@@ -1,5 +1,10 @@
-fun main() {
-    console.log("Hello, ${greet()}")
-}
+import icesword.World
+import icesword.worldView
+import kotlinx.browser.document
 
-fun greet() = "world"
+fun main() {
+    val world = World()
+
+    val root = document.getElementById("root")!!
+    root.appendChild(worldView(world))
+}
