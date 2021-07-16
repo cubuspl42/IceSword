@@ -13,6 +13,8 @@ data class IntVec2(
 
     operator fun minus(that: IntVec2): IntVec2 = IntVec2(x - that.x, y - that.y)
 
+    operator fun div(s: Int): IntVec2 = IntVec2(x / s, y / s)
+
     companion object {
         val ZERO = IntVec2(0, 0)
     }

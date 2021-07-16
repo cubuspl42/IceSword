@@ -1,5 +1,5 @@
 plugins {
-    kotlin("js") version "1.5.21"
+    kotlin("js") version "1.5.20"
 }
 
 group = "me.kuba"
@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
     implementation("org.jetbrains.kotlin-wrappers:kotlin-css:1.0.0-pre.214-kotlin-1.5.20")
 
     implementation(npm("pako", "2.0.3"))

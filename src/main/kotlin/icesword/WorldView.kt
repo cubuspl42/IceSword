@@ -42,7 +42,7 @@ fun worldView(world: World): HTMLElement {
     fun tileImg(tileId: Int): HTMLElement {
         val tileIdStr = tileId.toString().padStart(3, '0')
         return Image().apply {
-            src = "images/CLAW/LEVEL2/TILES/ACTION/$tileIdStr.png"
+            src = "images/CLAW/LEVEL3/TILES/ACTION/$tileIdStr.png"
             style.display = "block"
         }
     }
