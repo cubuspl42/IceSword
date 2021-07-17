@@ -4,6 +4,7 @@ import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.scene.Texture
 import icesword.scene.Tileset
+import icesword.frp.Till
 import icesword.worldView
 import icesword.wwd.Wwd
 import icesword.wwd.Wwd.readWorld
@@ -130,12 +131,11 @@ fun main() {
         val wwdWorld = fetchWorld()
         val world = World.load(wwdWorld)
 
-//        root.appendChild(worldView(world))
-
         root.appendChild(
             worldView(
                 world = world,
                 tileset = tileset,
+                tillDetach = Till.never,
             )
         )
     }

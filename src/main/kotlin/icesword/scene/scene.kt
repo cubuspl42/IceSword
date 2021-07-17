@@ -1,10 +1,15 @@
 package icesword.scene
 
+import icesword.frp.*
 import icesword.geometry.IntRect
+import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.*
+import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
+
 
 const val TILE_SIZE = 64
 
@@ -61,48 +66,98 @@ class SceneContext {
 
 class Scene(
     val root: Node,
-    val cameraFocusPoint: IntVec2,
+    val cameraFocusPoint: Cell<IntVec2>,
 )
 
 fun scene(
-    builder: (SceneContext) -> Scene
+    tillDetach: Till,
+    builder: (SceneContext) -> Scene,
 ): HTMLElement {
-    val canvas = document.createElement("canvas") as HTMLCanvasElement
+    fun createSceneCanvas(): HTMLCanvasElement {
+        val canvas = document.createElement("canvas") as HTMLCanvasElement
 
-    canvas.apply {
-        width = 1024
-        height = 1024
+        canvas.apply {
+            width = 1024
+            height = 1024
+        }
+
+        canvas.style.apply {
+            width = "100%"
+            height = "100%"
+        }
+
+        canvas.addEventListener("contextmenu", { it.preventDefault() })
+
+        return canvas
     }
 
-    canvas.style.apply {
-        width = "100%"
-        height = "100%"
+    fun buildScene(): Scene {
+        val context = SceneContext()
+
+        return builder(context)
     }
 
-    canvas.addEventListener("contextmenu", { it.preventDefault() })
+    fun buildDirtyFlag(scene: Scene): MutCell<Boolean> {
+        val isDirty = MutCell(true)
+
+        val onDirty = scene.cameraFocusPoint.values().map { }
+
+        onDirty.reactTill(tillDetach) {
+            isDirty.set(true)
+        }
+
+        return isDirty
+    }
+
+    val scene = buildScene()
+
+    val canvas = createSceneCanvas()
+
+    val isDirty = buildDirtyFlag(scene)
 
     val ctx = canvas.getContext("2d").unsafeCast<CanvasRenderingContext2D>()
-    val context = SceneContext()
 
-    val scene = builder(context)
     val root = scene.root
 
-    fun handleAnimationFrame() {
-        val rect = canvas.getBoundingClientRect()
+    fun resizeCanvasIfNeeded() {
+        val rectSize = canvas.getBoundingClientRect().size
 
-        canvas.width = rect.width.toInt()
-        canvas.height = rect.height.toInt()
+        if (canvas.size != rectSize) {
+            canvas.size = rectSize
+            isDirty.set(true)
+        }
+    }
 
-        val tv = -scene.cameraFocusPoint
+    fun drawScene() {
+        ctx.resetTransform()
+
+        ctx.clearRect(
+            x = 0.0,
+            y = 0.0,
+            w = canvas.width.toDouble(),
+            h = canvas.height.toDouble(),
+        )
+
+        val tv = -scene.cameraFocusPoint.sample()
+
         ctx.translate(tv.x.toDouble(), tv.y.toDouble())
 
         root.draw(ctx)
     }
 
+    fun handleAnimationFrame() {
+        resizeCanvasIfNeeded()
+
+        if (isDirty.sample()) {
+            drawScene()
+            isDirty.set(false)
+        }
+    }
+
     fun requestAnimationFrames() {
         window.requestAnimationFrame {
             handleAnimationFrame()
-//            requestAnimationFrames()
+            requestAnimationFrames()
         }
     }
 
@@ -111,5 +166,18 @@ fun scene(
     return canvas
 }
 
-private fun createHtmlElement(tagName: String): HTMLElement =
-    document.createElement(tagName) as HTMLElement
+private val DOMRect.size: IntSize
+    get() = IntSize(
+        this.width.roundToInt(),
+        this.height.roundToInt(),
+    )
+
+private var HTMLCanvasElement.size: IntSize
+    get() = IntSize(
+        this.width,
+        this.height,
+    )
+    set(value) {
+        this.width = value.width
+        this.height = value.height
+    }

@@ -1,5 +1,6 @@
 package icesword
 
+import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
 import org.khronos.webgl.get
@@ -34,4 +35,20 @@ class World(
         }
     }
 
+    private val _cameraFocusPoint = MutCell(IntVec2.ZERO)
+
+    val cameraFocusPoint: Cell<IntVec2>
+        get() = _cameraFocusPoint
+
+    fun dragCamera(
+        offsetDelta: Cell<IntVec2>,
+        tillStop: Till,
+    ) {
+        val initialFocusPoint = _cameraFocusPoint.sample()
+        val targetFocusPoint = offsetDelta.map { d -> initialFocusPoint + d }
+
+        println("initialFocusPoint: $initialFocusPoint")
+
+        targetFocusPoint.syncTill(_cameraFocusPoint, till = tillStop)
+    }
 }
