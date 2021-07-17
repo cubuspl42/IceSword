@@ -47,6 +47,9 @@ fun main() {
     GlobalScope.launch {
         val wwdWorld = fetchWorld()
         val world = World.load(wwdWorld)
+
+//        root.appendChild(worldView(world))
+
         root.appendChild(worldView(world))
     }
 }
