@@ -8,6 +8,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
+import org.w3c.dom.HTMLElement
 
 
 suspend fun fetchWorld(): Wwd.World {
@@ -22,12 +23,26 @@ suspend fun fetchWorld(): Wwd.World {
 
 @OptIn(DelicateCoroutinesApi::class)
 fun main() {
-    document.body?.apply {
-        style.margin = "0px";
-        style.padding = "0px";
+    document.body?.style?.apply {
+        margin = "0px"
+        padding = "0px"
+
+        width = "100vw"
+        height = "100vh"
+
+        asDynamic().overscrollBehavior = "none"
     }
 
-    val root = document.getElementById("root")!!
+    val root = document.getElementById("root")!! as HTMLElement
+
+    root.style.apply {
+        position = "relative"
+        width = "100%"
+        height = "100%"
+
+        overflowX = "hidden"
+        overflowY = "hidden"
+    }
 
     GlobalScope.launch {
         val wwdWorld = fetchWorld()

@@ -53,7 +53,9 @@ fun worldView(world: World): HTMLElement {
                 td(tileImg(tileId ?: 1))
             })
         }
-    )
+    ).apply {
+        style.position = "absolute"
+    }
 }
 
 private fun createHtmlElement(tagName: String): HTMLElement =
