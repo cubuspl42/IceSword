@@ -1,5 +1,7 @@
 package icesword
 
+import icesword.geometry.IntVec2
+import icesword.scene.Scene
 import icesword.scene.TileLayer
 import icesword.scene.Tileset
 import icesword.scene.scene
@@ -9,8 +11,11 @@ fun worldView(
     world: World,
     tileset: Tileset,
 ): HTMLElement = scene { context ->
-    TileLayer(
-        tileset = tileset,
-        tiles = world.tiles,
+    Scene(
+        root = TileLayer(
+            tileset = tileset,
+            tiles = world.tiles,
+        ),
+        cameraFocusPoint = IntVec2(1024, 32),
     )
 }

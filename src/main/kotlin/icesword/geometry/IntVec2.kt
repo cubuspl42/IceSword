@@ -17,6 +17,8 @@ data class IntVec2(
 
     operator fun div(s: Int): IntVec2 = IntVec2(x / s, y / s)
 
+    operator fun unaryMinus(): IntVec2 = IntVec2(-x, -y)
+
     companion object {
         val ZERO = IntVec2(0, 0)
     }

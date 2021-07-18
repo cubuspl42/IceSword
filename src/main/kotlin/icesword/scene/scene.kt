@@ -21,6 +21,15 @@ interface Node {
     fun draw(ctx: CanvasRenderingContext2D)
 }
 
+class Group(
+    val children: List<Node>,
+) {
+
+    fun draw(ctx: CanvasRenderingContext2D) {
+
+    }
+}
+
 class TileLayer(
     val tileset: Tileset,
     val tiles: Map<IntVec2, Int>,
@@ -50,8 +59,13 @@ class SceneContext {
 //        Texture(image)
 }
 
+class Scene(
+    val root: Node,
+    val cameraFocusPoint: IntVec2,
+)
+
 fun scene(
-    builder: (SceneContext) -> Node
+    builder: (SceneContext) -> Scene
 ): HTMLElement {
     val canvas = document.createElement("canvas") as HTMLCanvasElement
 
@@ -68,15 +82,19 @@ fun scene(
     canvas.addEventListener("contextmenu", { it.preventDefault() })
 
     val ctx = canvas.getContext("2d").unsafeCast<CanvasRenderingContext2D>()
-
     val context = SceneContext()
-    val root = builder(context)
+
+    val scene = builder(context)
+    val root = scene.root
 
     fun handleAnimationFrame() {
         val rect = canvas.getBoundingClientRect()
 
         canvas.width = rect.width.toInt()
         canvas.height = rect.height.toInt()
+
+        val tv = -scene.cameraFocusPoint
+        ctx.translate(tv.x.toDouble(), tv.y.toDouble())
 
         root.draw(ctx)
     }
