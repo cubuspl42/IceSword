@@ -1,13 +1,16 @@
 package icesword.scene
 
+import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
-import org.w3c.dom.HTMLElement
-import org.w3c.dom.Image
-import org.w3c.dom.Node as DomNode
+import kotlinx.browser.window
+import org.w3c.dom.*
 
-class Texture(
-    val image: Image,
+const val TILE_SIZE = 64
+
+data class Texture(
+    val imageBitmap: ImageBitmap,
+    val sourceRect: IntRect,
 )
 
 class Tileset(
@@ -15,78 +18,79 @@ class Tileset(
 )
 
 interface Node {
-    val htmlElement: HTMLElement
+    fun draw(ctx: CanvasRenderingContext2D)
 }
 
 class TileLayer(
     val tileset: Tileset,
     val tiles: Map<IntVec2, Int>,
 ) : Node {
-    override val htmlElement: HTMLElement = run {
-        fun <A> toRows(map: Map<IntVec2, A>): List<List<A?>> {
-            val keys = map.keys
+    override fun draw(ctx: CanvasRenderingContext2D) {
+        tiles.forEach { (tileOffset, tileId) ->
+            val texture = tileset.tileTextures[tileId]!!
+            val pixelOffset = tileOffset * TILE_SIZE
 
-            val minX = keys.map { it.x }.minOrNull() ?: 0
-            val maxX = keys.map { it.x }.maxOrNull() ?: -1
-
-            val minY = keys.map { it.y }.minOrNull() ?: 0
-            val maxY = keys.map { it.y }.maxOrNull() ?: -1
-
-            return (minY..maxY).map { y ->
-                (minX..maxX).map { x -> map[IntVec2(x, y)] }
-            }
-        }
-
-        fun table(rows: List<DomNode>): HTMLElement =
-            createHtmlElement("div").apply {
-                style.display = "table"
-                rows.forEach(::appendChild)
-            }
-
-        fun tr(cells: List<DomNode>): HTMLElement =
-            createHtmlElement("div").apply {
-                style.display = "table-row"
-                cells.forEach(::appendChild)
-            }
-
-        fun td(child: DomNode): HTMLElement =
-            createHtmlElement("div").apply {
-                style.display = "table-cell"
-                appendChild(child)
-            }
-
-        fun tileImg(tileId: Int): DomNode {
-            val imageNode = tileset.tileTextures[tileId]?.image?.cloneNode() ?: Image()
-            val image = imageNode as HTMLElement
-            return image.apply {
-                style.display = "block"
-            }
-        }
-
-        table(
-            toRows(tiles).map { tileIdRow ->
-                tr(tileIdRow.map { tileId ->
-                    td(tileImg(tileId ?: 1))
-                })
-            }
-        ).apply {
-            style.position = "absolute"
+            ctx.drawImage(
+                image = texture.imageBitmap,
+                sx = texture.sourceRect.xMin.toDouble(),
+                sy = texture.sourceRect.yMin.toDouble(),
+                sw = texture.sourceRect.width.toDouble(),
+                sh = texture.sourceRect.height.toDouble(),
+                dx = pixelOffset.x.toDouble(),
+                dy = pixelOffset.y.toDouble(),
+                dw = TILE_SIZE.toDouble(),
+                dh = TILE_SIZE.toDouble(),
+            )
         }
     }
-
 }
 
 class SceneContext {
-    fun createTexture(image: Image): Texture =
-        Texture(image)
+//    fun createTexture(image: Image): Texture =
+//        Texture(image)
 }
 
 fun scene(
     builder: (SceneContext) -> Node
 ): HTMLElement {
+    val canvas = document.createElement("canvas") as HTMLCanvasElement
+
+    canvas.apply {
+        width = 1024
+        height = 1024
+    }
+
+    canvas.style.apply {
+        width = "100%"
+        height = "100%"
+    }
+
+    canvas.addEventListener("contextmenu", { it.preventDefault() })
+
+    val ctx = canvas.getContext("2d").unsafeCast<CanvasRenderingContext2D>()
+
     val context = SceneContext()
     val root = builder(context)
-    return  root.htmlElement
+
+    fun handleAnimationFrame() {
+        val rect = canvas.getBoundingClientRect()
+
+        canvas.width = rect.width.toInt()
+        canvas.height = rect.height.toInt()
+
+        root.draw(ctx)
+    }
+
+    fun requestAnimationFrames() {
+        window.requestAnimationFrame {
+            handleAnimationFrame()
+//            requestAnimationFrames()
+        }
+    }
+
+    requestAnimationFrames()
+
+    return canvas
 }
 
 private fun createHtmlElement(tagName: String): HTMLElement =

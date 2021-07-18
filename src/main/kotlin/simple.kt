@@ -1,4 +1,9 @@
 import icesword.World
+import icesword.geometry.IntRect
+import icesword.geometry.IntSize
+import icesword.geometry.IntVec2
+import icesword.scene.Texture
+import icesword.scene.Tileset
 import icesword.worldView
 import icesword.wwd.Wwd
 import icesword.wwd.Wwd.readWorld
@@ -9,6 +14,81 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.ImageBitmap
+
+const val textureImagePath = "images/spritesheets/LEVEL3_ACTION/texture.png"
+const val textureIndexPath = "images/spritesheets/LEVEL3_ACTION/texture.json"
+
+val objectEntries = js("Object.entries") as (dynamic) -> Array<Array<Any?>>
+
+fun mapOf(jsObject: dynamic): Map<String, Any?> {
+    val entries = objectEntries(jsObject)
+        .map { entry -> entry[0] as String to entry[1] }
+    return entries.toMap()
+}
+
+external interface FrameIndex {
+    val frames: Map<String, Frame>
+}
+
+external interface Frame {
+    val frame: FrameRect
+}
+
+external interface FrameRect {
+    val x: Int
+    val y: Int
+}
+
+suspend fun loadTileset(): Tileset {
+    suspend fun loadImage(): ImageBitmap {
+        val textureImageResponse = window.fetch(textureImagePath).await()
+        val textureImageBlob = textureImageResponse.blob().await()
+        return window.createImageBitmap(textureImageBlob).await()
+    }
+
+    fun parseIndex(
+        indexJson: dynamic,
+    ): Map<Int, IntRect> {
+        val frames = mapOf(indexJson.frames)
+
+        return frames.map { (frameIdStr, frame) ->
+            val frameId = frameIdStr.toInt()
+
+            val frameRectJson = frame.asDynamic().frame
+            val frameRect = IntRect(
+                IntVec2(
+                    frameRectJson.x as Int,
+                    frameRectJson.y as Int,
+                ),
+                IntSize(
+                    frameRectJson.w as Int,
+                    frameRectJson.h as Int,
+                )
+            )
+
+            frameId to frameRect
+        }.toMap()
+    }
+
+    suspend fun loadIndex(): Map<Int, IntRect> {
+        val textureIndexResponse = window.fetch(textureIndexPath).await()
+        val json = textureIndexResponse.json().await().asDynamic()
+        return parseIndex(json)
+    }
+
+    val imageBitmap = loadImage()
+
+    val index = loadIndex()
+
+    val tileTextures = index.mapValues { (_, frameRect) ->
+        Texture(imageBitmap, frameRect)
+    }
+
+    return Tileset(
+        tileTextures = tileTextures,
+    )
+}
 
 
 suspend fun fetchWorld(): Wwd.World {
@@ -45,11 +125,18 @@ fun main() {
     }
 
     GlobalScope.launch {
+        val tileset = loadTileset()
+
         val wwdWorld = fetchWorld()
         val world = World.load(wwdWorld)
 
 //        root.appendChild(worldView(world))
 
-        root.appendChild(worldView(world))
+        root.appendChild(
+            worldView(
+                world = world,
+                tileset = tileset,
+            )
+        )
     }
 }
