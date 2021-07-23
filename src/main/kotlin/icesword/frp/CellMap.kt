@@ -3,19 +3,19 @@ package icesword.frp
 class CellMap<A, B>(
     private val source: Cell<A>,
     private val f: (A) -> B,
-) : SimpleCell<B>() {
+) : CachingCell<B>() {
     private var subscription: Subscription? = null
 
-    override fun sample(): B =
+    override fun sampleUncached(): B =
         f(source.sample())
 
-    override fun onStart() {
+    override fun onStartUncached() {
         subscription = source.subscribe {
-            notifyListeners(f(it))
+            cacheAndNotifyListeners(f(it))
         }
     }
 
-    override fun onStop() {
+    override fun onStopUncached() {
         subscription!!.unsubscribe()
         subscription = null
     }

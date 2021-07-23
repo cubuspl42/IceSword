@@ -21,9 +21,14 @@ fun <A> Stream<A>.tillNext(orTill: Till): Till =
 fun <A> Stream<A>.hold(initialValue: A, till: Till): Cell<A> =
     CellHold(this, initialValue, till)
 
-fun <A, B> Stream<A>.map(f: (A) -> B): Stream<B> {
-    return StreamMap(this, f)
-}
+fun <A, B> Stream<A>.map(f: (A) -> B): Stream<B> =
+    StreamMap(this, f)
+
+fun <A> Stream<A>.filter(predicate: (A) -> Boolean): Stream<A> =
+    StreamFilter(this, predicate)
+
+fun <A> Stream<A>.mergeWith(other: Stream<A>): Stream<A> =
+    StreamMerge(this, other)
 
 @Suppress("UNCHECKED_CAST")
 fun <A, B> Stream<A>.cast(): Stream<B> =

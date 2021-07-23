@@ -24,13 +24,17 @@ class Tileset(
 
 interface Node {
     fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect)
+
+    val onDirty: Stream<Unit>
 }
 
 class TileLayer(
     val tileset: Tileset,
-    val tiles: Map<IntVec2, Int>,
+    val tiles: DynamicMap<IntVec2, Int>,
 ) : Node {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
+        val tiles = this.tiles.sample()
+
         val xyMinTileCoord = tileAtPoint(windowRect.xyMin)
         val xyMaxTileCoord = tileAtPoint(windowRect.xyMax)
 
@@ -57,6 +61,8 @@ class TileLayer(
             }
         }
     }
+
+    override val onDirty: Stream<Unit> = tiles.changes()
 }
 
 class SceneContext {
@@ -100,7 +106,10 @@ fun scene(
     fun buildDirtyFlag(scene: Scene): MutCell<Boolean> {
         val isDirty = MutCell(true)
 
-        val onDirty = scene.cameraFocusPoint.values().map { }
+        val onCameraDirty = scene.cameraFocusPoint.values().map { }
+        val onRootDirty = scene.root.onDirty
+
+        val onDirty = onCameraDirty.mergeWith(onRootDirty)
 
         onDirty.reactTill(tillDetach) {
             isDirty.set(true)

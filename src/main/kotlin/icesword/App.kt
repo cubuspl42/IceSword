@@ -5,6 +5,7 @@ import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
 import org.khronos.webgl.get
+import org.w3c.dom.CanvasTransform
 
 class World(
     val startPoint: IntVec2,
@@ -36,7 +37,10 @@ class World(
 
     private val baseTiles = DynamicMap.of(wwdTiles)
 
-    private val knotMesh = KnotMesh(tileOffset = tileAtPoint(startPoint))
+    val knotMesh = KnotMesh(
+        tileOffset = tileAtPoint(startPoint),
+        till = Till.never,
+    )
 
     val tiles = baseTiles.union(knotMesh.tiles)
 
@@ -44,6 +48,12 @@ class World(
 
     val cameraFocusPoint: Cell<IntVec2>
         get() = _cameraFocusPoint
+
+    fun transformToWorld(cameraPoint: IntVec2): Cell<IntVec2> =
+        cameraFocusPoint.map { it + cameraPoint }
+
+    fun transformToWorld(cameraPoint: Cell<IntVec2>): Cell<IntVec2> =
+        cameraPoint.switchMap(this::transformToWorld)
 
     fun dragCamera(
         offsetDelta: Cell<IntVec2>,
@@ -57,3 +67,4 @@ class World(
         targetFocusPoint.syncTill(_cameraFocusPoint, till = tillStop)
     }
 }
+

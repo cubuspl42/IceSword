@@ -1,5 +1,6 @@
 package icesword
 
+import icesword.editor.closestKnot
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.scene.Scene
@@ -25,7 +26,7 @@ fun worldView(
         style.height = "100%"
     }
 
-    root.onMouseDrag(tillDetach).reactTill(tillDetach) { mouseDrag ->
+    root.onMouseDrag(button = 2, tillDetach).reactTill(tillDetach) { mouseDrag ->
         println("onMouseDrag")
 
         val initialXy = mouseDrag.position.sample()
@@ -34,13 +35,21 @@ fun worldView(
         world.dragCamera(offsetDelta = delta, tillStop = mouseDrag.tillEnd)
     }
 
+    root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
+        world.transformToWorld(mouseDrag.position)
+            .reactTill(mouseDrag.tillEnd) { worldPosition ->
+                val knotCoord = closestKnot(worldPosition)
+                world.knotMesh.putKnot(knotCoord)
+            }
+    }
+
     return root.apply {
         appendChild(
             scene(tillDetach) { context ->
                 Scene(
                     root = TileLayer(
                         tileset = tileset,
-                        tiles = world.tiles.content,
+                        tiles = world.tiles,
                     ),
                     cameraFocusPoint = world.cameraFocusPoint,
                 )
@@ -49,23 +58,26 @@ fun worldView(
     }
 }
 
-private fun HTMLElement.onMouseDrag(till: Till): Stream<MouseDrag> =
-    this.onMouseDown().until(till).map { event ->
+private fun HTMLElement.onMouseDrag(button: Short, till: Till): Stream<MouseDrag> =
+    this.onMouseDown(button = button).until(till).map { event ->
         MouseDrag.start(
             element = this,
             initialPosition = event.clientPosition,
+            button = button,
             tillAbort = till,
         )
     }
 
-private fun HTMLElement.onMouseDown(): Stream<MouseEvent> =
-    this.onEvent<MouseEvent>("mousedown").cast()
+private fun HTMLElement.onMouseDown(button: Short): Stream<MouseEvent> =
+    this.onEvent<MouseEvent>("mousedown")
+        .filter { e: MouseEvent -> e.button == button }
 
 private fun HTMLElement.onMouseMove(): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mousemove").cast()
 
-private fun HTMLElement.onMouseUp(): Stream<MouseEvent> =
-    this.onEvent<MouseEvent>("mouseup").cast()
+private fun HTMLElement.onMouseUp(button: Short): Stream<MouseEvent> =
+    this.onEvent<MouseEvent>("mouseup")
+        .filter { e: MouseEvent -> e.button == button }
 
 private fun <E : Event> HTMLElement.onEvent(eventType: String): Stream<E> =
     Stream.source<Event> { notify -> this.subscribeToEvent(eventType, notify) }.cast()
@@ -94,10 +106,10 @@ class MouseDrag(
         fun start(
             element: HTMLElement,
             initialPosition: IntVec2,
+            button: Short,
             tillAbort: Till,
         ): MouseDrag {
-            // TODO: filter button
-            val tillEnd = element.onMouseUp().tillNext(tillAbort)
+            val tillEnd = element.onMouseUp(button = button).tillNext(tillAbort)
 
             val position = element.onMouseMove().map { it.clientPosition }
                 .hold(initialPosition, till = tillEnd)

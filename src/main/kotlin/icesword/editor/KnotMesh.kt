@@ -1,7 +1,8 @@
 package icesword.editor
 
-import icesword.frp.DynamicMap
+import icesword.frp.*
 import icesword.geometry.IntVec2
+import icesword.tileAtPoint
 
 fun tilesAroundKnot(knotCoord: IntVec2): Set<IntVec2> {
     @Suppress("UnnecessaryVariable")
@@ -13,7 +14,10 @@ fun tilesAroundKnot(knotCoord: IntVec2): Set<IntVec2> {
     )
 }
 
-fun knotsAroundTile(tileCoord: IntVec2, distance: Int): Set<IntVec2> {
+fun closestKnot(point: IntVec2): IntVec2 =
+    tileAtPoint(point - IntVec2(32, 32))
+
+fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
     @Suppress("UnnecessaryVariable")
     val d = distance
 
@@ -23,37 +27,116 @@ fun knotsAroundTile(tileCoord: IntVec2, distance: Int): Set<IntVec2> {
         range.map { x ->
             tileCoord + IntVec2(x, y)
         }
-    }.toSet()
+    }
 }
 
-class KnotMesh(tileOffset: IntVec2) {
-    private val localKnots = setOf(
-        IntVec2(0, 0),
-        IntVec2(1, 0),
-        IntVec2(0, 1),
-        IntVec2(1, 1),
+class KnotMesh(
+    private val tileOffset: IntVec2,
+    till: Till,
+) {
+    private val localKnots = MutableDynamicSet.of(
+        setOf(
+            IntVec2(0, 0),
+            IntVec2(1, 0),
+            IntVec2(0, 1),
+            IntVec2(1, 1),
+        )
     )
 
-    private val localTileCoords = localKnots.flatMap(::tilesAroundKnot).toSet()
+    fun putKnot(globalKnotCoord: IntVec2) {
+        val localKnotCoord = globalKnotCoord - tileOffset
+        localKnots.add(localKnotCoord)
 
-    private val localTiles = localTileCoords.associateWith { tileCoord ->
-        val nearbyKnots = knotsAroundTile(tileCoord, distance = 1)
-            .filter(localKnots::contains)
-            .toSet()
+        val tileCoords = tilesAroundKnot(localKnotCoord)
 
-        val relativeKnots = nearbyKnots.map { it - tileCoord }.toSet()
+        val localKnots = this.localKnots.sample()
 
-        buildTile(relativeKnots)
+        tileCoords.forEach { tileCoord ->
+            localTiles.put(tileCoord, buildTileAt(localKnots, tileCoord))
+        }
     }
 
-    val tiles: DynamicMap<IntVec2, Int> = DynamicMap.of(
-        localTiles.mapKeys { (localTileOffset, _) ->
-            tileOffset + localTileOffset
-        },
-    )
+//    private val localTileCoords = localKnots.unionMap(::tilesAroundKnot)
+
+//    private val localTiles = localTileCoords.associateWith { tileCoord ->
+//        val nearbyKnots = knotsAroundTile(tileCoord, distance = 1)
+//            .filter(localKnots::contains)
+//            .toSet()
+//
+//        val relativeKnots = nearbyKnots.map { it - tileCoord }.toSet()
+//
+//        buildTile(relativeKnots)
+//    }
+
+
+    private fun <A> withCounter(f: (inc: () -> Unit) -> A): A {
+
+        var counter = 0
+
+        fun inc() {
+            ++counter
+        }
+
+        return f(::inc)
+
+        val a = f(::inc)
+
+        println("Counter: $counter")
+
+        return a
+    }
+
+    private val localTiles = run {
+        val localKnots = localKnots.sample()
+        val localTileCoords = localKnots.flatMap(::tilesAroundKnot)
+
+        MutableDynamicMap.of(
+            localTileCoords.associateWith { tileCoord ->
+                buildTileAt(localKnots, tileCoord)
+            }
+        )
+    }
+
+    private fun buildTileAt(
+        localKnots: Set<IntVec2>,
+        tileCoord: IntVec2,
+    ): Int {
+        val nearbyKnots = knotsAroundTile(tileCoord, distance = 1)
+            .filter(localKnots::contains)
+
+        val relativeKnots = nearbyKnots.map { it - tileCoord }
+
+        return buildTile(relativeKnots)
+    }
+
+//    private val localTiles = DynamicMap.diff(
+//        Cell.map2(
+//            localKnots.trackContent(till),
+//            localTileCoords.trackContent(till),
+//        ) { localKnots, localTileCoords ->
+//            withCounter { inc ->
+//                localTileCoords.associateWith { tileCoord ->
+//                    val nearbyKnots = knotsAroundTile(tileCoord, distance = 1)
+//                        .filter(localKnots::contains)
+//
+//                    val relativeKnots = nearbyKnots.map { it - tileCoord }
+//
+//                    inc()
+//                    buildTile(relativeKnots)
+//                }
+//            }
+//        },
+//    )
+
+    val tiles = localTiles.mapKeys { (localTileOffset, _) ->
+        tileOffset + localTileOffset
+    }
 }
 
-private fun buildTile(relativeKnots: Set<IntVec2>): Int {
+
+private fun buildTile(relativeKnots: List<IntVec2>): Int {
+//    return 620
+
     fun intVec2(y: Int, x: Int) = IntVec2(x, y)
 
     return if (
