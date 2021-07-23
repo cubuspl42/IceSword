@@ -19,6 +19,8 @@ data class IntVec2(
 
     operator fun unaryMinus(): IntVec2 = IntVec2(-x, -y)
 
+    fun map(f: (Int) -> Int): IntVec2 = IntVec2(f(x), f(y))
+
     companion object {
         val ZERO = IntVec2(0, 0)
     }

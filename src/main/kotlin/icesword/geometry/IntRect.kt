@@ -1,10 +1,5 @@
 package icesword.geometry
 
-data class IntSize(
-    val width: Int,
-    val height: Int,
-)
-
 data class IntRect(
     val position: IntVec2,
     val size: IntSize,
@@ -32,4 +27,7 @@ data class IntRect(
     fun overlaps(b: IntRect): Boolean =
         this.xMin < b.xMax && b.xMin < this.xMax &&
                 this.yMin < b.yMax && b.yMin < this.yMax
+
+    fun translate(t: IntVec2): IntRect =
+        IntRect(position + t, size)
 }

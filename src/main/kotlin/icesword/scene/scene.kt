@@ -1,17 +1,17 @@
 package icesword.scene
 
+import icesword.TILE_SIZE
 import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import icesword.tileAtPoint
+import icesword.tileTopLeftCorner
 import kotlinx.browser.document
 import kotlinx.browser.window
 import org.w3c.dom.*
-import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
-
-const val TILE_SIZE = 64
 
 data class Texture(
     val imageBitmap: ImageBitmap,
@@ -23,38 +23,38 @@ class Tileset(
 )
 
 interface Node {
-    fun draw(ctx: CanvasRenderingContext2D)
-}
-
-class Group(
-    val children: List<Node>,
-) {
-
-    fun draw(ctx: CanvasRenderingContext2D) {
-
-    }
+    fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect)
 }
 
 class TileLayer(
     val tileset: Tileset,
     val tiles: Map<IntVec2, Int>,
 ) : Node {
-    override fun draw(ctx: CanvasRenderingContext2D) {
-        tiles.forEach { (tileOffset, tileId) ->
-            val texture = tileset.tileTextures[tileId]!!
-            val pixelOffset = tileOffset * TILE_SIZE
+    override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
+        val xyMinTileCoord = tileAtPoint(windowRect.xyMin)
+        val xyMaxTileCoord = tileAtPoint(windowRect.xyMax)
 
-            ctx.drawImage(
-                image = texture.imageBitmap,
-                sx = texture.sourceRect.xMin.toDouble(),
-                sy = texture.sourceRect.yMin.toDouble(),
-                sw = texture.sourceRect.width.toDouble(),
-                sh = texture.sourceRect.height.toDouble(),
-                dx = pixelOffset.x.toDouble(),
-                dy = pixelOffset.y.toDouble(),
-                dw = TILE_SIZE.toDouble(),
-                dh = TILE_SIZE.toDouble(),
-            )
+        (xyMinTileCoord.y..xyMaxTileCoord.y).forEach { i ->
+            (xyMinTileCoord.x..xyMaxTileCoord.x).forEach { j ->
+                val tileCoord = IntVec2(j, i)
+                val tileId = tiles[tileCoord] ?: -1
+
+                tileset.tileTextures[tileId]?.let { texture ->
+                    val tilePosition = tileTopLeftCorner(tileCoord)
+
+                    ctx.drawImage(
+                        image = texture.imageBitmap,
+                        sx = texture.sourceRect.xMin.toDouble(),
+                        sy = texture.sourceRect.yMin.toDouble(),
+                        sw = texture.sourceRect.width.toDouble(),
+                        sh = texture.sourceRect.height.toDouble(),
+                        dx = tilePosition.x.toDouble(),
+                        dy = tilePosition.y.toDouble(),
+                        dw = TILE_SIZE.toDouble(),
+                        dh = TILE_SIZE.toDouble(),
+                    )
+                }
+            }
         }
     }
 }
@@ -79,11 +79,11 @@ fun scene(
         canvas.apply {
             width = 1024
             height = 1024
-        }
 
-        canvas.style.apply {
-            width = "100%"
-            height = "100%"
+            style.apply {
+                width = "100%"
+                height = "100%"
+            }
         }
 
         canvas.addEventListener("contextmenu", { it.preventDefault() })
@@ -129,20 +129,26 @@ fun scene(
     }
 
     fun drawScene() {
+        val viewportRect = canvas.size.toRect()
+
         ctx.resetTransform()
 
         ctx.clearRect(
-            x = 0.0,
-            y = 0.0,
-            w = canvas.width.toDouble(),
-            h = canvas.height.toDouble(),
+            x = viewportRect.xMin.toDouble(),
+            y = viewportRect.yMin.toDouble(),
+            w = viewportRect.width.toDouble(),
+            h = viewportRect.height.toDouble(),
         )
 
-        val tv = -scene.cameraFocusPoint.sample()
+        val fp = scene.cameraFocusPoint.sample()
+
+        val tv = -fp
 
         ctx.translate(tv.x.toDouble(), tv.y.toDouble())
 
-        root.draw(ctx)
+        val windowRect = viewportRect.translate(fp)
+
+        root.draw(ctx, windowRect = windowRect)
     }
 
     fun handleAnimationFrame() {
