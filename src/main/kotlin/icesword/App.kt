@@ -1,5 +1,6 @@
 package icesword
 
+import icesword.editor.KnotMesh
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
@@ -7,7 +8,7 @@ import org.khronos.webgl.get
 
 class World(
     val startPoint: IntVec2,
-    val tiles: Map<IntVec2, Int>,
+    val wwdTiles: Map<IntVec2, Int>,
 ) {
     companion object {
         fun load(wwdWorld: Wwd.World): World {
@@ -28,10 +29,16 @@ class World(
 
             return World(
                 startPoint = startPoint,
-                tiles = tiles,
+                wwdTiles = tiles,
             )
         }
     }
+
+    private val baseTiles = DynamicMap.of(wwdTiles)
+
+    private val knotMesh = KnotMesh(tileOffset = tileAtPoint(startPoint))
+
+    val tiles = baseTiles.union(knotMesh.tiles)
 
     private val _cameraFocusPoint = MutCell(startPoint)
 

@@ -40,78 +40,13 @@ fun worldView(
                 Scene(
                     root = TileLayer(
                         tileset = tileset,
-                        tiles = world.tiles,
+                        tiles = world.tiles.content,
                     ),
                     cameraFocusPoint = world.cameraFocusPoint,
                 )
             },
         )
     }
-}
-
-fun worldView_(
-    world: World,
-    tillDetach: Till,
-): HTMLElement {
-    fun <A> toRows(map: Map<IntVec2, A>): List<List<A?>> {
-        val keys = map.keys
-
-        val minX = keys.map { it.x }.minOrNull() ?: 0
-        val maxX = keys.map { it.x }.maxOrNull() ?: 0
-
-        val minY = keys.map { it.y }.minOrNull() ?: 0
-        val maxY = keys.map { it.y }.maxOrNull() ?: 0
-
-        return (minY..maxY).map { y ->
-            (minX..maxX).map { x -> map[IntVec2(x, y)] }
-        }
-    }
-
-    fun table(rows: List<HTMLElement>): HTMLElement =
-        createHtmlElement("div").apply {
-            style.display = "table"
-            rows.forEach(::appendChild)
-        }
-
-    fun tr(cells: List<HTMLElement>): HTMLElement =
-        createHtmlElement("div").apply {
-            style.display = "table-row"
-            cells.forEach(::appendChild)
-        }
-
-    fun td(child: HTMLElement): HTMLElement =
-        createHtmlElement("div").apply {
-            style.display = "table-cell"
-            appendChild(child)
-        }
-
-    fun tileImg(tileId: Int): HTMLElement {
-        val tileIdStr = tileId.toString().padStart(3, '0')
-        return Image().apply {
-            src = "images/CLAW/LEVEL3/TILES/ACTION/$tileIdStr.png"
-            style.display = "block"
-        }
-    }
-
-    val root = createHtmlElement("div")
-
-
-//    val tillDetach = Till()
-
-    root.onMouseDrag(tillDetach).reactTill(tillDetach) { mouseDrag ->
-        val initialXy = mouseDrag.position.sample()
-        val delta = mouseDrag.position.map { xy: IntVec2 -> xy - initialXy }
-
-        world.dragCamera(offsetDelta = delta, tillStop = mouseDrag.tillEnd)
-    }
-
-    return table(
-        toRows(world.tiles).map { tileIdRow ->
-            tr(tileIdRow.map { tileId ->
-                td(tileImg(tileId ?: 1))
-            })
-        }
-    )
 }
 
 private fun HTMLElement.onMouseDrag(till: Till): Stream<MouseDrag> =
