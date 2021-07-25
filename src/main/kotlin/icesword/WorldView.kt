@@ -41,19 +41,34 @@ fun worldView(
     }
 
     return root.apply {
+        val viewTransform = world.cameraFocusPoint.map { -it }
+
+        val planeLayer = Layer(
+            transform = viewTransform,
+            nodes = listOf(
+                TileLayer(
+                    tileset = tileset,
+                    tiles = world.tiles,
+                ),
+            ),
+        )
+
+        val planeUiLayer = Layer(
+            transform = Cell.constant(IntVec2.ZERO),
+            nodes = listOf(
+                KnotMeshUi(
+                    viewTransform = viewTransform,
+                    world.knotMesh,
+                ),
+            ),
+        )
+
         appendChild(
-            scene(tillDetach) { context ->
+            scene(tillDetach) { _ ->
                 Scene(
                     layers = listOf(
-                        Layer(
-                            transform = world.cameraFocusPoint.map { -it },
-                            nodes = listOf(
-                                TileLayer(
-                                    tileset = tileset,
-                                    tiles = world.tiles,
-                                ),
-                            ),
-                        ),
+                        planeLayer,
+                        planeUiLayer,
                     ),
                 )
             },

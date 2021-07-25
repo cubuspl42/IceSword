@@ -3,6 +3,7 @@ package icesword.editor
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
+import icesword.tileTopLeftCorner
 
 fun tilesAroundKnot(knotCoord: IntVec2): Set<IntVec2> {
     @Suppress("UnnecessaryVariable")
@@ -14,8 +15,30 @@ fun tilesAroundKnot(knotCoord: IntVec2): Set<IntVec2> {
     )
 }
 
+//fun tilesAroundKnot(knotCoord: IntVec2, distance: Int = 0): List<IntVec2> {
+//    @Suppress("UnnecessaryVariable")
+//    val d = distance
+//
+//    val range = (-d..(1 + d))
+//
+//    return range.flatMap { y ->
+//        range.map { x ->
+//            knotCoord + IntVec2(x, y)
+//        }
+//    }
+//}
+
+
 fun closestKnot(point: IntVec2): IntVec2 =
     tileAtPoint(point - IntVec2(32, 32))
+
+fun knotCenter(knotCoord: IntVec2): IntVec2 =
+    tileTopLeftCorner(
+        IntVec2(
+            x = knotCoord.x + 1,
+            y = knotCoord.y + 1,
+        )
+    )
 
 fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
     @Suppress("UnnecessaryVariable")
@@ -31,10 +54,10 @@ fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
 }
 
 class KnotMesh(
-    private val tileOffset: IntVec2,
+    val tileOffset: IntVec2,
     till: Till,
 ) {
-    private val localKnots = MutableDynamicSet.of(
+    private val _localKnots = MutableDynamicSet.of(
         setOf(
             IntVec2(0, 0),
             IntVec2(1, 0),
@@ -43,13 +66,15 @@ class KnotMesh(
         )
     )
 
+    val localKnots: DynamicSet<IntVec2> = _localKnots
+
     fun putKnot(globalKnotCoord: IntVec2) {
         val localKnotCoord = globalKnotCoord - tileOffset
-        localKnots.add(localKnotCoord)
+        _localKnots.add(localKnotCoord)
 
         val tileCoords = tilesAroundKnot(localKnotCoord)
 
-        val localKnots = this.localKnots.sample()
+        val localKnots = this._localKnots.sample()
 
         tileCoords.forEach { tileCoord ->
             localTiles.put(tileCoord, buildTileAt(localKnots, tileCoord))
@@ -87,7 +112,7 @@ class KnotMesh(
     }
 
     private val localTiles = run {
-        val localKnots = localKnots.sample()
+        val localKnots = _localKnots.sample()
         val localTileCoords = localKnots.flatMap(::tilesAroundKnot)
 
         MutableDynamicMap.of(
@@ -200,6 +225,16 @@ private fun buildTile(relativeKnots: List<IntVec2>): Int {
         !relativeKnots.contains(intVec2(-1, -1)) &&
         !relativeKnots.contains(intVec2(-1, 0)) &&
         !relativeKnots.contains(intVec2(0, 0))
-    ) 623
+    ) 623 else if (
+        relativeKnots.contains(intVec2(0, -1)) &&
+        relativeKnots.contains(intVec2(-1, 0)) &&
+        relativeKnots.contains(intVec2(-1, -1)) &&
+        !relativeKnots.contains(intVec2(0, 0))
+    ) 617 else if (
+        relativeKnots.contains(intVec2(0, 0)) &&
+        relativeKnots.contains(intVec2(-1, 0)) &&
+        relativeKnots.contains(intVec2(-1, -1)) &&
+        !relativeKnots.contains(intVec2(0, -1))
+    ) 618
     else 630
 }

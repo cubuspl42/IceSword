@@ -25,6 +25,9 @@ fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> = DynamicSet.di
     content.map { it.map(transform).toSet() },
 )
 
+fun <A> DynamicSet<A>.changes(): Stream<Unit> =
+    this.content.values().units()
+
 fun <A> DynamicSet<A>.sample(): Set<A> = content.sample()
 
 class ContentDynamicSet<A>(
