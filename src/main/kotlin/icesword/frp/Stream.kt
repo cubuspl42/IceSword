@@ -5,6 +5,10 @@ interface Stream<A> : Observable<A> {
         fun <A> source(
             subscribeToSource: (notify: (a: A) -> Unit) -> Subscription,
         ): Stream<A> = SourceStream(subscribeToSource)
+
+        fun <A> merge(
+            streams: Iterable<Stream<A>>,
+        ): Stream<A> = StreamMerge(streams)
     }
 }
 
@@ -24,11 +28,14 @@ fun <A> Stream<A>.hold(initialValue: A, till: Till): Cell<A> =
 fun <A, B> Stream<A>.map(f: (A) -> B): Stream<B> =
     StreamMap(this, f)
 
+fun <A> Stream<A>.units(): Stream<Unit> =
+    this.map { }
+
 fun <A> Stream<A>.filter(predicate: (A) -> Boolean): Stream<A> =
     StreamFilter(this, predicate)
 
 fun <A> Stream<A>.mergeWith(other: Stream<A>): Stream<A> =
-    StreamMerge(this, other)
+    StreamMerge2(this, other)
 
 @Suppress("UNCHECKED_CAST")
 fun <A, B> Stream<A>.cast(): Stream<B> =

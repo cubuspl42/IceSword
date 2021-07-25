@@ -28,6 +28,30 @@ interface Node {
     val onDirty: Stream<Unit>
 }
 
+class Layer(
+    private val transform: Cell<IntVec2>,
+    private val nodes: List<Node>,
+) {
+    fun draw(ctx: CanvasRenderingContext2D, viewportRect: IntRect) {
+        val transform = this.transform.sample()
+
+        val inverseTransform = -transform
+
+        val windowRect = viewportRect.translate(inverseTransform)
+
+        ctx.resetTransform()
+        ctx.translate(transform.x.toDouble(), transform.y.toDouble())
+
+        nodes.forEach {
+            it.draw(ctx, windowRect)
+        }
+    }
+
+    val onDirty: Stream<Unit> =
+        transform.values().units()
+            .mergeWith(Stream.merge(nodes.map { it.onDirty }))
+}
+
 class TileLayer(
     val tileset: Tileset,
     val tiles: DynamicMap<IntVec2, Int>,
@@ -71,8 +95,7 @@ class SceneContext {
 }
 
 class Scene(
-    val root: Node,
-    val cameraFocusPoint: Cell<IntVec2>,
+    val layers: List<Layer>,
 )
 
 fun scene(
@@ -106,10 +129,7 @@ fun scene(
     fun buildDirtyFlag(scene: Scene): MutCell<Boolean> {
         val isDirty = MutCell(true)
 
-        val onCameraDirty = scene.cameraFocusPoint.values().map { }
-        val onRootDirty = scene.root.onDirty
-
-        val onDirty = onCameraDirty.mergeWith(onRootDirty)
+        val onDirty = Stream.merge(scene.layers.map { it.onDirty })
 
         onDirty.reactTill(tillDetach) {
             isDirty.set(true)
@@ -126,7 +146,7 @@ fun scene(
 
     val ctx = canvas.getContext("2d").unsafeCast<CanvasRenderingContext2D>()
 
-    val root = scene.root
+    val layers = scene.layers
 
     fun resizeCanvasIfNeeded() {
         val rectSize = canvas.getBoundingClientRect().size
@@ -149,15 +169,9 @@ fun scene(
             h = viewportRect.height.toDouble(),
         )
 
-        val fp = scene.cameraFocusPoint.sample()
-
-        val tv = -fp
-
-        ctx.translate(tv.x.toDouble(), tv.y.toDouble())
-
-        val windowRect = viewportRect.translate(fp)
-
-        root.draw(ctx, windowRect = windowRect)
+        layers.forEach {
+            it.draw(ctx, viewportRect = viewportRect)
+        }
     }
 
     fun handleAnimationFrame() {

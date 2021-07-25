@@ -1,23 +1,16 @@
 package icesword.frp
 
 class StreamMerge<A>(
-    private val source1: Stream<A>,
-    private val source2: Stream<A>,
+    private val sources: Iterable<Stream<A>>,
 ) : SimpleStream<A>() {
-    private var subscription1: Subscription? = null
-
-    private var subscription2: Subscription? = null
+    private var subscriptions: List<Subscription> = emptyList()
 
     override fun onStart() {
-        subscription1 = source1.subscribe(this::notifyListeners)
-        subscription2 = source2.subscribe(this::notifyListeners)
+        subscriptions = sources.map { it.subscribe(this::notifyListeners) }
     }
 
     override fun onStop() {
-        subscription1!!.unsubscribe()
-        subscription1 = null
-
-        subscription2!!.unsubscribe()
-        subscription2 = null
+        subscriptions.forEach { it.unsubscribe() }
+        subscriptions = emptyList()
     }
 }

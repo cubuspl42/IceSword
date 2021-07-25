@@ -3,10 +3,7 @@ package icesword
 import icesword.editor.closestKnot
 import icesword.frp.*
 import icesword.geometry.IntVec2
-import icesword.scene.Scene
-import icesword.scene.TileLayer
-import icesword.scene.Tileset
-import icesword.scene.scene
+import icesword.scene.*
 import org.w3c.dom.HTMLElement
 
 
@@ -47,11 +44,17 @@ fun worldView(
         appendChild(
             scene(tillDetach) { context ->
                 Scene(
-                    root = TileLayer(
-                        tileset = tileset,
-                        tiles = world.tiles,
+                    layers = listOf(
+                        Layer(
+                            transform = world.cameraFocusPoint.map { -it },
+                            nodes = listOf(
+                                TileLayer(
+                                    tileset = tileset,
+                                    tiles = world.tiles,
+                                ),
+                            ),
+                        ),
                     ),
-                    cameraFocusPoint = world.cameraFocusPoint,
                 )
             },
         )
