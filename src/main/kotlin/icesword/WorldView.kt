@@ -1,14 +1,13 @@
 package icesword
 
+
+import icesword.editor.World
 import icesword.editor.closestKnot
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.scene.*
-import org.w3c.dom.HTMLElement
-
-
 import kotlinx.browser.document
-import org.w3c.dom.Image
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.MouseEvent
 

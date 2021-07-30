@@ -1,4 +1,4 @@
-import icesword.World
+import icesword.editor.World
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
@@ -22,7 +22,7 @@ const val textureIndexPath = "images/spritesheets/LEVEL3_ACTION/texture.json"
 
 val objectEntries = js("Object.entries") as (dynamic) -> Array<Array<Any?>>
 
-fun mapOf(jsObject: dynamic): Map<String, Any?> {
+fun mapOfObject(jsObject: dynamic): Map<String, Any?> {
     val entries = objectEntries(jsObject)
         .map { entry -> entry[0] as String to entry[1] }
     return entries.toMap()
@@ -51,7 +51,7 @@ suspend fun loadTileset(): Tileset {
     fun parseIndex(
         indexJson: dynamic,
     ): Map<Int, IntRect> {
-        val frames = mapOf(indexJson.frames)
+        val frames = mapOfObject(indexJson.frames)
 
         return frames.map { (frameIdStr, frame) ->
             val frameId = frameIdStr.toInt()

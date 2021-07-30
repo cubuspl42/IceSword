@@ -1,11 +1,10 @@
-package icesword
+package icesword.editor
 
-import icesword.editor.KnotMesh
 import icesword.frp.*
 import icesword.geometry.IntVec2
+import icesword.tileAtPoint
 import icesword.wwd.Wwd
 import org.khronos.webgl.get
-import org.w3c.dom.CanvasTransform
 
 class World(
     val startPoint: IntVec2,
@@ -42,7 +41,11 @@ class World(
         till = Till.never,
     )
 
-    val tiles = baseTiles.union(knotMesh.tiles)
+    private val planeTiles = PlaneTiles()
+
+    val tiles = baseTiles
+        .union(knotMesh.tiles)
+        .union(planeTiles.tiles)
 
     private val _cameraFocusPoint = MutCell(startPoint)
 
