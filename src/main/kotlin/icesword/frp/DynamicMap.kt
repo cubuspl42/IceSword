@@ -5,30 +5,30 @@ class MapUnion<K, V>(
     private val map2: Map<K, V>,
 ) : Map<K, V> {
     override val entries: Set<Map.Entry<K, V>>
-        get() = TODO("Not yet implemented")
+        get() = throw NotImplementedError()
 
     override val keys: Set<K>
-        get() = TODO("Not yet implemented")
+        get() = throw NotImplementedError()
 
     override val size: Int
-        get() = TODO("Not yet implemented")
+        get() = throw NotImplementedError()
 
     override val values: Collection<V>
-        get() = TODO("Not yet implemented")
+        get() = throw NotImplementedError()
 
     override fun containsKey(key: K): Boolean {
-        TODO("Not yet implemented")
+        throw NotImplementedError()
     }
 
     override fun containsValue(value: V): Boolean {
-        TODO("Not yet implemented")
+        throw NotImplementedError()
     }
 
     override fun get(key: K): V? =
         map2[key] ?: map1[key]
 
     override fun isEmpty(): Boolean {
-        TODO("Not yet implemented")
+        throw NotImplementedError()
     }
 }
 
@@ -46,8 +46,6 @@ interface DynamicMap<K, V> {
     }
 }
 
-
-
 fun <K, V> DynamicMap<K, V>.changes(): Stream<Unit> =
     content.values().map { }
 
@@ -59,15 +57,52 @@ fun <K, V> DynamicMap<K, V>.union(other: DynamicMap<K, V>): DynamicMap<K, V> =
     )
 
 fun <K, V, R> DynamicMap<K, V>.mapKeys(transform: (Map.Entry<K, V>) -> R): DynamicMap<R, V> =
-    DynamicMap.   diff(
+    DynamicMap.diff(
         content.map { it.mapKeys(transform) },
+    )
+
+fun <K, V, R> DynamicMap<K, V>.fuseMapKeys(transform: (Map.Entry<K, V>) -> Cell<R>): DynamicMap<R, V> =
+    DynamicMap.diff(
+        content.switchMap { content ->
+            val dynamicEntries = content.entries.map { entry ->
+                transform(entry).map { k2 -> k2 to entry.value }
+            }
+
+            Cell.sequence(dynamicEntries).map { entries -> entries.toMap() }
+        },
+    )
+
+fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(): DynamicMap<K, V> =
+    DynamicMap.diff(
+        content.switchMap { content ->
+            val dynamicEntries = content.entries.map { (key, valueCell) ->
+                valueCell.map { value -> key to value }
+            }
+
+            Cell.sequence(dynamicEntries).map { entries -> entries.toMap() }
+        },
+    )
+
+fun <K, V> DynamicMap<K, V?>.filterKeysNotNull(): DynamicMap<K, V> =
+    DynamicMap.diff(
+        content.map { content ->
+            content.entries.mapNotNull { (key, valueOrNull) ->
+                valueOrNull?.let { value -> key to value }
+            }.toMap()
+        },
+    )
+
+val <K, V> DynamicMap<K, V>.keys: DynamicSet<K>
+    get() = DynamicSet.diff(content.map { it.keys })
+
+val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
+    get() = DynamicSet.diff(
+        content = content.map { it.values.toSet() }
     )
 
 class ContentDynamicMap<K, V>(
     override val content: Cell<Map<K, V>>,
-) : DynamicMap<K, V> {
-
-}
+) : DynamicMap<K, V>
 
 class MutableDynamicMap<K, V>(
     initialContent: Map<K, V>,
@@ -87,3 +122,4 @@ class MutableDynamicMap<K, V>(
     override val content: Cell<Map<K, V>>
         get() = _content
 }
+

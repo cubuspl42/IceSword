@@ -2,7 +2,6 @@ package icesword
 
 
 import icesword.editor.World
-import icesword.editor.closestKnot
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.scene.*
@@ -23,20 +22,38 @@ fun worldView(
     }
 
     root.onMouseDrag(button = 2, tillDetach).reactTill(tillDetach) { mouseDrag ->
-        println("onMouseDrag")
-
         val initialXy = mouseDrag.position.sample()
         val delta = mouseDrag.position.map { initialXy - it }
 
         world.dragCamera(offsetDelta = delta, tillStop = mouseDrag.tillEnd)
     }
 
+//    root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
+//        world.transformToWorld(mouseDrag.position)
+//            .reactTill(mouseDrag.tillEnd) { worldPosition ->
+//                val knotCoord = closestKnot(worldPosition)
+//                world.knotMesh.putKnot(knotCoord)
+//            }
+//    }
+
     root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
-        world.transformToWorld(mouseDrag.position)
-            .reactTill(mouseDrag.tillEnd) { worldPosition ->
-                val knotCoord = closestKnot(worldPosition)
-                world.knotMesh.putKnot(knotCoord)
-            }
+//        val initialPosition = mouseDrag.position.sample()
+//        val delta = mouseDrag.position.map { initialPosition - it }
+
+        val selectedMetaTileCluster = world.selectedMetaTileCluster
+
+        val worldPosition = world.transformToWorld(mouseDrag.position)
+        val initialWorldPosition = worldPosition.sample()
+        val tileOffsetDelta = worldPosition.map {
+            (it - initialWorldPosition) / TILE_SIZE
+        }.map {
+            it.also(::println)
+        }
+
+        selectedMetaTileCluster.move(
+            tileOffsetDelta = tileOffsetDelta,
+            tillStop = mouseDrag.tillEnd,
+        )
     }
 
     return root.apply {
@@ -52,6 +69,7 @@ fun worldView(
             ),
         )
 
+        // TODO: React
         val planeUiLayer = Layer(
             transform = Cell.constant(IntVec2.ZERO),
             nodes = listOf(
@@ -59,11 +77,16 @@ fun worldView(
                     viewTransform = viewTransform,
                     world.knotMesh,
                 ),
-            ),
+            ) + world.metaTileClusters.content.sample().map {
+                MetaTileClusterUi(
+                    viewTransform = viewTransform,
+                    it,
+                )
+            },
         )
 
         appendChild(
-            scene(tillDetach) { _ ->
+            scene(tillDetach) {
                 Scene(
                     layers = listOf(
                         planeLayer,

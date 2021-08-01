@@ -1,7 +1,8 @@
 package icesword.editor
 
-import icesword.frp.DynamicMap
+import icesword.frp.*
 import icesword.geometry.IntVec2
+
 
 enum class MetaTile(
     val tileId: Int?,
@@ -20,11 +21,34 @@ enum class MetaTile(
 }
 
 class MetaTileCluster(
-    val tileOffset: IntVec2,
+    override val isSelectedInitial: Boolean = false,
+    initialTileOffset: IntVec2,
     val localMetaTiles: Map<IntVec2, MetaTile>,
-) {
-    val globalMetaTiles = localMetaTiles.mapKeys { (localTileCoord, _) ->
-        tileOffset + localTileCoord
+) : Entity() {
+    private val _tileOffset = MutCell(initialTileOffset)
+
+    val tileOffset: Cell<IntVec2> = _tileOffset
+
+    val globalTileCoords: DynamicSet<IntVec2> =
+        DynamicSet.diff(tileOffset.map { tileOffset ->
+            localMetaTiles.keys.map { tileOffset + it }.toSet()
+        })
+
+    fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
+        tileOffset.map { localMetaTiles[globalTileCoord - it] }
+
+    fun move(
+        tileOffsetDelta: Cell<IntVec2>,
+        tillStop: Till,
+    ) {
+        val initialTileOffset = _tileOffset.sample()
+        val targetTileOffset = tileOffsetDelta.map { d -> initialTileOffset + d }
+
+        targetTileOffset.reactTill(tillStop) {
+            if (_tileOffset.sample() != it) {
+                _tileOffset.set(it)
+            }
+        }
     }
 }
 
@@ -49,43 +73,53 @@ class PlaneTiles {
         IntVec2(4, 1) to MetaTile.LEAVES_LOWER_RIGHT,
     )
 
-    private val metaTileClusters = setOf(
-        MetaTileCluster(
-            tileOffset = IntVec2(83, 82),
-            localMetaTiles = (0..16).flatMap(::logLevel).toMap()
-        ),
-        MetaTileCluster(
-            tileOffset = IntVec2(81, 92),
-            localMetaTiles = treeCrown,
-        ),
-        MetaTileCluster(
-            tileOffset = IntVec2(79, 87),
-            localMetaTiles = treeCrown,
-        ),
-        MetaTileCluster(
-            tileOffset = IntVec2(83, 84),
-            localMetaTiles = treeCrown,
-        ),
+    val metaTileClusters = DynamicSet.of(
+        setOf(
+            MetaTileCluster(
+                isSelectedInitial = true,
+                initialTileOffset = IntVec2(83, 82),
+                localMetaTiles = (0..16).flatMap(::logLevel).toMap()
+            ),
+            MetaTileCluster(
+                initialTileOffset = IntVec2(81, 92),
+                localMetaTiles = treeCrown,
+            ),
+            MetaTileCluster(
+                initialTileOffset = IntVec2(79, 87),
+                localMetaTiles = treeCrown,
+            ),
+            MetaTileCluster(
+                initialTileOffset = IntVec2(83, 84),
+                localMetaTiles = treeCrown,
+            ),
+        )
     )
 
-    private val globalTileCoords =
-        metaTileClusters.flatMap { it.globalMetaTiles.keys }.toSet()
+    private val globalTileCoords: DynamicSet<IntVec2> =
+        metaTileClusters.unionMapDynamic { it.globalTileCoords }
+
+            .also { dynSet ->
+                dynSet.content.reactTill(Till.never) {
+                    println("globalTileCoord (PlaneTiles) content: $it")
+                }
+            }
 
     val tiles: DynamicMap<IntVec2, Int> =
-        DynamicMap.of(
-            globalTileCoords.associateWith(this::buildTileAt)
-        )
+        globalTileCoords.associateWithDynamic(this::buildTileAt)
 
     private fun buildTileAt(
         globalTileCoord: IntVec2,
-    ): Int {
+    ): Cell<Int> {
         val metaTiles = metaTileClusters
-            .mapNotNull { it.globalMetaTiles[globalTileCoord] }
-            .toSet()
+            .associateWith { it.getMetaTileAt(globalTileCoord) }
+            .fuseValues()
+            .filterKeysNotNull()
+            .valuesSet
 
-        val tileId = buildTile(metaTiles)
-
-        return tileId ?: metaTiles.firstNotNullOfOrNull { it.tileId } ?: -1
+        return metaTiles.content.map { metaTilesContent ->
+            val tileId = buildTile(metaTilesContent)
+            tileId ?: metaTilesContent.firstNotNullOfOrNull { it.tileId } ?: -1
+        }
     }
 
     private fun buildTile(metaTiles: Set<MetaTile>): Int? =

@@ -2,16 +2,16 @@ package icesword.frp
 
 class CellSwitch<A>(
     private val source: Cell<Cell<A>>,
-) : SimpleCell<A>() {
+) : CachingCell<A>() {
 
     private var _subscriptionOuter: Subscription? = null
 
     private var _subscriptionInner: Subscription? = null
 
 
-    override fun onStart(): Unit {
+    override fun onStartUncached(): Unit {
         fun addInnerListener(inner: Cell<A>): Unit {
-            _subscriptionInner = inner.subscribe(this::notifyListeners)
+            _subscriptionInner = inner.subscribe(this::cacheAndNotifyListeners)
         }
 
         fun reAddInnerListener(inner: Cell<A>): Unit {
@@ -24,13 +24,13 @@ class CellSwitch<A>(
         _subscriptionOuter = source.subscribe { inner ->
             reAddInnerListener(inner)
 
-            notifyListeners(inner.sample())
+            cacheAndNotifyListeners(inner.sample())
         }
 
         addInnerListener(source.sample())
     }
 
-    override fun onStop(): Unit {
+    override fun onStopUncached(): Unit {
         _subscriptionInner!!.unsubscribe()
         _subscriptionInner = null
 
@@ -38,5 +38,5 @@ class CellSwitch<A>(
         _subscriptionOuter = null
     }
 
-    override fun sample(): A = source.sample().sample()
+    override fun sampleUncached(): A = source.sample().sample()
 }
