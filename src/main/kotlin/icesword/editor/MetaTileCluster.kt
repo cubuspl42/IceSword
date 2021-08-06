@@ -122,18 +122,23 @@ class PlaneTiles {
         }
     }
 
-    private fun buildTile(metaTiles: Set<MetaTile>): Int? =
-        when {
-            metaTiles.containsAll(setOf(MetaTile.LOG, MetaTile.LEAVES_UPPER)) -> 647
-            metaTiles.containsAll(setOf(MetaTile.LOG, MetaTile.LEAVES_LOWER)) -> 653
-            metaTiles.containsAll(setOf(MetaTile.LOG_LEFT, MetaTile.LEAVES_LOWER)) -> 652
-            metaTiles.containsAll(setOf(MetaTile.LOG_RIGHT, MetaTile.LEAVES_LOWER)) -> 654
+    private fun buildTile(metaTiles: Set<MetaTile>): Int? {
+        fun containsAll(vararg ms: MetaTile): Boolean =
+            ms.all { metaTiles.contains(it) }
 
-            metaTiles.containsAll(setOf(MetaTile.LOG, MetaTile.LEAVES_UPPER_RIGHT)) -> 663
-            metaTiles.containsAll(setOf(MetaTile.LOG, MetaTile.LEAVES_LOWER_RIGHT)) -> 665
+        return when {
+            containsAll(MetaTile.LOG, MetaTile.LEAVES_UPPER) -> 647
+            containsAll(MetaTile.LOG, MetaTile.LEAVES_LOWER) -> 653
+            containsAll(MetaTile.LOG_LEFT, MetaTile.LEAVES_LOWER) -> 652
+            containsAll(MetaTile.LOG_RIGHT, MetaTile.LEAVES_LOWER) -> 654
 
-            metaTiles.containsAll(setOf(MetaTile.LOG, MetaTile.LEAVES_UPPER_LEFT)) -> 659
-            metaTiles.containsAll(setOf(MetaTile.LOG, MetaTile.LEAVES_LOWER_LEFT)) -> 661
+            containsAll(MetaTile.LOG, MetaTile.LEAVES_UPPER_RIGHT) -> 663
+            containsAll(MetaTile.LOG, MetaTile.LEAVES_LOWER_RIGHT) -> 665
+
+            containsAll(MetaTile.LOG, MetaTile.LEAVES_UPPER_LEFT) -> 659
+            containsAll(MetaTile.LOG, MetaTile.LEAVES_LOWER_LEFT) -> 661
+
             else -> null
         }
+    }
 }

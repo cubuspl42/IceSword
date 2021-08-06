@@ -4,8 +4,11 @@ class MapUnion<K, V>(
     private val map1: Map<K, V>,
     private val map2: Map<K, V>,
 ) : Map<K, V> {
+    private val content: Map<K, V>
+        get() = map1 + map2
+
     override val entries: Set<Map.Entry<K, V>>
-        get() = throw NotImplementedError()
+        get() = content.entries
 
     override val keys: Set<K>
         get() = throw NotImplementedError()
@@ -17,7 +20,7 @@ class MapUnion<K, V>(
         get() = throw NotImplementedError()
 
     override fun containsKey(key: K): Boolean {
-        throw NotImplementedError()
+        return map1.containsKey(key) || map2.containsKey(key)
     }
 
     override fun containsValue(value: V): Boolean {
@@ -33,16 +36,33 @@ class MapUnion<K, V>(
 }
 
 interface DynamicMap<K, V> {
-
     val content: Cell<Map<K, V>>
 
+    val changes: Stream<MapChange<K, V>>
 
     companion object {
         fun <K, V> of(content: Map<K, V>): DynamicMap<K, V> =
             ContentDynamicMap(Cell.constant(content))
 
         fun <K, V> diff(content: Cell<Map<K, V>>): DynamicMap<K, V> =
-            ContentDynamicMap(content)
+            DiffDynamicMap(content)
+
+//        fun <K, V> diffDynamic(vm: Cell<Map<K, V>>): DynamicMap<K, V> {
+//            val initialContent = vm.sample();
+//
+//            val changes = vm.values().map { valueChange ->
+//                val oldMap = valueChange.oldValue;
+//                val newMap = valueChange.newValue;
+//                icesword.frp.MapChange.diff(oldMap, newMap);
+//            }
+//
+//            return holdRc(
+//                initialContent,
+//                changes = changes,
+//            );
+//        }
+
+
     }
 }
 
@@ -100,9 +120,72 @@ val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
         content = content.map { it.values.toSet() }
     )
 
+abstract class SimpleDynamicMap<K, V> : DynamicMap<K, V>, SimpleObservable<MapChange<K, V>>() {
+    override val content: Cell<Map<K, V>>
+        get() = TODO("Not yet implemented")
+}
+
+class RawCell<A>(
+    private val sampleValue: () -> A,
+    private val changes: Stream<A>,
+) : CachingCell<A>() {
+    private var subscription: Subscription? = null
+
+    override fun sampleUncached(): A = this.sampleValue()
+
+    override fun onStartUncached() {
+        subscription = changes.subscribe {
+            cacheAndNotifyListeners(it)
+        }
+    }
+
+    override fun onStopUncached() {
+        subscription!!.unsubscribe()
+
+        subscription = null
+    }
+}
+
+class DiffDynamicMap<K, V>(
+    private val inputContent: Cell<Map<K, V>>,
+) : SimpleDynamicMap<K, V>() {
+    private var mutableContent: MutableMap<K, V>? = null
+
+    private var subscription: Subscription? = null
+
+    override val changes: Stream<MapChange<K, V>>
+        get() = Stream.source(this::subscribe)
+
+    override val content: Cell<Map<K, V>>
+        get() = RawCell(
+            { mutableContent!!.toMap() },
+            changes.map { mutableContent!!.toMap() },
+        )
+
+    override fun onStart() {
+        subscription = inputContent.subscribe { newContent ->
+            val change = MapChange.diff(mutableContent!!, newContent)
+            change.applyTo(mutableContent!!)
+            notifyListeners(change)
+        }
+
+        mutableContent = inputContent.sample().toMutableMap()
+    }
+
+    override fun onStop() {
+        mutableContent = null
+
+        subscription!!.unsubscribe()
+    }
+}
+
 class ContentDynamicMap<K, V>(
     override val content: Cell<Map<K, V>>,
-) : DynamicMap<K, V>
+) : DynamicMap<K, V> {
+    override val changes: Stream<MapChange<K, V>>
+        get() = TODO()
+
+}
 
 class MutableDynamicMap<K, V>(
     initialContent: Map<K, V>,
@@ -121,5 +204,8 @@ class MutableDynamicMap<K, V>(
 
     override val content: Cell<Map<K, V>>
         get() = _content
+
+    override val changes: Stream<MapChange<K, V>>
+        get() = TODO()
 }
 

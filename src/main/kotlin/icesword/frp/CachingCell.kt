@@ -15,14 +15,14 @@ abstract class CachingCell<A> : SimpleCell<A>() {
         }
 
     final override fun onStart() {
+        this.onStartUncached()
         cache = Cache.FullCache(sampleUncached())
 
-        this.onStartUncached()
     }
 
     final override fun onStop() {
-        this.onStopUncached()
         cache = Cache.EmptyCache()
+        this.onStopUncached()
     }
 
     protected fun cacheAndNotifyListeners(value: A) {
