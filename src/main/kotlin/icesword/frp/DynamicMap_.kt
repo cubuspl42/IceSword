@@ -63,6 +63,20 @@ data class MapChange<K, V>(
         )
     }
 
+    fun <V2> mapValues(
+        f: (Map.Entry<K, V>) -> V2,
+    ): MapChange<K, V2> {
+        val added = this.added.mapValues(f)
+        val updated = this.updated.mapValues(f)
+
+        return MapChange<K, V2>(
+            added = added,
+            updated = updated,
+            removed = this.removed,
+        )
+    }
+
+
 //
 //  MapChange<K, V2> mapValues<V2>(V2 f(K key, V value)) {
 //    final added = this.added.mapValues(f);

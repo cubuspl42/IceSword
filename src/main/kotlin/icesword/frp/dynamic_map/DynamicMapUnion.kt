@@ -22,7 +22,7 @@ class DynamicMapUnion<K, V>(
 //            { mutableContent!!.toMap() },
 //            changes.map { mutableContent!!.toMap() },
 //        )
-
+//
     override val content: Cell<Map<K, V>>
         get() = RawCell(
             { mutableContent!! },
@@ -56,7 +56,7 @@ class DynamicMapUnion<K, V>(
                             }
                         }.toMap(),
 
-                removed = change.removed.filter { key -> !source2.containsKeyNow(key) }.toSet(),
+                removed = change.removed.filter { key -> !source1.containsKeyNow(key) }.toSet(),
             )
 
             unionChange.applyTo(mutableContent!!)

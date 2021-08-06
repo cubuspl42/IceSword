@@ -1,5 +1,6 @@
 package icesword.frp
 
+import icesword.frp.dynamic_map.DynamicMapFuseValues
 import icesword.frp.dynamic_map.DynamicMapMapKeys
 import icesword.frp.dynamic_map.DynamicMapUnion
 
@@ -41,10 +42,10 @@ interface DynamicMap<K, V> {
     }
 }
 
-fun <K, V> DynamicMap<K, V>.changes(): Stream<Unit> =
-    content.values().map { }
+fun <K, V> DynamicMap<K, V>.changesUnits(): Stream<Unit> =
+    changes.map { }
 
-fun <K, V> DynamicMap<K, V>.sample(): Map<K, V> = content.sample()
+fun <K, V> DynamicMap<K, V>.sample(): Map<K, V> = volatileContentView.toMap()
 
 fun <K, V> DynamicMap<K, V>.union(other: DynamicMap<K, V>): DynamicMap<K, V> =
     DynamicMapUnion(this, other)
@@ -52,27 +53,30 @@ fun <K, V> DynamicMap<K, V>.union(other: DynamicMap<K, V>): DynamicMap<K, V> =
 fun <K, V, R> DynamicMap<K, V>.mapKeys(transform: (Map.Entry<K, V>) -> R): DynamicMap<R, V> =
     DynamicMapMapKeys(this, transform)
 
-fun <K, V, R> DynamicMap<K, V>.fuseMapKeys(transform: (Map.Entry<K, V>) -> Cell<R>): DynamicMap<R, V> =
-    DynamicMap.diff(
-        content.switchMap { content ->
-            val dynamicEntries = content.entries.map { entry ->
-                transform(entry).map { k2 -> k2 to entry.value }
-            }
+//fun <K, V, R> DynamicMap<K, V>.fuseMapKeys(transform: (Map.Entry<K, V>) -> Cell<R>): DynamicMap<R, V> =
+//    DynamicMap.diff(
+//        content.switchMap { content ->
+//            val dynamicEntries = content.entries.map { entry ->
+//                transform(entry).map { k2 -> k2 to entry.value }
+//            }
+//
+//            Cell.sequence(dynamicEntries).map { entries -> entries.toMap() }
+//        },
+//    )
 
-            Cell.sequence(dynamicEntries).map { entries -> entries.toMap() }
-        },
-    )
+//fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(): DynamicMap<K, V> =
+//    DynamicMap.diff(
+//        content.switchMap { content ->
+//            val dynamicEntries = content.entries.map { (key, valueCell) ->
+//                valueCell.map { value -> key to value }
+//            }
+//
+//            Cell.sequence(dynamicEntries).map { entries -> entries.toMap() }
+//        },
+//    )
 
 fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(): DynamicMap<K, V> =
-    DynamicMap.diff(
-        content.switchMap { content ->
-            val dynamicEntries = content.entries.map { (key, valueCell) ->
-                valueCell.map { value -> key to value }
-            }
-
-            Cell.sequence(dynamicEntries).map { entries -> entries.toMap() }
-        },
-    )
+    DynamicMapFuseValues(this)
 
 fun <K, V> DynamicMap<K, V?>.filterKeysNotNull(): DynamicMap<K, V> =
     DynamicMap.diff(
@@ -83,8 +87,8 @@ fun <K, V> DynamicMap<K, V?>.filterKeysNotNull(): DynamicMap<K, V> =
         },
     )
 
-val <K, V> DynamicMap<K, V>.keys: DynamicSet<K>
-    get() = DynamicSet.diff(content.map { it.keys })
+//val <K, V> DynamicMap<K, V>.keys: DynamicSet<K>
+//    get() = DynamicSet.diff(content.map { it.keys })
 
 val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
     get() = DynamicSet.diff(

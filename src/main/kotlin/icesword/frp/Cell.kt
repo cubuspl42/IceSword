@@ -17,11 +17,11 @@ interface Cell<out A> : Observable<A> {
         fun <A> switch(ca: Cell<Cell<A>>): Cell<A> =
             CellSwitch(ca)
 
-        fun <A> sequence(lca: List<Cell<A>>): Cell<List<A>> =
+        private fun <A> sequence(lca: List<Cell<A>>): Cell<List<A>> =
             CellSequenceList(lca)
-
-        fun <A, B> traverse(lca: List<A>, f: (A) -> Cell<B>): Cell<List<B>> =
-            sequence(lca.map { f(it) })
+//
+//        fun <A, B> traverse(lca: List<A>, f: (A) -> Cell<B>): Cell<List<B>> =
+//            sequence(lca.map { f(it) })
 
         fun <A, B> traverse(sca: Set<A>, f: (A) -> Cell<B>): Cell<Set<B>> =
             sequence(sca.toList().map { f(it) }).map { it.toSet() }

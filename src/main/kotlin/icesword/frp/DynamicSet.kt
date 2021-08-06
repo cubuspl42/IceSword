@@ -2,18 +2,19 @@ package icesword.frp
 
 import icesword.editor.MetaTile
 import icesword.geometry.IntVec2
+import kotlinx.css.ol
 
 interface DynamicSet<A> {
     companion object {
         fun <A> of(content: Set<A>): DynamicSet<A> =
-            ContentDynamicSet(Cell.constant(content))
+            StaticDynamicSet(content)
 
         fun <A> diff(content: Cell<Set<A>>): DynamicSet<A> =
             ContentDynamicSet(content)
 
-        fun <A> union(sets: DynamicSet<Set<A>>): DynamicSet<A> = diff(
-            sets.content.map { it.flatten().toSet() }
-        )
+//        fun <A> union(sets: DynamicSet<Set<A>>): DynamicSet<A> = diff(
+//            sets.content.map { it.flatten().toSet() }
+//        )
 
         fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = diff(
             sets.content.switchMap { outerSet ->
@@ -24,16 +25,27 @@ interface DynamicSet<A> {
                 }
             }
         )
+
+//        fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = DynamicSetUnion()
     }
 
     val content: Cell<Set<A>>
+
+    // May be view, may be copy
+    val volatileContentView: Set<A>
+
+    val changes: Stream<SetChange<A>>
+
+    fun containsNow(a: A): Boolean {
+        return content.sample().contains(a)
+    }
 }
 
-fun <K, V> DynamicMap<K, V>.get(key: K): Cell<V?> =
-    content.map { it[key] }
+//fun <K, V> DynamicMap<K, V>.get(key: K): Cell<V?> =
+//    content.map { it[key] }
 
-fun <A, B> DynamicSet<A>.unionMap(transform: (A) -> Set<B>): DynamicSet<B> =
-    DynamicSet.union(map(transform))
+//fun <A, B> DynamicSet<A>.unionMap(transform: (A) -> Set<B>): DynamicSet<B> =
+//    DynamicSet.union(map(transform))
 
 fun <A, B> DynamicSet<A>.unionMapDynamic(transform: (A) -> DynamicSet<B>): DynamicSet<B> =
     DynamicSet.union(map(transform))
@@ -72,10 +84,36 @@ fun <K, V> DynamicSet<K>.associateWithDynamic(valueSelector: (K) -> Cell<V>): Dy
 //
 //}
 
+abstract class SimpleDynamicSet<A> : DynamicSet<A>, SimpleObservable<SetChange<A>>() {
+//    override val content: Cell<Set<K, V>>
+//        get() = TODO("Not yet implemented")
+
+    override val changes: Stream<SetChange<A>>
+        get() = Stream.source(this::subscribe)
+}
 
 class ContentDynamicSet<A>(
     override val content: Cell<Set<A>>,
-) : DynamicSet<A>
+) : DynamicSet<A> {
+    override val changes: Stream<SetChange<A>>
+        get() = TODO("Not yet implemented")
+
+    override val volatileContentView: Set<A>
+        get() = content.sample()
+}
+
+class StaticDynamicSet<A>(
+    private val staticContent: Set<A>,
+) : DynamicSet<A> {
+    override val changes: Stream<SetChange<A>>
+        get() = Stream.never()
+
+    override val volatileContentView: Set<A>
+        get() = staticContent
+
+    override val content: Cell<Set<A>>
+        get() = Cell.constant(staticContent)
+}
 
 class MutableDynamicSet<A>(
     initialContent: Set<A>,
@@ -87,11 +125,31 @@ class MutableDynamicSet<A>(
 
     private val _content = MutCell(initialContent.toSet())
 
+
+    private val _changes = StreamSink<SetChange<A>>()
+
+    override val volatileContentView: Set<A>
+        get() = _content.sample()
+
     fun add(element: A) {
         val oldContent = _content.sample()
+
         _content.set(oldContent + element)
+
+        if (!oldContent.contains(element)) {
+            _changes.send(
+                SetChange(
+                    added = setOf(element),
+                    removed = emptySet(),
+                ),
+            )
+        }
+
     }
 
     override val content: Cell<Set<A>>
         get() = _content
+
+    override val changes: Stream<SetChange<A>>
+        get() = _changes
 }

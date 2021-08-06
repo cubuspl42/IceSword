@@ -3,7 +3,7 @@ package icesword.scene
 import icesword.TILE_SIZE
 import icesword.frp.DynamicMap
 import icesword.frp.Stream
-import icesword.frp.changes
+import icesword.frp.changesUnits
 import icesword.frp.sample
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -16,7 +16,7 @@ class TileLayer(
     val tiles: DynamicMap<IntVec2, Int>,
 ) : Node {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-        val tiles = this.tiles.sample()
+        val tiles = this.tiles.volatileContentView
 
         val xyMinTileCoord = tileAtPoint(windowRect.xyMin)
         val xyMaxTileCoord = tileAtPoint(windowRect.xyMax)
@@ -57,5 +57,5 @@ class TileLayer(
         }
     }
 
-    override val onDirty: Stream<Unit> = tiles.changes()
+    override val onDirty: Stream<Unit> = tiles.changesUnits()
 }
