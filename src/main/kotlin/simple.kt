@@ -1,4 +1,6 @@
+import icesword.editor.Editor
 import icesword.editor.World
+import icesword.editorView
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
@@ -126,15 +128,11 @@ fun main() {
     }
 
     GlobalScope.launch {
-        val tileset = loadTileset()
-
-        val wwdWorld = fetchWorld()
-        val world = World.load(wwdWorld)
+        val editor = Editor.load()
 
         root.appendChild(
-            worldView(
-                world = world,
-                tileset = tileset,
+            editorView(
+                editor = editor,
                 tillDetach = Till.never,
             )
         )

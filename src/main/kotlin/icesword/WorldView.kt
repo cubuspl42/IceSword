@@ -1,6 +1,7 @@
 package icesword
 
 
+import createHtmlElement
 import icesword.editor.World
 import icesword.frp.*
 import icesword.geometry.IntVec2
@@ -163,6 +164,3 @@ class MouseDrag(
     }
 }
 
-
-private fun createHtmlElement(tagName: String): HTMLElement =
-    document.createElement(tagName) as HTMLElement
