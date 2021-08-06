@@ -1,8 +1,15 @@
 package icesword.editor
 
 import fetchWorld
+import icesword.frp.Cell
+import icesword.frp.MutCell
 import icesword.scene.Tileset
 import loadTileset
+
+enum class Tool {
+    select,
+    move,
+}
 
 class Editor(
     val world: World,
@@ -21,5 +28,13 @@ class Editor(
                 tileset = tileset,
             )
         }
+    }
+
+    private val _selectedTool = MutCell(Tool.select)
+
+    val selectedTool: Cell<Tool> = _selectedTool
+
+    fun selectTool(tool: Tool) {
+        _selectedTool.set(tool)
     }
 }
