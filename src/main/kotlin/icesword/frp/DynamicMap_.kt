@@ -48,6 +48,21 @@ data class MapChange<K, V>(
         }
     }
 
+    fun <K2> mapKeys(
+        f: (Map.Entry<K, V>) -> K2,
+        keyMap: Map<K, K2>,
+    ): MapChange<K2, V> {
+        val added = this.added.mapKeys(f)
+        val updated = this.updated.mapKeys(f)
+        val removed = this.removed.map { keyMap[it]!! }.toSet()
+
+        return MapChange<K2, V>(
+            added = added,
+            updated = updated,
+            removed = removed,
+        )
+    }
+
 //
 //  MapChange<K, V2> mapValues<V2>(V2 f(K key, V value)) {
 //    final added = this.added.mapValues(f);

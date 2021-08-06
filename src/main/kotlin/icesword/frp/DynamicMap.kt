@@ -1,5 +1,7 @@
 package icesword.frp
 
+import icesword.frp.dynamic_map.DynamicMapMapKeys
+
 class MapUnion<K, V>(
     private val map1: Map<K, V>,
     private val map2: Map<K, V>,
@@ -77,9 +79,7 @@ fun <K, V> DynamicMap<K, V>.union(other: DynamicMap<K, V>): DynamicMap<K, V> =
     )
 
 fun <K, V, R> DynamicMap<K, V>.mapKeys(transform: (Map.Entry<K, V>) -> R): DynamicMap<R, V> =
-    DynamicMap.diff(
-        content.map { it.mapKeys(transform) },
-    )
+    DynamicMapMapKeys(this, transform)
 
 fun <K, V, R> DynamicMap<K, V>.fuseMapKeys(transform: (Map.Entry<K, V>) -> Cell<R>): DynamicMap<R, V> =
     DynamicMap.diff(
@@ -121,8 +121,11 @@ val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
     )
 
 abstract class SimpleDynamicMap<K, V> : DynamicMap<K, V>, SimpleObservable<MapChange<K, V>>() {
-    override val content: Cell<Map<K, V>>
-        get() = TODO("Not yet implemented")
+//    override val content: Cell<Map<K, V>>
+//        get() = TODO("Not yet implemented")
+
+    override val changes: Stream<MapChange<K, V>>
+        get() = Stream.source(this::subscribe)
 }
 
 class RawCell<A>(
@@ -197,15 +200,21 @@ class MutableDynamicMap<K, V>(
 
     private val _content = MutCell(initialContent.toMap())
 
+    private val _changes = StreamSink<MapChange<K, V>>()
+
     fun put(key: K, value: V) {
         val oldContent = _content.sample()
-        _content.set(oldContent + (key to value))
+        val newContent = oldContent + (key to value)
+        _content.set(newContent)
+
+        val change = MapChange.diff(oldContent, newContent)
+        _changes.send(change)
     }
 
     override val content: Cell<Map<K, V>>
         get() = _content
 
     override val changes: Stream<MapChange<K, V>>
-        get() = TODO()
+        get() = _changes
 }
 
