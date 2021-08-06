@@ -10,6 +10,12 @@ class DynamicMapMapKeys<K, K2, V>(
 
     private var mutableContent: MutableMap<K2, V>? = null
 
+//    override val volatileContentView: Map<K2, V>
+//        get() = mutableContent ?: sampleUncached()
+
+    override val volatileContentView: Map<K2, V>
+        get() = mutableContent!!
+
     private var subscription: Subscription? = null
 
     override val content: Cell<Map<K2, V>>
@@ -18,6 +24,10 @@ class DynamicMapMapKeys<K, K2, V>(
             changes.map { mutableContent!!.toMap() },
         )
 
+    private fun sampleUncached(): Map<K2, V> {
+        return source.sample().mapKeys(transform)
+    }
+
     override fun onStart() {
         subscription = source.changes.subscribe { change ->
             val mappedChange = change.mapKeys(transform, keyMap!!)
@@ -25,7 +35,7 @@ class DynamicMapMapKeys<K, K2, V>(
             notifyListeners(mappedChange)
         }
 
-        mutableContent = source.sample().mapKeys(transform).toMutableMap()
+        mutableContent = sampleUncached().toMutableMap()
     }
 
     override fun onStop() {
@@ -33,4 +43,5 @@ class DynamicMapMapKeys<K, K2, V>(
 
         subscription!!.unsubscribe()
     }
+
 }

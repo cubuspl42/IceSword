@@ -46,9 +46,10 @@ fun worldView(
         val initialWorldPosition = worldPosition.sample()
         val tileOffsetDelta = worldPosition.map {
             (it - initialWorldPosition) / TILE_SIZE
-        }.map {
-            it.also(::println)
         }
+//            .map {
+//                it.also(::println)
+//            }
 
         selectedMetaTileCluster.move(
             tileOffsetDelta = tileOffsetDelta,

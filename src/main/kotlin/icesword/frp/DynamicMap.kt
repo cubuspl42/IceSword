@@ -1,50 +1,23 @@
 package icesword.frp
 
 import icesword.frp.dynamic_map.DynamicMapMapKeys
-
-class MapUnion<K, V>(
-    private val map1: Map<K, V>,
-    private val map2: Map<K, V>,
-) : Map<K, V> {
-    private val content: Map<K, V>
-        get() = map1 + map2
-
-    override val entries: Set<Map.Entry<K, V>>
-        get() = content.entries
-
-    override val keys: Set<K>
-        get() = throw NotImplementedError()
-
-    override val size: Int
-        get() = throw NotImplementedError()
-
-    override val values: Collection<V>
-        get() = throw NotImplementedError()
-
-    override fun containsKey(key: K): Boolean {
-        return map1.containsKey(key) || map2.containsKey(key)
-    }
-
-    override fun containsValue(value: V): Boolean {
-        throw NotImplementedError()
-    }
-
-    override fun get(key: K): V? =
-        map2[key] ?: map1[key]
-
-    override fun isEmpty(): Boolean {
-        throw NotImplementedError()
-    }
-}
+import icesword.frp.dynamic_map.DynamicMapUnion
 
 interface DynamicMap<K, V> {
     val content: Cell<Map<K, V>>
 
+    // May be view, may be copy
+    val volatileContentView: Map<K, V>
+
     val changes: Stream<MapChange<K, V>>
+
+    fun containsKeyNow(key: K): Boolean {
+        return volatileContentView.containsKey(key)
+    }
 
     companion object {
         fun <K, V> of(content: Map<K, V>): DynamicMap<K, V> =
-            ContentDynamicMap(Cell.constant(content))
+            StaticDynamicMap(content)
 
         fun <K, V> diff(content: Cell<Map<K, V>>): DynamicMap<K, V> =
             DiffDynamicMap(content)
@@ -74,9 +47,7 @@ fun <K, V> DynamicMap<K, V>.changes(): Stream<Unit> =
 fun <K, V> DynamicMap<K, V>.sample(): Map<K, V> = content.sample()
 
 fun <K, V> DynamicMap<K, V>.union(other: DynamicMap<K, V>): DynamicMap<K, V> =
-    DynamicMap.diff(
-        Cell.map2(content, other.content) { self, other -> MapUnion(self, other) },
-    )
+    DynamicMapUnion(this, other)
 
 fun <K, V, R> DynamicMap<K, V>.mapKeys(transform: (Map.Entry<K, V>) -> R): DynamicMap<R, V> =
     DynamicMapMapKeys(this, transform)
@@ -120,6 +91,8 @@ val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
         content = content.map { it.values.toSet() }
     )
 
+fun <K, V> DynamicMap<K, V>.getNow(key: K): V? = this.volatileContentView[key]
+
 abstract class SimpleDynamicMap<K, V> : DynamicMap<K, V>, SimpleObservable<MapChange<K, V>>() {
 //    override val content: Cell<Map<K, V>>
 //        get() = TODO("Not yet implemented")
@@ -154,6 +127,9 @@ class DiffDynamicMap<K, V>(
 ) : SimpleDynamicMap<K, V>() {
     private var mutableContent: MutableMap<K, V>? = null
 
+    override val volatileContentView: Map<K, V>
+        get() = mutableContent ?: inputContent.sample()
+
     private var subscription: Subscription? = null
 
     override val changes: Stream<MapChange<K, V>>
@@ -180,14 +156,31 @@ class DiffDynamicMap<K, V>(
 
         subscription!!.unsubscribe()
     }
+
 }
 
-class ContentDynamicMap<K, V>(
-    override val content: Cell<Map<K, V>>,
+//class ContentDynamicMap<K, V>(
+//    override val content: Cell<Map<K, V>>,
+//) : DynamicMap<K, V> {
+//    override val changes: Stream<MapChange<K, V>>
+//        get() = TODO()
+//
+//    override val volatileContentView: Map<K, V>
+//        get() = content.sample()
+//
+//}
+
+class StaticDynamicMap<K, V>(
+    private val staticContent: Map<K, V>,
 ) : DynamicMap<K, V> {
     override val changes: Stream<MapChange<K, V>>
-        get() = TODO()
+        get() = Stream.never()
 
+    override val volatileContentView: Map<K, V>
+        get() = staticContent
+
+    override val content: Cell<Map<K, V>>
+        get() = Cell.constant(staticContent)
 }
 
 class MutableDynamicMap<K, V>(
@@ -199,6 +192,9 @@ class MutableDynamicMap<K, V>(
     }
 
     private val _content = MutCell(initialContent.toMap())
+
+    override val volatileContentView: Map<K, V>
+        get() = _content.sample()
 
     private val _changes = StreamSink<MapChange<K, V>>()
 

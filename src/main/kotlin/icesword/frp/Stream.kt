@@ -9,6 +9,8 @@ interface Stream<A> : Observable<A> {
         fun <A> merge(
             streams: Iterable<Stream<A>>,
         ): Stream<A> = StreamMerge(streams)
+
+        fun <A> never(): Stream<A> = StreamNever()
     }
 }
 

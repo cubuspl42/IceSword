@@ -98,11 +98,11 @@ class PlaneTiles {
     private val globalTileCoords: DynamicSet<IntVec2> =
         metaTileClusters.unionMapDynamic { it.globalTileCoords }
 
-            .also { dynSet ->
-                dynSet.content.reactTill(Till.never) {
-                    println("globalTileCoord (PlaneTiles) content: $it")
-                }
-            }
+//            .also { dynSet ->
+//                dynSet.content.reactTill(Till.never) {
+//                    println("globalTileCoord (PlaneTiles) content: $it")
+//                }
+//            }
 
     val tiles: DynamicMap<IntVec2, Int> =
         globalTileCoords.associateWithDynamic(this::buildTileAt)
