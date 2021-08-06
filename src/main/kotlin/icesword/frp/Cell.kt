@@ -46,9 +46,30 @@ fun <A, B> Cell<A>.map(f: (A) -> B): Cell<B> =
 fun <A, B> Cell<A>.switchMap(transform: (A) -> Cell<B>): Cell<B> =
     Cell.switch(map(transform))
 
+
 fun <A> Cell<A>.reactTill(till: Till, handler: (A) -> Unit) {
     handler(sample())
     values().reactTill(till, handler)
+}
+
+fun <A, B> Cell<A>.mapTillNext(
+    tillAbort: Till,
+    transform: (value: A, tillNext: Till) -> B,
+): Cell<B> =
+    CellMapTillNext(
+        source = this,
+        f = transform,
+        tillAbort = tillAbort,
+    )
+
+fun <A> Cell<A>.reactTillNext(
+    tillAbort: Till,
+    handler: (value: A, tillNext: Till) -> Unit,
+) {
+    mapTillNext(
+        tillAbort = tillAbort,
+        transform = handler,
+    )
 }
 
 fun <A> Cell<A>.syncTill(target: MutCell<in A>, till: Till) {

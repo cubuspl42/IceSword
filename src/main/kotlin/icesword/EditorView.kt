@@ -35,7 +35,7 @@ fun editorView(
         )
         appendChild(
             worldView(
-                world = editor.world,
+                editor = editor,
                 tileset = editor.tileset,
                 tillDetach = tillDetach,
             )

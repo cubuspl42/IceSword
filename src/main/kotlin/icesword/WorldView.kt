@@ -2,21 +2,24 @@ package icesword
 
 
 import createHtmlElement
+import icesword.editor.Editor
+import icesword.editor.Tool
 import icesword.editor.World
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.scene.*
-import kotlinx.browser.document
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.MouseEvent
 
 
 fun worldView(
-    world: World,
+    editor: Editor,
     tileset: Tileset,
     tillDetach: Till,
 ): HTMLElement {
+    val world = editor.world
+
     val root = createHtmlElement("div").apply {
         style.width = "100%"
         style.height = "100%"
@@ -29,6 +32,21 @@ fun worldView(
         world.dragCamera(offsetDelta = delta, tillStop = mouseDrag.tillEnd)
     }
 
+    editor.selectedTool.reactTillNext(tillDetach) { tool, tillNext ->
+        when (tool) {
+            Tool.select -> setupSelectToolController(
+                world = world,
+                root = root,
+                tillDetach = tillNext,
+            )
+            Tool.move -> setupMoveToolController(
+                world = world,
+                root = root,
+                tillDetach = tillNext,
+            )
+        }
+    }
+
 //    root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
 //        world.transformToWorld(mouseDrag.position)
 //            .reactTill(mouseDrag.tillEnd) { worldPosition ->
@@ -36,27 +54,6 @@ fun worldView(
 //                world.knotMesh.putKnot(knotCoord)
 //            }
 //    }
-
-    root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
-//        val initialPosition = mouseDrag.position.sample()
-//        val delta = mouseDrag.position.map { initialPosition - it }
-
-        val selectedMetaTileCluster = world.selectedMetaTileCluster
-
-        val worldPosition = world.transformToWorld(mouseDrag.position)
-        val initialWorldPosition = worldPosition.sample()
-        val tileOffsetDelta = worldPosition.map {
-            (it - initialWorldPosition) / TILE_SIZE
-        }
-//            .map {
-//                it.also(::println)
-//            }
-
-        selectedMetaTileCluster.move(
-            tileOffsetDelta = tileOffsetDelta,
-            tillStop = mouseDrag.tillEnd,
-        )
-    }
 
     return root.apply {
         val viewTransform = world.cameraFocusPoint.map { -it }
@@ -96,6 +93,35 @@ fun worldView(
                     ),
                 )
             },
+        )
+    }
+}
+
+fun setupSelectToolController(
+    world: World,
+    root: HTMLElement,
+    tillDetach: Till,
+) {
+
+}
+
+fun setupMoveToolController(
+    world: World,
+    root: HTMLElement,
+    tillDetach: Till,
+) {
+    root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
+        val selectedMetaTileCluster = world.selectedMetaTileCluster
+
+        val worldPosition = world.transformToWorld(mouseDrag.position)
+        val initialWorldPosition = worldPosition.sample()
+        val tileOffsetDelta = worldPosition.map {
+            (it - initialWorldPosition) / TILE_SIZE
+        }
+
+        selectedMetaTileCluster.move(
+            tileOffsetDelta = tileOffsetDelta,
+            tillStop = mouseDrag.tillEnd,
         )
     }
 }
