@@ -62,6 +62,20 @@ fun toolButton(
     )
 }
 
+fun insertMetaTileClusterButton(
+    editor: Editor,
+    tillDetach: Till,
+): HTMLElement {
+    return createButton(
+        text = "Insert Log",
+        onPressed = {
+            editor.insertLeaves()
+        },
+        tillDetach = tillDetach,
+    )
+}
+
+
 fun editorToolBar(
     editor: Editor,
     tillDetach: Till,
@@ -85,8 +99,14 @@ fun editorToolBar(
         tillDetach = tillDetach,
     )
 
+    val leavesButton = insertMetaTileClusterButton(
+        editor = editor,
+        tillDetach = tillDetach,
+    )
+
     return root.apply {
         appendChild(button1)
         appendChild(button2)
+        appendChild(leavesButton)
     }
 }

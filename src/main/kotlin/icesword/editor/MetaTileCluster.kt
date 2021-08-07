@@ -94,6 +94,11 @@ class PlaneTiles {
 
     val metaTileClusters: DynamicSet<MetaTileCluster>
         get() = _metaTileClusters
+
+    fun insertMetaTileCluster(metaTileCluster: MetaTileCluster) {
+        _metaTileClusters.add(metaTileCluster)
+    }
+
     private val globalTileCoords: DynamicSet<IntVec2> =
         metaTileClusters.unionMapDynamic { it.globalTileCoords }
 

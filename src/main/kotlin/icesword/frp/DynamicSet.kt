@@ -1,9 +1,5 @@
 package icesword.frp
 
-import icesword.editor.MetaTile
-import icesword.geometry.IntVec2
-import kotlinx.css.ol
-
 interface DynamicSet<A> {
     companion object {
         fun <A> of(content: Set<A>): DynamicSet<A> =
@@ -119,12 +115,11 @@ class MutableDynamicSet<A>(
     initialContent: Set<A>,
 ) : DynamicSet<A> {
     companion object {
-        fun <A> of(content: Set<A>): MutableDynamicSet<A> =
-            MutableDynamicSet(content)
+        fun <A> of(initialContent: Set<A>): MutableDynamicSet<A> =
+            MutableDynamicSet(initialContent)
     }
 
     private val _content = MutCell(initialContent.toSet())
-
 
     private val _changes = StreamSink<SetChange<A>>()
 

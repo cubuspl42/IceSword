@@ -23,9 +23,9 @@ class DynamicMapFuseValues<K, V>(
             changes.map { mutableContent!!.toMap() },
         )
 
-    private fun sampleUncached(): Map<K, V> {
-        return source.sample().mapValues { (_, cell) -> cell.sample() }
-    }
+//    private fun sampleUncached(): Map<K, V> {
+//        return source.sample().mapValues { (_, cell) -> cell.sample() }
+//    }
 
     private fun subscribeToCell(key: K, cell: Cell<V>) {
         val subscription = cell.subscribe { value ->
@@ -78,10 +78,22 @@ class DynamicMapFuseValues<K, V>(
             notifyListeners(sampledChange)
         }
 
-        mutableContent = sampleUncached().toMutableMap()
+        mutableContent = mutableMapOf()
+
+        subscriptionMap = mutableMapOf()
+
+        source.volatileContentView.forEach { (key, cell) ->
+            subscribeToCell(key, cell)
+        }
     }
 
     override fun onStop() {
+        subscriptionMap!!.forEach { (_, sub) ->
+            sub.unsubscribe()
+        }
+
+        subscriptionMap = null
+
         mutableContent = null
 
         subscription!!.unsubscribe()

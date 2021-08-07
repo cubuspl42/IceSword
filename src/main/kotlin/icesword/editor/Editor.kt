@@ -5,6 +5,7 @@ import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.geometry.IntVec2
 import icesword.scene.Tileset
+import icesword.tileAtPoint
 import icesword.tileTopLeftCorner
 import loadTileset
 
@@ -59,5 +60,17 @@ class Editor(
     private fun selectEntity(entity: Entity) {
         _selectedEntity.sample()?.unselect()
         _selectedEntity.set(entity.also { it.select() })
+    }
+
+    fun insertLeaves() {
+        val focusPoint = world.cameraFocusPoint.sample()
+        val insertionPoint = focusPoint + IntVec2(512, 512)
+
+        val metaTileCluster = MetaTileCluster(
+            initialTileOffset = tileAtPoint(insertionPoint),
+            localMetaTiles = LeavesPrototype.metaTiles,
+        )
+
+        world.planeTiles.insertMetaTileCluster(metaTileCluster)
     }
 }

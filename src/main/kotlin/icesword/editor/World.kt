@@ -41,7 +41,7 @@ class World(
         till = Till.never,
     )
 
-    private val planeTiles = PlaneTiles()
+    val planeTiles = PlaneTiles()
 
     val metaTileClusters = planeTiles.metaTileClusters
 
