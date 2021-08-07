@@ -4,7 +4,16 @@ import icesword.frp.Cell
 import icesword.frp.MutCell
 
 abstract class Entity {
-    open val isSelectedInitial: Boolean = false
+    private val _isSelected = MutCell(false)
 
-    val isSelected: Cell<Boolean> by lazy { Cell.constant(isSelectedInitial) }
+    val isSelected: Cell<Boolean>
+        get() = _isSelected
+
+    fun select() {
+        _isSelected.set(true)
+    }
+
+    fun unselect() {
+        _isSelected.set(false)
+    }
 }

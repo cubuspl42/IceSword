@@ -45,8 +45,8 @@ class World(
 
     val metaTileClusters = planeTiles.metaTileClusters
 
-    val selectedMetaTileCluster: MetaTileCluster
-        get() = metaTileClusters.content.sample().single { it.isSelected.sample() }
+//    val selectedMetaTileCluster: MetaTileCluster
+//        get() = metaTileClusters.content.sample().single { it.isSelected.sample() }
 
     val tiles = baseTiles
         .union(knotMesh.tiles)

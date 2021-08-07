@@ -6,8 +6,11 @@ data class IntVec2(
     val x: Int,
     val y: Int,
 ) {
+    val lengthSquared: Double
+        get() = x.toDouble() * x + y.toDouble() * y
+
     val length: Double
-        get() = sqrt(x.toDouble() * x + y.toDouble() * y)
+        get() = sqrt(lengthSquared)
 
     operator fun plus(that: IntVec2): IntVec2 = IntVec2(x + that.x, y + that.y)
 

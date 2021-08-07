@@ -3,6 +3,7 @@ package icesword
 
 import createHtmlElement
 import icesword.editor.Editor
+import icesword.editor.MetaTileCluster
 import icesword.editor.Tool
 import icesword.editor.World
 import icesword.frp.*
@@ -11,6 +12,7 @@ import icesword.scene.*
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.MouseEvent
+import kotlin.math.roundToInt
 
 
 fun worldView(
@@ -35,12 +37,12 @@ fun worldView(
     editor.selectedTool.reactTillNext(tillDetach) { tool, tillNext ->
         when (tool) {
             Tool.select -> setupSelectToolController(
-                world = world,
+                editor = editor,
                 root = root,
                 tillDetach = tillNext,
             )
             Tool.move -> setupMoveToolController(
-                world = world,
+                editor = editor,
                 root = root,
                 tillDetach = tillNext,
             )
@@ -98,31 +100,40 @@ fun worldView(
 }
 
 fun setupSelectToolController(
-    world: World,
+    editor: Editor,
     root: HTMLElement,
     tillDetach: Till,
 ) {
+    val world = editor.world
 
+    root.onClick().reactTill(tillDetach) {
+        val viewportPosition = it.relativePosition(root)
+        val worldPosition = world.transformToWorld(viewportPosition)
+        editor.selectEntityAt(worldPosition.sample())
+    }
 }
 
+
 fun setupMoveToolController(
-    world: World,
+    editor: Editor,
     root: HTMLElement,
     tillDetach: Till,
 ) {
+    val world = editor.world
+
     root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
-        val selectedMetaTileCluster = world.selectedMetaTileCluster
+        (editor.selectedEntity.sample() as? MetaTileCluster)?.let { selectedMetaTileCluster ->
+            val worldPosition = world.transformToWorld(mouseDrag.position)
+            val initialWorldPosition = worldPosition.sample()
+            val tileOffsetDelta = worldPosition.map {
+                (it - initialWorldPosition) / TILE_SIZE
+            }
 
-        val worldPosition = world.transformToWorld(mouseDrag.position)
-        val initialWorldPosition = worldPosition.sample()
-        val tileOffsetDelta = worldPosition.map {
-            (it - initialWorldPosition) / TILE_SIZE
+            selectedMetaTileCluster.move(
+                tileOffsetDelta = tileOffsetDelta,
+                tillStop = mouseDrag.tillEnd,
+            )
         }
-
-        selectedMetaTileCluster.move(
-            tileOffsetDelta = tileOffsetDelta,
-            tillStop = mouseDrag.tillEnd,
-        )
     }
 }
 
@@ -141,17 +152,26 @@ private fun HTMLElement.onMouseDown(button: Short): Stream<MouseEvent> =
         .filter { e: MouseEvent -> e.button == button }
 
 private fun HTMLElement.onMouseMove(): Stream<MouseEvent> =
-    this.onEvent<MouseEvent>("mousemove").cast()
+    this.onEvent<MouseEvent>("mousemove")
 
 private fun HTMLElement.onMouseUp(button: Short): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mouseup")
         .filter { e: MouseEvent -> e.button == button }
+
+private fun HTMLElement.onClick(): Stream<MouseEvent> =
+    this.onEvent("click")
 
 private fun <E : Event> HTMLElement.onEvent(eventType: String): Stream<E> =
     Stream.source<Event> { notify -> this.subscribeToEvent(eventType, notify) }.cast()
 
 private val MouseEvent.clientPosition: IntVec2
     get() = IntVec2(this.clientX, this.clientY)
+
+private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
+    val rect = origin.getBoundingClientRect()
+    val originPosition = IntVec2(rect.x.roundToInt(), rect.y.roundToInt())
+    return this.clientPosition - originPosition
+}
 
 private fun HTMLElement.subscribeToEvent(
     eventType: String,

@@ -21,7 +21,6 @@ enum class MetaTile(
 }
 
 class MetaTileCluster(
-    override val isSelectedInitial: Boolean = false,
     initialTileOffset: IntVec2,
     val localMetaTiles: Map<IntVec2, MetaTile>,
 ) : Entity() {
@@ -76,7 +75,6 @@ class PlaneTiles {
     val metaTileClusters = DynamicSet.of(
         setOf(
             MetaTileCluster(
-                isSelectedInitial = true,
                 initialTileOffset = IntVec2(83, 82),
                 localMetaTiles = (0..16).flatMap(::logLevel).toMap()
             ),
