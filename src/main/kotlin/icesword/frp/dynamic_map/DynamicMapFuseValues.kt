@@ -23,10 +23,6 @@ class DynamicMapFuseValues<K, V>(
             changes.map { mutableContent!!.toMap() },
         )
 
-//    private fun sampleUncached(): Map<K, V> {
-//        return source.sample().mapValues { (_, cell) -> cell.sample() }
-//    }
-
     private fun subscribeToCell(key: K, cell: Cell<V>) {
         val subscription = cell.subscribe { value ->
             mutableContent!![key] = value
@@ -97,5 +93,7 @@ class DynamicMapFuseValues<K, V>(
         mutableContent = null
 
         subscription!!.unsubscribe()
+
+        subscription = null
     }
 }

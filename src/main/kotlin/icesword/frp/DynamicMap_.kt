@@ -7,7 +7,6 @@ data class MapChange<K, V>(
     val updated: Map<K, V>,
     val removed: Set<K>,
 ) {
-
     companion object {
         /// A no-op change with all groups being empty is valid.
         fun <K, V> empty(): MapChange<K, V> =
