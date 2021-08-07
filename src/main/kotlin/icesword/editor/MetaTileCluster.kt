@@ -3,7 +3,6 @@ package icesword.editor
 import icesword.frp.*
 import icesword.geometry.IntVec2
 
-
 enum class MetaTile(
     val tileId: Int?,
 ) {
@@ -72,7 +71,7 @@ class PlaneTiles {
         IntVec2(4, 1) to MetaTile.LEAVES_LOWER_RIGHT,
     )
 
-    val metaTileClusters = DynamicSet.of(
+    private val _metaTileClusters = MutableDynamicSet.of(
         setOf(
             MetaTileCluster(
                 initialTileOffset = IntVec2(83, 82),
@@ -93,6 +92,8 @@ class PlaneTiles {
         )
     )
 
+    val metaTileClusters: DynamicSet<MetaTileCluster>
+        get() = _metaTileClusters
     private val globalTileCoords: DynamicSet<IntVec2> =
         metaTileClusters.unionMapDynamic { it.globalTileCoords }
 
