@@ -26,9 +26,13 @@ abstract class CachingCell<A> : SimpleCell<A>() {
     }
 
     protected fun cacheAndNotifyListeners(value: A) {
-        cache = Cache.FullCache(value)
+        (cache as? Cache.FullCache)?.let { fullCache ->
+            if (fullCache.cachedValue != value) {
+                cache = Cache.FullCache(value)
 
-        notifyListeners(value)
+                notifyListeners(value)
+            }
+        }
     }
 
     protected abstract fun sampleUncached(): A

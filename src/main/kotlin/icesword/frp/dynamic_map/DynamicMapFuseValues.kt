@@ -63,15 +63,17 @@ class DynamicMapFuseValues<K, V>(
                 subscribeToCell(key, cell)
             }
 
-            change.removed.forEach { key ->
-                unsubscribeFromCell(key)
-            }
 
             val sampledChange = change.mapValues { (_, cell) ->
                 cell.sample()
             }
 
             notifyListeners(sampledChange)
+
+            change.removed.forEach { key ->
+//                 FIXME
+                unsubscribeFromCell(key)
+            }
         }
 
         mutableContent = mutableMapOf()

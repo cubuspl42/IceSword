@@ -21,8 +21,8 @@ interface DynamicMap<K, V> {
         fun <K, V> of(content: Map<K, V>): DynamicMap<K, V> =
             StaticDynamicMap(content)
 
-        fun <K, V> diff(content: Cell<Map<K, V>>): DynamicMap<K, V> =
-            DiffDynamicMap(content)
+//        fun <K, V> diff(content: Cell<Map<K, V>>): DynamicMap<K, V> =
+//            DiffDynamicMap(content)
 
 //        fun <K, V> diffDynamic(vm: Cell<Map<K, V>>): DynamicMap<K, V> {
 //            val initialContent = vm.sample();

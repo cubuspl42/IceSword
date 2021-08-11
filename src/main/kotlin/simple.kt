@@ -99,7 +99,7 @@ suspend fun fetchWorld(): Wwd.World {
     val worldBuffer = response.arrayBuffer().await()
     val world = readWorld(worldBuffer)
 
-    println("World name: ${world.name.decode()}")
+//    println("World name: ${world.name.decode()}")
 
     return world
 }

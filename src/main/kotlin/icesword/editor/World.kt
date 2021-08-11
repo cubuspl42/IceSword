@@ -70,7 +70,7 @@ class World(
         val initialFocusPoint = _cameraFocusPoint.sample()
         val targetFocusPoint = offsetDelta.map { d -> initialFocusPoint + d }
 
-        println("initialFocusPoint: $initialFocusPoint")
+//        println("initialFocusPoint: $initialFocusPoint")
 
         targetFocusPoint.syncTill(_cameraFocusPoint, till = tillStop)
     }

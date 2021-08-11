@@ -402,8 +402,7 @@ object Wwd {
         val prefix3 = stream.readByteString(prefixLength)
         val prefix4 = stream.readByteString(prefixLength)
 
-
-        println("world name: ${levelName.decode()}")
+//        println("world name: ${levelName.decode()}")
 
         return WwdHeader(
             size = size.toInt(), // Sign?
@@ -472,8 +471,8 @@ object Wwd {
         stream.readUint32() // 0
         stream.readUint32() // 0
 
-        println("imageSetCount: ${imageSetCount}")
-        println("objectCount: ${objectCount}")
+//        println("imageSetCount: ${imageSetCount}")
+//        println("objectCount: ${objectCount}")
 
         return WwdPlaneHeader(
             size = size.toInt(),

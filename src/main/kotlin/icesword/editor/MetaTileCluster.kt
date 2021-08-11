@@ -48,6 +48,8 @@ class MetaTileCluster(
             }
         }
     }
+
+    override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
 }
 
 private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
@@ -101,6 +103,11 @@ class PlaneTiles {
 
     private val globalTileCoords: DynamicSet<IntVec2> =
         metaTileClusters.unionMapDynamic { it.globalTileCoords }
+//            .also {
+//                it.changes.subscribe { change ->
+//                    println("globalTileCoords change: $change")
+//                }
+//            }
 
 //            .also { dynSet ->
 //                dynSet.content.reactTill(Till.never) {
@@ -116,8 +123,23 @@ class PlaneTiles {
     ): Cell<Int> {
         val metaTiles = metaTileClusters
             .associateWith { it.getMetaTileAt(globalTileCoord) }
+//            .also { dynMap ->
+//                dynMap.changes.subscribe { change ->
+//                    println("[$globalTileCoord] associateWith change: $change")
+//                }
+//            }
             .fuseValues()
+//            .also { dynMap ->
+//                dynMap.changes.subscribe { change ->
+//                    println("[$globalTileCoord] fuseValues change: $change")
+//                }
+//            }
             .filterValuesNotNull()
+//            .also { dynMap ->
+//                dynMap.changes.subscribe { change ->
+//                    println("[$globalTileCoord] filterValuesNotNull change: $change")
+//                }
+//            }
             .valuesSet
 
         return metaTiles.content.map { metaTilesContent ->

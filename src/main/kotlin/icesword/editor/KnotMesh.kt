@@ -94,22 +94,22 @@ class KnotMesh(
 //    }
 
 
-    private fun <A> withCounter(f: (inc: () -> Unit) -> A): A {
-
-        var counter = 0
-
-        fun inc() {
-            ++counter
-        }
-
-        return f(::inc)
-
-        val a = f(::inc)
-
-        println("Counter: $counter")
-
-        return a
-    }
+//    private fun <A> withCounter(f: (inc: () -> Unit) -> A): A {
+//
+//        var counter = 0
+//
+//        fun inc() {
+//            ++counter
+//        }
+//
+//        return f(::inc)
+//
+//        val a = f(::inc)
+//
+//        println("Counter: $counter")
+//
+//        return a
+//    }
 
     private val localTiles = run {
         val localKnots = _localKnots.sample()
