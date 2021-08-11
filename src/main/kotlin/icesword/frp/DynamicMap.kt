@@ -3,6 +3,7 @@ package icesword.frp
 import icesword.frp.dynamic_map.DynamicMapFuseValues
 import icesword.frp.dynamic_map.DynamicMapMapKeys
 import icesword.frp.dynamic_map.DynamicMapUnion
+import icesword.frp.dynamic_map.MapValuesNotNullDynamicMap
 
 interface DynamicMap<K, V> {
     val content: Cell<Map<K, V>>
@@ -78,14 +79,29 @@ fun <K, V, R> DynamicMap<K, V>.mapKeys(transform: (Map.Entry<K, V>) -> R): Dynam
 fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(): DynamicMap<K, V> =
     DynamicMapFuseValues(this)
 
-fun <K, V> DynamicMap<K, V?>.filterKeysNotNull(): DynamicMap<K, V> =
-    DynamicMap.diff(
-        content.map { content ->
-            content.entries.mapNotNull { (key, valueOrNull) ->
-                valueOrNull?.let { value -> key to value }
-            }.toMap()
-        },
-    )
+//fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(transform: (K, V) -> V2?): DynamicMap<K, V2> =
+//    DynamicMap.diff(
+//        content.map { content ->
+//            content.entries.mapNotNull { (key, value) ->
+//                transform(key, value)?.let { key to it }
+//            }.toMap()
+//        },
+//    )
+
+fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(transform: (Map.Entry<K, V>) -> V2?): DynamicMap<K, V2> =
+    MapValuesNotNullDynamicMap(this, transform)
+
+//fun <K, V> DynamicMap<K, V?>.filterValuesNotNull(): DynamicMap<K, V> =
+//    DynamicMap.diff(
+//        content.map { content ->
+//            content.entries.mapNotNull { (key, valueOrNull) ->
+//                valueOrNull?.let { value -> key to value }
+//            }.toMap()
+//        },
+//    )
+
+fun <K, V : Any> DynamicMap<K, V?>.filterValuesNotNull(): DynamicMap<K, V> =
+    this.mapValuesNotNull { (_, value) -> value }
 
 //val <K, V> DynamicMap<K, V>.keys: DynamicSet<K>
 //    get() = DynamicSet.diff(content.map { it.keys })

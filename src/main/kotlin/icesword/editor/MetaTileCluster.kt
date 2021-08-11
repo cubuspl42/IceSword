@@ -117,7 +117,7 @@ class PlaneTiles {
         val metaTiles = metaTileClusters
             .associateWith { it.getMetaTileAt(globalTileCoord) }
             .fuseValues()
-            .filterKeysNotNull()
+            .filterValuesNotNull()
             .valuesSet
 
         return metaTiles.content.map { metaTilesContent ->
