@@ -126,7 +126,7 @@ fun setupMoveToolController(
             val worldPosition = world.transformToWorld(mouseDrag.position)
             val initialWorldPosition = worldPosition.sample()
             val tileOffsetDelta = worldPosition.map {
-                (it - initialWorldPosition) / TILE_SIZE
+                (it - initialWorldPosition).divRound(TILE_SIZE)
             }
 
             selectedMetaTileCluster.move(
