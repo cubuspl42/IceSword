@@ -66,8 +66,8 @@ fun <A> DynamicSet<A>.sample(): Set<A> = content.sample()
 //fun <K, V> DynamicSet<K>.associateWith(valueSelector: (K) -> V): DynamicMap<K, V> =
 //    DynamicMap.diff(content.map { it.associateWith(valueSelector) })
 
-fun <K, V> DynamicSet<K>.associateWith(valueSelector: (K) -> V): DynamicMap<K, V> =
-    DynamicSetAssociateWith(this, valueSelector)
+fun <K, V> DynamicSet<K>.associateWith(tag: String, valueSelector: (K) -> V): DynamicMap<K, V> =
+    DynamicSetAssociateWith(this, valueSelector, tag = tag)
 
 //fun <K, V> DynamicSet<K>.associateWithDynamic(valueSelector: (K) -> Cell<V>): DynamicMap<K, V> =
 //    DynamicMap.diff(content.switchMap { content ->
@@ -76,8 +76,8 @@ fun <K, V> DynamicSet<K>.associateWith(valueSelector: (K) -> V): DynamicMap<K, V
 //        }.map { it.toMap() }
 //    })
 
-fun <K, V> DynamicSet<K>.associateWithDynamic(valueSelector: (K) -> Cell<V>): DynamicMap<K, V> =
-    this.associateWith(valueSelector).fuseValues()
+fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) -> Cell<V>): DynamicMap<K, V> =
+    this.associateWith(tag = tag, valueSelector).fuseValues()
 
 //fun <A, B> DynamicSet<A>.mapNotNull(transform: (A) -> B?): DynamicSet<B> {
 //
@@ -92,12 +92,18 @@ fun <K, V> DynamicSet<K>.associateWithDynamic(valueSelector: (K) -> Cell<V>): Dy
 //
 //}
 
-abstract class SimpleDynamicSet<A> : DynamicSet<A>, SimpleObservable<SetChange<A>>() {
+abstract class SimpleDynamicSet<A>(
+    tag: String,
+) : DynamicSet<A>, SimpleObservable<SetChange<A>>(
+    tag = tag,
+) {
 //    override val content: Cell<Set<K, V>>
 //        get() = TODO("Not yet implemented")
 
     override val changes: Stream<SetChange<A>>
         get() = Stream.source(this::subscribe)
+
+    override fun toString(): String = "SimpleDynamicSet(name = $name)"
 }
 
 //class ContentDynamicSet<A>(
@@ -125,38 +131,46 @@ class StaticDynamicSet<A>(
 
 class MutableDynamicSet<A>(
     initialContent: Set<A>,
-) : DynamicSet<A> {
+) : SimpleDynamicSet<A>(tag = "MutableDynamicSet") {
     companion object {
         fun <A> of(initialContent: Set<A>): MutableDynamicSet<A> =
             MutableDynamicSet(initialContent)
     }
 
-    private val _content = MutCell(initialContent.toSet())
+//    private val _content = MutCell(initialContent.toSet())
 
-    private val _changes = StreamSink<SetChange<A>>()
+
+    private var mutableContent: Set<A> = initialContent
+
+    override val content: Cell<Set<A>>
+        get() = RawCell(
+            { mutableContent!!.toSet() },
+            changes.map { mutableContent!!.toSet() },
+        )
 
     override val volatileContentView: Set<A>
-        get() = _content.sample()
+        get() = mutableContent
 
     fun add(element: A) {
-        val oldContent = _content.sample()
+        val oldContent = mutableContent
 
-        _content.set(oldContent + element)
+        mutableContent = oldContent + element
 
         if (!oldContent.contains(element)) {
-            _changes.send(
-                SetChange(
-                    added = setOf(element),
-                    removed = emptySet(),
-                ),
+            val change = SetChange(
+                added = setOf(element),
+                removed = emptySet(),
             )
+
+            if (change.added.intersect(oldContent).isNotEmpty()) {
+                throw IllegalStateException("MutableDynamicSet: change.added.intersect")
+            }
+
+            notifyListeners(change)
         }
 
     }
 
-    override val content: Cell<Set<A>>
-        get() = _content
-
-    override val changes: Stream<SetChange<A>>
-        get() = _changes
+//    override val content: Cell<Set<A>>
+//        get() = _content
 }

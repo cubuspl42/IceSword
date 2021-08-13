@@ -26,7 +26,8 @@ class TillUnreachable : Till {
 class TillOr(
     source1: Observable<Any?>,
     source2: Observable<Any?>,
-) : SimpleObservable<Unit>(), Till {
+    tag: String,
+) : SimpleObservable<Unit>(tag = tag), Till {
 
     private var _wasReached: Boolean = false
 

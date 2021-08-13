@@ -49,8 +49,8 @@ class World(
 //        get() = metaTileClusters.content.sample().single { it.isSelected.sample() }
 
     val tiles = baseTiles
-        .union(knotMesh.tiles)
-        .union(planeTiles.tiles)
+        .union(knotMesh.tiles, tag = ".union(knotMesh.tiles ...) ")
+        .union(planeTiles.tiles, tag = ".union(planeTiles.tiles ...)")
 
     private val _cameraFocusPoint = MutCell(startPoint)
 

@@ -5,7 +5,8 @@ import icesword.frp.*
 class DynamicMapUnion<K, V>(
     private val source1: DynamicMap<K, V>,
     private val source2: DynamicMap<K, V>,
-) : SimpleDynamicMap<K, V>() {
+    tag: String,
+) : SimpleDynamicMap<K, V>(tag = tag) {
     private var keyMap: MutableMap<K, K>? = null
 
     private var mutableContent: MutableMap<K, V>? = null
@@ -17,7 +18,7 @@ class DynamicMapUnion<K, V>(
 
     private var subscription2: Subscription? = null
 
-//    override val content: Cell<Map<K, V>>
+    //    override val content: Cell<Map<K, V>>
 //        get() = RawCell(
 //            { mutableContent!!.toMap() },
 //            changes.map { mutableContent!!.toMap() },

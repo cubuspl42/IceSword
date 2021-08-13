@@ -4,8 +4,22 @@ import icesword.frp.*
 
 class DynamicMapFuseValues<K, V>(
     private val source: DynamicMap<K, Cell<V>>,
-) : SimpleDynamicMap<K, V>() {
-    private var mutableContent: MutableMap<K, V>? = null
+    tag: String,
+) : SimpleDynamicMap<K, V>(
+    tag = tag,
+) {
+    private var _mutableContent: MutableMap<K, V>? = null
+
+    private val mutableContent: MutableMap<K, V>
+        get() {
+            val content = _mutableContent
+            if (content == null) {
+                debugLog { "DynamicMapFuseValues#${id}: _mutableContent == null" }
+                throw IllegalStateException("_mutableContent == null")
+            } else {
+                return content
+            }
+        }
 
     private var subscriptionMap: MutableMap<K, Subscription>? = null
 
@@ -13,19 +27,21 @@ class DynamicMapFuseValues<K, V>(
 //        get() = mutableContent ?: sampleUncached()
 
     override val volatileContentView: Map<K, V>
-        get() = mutableContent!!
+        get() = mutableContent
 
     private var subscription: Subscription? = null
 
     override val content: Cell<Map<K, V>>
         get() = RawCell(
-            { mutableContent!!.toMap() },
-            changes.map { mutableContent!!.toMap() },
+            { mutableContent.toMap() },
+            changes.map { mutableContent.toMap() },
         )
 
     private fun subscribeToCell(key: K, cell: Cell<V>) {
+        debugLog { "$name: subscribe to cell @ key: $key" }
+
         val subscription = cell.subscribe { value ->
-            mutableContent!![key] = value
+            mutableContent[key] = value
 
             notifyListeners(
                 MapChange(
@@ -36,9 +52,11 @@ class DynamicMapFuseValues<K, V>(
             )
         }
 
-        mutableContent!![key] = cell.sample()
+        mutableContent[key] = cell.sample()
 
-        subscriptionMap!![key] = subscription
+        if (subscriptionMap!!.put(key, subscription) != null) {
+            throw IllegalStateException("subscriptionMap!!.put(key,subscription ) != null")
+        }
     }
 
 
@@ -49,34 +67,40 @@ class DynamicMapFuseValues<K, V>(
 
         subscriptionMap!!.remove(key)
 
-        mutableContent!!.remove(key)
+        mutableContent.remove(key)
+    }
+
+    private fun handleChange(change: MapChange<K, Cell<V>>) {
+        debugLog { "$name: source change: $change" }
+
+        change.added.forEach { (key, cell) ->
+
+            subscribeToCell(key, cell)
+        }
+
+        change.updated.forEach { (key, cell) ->
+            unsubscribeFromCell(key)
+            subscribeToCell(key, cell)
+        }
+
+
+        val sampledChange = change.mapValues { (_, cell) ->
+            cell.sample()
+        }
+
+
+        change.removed.forEach { key ->
+//                 FIXME
+            unsubscribeFromCell(key)
+        }
+
+        notifyListeners(sampledChange)
     }
 
     override fun onStart() {
-        subscription = source.changes.subscribe { change ->
-            change.added.forEach { (key, cell) ->
-                subscribeToCell(key, cell)
-            }
+        subscription = source.changes.subscribe(this::handleChange)
 
-            change.updated.forEach { (key, cell) ->
-                unsubscribeFromCell(key)
-                subscribeToCell(key, cell)
-            }
-
-
-            val sampledChange = change.mapValues { (_, cell) ->
-                cell.sample()
-            }
-
-            notifyListeners(sampledChange)
-
-            change.removed.forEach { key ->
-//                 FIXME
-                unsubscribeFromCell(key)
-            }
-        }
-
-        mutableContent = mutableMapOf()
+        _mutableContent = mutableMapOf()
 
         subscriptionMap = mutableMapOf()
 
@@ -92,7 +116,7 @@ class DynamicMapFuseValues<K, V>(
 
         subscriptionMap = null
 
-        mutableContent = null
+        _mutableContent = null
 
         subscription!!.unsubscribe()
 

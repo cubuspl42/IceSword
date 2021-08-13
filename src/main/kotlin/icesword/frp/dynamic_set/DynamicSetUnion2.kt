@@ -5,7 +5,7 @@ import icesword.frp.*
 class DynamicSetUnion2<A>(
     private val source1: DynamicSet<A>,
     private val source2: DynamicSet<A>,
-) : SimpleDynamicSet<A>() {
+) : SimpleDynamicSet<A>(tag = "DynamicSetUnion2") {
 
     private var mutableContent: MutableSet<A>? = null
 

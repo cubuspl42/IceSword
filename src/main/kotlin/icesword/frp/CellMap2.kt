@@ -4,7 +4,7 @@ class CellMap2<A, B, C>(
     private val ca: Cell<A>,
     private val cb: Cell<B>,
     private val f: (A, B) -> C
-) : CachingCell<C>() {
+) : CachingCell<C>(tag = "CellMap2") {
     private var subscriptionA: Subscription? = null
     private var subscriptionB: Subscription? = null
 

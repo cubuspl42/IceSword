@@ -3,7 +3,7 @@ package icesword.frp
 class StreamMap<A, B>(
     private val source: Stream<A>,
     private val f: (A) -> B,
-) : SimpleStream<B>() {
+) : SimpleStream<B>(tag = "StreamMap") {
     private var subscription: Subscription? = null
 
     override fun onStart() {

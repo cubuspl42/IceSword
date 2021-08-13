@@ -4,8 +4,9 @@ import icesword.frp.*
 
 class DynamicMapMapKeys<K, K2, V>(
     private val source: DynamicMap<K, V>,
-    private val transform: (Map.Entry<K, V>) -> K2
-) : SimpleDynamicMap<K2, V>() {
+    private val transform: (Map.Entry<K, V>) -> K2,
+    tag: String,
+) : SimpleDynamicMap<K2, V>(tag = tag) {
     private var keyMap: MutableMap<K, K2>? = null
 
     private var mutableContent: MutableMap<K2, V>? = null

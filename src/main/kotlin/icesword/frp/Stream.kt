@@ -21,7 +21,7 @@ fun <A> Stream<A>.tillNext(orTill: Till): Till =
     if (orTill.wasReached()) {
         Till.reached
     } else {
-        TillOr(this, orTill)
+        TillOr(this, orTill, tag = "tillNext")
     }
 
 fun <A> Stream<A>.hold(initialValue: A, till: Till): Cell<A> =

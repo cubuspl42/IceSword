@@ -3,7 +3,7 @@ package icesword.frp
 class StreamMerge2<A>(
     private val source1: Stream<A>,
     private val source2: Stream<A>,
-) : SimpleStream<A>() {
+) : SimpleStream<A>(tag = "StreamMerge2") {
     private var subscription1: Subscription? = null
 
     private var subscription2: Subscription? = null

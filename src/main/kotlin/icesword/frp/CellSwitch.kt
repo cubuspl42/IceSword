@@ -2,7 +2,7 @@ package icesword.frp
 
 class CellSwitch<A>(
     private val source: Cell<Cell<A>>,
-) : CachingCell<A>() {
+) : CachingCell<A>(tag = "CellSwitch") {
 
     private var _subscriptionOuter: Subscription? = null
 

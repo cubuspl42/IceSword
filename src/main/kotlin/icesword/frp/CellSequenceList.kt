@@ -2,7 +2,7 @@ package icesword.frp
 
 class CellSequenceList<A>(
     private val sources: List<Cell<A>>,
-) : CachingCell<List<A>>() {
+) : CachingCell<List<A>>(tag = "CellSequenceList") {
     private var subscriptions: List<Subscription> = emptyList()
 
     override fun onStartUncached() {

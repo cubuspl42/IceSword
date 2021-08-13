@@ -1,6 +1,6 @@
 package icesword.frp
 
-abstract class NonCachingCell<A> : SimpleCell<A>() {
+abstract class NonCachingCell<A> : SimpleCell<A>(tag = "NonCachingCell") {
     final override fun sample(): A =
         sampleUncached()
 

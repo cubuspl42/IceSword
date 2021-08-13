@@ -116,13 +116,16 @@ class PlaneTiles {
 //            }
 
     val tiles: DynamicMap<IntVec2, Int> =
-        globalTileCoords.associateWithDynamic(this::buildTileAt)
+        globalTileCoords.associateWithDynamic(
+            tag = "globalTileCoords.associateWithDynamic",
+            this::buildTileAt,
+        )
 
     private fun buildTileAt(
         globalTileCoord: IntVec2,
     ): Cell<Int> {
         val metaTiles = metaTileClusters
-            .associateWith { it.getMetaTileAt(globalTileCoord) }
+            .associateWith(tag = "metaTileClusters.associateWith") { it.getMetaTileAt(globalTileCoord) }
 //            .also { dynMap ->
 //                dynMap.changes.subscribe { change ->
 //                    println("[$globalTileCoord] associateWith change: $change")

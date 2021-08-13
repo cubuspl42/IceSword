@@ -153,7 +153,7 @@ class KnotMesh(
 //        },
 //    )
 
-    val tiles = localTiles.mapKeys { (localTileOffset, _) ->
+    val tiles = localTiles.mapKeys(tag = "localTiles.mapKeys") { (localTileOffset, _) ->
         tileOffset + localTileOffset
     }
 }

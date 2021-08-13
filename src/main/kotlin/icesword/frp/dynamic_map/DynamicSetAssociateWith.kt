@@ -5,7 +5,8 @@ import icesword.frp.*
 class DynamicSetAssociateWith<K, V>(
     private val source: DynamicSet<K>,
     private val valueSelector: (K) -> V,
-) : SimpleDynamicMap<K, V>() {
+    tag: String,
+) : SimpleDynamicMap<K, V>(tag = tag) {
     private var mutableContent: MutableMap<K, V>? = null
 
     override val volatileContentView: Map<K, V>
@@ -29,13 +30,24 @@ class DynamicSetAssociateWith<K, V>(
                 removed = change.removed,
             )
 
+            val intersect = change.added.intersect(mutableContent!!.keys)
+            if (intersect.isNotEmpty()) {
+                debugLog { "$name: change.added.keys.intersect: $intersect" }
+                throw IllegalStateException("change.added.keys.intersect")
+            }
+
             mappedChange.applyTo(mutableContent!!)
 
             notifyListeners(mappedChange)
         }
 
-        mutableContent = source.volatileContentView
-            .associateWith(valueSelector).toMutableMap()
+        val initialContent = source.volatileContentView
+            .associateWith(valueSelector)
+
+        debugLog { "$name: initializing mutable content (source: $source)" }
+        debugLog { "$name: initialContent: $initialContent" }
+
+        mutableContent = initialContent.toMutableMap()
     }
 
     override fun onStop() {

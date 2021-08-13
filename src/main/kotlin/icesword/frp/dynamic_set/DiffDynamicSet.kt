@@ -4,7 +4,7 @@ import icesword.frp.*
 
 class DiffDynamicSet<A>(
     private val inputContent: Cell<Set<A>>,
-) : SimpleDynamicSet<A>() {
+) : SimpleDynamicSet<A>(tag = "DiffDynamicSet") {
     private var mutableContent: MutableSet<A>? = null
 
     override val volatileContentView: Set<A>
@@ -24,6 +24,11 @@ class DiffDynamicSet<A>(
     override fun onStart() {
         subscription = inputContent.subscribe { newContent ->
             val change = SetChange.diff(mutableContent!!, newContent)
+
+            if (change.added.intersect(mutableContent!!).isNotEmpty()) {
+                throw IllegalStateException("DiffDynamicSet: change.added.intersect")
+            }
+
             change.applyTo(mutableContent!!)
             notifyListeners(change)
         }
