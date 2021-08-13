@@ -5,15 +5,18 @@ package icesword.frp
 data class MapChange<K, V>(
     val added: Map<K, V>,
     val updated: Map<K, V>,
-    val removed: Set<K>,
+    val removedEntries: Map<K, V>,
 ) {
+    val removed: Set<K>
+        get() = removedEntries.keys
+
     companion object {
         /// A no-op change with all groups being empty is valid.
         fun <K, V> empty(): MapChange<K, V> =
             MapChange(
                 added = emptyMap(),
                 updated = emptyMap(),
-                removed = emptySet(),
+                removedEntries = emptyMap(),
             )
 
         fun <K, V> diff(
@@ -27,9 +30,9 @@ data class MapChange<K, V>(
                 updated = newMap.filter { (key, newValue) ->
                     oldMap[key]?.let { it != newValue } ?: false
                 },
-                removed = oldMap.keys
-                    .filter { key -> !newMap.containsKey(key) }
-                    .toSet(),
+                removedEntries = oldMap.filter { (key, _) ->
+                    !newMap.containsKey(key)
+                },
             )
     }
 
@@ -42,7 +45,7 @@ data class MapChange<K, V>(
             mutableMap[key] = value
         }
 
-        removed.forEach { key ->
+        removedEntries.forEach { (key, _) ->
             mutableMap.remove(key)
         }
     }
@@ -53,12 +56,12 @@ data class MapChange<K, V>(
     ): MapChange<K2, V> {
         val added = this.added.mapKeys(f)
         val updated = this.updated.mapKeys(f)
-        val removed = this.removed.map { keyMap[it]!! }.toSet()
+        val removedEntries = this.removedEntries.mapKeys(f)
 
         return MapChange<K2, V>(
             added = added,
             updated = updated,
-            removed = removed,
+            removedEntries = removedEntries,
         )
     }
 
@@ -67,11 +70,12 @@ data class MapChange<K, V>(
     ): MapChange<K, V2> {
         val added = this.added.mapValues(f)
         val updated = this.updated.mapValues(f)
+        val removedEntries = this.removedEntries.mapValues(f)
 
         return MapChange<K, V2>(
             added = added,
             updated = updated,
-            removed = this.removed,
+            removedEntries = removedEntries,
         )
     }
 

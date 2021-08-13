@@ -35,7 +35,7 @@ class DynamicMapUnion<K, V>(
             val unionChange = MapChange(
                 added = change.added.filter { (key, _) -> !source2.containsKeyNow(key) },
                 updated = change.updated.filter { (key, _) -> !source2.containsKeyNow(key) },
-                removed = change.removed.filter { key -> !source2.containsKeyNow(key) }.toSet(),
+                removedEntries = change.removedEntries.filter { (key, _) -> !source2.containsKeyNow(key) },
             )
 
             unionChange.applyTo(mutableContent!!)
@@ -56,8 +56,7 @@ class DynamicMapUnion<K, V>(
                                 key to value
                             }
                         }.toMap(),
-
-                removed = change.removed.filter { key -> !source1.containsKeyNow(key) }.toSet(),
+                removedEntries = change.removedEntries.filter { (key, _) -> !source1.containsKeyNow(key) },
             )
 
             unionChange.applyTo(mutableContent!!)

@@ -27,7 +27,7 @@ class DynamicSetAssociateWith<K, V>(
             val mappedChange = MapChange(
                 added = added,
                 updated = emptyMap(),
-                removed = change.removed,
+                removedEntries = change.removed.associateWith { key -> volatileContentView[key]!! },
             )
 
             val intersect = change.added.intersect(mutableContent!!.keys)

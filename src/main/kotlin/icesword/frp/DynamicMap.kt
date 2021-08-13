@@ -1,9 +1,6 @@
 package icesword.frp
 
-import icesword.frp.dynamic_map.DynamicMapFuseValues
-import icesword.frp.dynamic_map.DynamicMapMapKeys
-import icesword.frp.dynamic_map.DynamicMapUnion
-import icesword.frp.dynamic_map.MapValuesNotNullDynamicMap
+import icesword.frp.dynamic_map.*
 
 interface DynamicMap<K, V> {
     val content: Cell<Map<K, V>>
@@ -21,8 +18,8 @@ interface DynamicMap<K, V> {
         fun <K, V> of(content: Map<K, V>): DynamicMap<K, V> =
             StaticDynamicMap(content)
 
-//        fun <K, V> diff(content: Cell<Map<K, V>>): DynamicMap<K, V> =
-//            DiffDynamicMap(content)
+        fun <K, V> diff(content: Cell<Map<K, V>>): DynamicMap<K, V> =
+            DiffDynamicMap(content)
 
 //        fun <K, V> diffDynamic(vm: Cell<Map<K, V>>): DynamicMap<K, V> {
 //            val initialContent = vm.sample();
@@ -79,20 +76,20 @@ fun <K, V, R> DynamicMap<K, V>.mapKeys(tag: String, transform: (Map.Entry<K, V>)
 fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(tag: String? = null): DynamicMap<K, V> =
     DynamicMapFuseValues(this, tag = tag ?: "fuseValues")
 
-//fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(transform: (K, V) -> V2?): DynamicMap<K, V2> =
-//    DynamicMap.diff(
-//        content.map { content ->
-//            content.entries.mapNotNull { (key, value) ->
-//                transform(key, value)?.let { key to it }
-//            }.toMap()
-//        },
-//    )
+fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(tag: String, transform: (Map.Entry<K, V>) -> V2?): DynamicMap<K, V2> =
+    DynamicMap.diff(
+        content.map { content ->
+            content.entries.mapNotNull { e ->
+                transform(e)?.let { e.key to it }
+            }.toMap()
+        },
+    )
 
-fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(
-    tag: String? = null,
-    transform: (Map.Entry<K, V>) -> V2?,
-): DynamicMap<K, V2> =
-    MapValuesNotNullDynamicMap(this, transform, tag = tag ?: "mapValuesNotNull")
+//fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(
+//    tag: String? = null,
+//    transform: (Map.Entry<K, V>) -> V2?,
+//): DynamicMap<K, V2> =
+//    MapValuesNotNullDynamicMap(this, transform, tag = tag ?: "mapValuesNotNull")
 
 //fun <K, V> DynamicMap<K, V?>.filterValuesNotNull(): DynamicMap<K, V> =
 //    DynamicMap.diff(
@@ -115,6 +112,9 @@ val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
     get() = DynamicSet.diff(
         content = content.map { it.values.toSet() }
     )
+
+//val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
+//    get() = ValuesSetDynamicSet(this)
 
 fun <K, V> DynamicMap<K, V>.getNow(key: K): V? = this.volatileContentView[key]
 
@@ -214,23 +214,28 @@ class StaticDynamicMap<K, V>(
 
 class MutableDynamicMap<K, V>(
     initialContent: Map<K, V>,
-) : DynamicMap<K, V> {
+) : SimpleDynamicMap<K, V>(tag = "MutableDynamicMap") {
     companion object {
         fun <K, V> of(content: Map<K, V>): MutableDynamicMap<K, V> =
             MutableDynamicMap(content)
     }
 
-    private val _content = MutCell(initialContent.toMap())
+    private var mutableContent: Map<K, V> = initialContent
 
     override val volatileContentView: Map<K, V>
-        get() = _content.sample()
+        get() = mutableContent
 
-    private val _changes = StreamSink<MapChange<K, V>>()
+    override val content: Cell<Map<K, V>>
+        get() = RawCell(
+            { mutableContent },
+            changes.map { mutableContent },
+        )
+
 
     fun put(key: K, value: V) {
-        val oldContent = _content.sample()
+        val oldContent = mutableContent
         val newContent = oldContent + (key to value)
-        _content.set(newContent)
+        mutableContent = newContent
 
         val change = MapChange.diff(oldContent, newContent)
 
@@ -238,13 +243,8 @@ class MutableDynamicMap<K, V>(
             throw IllegalStateException("MutableDynamicMap: change.added.keys.intersect")
         }
 
-        _changes.send(change)
+        notifyListeners(change)
     }
 
-    override val content: Cell<Map<K, V>>
-        get() = _content
-
-    override val changes: Stream<MapChange<K, V>>
-        get() = _changes
 }
 

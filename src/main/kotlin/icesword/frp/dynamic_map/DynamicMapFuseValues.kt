@@ -47,7 +47,7 @@ class DynamicMapFuseValues<K, V>(
                 MapChange(
                     added = emptyMap(),
                     updated = mapOf(key to value),
-                    removed = emptySet(),
+                    removedEntries = emptyMap(),
                 ),
             )
         }
