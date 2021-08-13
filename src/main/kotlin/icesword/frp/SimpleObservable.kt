@@ -1,5 +1,23 @@
 package icesword.frp
 
+private external class Set<A>(
+    other: Set<A> = definedExternally,
+) {
+    fun add(value: A): Set<A>
+
+    // Returns true if value was already in mySet; otherwise false.
+    fun delete(value: A): Boolean
+
+    fun has(value: A): Boolean
+
+    fun forEach(callback: (value: A) -> Unit)
+
+    val size: Int
+}
+
+private fun <A> Set<A>.isEmpty(): Boolean =
+    this.size == 0
+
 abstract class SimpleObservable<A>(
     val tag: String,
 ) : Observable<A> {
@@ -14,7 +32,7 @@ abstract class SimpleObservable<A>(
     val name: String
         get() = "Observable $tag #$id#"
 
-    private val listeners = hashSetOf<(A) -> Unit>()
+    private val listeners = Set<(A) -> Unit>()
 
     override fun subscribe(handler: (A) -> Unit): Subscription {
         addListener(handler)
@@ -27,7 +45,9 @@ abstract class SimpleObservable<A>(
     }
 
     private fun addListener(h: (A) -> Unit) {
-        val wasAdded = listeners.add(h)
+        val wasAdded = !listeners.has(h)
+
+        listeners.add(h)
 
         if (!wasAdded) {
             throw IllegalStateException("Attempted to add same listener twice")
@@ -40,7 +60,7 @@ abstract class SimpleObservable<A>(
     }
 
     private fun removeListener(h: (A) -> Unit) {
-        val wasThere = listeners.remove(h)
+        val wasThere = listeners.delete(h)
 
         if (!wasThere) {
             throw IllegalStateException("Attempted to remove non-existing listener")
@@ -52,18 +72,17 @@ abstract class SimpleObservable<A>(
         }
     }
 
-    protected fun notifyListeners(a: A): Unit {
-        val oldListeners = listeners.toList()
+    protected fun notifyListeners(a: A) {
+        val oldListeners = Set(listeners)
 
         debugLog { "$name: Starting notifying listeners..." }
 
         oldListeners.forEach {
-            if (!listeners.contains(it)) {
-                debugLog { "$name: Notifying dead listener"}
+            if (!listeners.has(it)) {
+                debugLog { "$name: Notifying dead listener" }
             }
             it(a)
         }
-
 
         debugLog { "$name: Ended notifying listeners" }
     }
@@ -72,3 +91,5 @@ abstract class SimpleObservable<A>(
 
     protected open fun onStop() {}
 }
+
+
