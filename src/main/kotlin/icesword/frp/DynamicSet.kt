@@ -3,6 +3,7 @@ package icesword.frp
 import icesword.frp.dynamic_map.DynamicSetAssociateWith
 import icesword.frp.dynamic_set.DiffDynamicSet
 import icesword.frp.dynamic_set.DynamicSetUnion
+import icesword.frp.dynamic_set.MapDynamicSet
 
 interface DynamicSet<A> {
     companion object {
@@ -58,9 +59,11 @@ fun <A, B> DynamicSet<A>.unionMapDynamic(transform: (A) -> DynamicSet<B>): Dynam
 
 fun <A> DynamicSet<A>.trackContent(till: Till): Cell<Set<A>> = content
 
-fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> = DynamicSet.diff(
-    content.map { it.map(transform).toSet() },
-)
+//fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> = DynamicSet.diff(
+//    content.map { it.map(transform).toSet() },
+//)
+
+fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> = MapDynamicSet(this, transform)
 
 fun <A> DynamicSet<A>.changes(): Stream<Unit> =
     this.content.values().units()
