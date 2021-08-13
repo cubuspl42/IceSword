@@ -45,6 +45,20 @@ class World(
 
     val metaTileClusters = planeTiles.metaTileClusters
 
+    val entities: DynamicSet<Entity> = DynamicSet.union(
+        DynamicSet.of(
+            setOf(
+                metaTileClusters,
+                DynamicSet.of<Entity>(
+                    setOf(knotMesh)
+                ),
+            ),
+        )
+    ).also {
+        // FIXME
+        it.changes.subscribe { }
+    }
+
 //    val selectedMetaTileCluster: MetaTileCluster
 //        get() = metaTileClusters.content.sample().single { it.isSelected.sample() }
 

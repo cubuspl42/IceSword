@@ -2,7 +2,7 @@ package icesword.frp
 
 import kotlinx.css.ol
 
-data class SetChange<A>(
+data class SetChange<out A>(
     val added: Set<A>,
     val removed: Set<A>,
 ) {
@@ -36,13 +36,14 @@ data class SetChange<A>(
         )
     }
 
-    fun applyTo(mutableSet: MutableSet<A>) {
-        added.forEach { key ->
-            mutableSet.add(key)
-        }
+}
 
-        removed.forEach { key ->
-            mutableSet.remove(key)
-        }
+fun <A> SetChange<A>.applyTo(mutableSet: MutableSet<A>) {
+    added.forEach { key ->
+        mutableSet.add(key)
+    }
+
+    removed.forEach { key ->
+        mutableSet.remove(key)
     }
 }

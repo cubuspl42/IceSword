@@ -20,17 +20,22 @@ class KnotMeshUi(
         val viewTransform = this.viewTransform.sample()
         val localKnots = knotMesh.localKnots.sample()
         val localTiles = localKnots.flatMap(::tilesAroundKnot).toSet()
+        val isSelected = knotMesh.isSelected.sample()
 
         ctx.fillStyle = "grey"
-        ctx.strokeStyle = "black"
+//        ctx.strokeStyle = "black"
         ctx.lineWidth = 4.0
 
         localTiles.forEach { localTileCoord ->
             val globalTileCoord = knotMesh.tileOffset + localTileCoord
             val rect = tileRect(globalTileCoord).translate(viewTransform)
 
-            val a = 128
-            ctx.strokeStyle = "rgba($a, $a, $a, 0.4)"
+            if (isSelected) {
+                ctx.strokeStyle = "red"
+            } else {
+                val a = 128
+                ctx.strokeStyle = "rgba($a, $a, $a, 0.4)"
+            }
 
             ctx.strokeRect(
                 x = rect.xMin.toDouble(),
@@ -70,6 +75,7 @@ class KnotMeshUi(
 
     override val onDirty: Stream<Unit> =
         viewTransform.values().units()
+            .mergeWith(knotMesh.isSelected.values().units())
             .mergeWith(knotMesh.localKnots.changes().units())
 }
 

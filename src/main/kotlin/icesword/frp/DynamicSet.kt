@@ -5,7 +5,7 @@ import icesword.frp.dynamic_set.DiffDynamicSet
 import icesword.frp.dynamic_set.DynamicSetUnion
 import icesword.frp.dynamic_set.MapDynamicSet
 
-interface DynamicSet<A> {
+interface DynamicSet<out A> {
     companion object {
         fun <A> of(content: Set<A>): DynamicSet<A> =
             StaticDynamicSet(content)
@@ -43,7 +43,7 @@ interface DynamicSet<A> {
 
     val changes: Stream<SetChange<A>>
 
-    fun containsNow(a: A): Boolean {
+    fun containsNow(a: @UnsafeVariance A): Boolean {
         return volatileContentView.contains(a)
     }
 }

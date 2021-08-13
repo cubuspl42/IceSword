@@ -156,6 +156,11 @@ class KnotMesh(
     val tiles = localTiles.mapKeys(tag = "localTiles.mapKeys") { (localTileOffset, _) ->
         tileOffset + localTileOffset
     }
+
+    override fun isSelectableAt(worldPoint: IntVec2): Boolean {
+        val globalTileCoord = tileAtPoint(worldPoint)
+        return tiles.getNow(globalTileCoord) != null
+    }
 }
 
 

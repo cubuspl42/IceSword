@@ -50,7 +50,7 @@ class MetaTileCluster(
         }
     }
 
-    fun isSelectableAt(worldPoint: IntVec2): Boolean {
+    override fun isSelectableAt(worldPoint: IntVec2): Boolean {
         val globalTileCoord = tileAtPoint(worldPoint)
         return getMetaTileAt(globalTileCoord).sample() != null
     }

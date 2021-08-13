@@ -1,6 +1,6 @@
 package icesword.frp
 
-interface Stream<A> : Observable<A> {
+interface Stream<out A> : Observable<A> {
     companion object {
         fun <A> source(
             subscribeToSource: (notify: (a: A) -> Unit) -> Subscription,

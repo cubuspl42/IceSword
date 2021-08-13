@@ -3,10 +3,10 @@ package icesword.editor
 import fetchWorld
 import icesword.frp.Cell
 import icesword.frp.MutCell
+import icesword.frp.sample
 import icesword.geometry.IntVec2
 import icesword.scene.Tileset
 import icesword.tileAtPoint
-import icesword.tileTopLeftCorner
 import loadTileset
 
 enum class Tool {
@@ -46,20 +46,19 @@ class Editor(
     val selectedEntity: Cell<Entity?> = _selectedEntity
 
     fun selectEntityAt(worldPosition: IntVec2) {
-        val metaTileClusters = world.metaTileClusters.volatileContentView
+        val entities = world.entities.sample()
 
-        val selectableMetaTileClusters = metaTileClusters.filter { it.isSelectableAt(worldPosition) }
+        val selectableEntities = entities.filter { it.isSelectableAt(worldPosition) }
 
-        val selectedMetaTileCluster = selectedEntity.sample() as? MetaTileCluster?
+        val selectedEntity = selectedEntity.sample()
 
-        val metaTileClusterToSelect =
-            selectableMetaTileClusters.indexOfOrNull(selectedMetaTileCluster)?.let { index ->
-                val n = selectableMetaTileClusters.size
-                selectableMetaTileClusters[(index + 1) % n]
-            } ?: selectableMetaTileClusters.firstOrNull()
+        val entityToSelect =
+            selectableEntities.indexOfOrNull(selectedEntity)?.let { index ->
+                val n = selectableEntities.size
+                selectableEntities[(index + 1) % n]
+            } ?: selectableEntities.firstOrNull()
 
-        metaTileClusterToSelect
-            ?.let { entity -> selectEntity(entity) }
+        entityToSelect?.let { entity -> selectEntity(entity) }
     }
 
     private fun selectEntity(entity: Entity) {
