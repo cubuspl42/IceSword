@@ -2,6 +2,7 @@ package icesword.frp
 
 import icesword.frp.dynamic_map.DynamicSetAssociateWith
 import icesword.frp.dynamic_set.DiffDynamicSet
+import icesword.frp.dynamic_set.DynamicSetUnion
 
 interface DynamicSet<A> {
     companion object {
@@ -18,15 +19,18 @@ interface DynamicSet<A> {
 //            sets.content.map { it.flatten().toSet() }
 //        )
 
-        fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = diff(
-            sets.content.switchMap { outerSet ->
-                Cell.traverse(outerSet) { innerDynSet ->
-                    innerDynSet.content
-                }.map { setOfSets ->
-                    setOfSets.flatten().toSet()
-                }
-            }
-        )
+//        fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = diff(
+//            sets.content.switchMap { outerSet ->
+//                Cell.traverse(outerSet) { innerDynSet ->
+//                    innerDynSet.content
+//                }.map { setOfSets ->
+//                    setOfSets.flatten().toSet()
+//                }
+//            }
+//        )
+
+        fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = DynamicSetUnion(sets)
+
 
 //        fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = DynamicSetUnion()
     }
@@ -39,7 +43,7 @@ interface DynamicSet<A> {
     val changes: Stream<SetChange<A>>
 
     fun containsNow(a: A): Boolean {
-        return content.sample().contains(a)
+        return volatileContentView.contains(a)
     }
 }
 
@@ -144,8 +148,8 @@ class MutableDynamicSet<A>(
 
     override val content: Cell<Set<A>>
         get() = RawCell(
-            { mutableContent!!.toSet() },
-            changes.map { mutableContent!!.toSet() },
+            { mutableContent.toSet() },
+            changes.map { mutableContent.toSet() },
         )
 
     override val volatileContentView: Set<A>
