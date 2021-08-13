@@ -48,13 +48,18 @@ class Editor(
     fun selectEntityAt(worldPosition: IntVec2) {
         val metaTileClusters = world.metaTileClusters.volatileContentView
 
-        metaTileClusters.minByOrNull {
-            val position = tileTopLeftCorner(it.tileOffset.sample())
-            val diff = position - worldPosition
-            diff.lengthSquared
-        }?.let { entity ->
-            selectEntity(entity)
-        }
+        val selectableMetaTileClusters = metaTileClusters.filter { it.isSelectableAt(worldPosition) }
+
+        val selectedMetaTileCluster = selectedEntity.sample() as? MetaTileCluster?
+
+        val metaTileClusterToSelect =
+            selectableMetaTileClusters.indexOfOrNull(selectedMetaTileCluster)?.let { index ->
+                val n = selectableMetaTileClusters.size
+                selectableMetaTileClusters[(index + 1) % n]
+            } ?: selectableMetaTileClusters.firstOrNull()
+
+        metaTileClusterToSelect
+            ?.let { entity -> selectEntity(entity) }
     }
 
     private fun selectEntity(entity: Entity) {
@@ -74,3 +79,14 @@ class Editor(
         world.planeTiles.insertMetaTileCluster(metaTileCluster)
     }
 }
+
+private fun <T> Iterable<T>.indexOfOrNull(element: T?): Int? {
+    val i = this.indexOf(element)
+    return when {
+        i >= 0 -> i
+        else -> null
+    }
+}
+
+fun <T> List<T>.rotate(n: Int) =
+    slice(n until size) + slice(0 until n)

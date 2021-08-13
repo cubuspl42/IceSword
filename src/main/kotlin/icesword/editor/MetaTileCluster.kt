@@ -2,6 +2,7 @@ package icesword.editor
 
 import icesword.frp.*
 import icesword.geometry.IntVec2
+import icesword.tileAtPoint
 
 enum class MetaTile(
     val tileId: Int?,
@@ -47,6 +48,11 @@ class MetaTileCluster(
                 _tileOffset.set(it)
             }
         }
+    }
+
+    fun isSelectableAt(worldPoint: IntVec2): Boolean {
+        val globalTileCoord = tileAtPoint(worldPoint)
+        return getMetaTileAt(globalTileCoord).sample() != null
     }
 
     override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
