@@ -3,9 +3,7 @@ package icesword
 
 import createHtmlElement
 import icesword.editor.Editor
-import icesword.editor.MetaTileCluster
 import icesword.editor.Tool
-import icesword.editor.World
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.scene.*
@@ -36,12 +34,12 @@ fun worldView(
 
     editor.selectedTool.reactTillNext(tillDetach) { tool, tillNext ->
         when (tool) {
-            Tool.select -> setupSelectToolController(
+            Tool.SELECT -> setupSelectToolController(
                 editor = editor,
                 root = root,
                 tillDetach = tillNext,
             )
-            Tool.move -> setupMoveToolController(
+            Tool.MOVE -> setupMoveToolController(
                 editor = editor,
                 root = root,
                 tillDetach = tillNext,

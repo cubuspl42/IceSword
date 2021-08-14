@@ -10,8 +10,8 @@ import icesword.tileAtPoint
 import loadTileset
 
 enum class Tool {
-    select,
-    move,
+    SELECT,
+    MOVE,
 }
 
 class Editor(
@@ -33,7 +33,7 @@ class Editor(
         }
     }
 
-    private val _selectedTool = MutCell(Tool.select)
+    private val _selectedTool = MutCell(Tool.SELECT)
 
     val selectedTool: Cell<Tool> = _selectedTool
 

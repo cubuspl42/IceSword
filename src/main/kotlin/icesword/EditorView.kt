@@ -6,7 +6,6 @@ import html.FontWeight
 import html.createButton
 import icesword.editor.Editor
 import icesword.editor.Tool
-import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.map
 import org.w3c.dom.HTMLElement
@@ -89,13 +88,13 @@ fun editorToolBar(
 
     val button1 = toolButton(
         editor = editor,
-        tool = Tool.select,
+        tool = Tool.SELECT,
         tillDetach = tillDetach,
     )
 
     val button2 = toolButton(
         editor = editor,
-        tool = Tool.move,
+        tool = Tool.MOVE,
         tillDetach = tillDetach,
     )
 
