@@ -12,6 +12,7 @@ import loadTileset
 enum class Tool {
     SELECT,
     MOVE,
+    KNOT_BRUSH
 }
 
 class Editor(

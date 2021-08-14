@@ -86,15 +86,21 @@ fun editorToolBar(
         style.padding = "4px"
     }
 
-    val button1 = toolButton(
+    val selectButton = toolButton(
         editor = editor,
         tool = Tool.SELECT,
         tillDetach = tillDetach,
     )
 
-    val button2 = toolButton(
+    val moveButton = toolButton(
         editor = editor,
         tool = Tool.MOVE,
+        tillDetach = tillDetach,
+    )
+
+    val knotBrushButton = toolButton(
+        editor = editor,
+        tool = Tool.KNOT_BRUSH,
         tillDetach = tillDetach,
     )
 
@@ -104,8 +110,9 @@ fun editorToolBar(
     )
 
     return root.apply {
-        appendChild(button1)
-        appendChild(button2)
+        appendChild(selectButton)
+        appendChild(moveButton)
+        appendChild(knotBrushButton)
         appendChild(leavesButton)
     }
 }

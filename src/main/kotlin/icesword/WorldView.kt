@@ -4,6 +4,7 @@ package icesword
 import createHtmlElement
 import icesword.editor.Editor
 import icesword.editor.Tool
+import icesword.editor.closestKnot
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.scene.*
@@ -40,6 +41,11 @@ fun worldView(
                 tillDetach = tillNext,
             )
             Tool.MOVE -> setupMoveToolController(
+                editor = editor,
+                root = root,
+                tillDetach = tillNext,
+            )
+            Tool.KNOT_BRUSH -> setupKnotBrushToolController(
                 editor = editor,
                 root = root,
                 tillDetach = tillNext,
@@ -132,6 +138,22 @@ fun setupMoveToolController(
                 tillStop = mouseDrag.tillEnd,
             )
         }
+    }
+}
+
+fun setupKnotBrushToolController(
+    editor: Editor,
+    root: HTMLElement,
+    tillDetach: Till,
+) {
+    val world = editor.world
+
+    root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
+        world.transformToWorld(mouseDrag.position)
+            .reactTill(mouseDrag.tillEnd) { worldPosition ->
+                val knotCoord = closestKnot(worldPosition)
+                world.knotMesh.putKnot(knotCoord)
+            }
     }
 }
 
