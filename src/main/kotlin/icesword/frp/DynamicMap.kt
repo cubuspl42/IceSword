@@ -135,6 +135,12 @@ fun <K, V : Any> DynamicMap<K, V?>.filterValuesNotNull(
 //val <K, V> DynamicMap<K, V>.keys: DynamicSet<K>
 //    get() = DynamicSet.diff(content.map { it.keys })
 
+
+val <K, V> DynamicMap<K, V>.keys: DynamicSet<K>
+    get() = DynamicSet.diff(
+        content = content.map { it.keys }
+    )
+
 val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
     get() = DynamicSet.diff(
         content = content.map { it.values.toSet() }

@@ -65,6 +65,12 @@ fun <A> DynamicSet<A>.trackContent(till: Till): Cell<Set<A>> = content
 
 fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> = MapDynamicSet(this, transform)
 
+//fun <A, R> DynamicSet<A>.mapDynamic(transform: (A) -> Cell<R>): DynamicSet<R> =
+//    DynamicSet.diff(tileOffset.map { tileOffset ->
+//        localMetaTiles.keys.map { tileOffset + it }.toSet()
+//    })
+
+
 fun <A> DynamicSet<A>.changes(): Stream<Unit> =
     this.content.values().units()
 

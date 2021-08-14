@@ -30,14 +30,24 @@ class MetaTileCluster(
 
 //    val tileOffset: Cell<IntVec2> = _tileOffset
 
-    val globalTileCoords: DynamicSet<IntVec2> =
+
+    private val localMetaTilesDynamic = DynamicMap.of(localMetaTiles)
+
+    private val globalTileCoordsDiff: DynamicSet<IntVec2> =
         DynamicSet.diff(tileOffset.map { tileOffset ->
             localMetaTiles.keys.map { tileOffset + it }.toSet()
         })
 
+    private val globalTileCoordsFuseMap: DynamicSet<IntVec2> =
+        localMetaTilesDynamic.keys.fuseMap { localTileCoord ->
+            tileOffset.map { it + localTileCoord }
+        }
+
+    val globalTileCoords: DynamicSet<IntVec2>
+        get() = globalTileCoordsDiff
+
     fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
         tileOffset.map { localMetaTiles[globalTileCoord - it] }
-
 
 
     override fun isSelectableAt(worldPoint: IntVec2): Boolean {
