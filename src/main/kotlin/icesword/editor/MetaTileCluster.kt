@@ -23,10 +23,12 @@ enum class MetaTile(
 class MetaTileCluster(
     initialTileOffset: IntVec2,
     val localMetaTiles: Map<IntVec2, MetaTile>,
-) : Entity() {
-    private val _tileOffset = MutCell(initialTileOffset)
+) : Entity(
+    initialTileOffset = initialTileOffset,
+) {
+//    private val _tileOffset = MutCell(initialTileOffset)
 
-    val tileOffset: Cell<IntVec2> = _tileOffset
+//    val tileOffset: Cell<IntVec2> = _tileOffset
 
     val globalTileCoords: DynamicSet<IntVec2> =
         DynamicSet.diff(tileOffset.map { tileOffset ->
@@ -36,19 +38,7 @@ class MetaTileCluster(
     fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
         tileOffset.map { localMetaTiles[globalTileCoord - it] }
 
-    fun move(
-        tileOffsetDelta: Cell<IntVec2>,
-        tillStop: Till,
-    ) {
-        val initialTileOffset = _tileOffset.sample()
-        val targetTileOffset = tileOffsetDelta.map { d -> initialTileOffset + d }
 
-        targetTileOffset.reactTill(tillStop) {
-            if (_tileOffset.sample() != it) {
-                _tileOffset.set(it)
-            }
-        }
-    }
 
     override fun isSelectableAt(worldPoint: IntVec2): Boolean {
         val globalTileCoord = tileAtPoint(worldPoint)

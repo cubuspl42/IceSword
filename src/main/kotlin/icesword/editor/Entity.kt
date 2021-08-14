@@ -1,11 +1,12 @@
 package icesword.editor
 
-import icesword.frp.Cell
-import icesword.frp.MutCell
+import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 
-abstract class Entity {
+abstract class Entity(
+    initialTileOffset: IntVec2,
+) {
     private val _isSelected = MutCell(false)
 
     val isSelected: Cell<Boolean>
@@ -20,4 +21,22 @@ abstract class Entity {
     }
 
     abstract fun isSelectableAt(worldPoint: IntVec2): Boolean
+
+    private val _tileOffset = MutCell(initialTileOffset)
+
+    val tileOffset: Cell<IntVec2> = _tileOffset
+
+    fun move(
+        tileOffsetDelta: Cell<IntVec2>,
+        tillStop: Till,
+    ) {
+        val initialTileOffset = _tileOffset.sample()
+        val targetTileOffset = tileOffsetDelta.map { d -> initialTileOffset + d }
+
+        targetTileOffset.reactTill(tillStop) {
+            if (_tileOffset.sample() != it) {
+                _tileOffset.set(it)
+            }
+        }
+    }
 }

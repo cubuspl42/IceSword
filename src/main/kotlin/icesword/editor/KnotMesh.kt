@@ -54,9 +54,13 @@ fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
 }
 
 class KnotMesh(
-    val tileOffset: IntVec2,
+    initialTileOffset: IntVec2,
     till: Till,
-) : Entity()  {
+) : Entity(
+    initialTileOffset = initialTileOffset,
+) {
+//    val tileOffset = Cell.constant(initialTileOffset)
+
     private val _localKnots = MutableDynamicSet.of(
         setOf(
             IntVec2(0, 0),
@@ -69,7 +73,7 @@ class KnotMesh(
     val localKnots: DynamicSet<IntVec2> = _localKnots
 
     fun putKnot(globalKnotCoord: IntVec2) {
-        val localKnotCoord = globalKnotCoord - tileOffset
+        val localKnotCoord = globalKnotCoord - tileOffset.sample()
         _localKnots.add(localKnotCoord)
 
         val tileCoords = tilesAroundKnot(localKnotCoord)
@@ -153,13 +157,17 @@ class KnotMesh(
 //        },
 //    )
 
-    val tiles = localTiles.mapKeys(tag = "localTiles.mapKeys") { (localTileOffset, _) ->
-        tileOffset + localTileOffset
+//    val tiles = localTiles.mapKeys(tag = "localTiles.mapKeys") { (localTileOffset, _) ->
+//        initialTileOffset + localTileOffset
+//    }
+
+    val tilesDynamic = localTiles.mapKeysDynamic { (localTileOffset, _) ->
+        tileOffset.map { it + localTileOffset }
     }
 
     override fun isSelectableAt(worldPoint: IntVec2): Boolean {
         val globalTileCoord = tileAtPoint(worldPoint)
-        return tiles.getNow(globalTileCoord) != null
+        return tilesDynamic.getNow(globalTileCoord) != null
     }
 }
 

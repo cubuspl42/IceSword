@@ -37,7 +37,7 @@ class World(
     private val baseTiles = DynamicMap.of(wwdTiles)
 
     val knotMesh = KnotMesh(
-        tileOffset = tileAtPoint(startPoint),
+        initialTileOffset = tileAtPoint(startPoint),
         till = Till.never,
     )
 
@@ -49,7 +49,7 @@ class World(
         DynamicSet.of(
             setOf(
                 metaTileClusters,
-                DynamicSet.of<Entity>(
+                DynamicSet.of(
                     setOf(knotMesh)
                 ),
             ),
@@ -63,7 +63,7 @@ class World(
 //        get() = metaTileClusters.content.sample().single { it.isSelected.sample() }
 
     val tiles = baseTiles
-        .union(knotMesh.tiles, tag = ".union(knotMesh.tiles ...) ")
+        .union(knotMesh.tilesDynamic, tag = ".union(knotMesh.tiles ...) ")
         .union(planeTiles.tiles, tag = ".union(planeTiles.tiles ...)")
 
     private val _cameraFocusPoint = MutCell(startPoint)

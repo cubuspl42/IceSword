@@ -1,5 +1,6 @@
 package icesword.frp
 
+import icesword.frp.DynamicMap.Companion.fromEntries
 import icesword.frp.dynamic_map.*
 
 interface DynamicMap<K, V> {
@@ -21,6 +22,15 @@ interface DynamicMap<K, V> {
         fun <K, V> diff(content: Cell<Map<K, V>>): DynamicMap<K, V> =
             DiffDynamicMap(content)
 
+        fun <K, V> fromEntries(
+            entries: DynamicSet<Pair<K, V>>
+        ): DynamicMap<K, V> =
+            diff(
+                entries.content.map { staticEntries ->
+                    staticEntries.associate { it }
+                }
+            )
+
 //        fun <K, V> diffDynamic(vm: Cell<Map<K, V>>): DynamicMap<K, V> {
 //            val initialContent = vm.sample();
 //
@@ -40,6 +50,11 @@ interface DynamicMap<K, V> {
     }
 }
 
+val <K, V> DynamicMap<K, V>.entries: DynamicSet<Map.Entry<K, V>>
+    get() = DynamicSet.diff(
+        content.map { it.entries }
+    )
+
 fun <K, V> DynamicMap<K, V>.changesUnits(): Stream<Unit> =
     changes.map { }
 
@@ -50,6 +65,15 @@ fun <K, V> DynamicMap<K, V>.union(other: DynamicMap<K, V>, tag: String): Dynamic
 
 fun <K, V, R> DynamicMap<K, V>.mapKeys(tag: String, transform: (Map.Entry<K, V>) -> R): DynamicMap<R, V> =
     DynamicMapMapKeys(this, transform, tag = tag)
+
+fun <K, V, K2> DynamicMap<K, V>.mapKeysDynamic(
+    transform: (Map.Entry<K, V>) -> Cell<K2>,
+): DynamicMap<K2, V> =
+    fromEntries(
+        this.entries.fuseMap { entry ->
+            transform(entry).map { key -> key to entry.value }
+        }
+    )
 
 //fun <K, V, R> DynamicMap<K, V>.fuseMapKeys(transform: (Map.Entry<K, V>) -> Cell<R>): DynamicMap<R, V> =
 //    DynamicMap.diff(
@@ -76,7 +100,10 @@ fun <K, V, R> DynamicMap<K, V>.mapKeys(tag: String, transform: (Map.Entry<K, V>)
 fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(tag: String? = null): DynamicMap<K, V> =
     DynamicMapFuseValues(this, tag = tag ?: "fuseValues")
 
-fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(tag: String, transform: (Map.Entry<K, V>) -> V2?): DynamicMap<K, V2> =
+fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(
+    tag: String,
+    transform: (Map.Entry<K, V>) -> V2?
+): DynamicMap<K, V2> =
     DynamicMap.diff(
         content.map { content ->
             content.entries.mapNotNull { e ->

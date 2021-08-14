@@ -122,14 +122,14 @@ fun setupMoveToolController(
     val world = editor.world
 
     root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
-        (editor.selectedEntity.sample() as? MetaTileCluster)?.let { selectedMetaTileCluster ->
+        editor.selectedEntity.sample()?.let { selectedEntity ->
             val worldPosition = world.transformToWorld(mouseDrag.position)
             val initialWorldPosition = worldPosition.sample()
             val tileOffsetDelta = worldPosition.map {
                 (it - initialWorldPosition).divRound(TILE_SIZE)
             }
 
-            selectedMetaTileCluster.move(
+            selectedEntity.move(
                 tileOffsetDelta = tileOffsetDelta,
                 tillStop = mouseDrag.tillEnd,
             )

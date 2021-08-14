@@ -70,6 +70,13 @@ fun <A> DynamicSet<A>.changes(): Stream<Unit> =
 
 fun <A> DynamicSet<A>.sample(): Set<A> = content.sample()
 
+fun <K, B> DynamicSet<K>.fuseMap(transform: (K) -> Cell<B>): DynamicSet<B> =
+    DynamicSet.diff(
+        content.switchMap {  content ->
+            Cell.traverse(content, transform).map { it.toSet() }
+        }
+    )
+
 //fun <K, V> DynamicSet<K>.associateWith(valueSelector: (K) -> V): DynamicMap<K, V> =
 //    DynamicMap.diff(content.map { it.associateWith(valueSelector) })
 

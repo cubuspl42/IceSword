@@ -7,7 +7,6 @@ import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileRect
-import icesword.tileTopLeftCorner
 import org.w3c.dom.CanvasRenderingContext2D
 import kotlin.math.PI
 
@@ -18,6 +17,7 @@ class KnotMeshUi(
 ) : Node {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
         val viewTransform = this.viewTransform.sample()
+        val tileOffset = knotMesh.tileOffset.sample()
         val localKnots = knotMesh.localKnots.sample()
         val localTiles = localKnots.flatMap(::tilesAroundKnot).toSet()
         val isSelected = knotMesh.isSelected.sample()
@@ -27,7 +27,7 @@ class KnotMeshUi(
         ctx.lineWidth = 4.0
 
         localTiles.forEach { localTileCoord ->
-            val globalTileCoord = knotMesh.tileOffset + localTileCoord
+            val globalTileCoord = tileOffset + localTileCoord
             val rect = tileRect(globalTileCoord).translate(viewTransform)
 
             if (isSelected) {
@@ -46,7 +46,7 @@ class KnotMeshUi(
         }
 
         localKnots.forEach { localKnotCoord ->
-            val globalKnotCoord = knotMesh.tileOffset + localKnotCoord
+            val globalKnotCoord = tileOffset + localKnotCoord
             val center = knotCenter(globalKnotCoord) + viewTransform
 
             val rect = tileRect(globalKnotCoord)
@@ -76,6 +76,7 @@ class KnotMeshUi(
     override val onDirty: Stream<Unit> =
         viewTransform.values().units()
             .mergeWith(knotMesh.isSelected.values().units())
+            .mergeWith(knotMesh.tileOffset.values().units())
             .mergeWith(knotMesh.localKnots.changes().units())
 }
 
