@@ -4,6 +4,7 @@ import fetchWorld
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.sample
+import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.scene.Tileset
 import icesword.tileAtPoint
@@ -67,16 +68,17 @@ class Editor(
         _selectedEntity.set(entity.also { it.select() })
     }
 
-    fun insertLeaves() {
+    fun insertLog() {
         val focusPoint = world.cameraFocusPoint.sample()
         val insertionPoint = focusPoint + IntVec2(512, 512)
 
-        val metaTileCluster = MetaTileCluster(
+        val elastic = Elastic(
+            prototype = LogPrototype,
             initialTileOffset = tileAtPoint(insertionPoint),
-            localMetaTiles = LeavesPrototype.metaTiles,
+            initialSize = IntSize(3, 8),
         )
 
-        world.planeTiles.insertMetaTileCluster(metaTileCluster)
+        world.planeTiles.insertElastic(elastic)
     }
 }
 

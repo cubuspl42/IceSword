@@ -68,7 +68,7 @@ fun insertMetaTileClusterButton(
     return createButton(
         text = "Insert Log",
         onPressed = {
-            editor.insertLeaves()
+            editor.insertLog()
         },
         tillDetach = tillDetach,
     )

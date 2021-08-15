@@ -1,6 +1,7 @@
 package icesword.editor
 
 import icesword.frp.*
+import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 
@@ -21,22 +22,20 @@ enum class MetaTile(
 }
 
 class MetaTileCluster(
-    initialTileOffset: IntVec2,
-    val localMetaTiles: Map<IntVec2, MetaTile>,
-) : Entity(
-    initialTileOffset = initialTileOffset,
+    private val tileOffset: Cell<IntVec2>,
+    val localMetaTilesDynamic: DynamicMap<IntVec2, MetaTile>,
 ) {
 //    private val _tileOffset = MutCell(initialTileOffset)
 
 //    val tileOffset: Cell<IntVec2> = _tileOffset
 
 
-    private val localMetaTilesDynamic = DynamicMap.of(localMetaTiles)
+//    private val localMetaTilesDynamic = DynamicMap.of(localMetaTiles)
 
-    private val globalTileCoordsDiff: DynamicSet<IntVec2> =
-        DynamicSet.diff(tileOffset.map { tileOffset ->
-            localMetaTiles.keys.map { tileOffset + it }.toSet()
-        })
+//    private val globalTileCoordsDiff: DynamicSet<IntVec2> =
+//        DynamicSet.diff(tileOffset.map { tileOffset ->
+//            localMetaTiles.keys.map { tileOffset + it }.toSet()
+//        })
 
     private val globalTileCoordsFuseMap: DynamicSet<IntVec2> =
         localMetaTilesDynamic.keys.fuseMap { localTileCoord ->
@@ -44,71 +43,96 @@ class MetaTileCluster(
         }
 
     val globalTileCoords: DynamicSet<IntVec2>
-        get() = globalTileCoordsDiff
+        get() = globalTileCoordsFuseMap
 
     fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
-        tileOffset.map { localMetaTiles[globalTileCoord - it] }
+        tileOffset.map { localMetaTilesDynamic.getNow(globalTileCoord - it) }
 
 
-    override fun isSelectableAt(worldPoint: IntVec2): Boolean {
-        val globalTileCoord = tileAtPoint(worldPoint)
-        return getMetaTileAt(globalTileCoord).sample() != null
-    }
+//    fun isSelectableAt(worldPoint: IntVec2): Boolean {
+//        val globalTileCoord = tileAtPoint(worldPoint)
+//        return getMetaTileAt(globalTileCoord).sample() != null
+//    }
 
     override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
 }
 
-private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
-    IntVec2(-1, i) to MetaTile.LOG_LEFT,
-    IntVec2(0, i) to MetaTile.LOG,
-    IntVec2(1, i) to MetaTile.LOG_RIGHT,
-)
+//private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
+//    IntVec2(-1, i) to MetaTile.LOG_LEFT,
+//    IntVec2(0, i) to MetaTile.LOG,
+//    IntVec2(1, i) to MetaTile.LOG_RIGHT,
+//)
 
 class PlaneTiles {
-    private val treeCrown = mapOf(
-        IntVec2(0, 0) to MetaTile.LEAVES_UPPER_LEFT,
-        IntVec2(1, 0) to MetaTile.LEAVES_UPPER,
-        IntVec2(2, 0) to MetaTile.LEAVES_UPPER,
-        IntVec2(3, 0) to MetaTile.LEAVES_UPPER,
-        IntVec2(4, 0) to MetaTile.LEAVES_UPPER_RIGHT,
+//    private val treeCrown = mapOf(
+//        IntVec2(0, 0) to MetaTile.LEAVES_UPPER_LEFT,
+//        IntVec2(1, 0) to MetaTile.LEAVES_UPPER,
+//        IntVec2(2, 0) to MetaTile.LEAVES_UPPER,
+//        IntVec2(3, 0) to MetaTile.LEAVES_UPPER,
+//        IntVec2(4, 0) to MetaTile.LEAVES_UPPER_RIGHT,
+//
+//        IntVec2(0, 1) to MetaTile.LEAVES_LOWER_LEFT,
+//        IntVec2(1, 1) to MetaTile.LEAVES_LOWER,
+//        IntVec2(2, 1) to MetaTile.LEAVES_LOWER,
+//        IntVec2(3, 1) to MetaTile.LEAVES_LOWER,
+//        IntVec2(4, 1) to MetaTile.LEAVES_LOWER_RIGHT,
+//    )
 
-        IntVec2(0, 1) to MetaTile.LEAVES_LOWER_LEFT,
-        IntVec2(1, 1) to MetaTile.LEAVES_LOWER,
-        IntVec2(2, 1) to MetaTile.LEAVES_LOWER,
-        IntVec2(3, 1) to MetaTile.LEAVES_LOWER,
-        IntVec2(4, 1) to MetaTile.LEAVES_LOWER_RIGHT,
-    )
+//    private val _elastics = MutableDynamicSet.of(
+//        setOf(
+//            MetaTileCluster(
+//                initialTileOffset = IntVec2(83, 82),
+//                localMetaTiles = (0..16).flatMap(::logLevel).toMap()
+//            ),
+//            MetaTileCluster(
+//                initialTileOffset = IntVec2(81, 92),
+//                localMetaTiles = treeCrown,
+//            ),
+//            MetaTileCluster(
+//                initialTileOffset = IntVec2(79, 87),
+//                localMetaTiles = treeCrown,
+//            ),
+//            MetaTileCluster(
+//                initialTileOffset = IntVec2(83, 84),
+//                localMetaTiles = treeCrown,
+//            ),
+//        )
+//    )
 
-    private val _metaTileClusters = MutableDynamicSet.of(
+    private val _elastics = MutableDynamicSet.of(
         setOf(
-            MetaTileCluster(
+            Elastic(
+                prototype = LogPrototype,
                 initialTileOffset = IntVec2(83, 82),
-                localMetaTiles = (0..16).flatMap(::logLevel).toMap()
+                initialSize = IntSize(3, 16),
             ),
-            MetaTileCluster(
+            Elastic(
+                prototype = TreeCrownPrototype,
                 initialTileOffset = IntVec2(81, 92),
-                localMetaTiles = treeCrown,
+                initialSize = IntSize.ZERO,
             ),
-            MetaTileCluster(
+            Elastic(
+                prototype = TreeCrownPrototype,
                 initialTileOffset = IntVec2(79, 87),
-                localMetaTiles = treeCrown,
+                initialSize = IntSize.ZERO,
             ),
-            MetaTileCluster(
+            Elastic(
+                prototype = TreeCrownPrototype,
                 initialTileOffset = IntVec2(83, 84),
-                localMetaTiles = treeCrown,
+                initialSize = IntSize.ZERO,
             ),
         )
     )
 
-    val metaTileClusters: DynamicSet<MetaTileCluster>
-        get() = _metaTileClusters
+    val elastics: DynamicSet<Elastic>
+        get() = _elastics
 
-    fun insertMetaTileCluster(metaTileCluster: MetaTileCluster) {
-        _metaTileClusters.add(metaTileCluster)
+    fun insertElastic(elastic: Elastic) {
+        _elastics.add(elastic)
     }
 
     private val globalTileCoords: DynamicSet<IntVec2> =
-        metaTileClusters.unionMapDynamic { it.globalTileCoords }
+        elastics.unionMapDynamic { it.metaTileCluster.globalTileCoords }
 //            .also {
 //                it.changes.subscribe { change ->
 //                    println("globalTileCoords change: $change")
@@ -130,8 +154,10 @@ class PlaneTiles {
     private fun buildTileAt(
         globalTileCoord: IntVec2,
     ): Cell<Int> {
-        val metaTiles = metaTileClusters
-            .associateWith(tag = "metaTileClusters.associateWith") { it.getMetaTileAt(globalTileCoord) }
+        val metaTiles = elastics
+            .associateWith(tag = "metaTileClusters.associateWith") {
+                it.metaTileCluster.getMetaTileAt(globalTileCoord)
+            }
 //            .also { dynMap ->
 //                dynMap.changes.subscribe { change ->
 //                    println("[$globalTileCoord] associateWith change: $change")

@@ -82,8 +82,8 @@ fun worldView(
                     viewTransform = viewTransform,
                     world.knotMesh,
                 ),
-            ) + world.metaTileClusters.content.sample().map {
-                MetaTileClusterUi(
+            ) + world.elastics.content.sample().map {
+                ElasticUi(
                     viewTransform = viewTransform,
                     it,
                 )

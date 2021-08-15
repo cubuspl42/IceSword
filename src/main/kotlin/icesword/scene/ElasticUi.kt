@@ -1,5 +1,6 @@
 package icesword.scene
 
+import icesword.editor.Elastic
 import icesword.editor.MetaTileCluster
 import icesword.frp.*
 import icesword.geometry.IntRect
@@ -8,16 +9,20 @@ import icesword.tileRect
 import org.w3c.dom.CanvasRenderingContext2D
 
 
-class MetaTileClusterUi(
+class ElasticUi(
     private val viewTransform: Cell<IntVec2>,
-    private val metaTileCluster: MetaTileCluster,
+    private val elastic: Elastic,
 ) : Node {
-    override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-        val viewTransform = this.viewTransform.sample()
-        val tileOffset = metaTileCluster.tileOffset.sample()
-        val isSelected = metaTileCluster.isSelected.sample()
+    private val metaTileCluster: MetaTileCluster
+        get() = elastic.metaTileCluster
 
-        val localTileCoords = metaTileCluster.localMetaTiles.keys
+    override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
+
+        val viewTransform = this.viewTransform.sample()
+        val tileOffset = elastic.tileOffset.sample()
+        val isSelected = elastic.isSelected.sample()
+
+        val localTileCoords = metaTileCluster.localMetaTilesDynamic.keys.volatileContentView
 
         localTileCoords.forEach { localTileCoord ->
             val globalTileCoord = tileOffset + localTileCoord
@@ -37,6 +42,7 @@ class MetaTileClusterUi(
 
     override val onDirty: Stream<Unit> =
         viewTransform.values().units()
-            .mergeWith(metaTileCluster.tileOffset.values().units())
-            .mergeWith(metaTileCluster.isSelected.values().units())
+            .mergeWith(metaTileCluster.localMetaTilesDynamic.changesUnits())
+            .mergeWith(elastic.tileOffset.values().units())
+            .mergeWith(elastic.isSelected.values().units())
 }

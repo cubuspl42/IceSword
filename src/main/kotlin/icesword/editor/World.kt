@@ -43,12 +43,12 @@ class World(
 
     val planeTiles = PlaneTiles()
 
-    val metaTileClusters = planeTiles.metaTileClusters
+    val elastics = planeTiles.elastics
 
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
             setOf(
-                metaTileClusters,
+                elastics,
                 DynamicSet.of(
                     setOf(knotMesh)
                 ),
