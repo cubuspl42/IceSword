@@ -75,7 +75,7 @@ class Editor(
         val elastic = Elastic(
             prototype = LogPrototype,
             initialTileOffset = tileAtPoint(insertionPoint),
-            initialSize = IntSize(3, 8),
+            initialSize = IntSize(1, 8),
         )
 
         world.planeTiles.insertElastic(elastic)

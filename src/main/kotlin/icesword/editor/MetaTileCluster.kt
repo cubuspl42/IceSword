@@ -104,12 +104,12 @@ class PlaneTiles {
             Elastic(
                 prototype = LogPrototype,
                 initialTileOffset = IntVec2(83, 82),
-                initialSize = IntSize(3, 16),
+                initialSize = IntSize(1, 16),
             ),
             Elastic(
                 prototype = TreeCrownPrototype,
                 initialTileOffset = IntVec2(81, 92),
-                initialSize = IntSize.ZERO,
+                initialSize = IntSize(5, 2),
             ),
             Elastic(
                 prototype = TreeCrownPrototype,

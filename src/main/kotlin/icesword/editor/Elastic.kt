@@ -18,7 +18,7 @@ object LogPrototype : ElasticPrototype() {
 //        (0..16).flatMap(::logLevel).toMap()
 
     override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> =
-        (0..size.height).flatMap(::logLevel).toMap()
+        (0 until size.height).flatMap(::logLevel).toMap()
 
 }
 
@@ -59,7 +59,7 @@ class Elastic(
 
 //    val tileOffset: Cell<IntVec2> = _tileOffset
 
-    private val size = Cell.constant(initialSize)
+    val size = Cell.constant(initialSize)
 
     val metaTileCluster = MetaTileCluster(
         tileOffset = tileOffset,

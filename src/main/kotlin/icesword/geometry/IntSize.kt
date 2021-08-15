@@ -10,4 +10,7 @@ data class IntSize(
 
     fun toRect(position: IntVec2 = IntVec2.ZERO): IntRect =
         IntRect(position, this)
+
+    operator fun times(s: Int): IntSize =
+        IntSize(width * s, height * s)
 }
