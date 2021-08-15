@@ -27,7 +27,7 @@ interface Node {
 
 class Layer(
     private val transform: Cell<IntVec2>,
-    private val nodes: List<Node>,
+    private val nodes: DynamicSet<Node>,
 ) {
     fun draw(ctx: CanvasRenderingContext2D, viewportRect: IntRect) {
         val transform = this.transform.sample()
@@ -39,14 +39,14 @@ class Layer(
         ctx.resetTransform()
         ctx.translate(transform.x.toDouble(), transform.y.toDouble())
 
-        nodes.forEach {
+        nodes.volatileContentView.forEach {
             it.draw(ctx, windowRect)
         }
     }
 
     val onDirty: Stream<Unit> =
         transform.values().units()
-            .mergeWith(Stream.merge(nodes.map { it.onDirty }))
+            .mergeWith(DynamicSet.merge(nodes.map { it.onDirty }))
 }
 
 class SceneContext {

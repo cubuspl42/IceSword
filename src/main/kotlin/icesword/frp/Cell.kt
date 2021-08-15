@@ -17,6 +17,9 @@ interface Cell<out A> : Observable<A> {
         fun <A> switch(ca: Cell<Cell<A>>): Cell<A> =
             CellSwitch(ca)
 
+        fun <A> divert(ca: Cell<Stream<A>>): Stream<A> =
+            CellDivert(ca)
+
         private fun <A> sequence(lca: List<Cell<A>>): Cell<List<A>> =
             CellSequenceList(lca)
 //
@@ -46,6 +49,8 @@ fun <A, B> Cell<A>.map(f: (A) -> B): Cell<B> =
 fun <A, B> Cell<A>.switchMap(transform: (A) -> Cell<B>): Cell<B> =
     Cell.switch(map(transform))
 
+fun <A, B> Cell<A>.divertMap(transform: (A) -> Stream<B>): Stream<B> =
+    Cell.divert(map(transform))
 
 fun <A> Cell<A>.reactTill(till: Till, handler: (A) -> Unit) {
     handler(sample())

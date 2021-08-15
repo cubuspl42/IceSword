@@ -66,28 +66,34 @@ fun worldView(
 
         val planeLayer = Layer(
             transform = viewTransform,
-            nodes = listOf(
-                TileLayer(
-                    tileset = tileset,
-                    tiles = world.tiles,
-                ),
+            nodes = DynamicSet.of(
+                setOf(
+                    TileLayer(
+                        tileset = tileset,
+                        tiles = world.tiles,
+                    ),
+                )
             ),
         )
 
         // TODO: React
         val planeUiLayer = Layer(
             transform = Cell.constant(IntVec2.ZERO),
-            nodes = listOf(
-                KnotMeshUi(
-                    viewTransform = viewTransform,
-                    world.knotMesh,
-                ),
-            ) + world.elastics.content.sample().map {
-                ElasticUi(
-                    viewTransform = viewTransform,
-                    it,
+            nodes = DynamicSet.of(
+                setOf(
+                    KnotMeshUi(
+                        viewTransform = viewTransform,
+                        world.knotMesh,
+                    ),
                 )
-            },
+            ).unionWith(
+                world.elastics.map {
+                    ElasticUi(
+                        viewTransform = viewTransform,
+                        it,
+                    )
+                },
+            ),
         )
 
         appendChild(

@@ -32,6 +32,11 @@ interface DynamicSet<out A> {
 
         fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = DynamicSetUnion(sets)
 
+        fun <A> merge(
+            streams: DynamicSet<Stream<A>>,
+        ): Stream<A> = streams.content.divertMap {
+            Stream.merge(it)
+        }
 
 //        fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = DynamicSetUnion()
     }
@@ -57,6 +62,13 @@ interface DynamicSet<out A> {
 fun <A, B> DynamicSet<A>.unionMapDynamic(transform: (A) -> DynamicSet<B>): DynamicSet<B> =
     DynamicSet.union(map(transform))
 
+fun <A> DynamicSet<A>.unionWith(other: DynamicSet<A>): DynamicSet<A> =
+    DynamicSet.union(
+        DynamicSet.of(
+            setOf(this, other)
+        )
+    )
+
 fun <A> DynamicSet<A>.trackContent(till: Till): Cell<Set<A>> = content
 
 //fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> = DynamicSet.diff(
@@ -78,7 +90,7 @@ fun <A> DynamicSet<A>.sample(): Set<A> = content.sample()
 
 fun <K, B> DynamicSet<K>.fuseMap(transform: (K) -> Cell<B>): DynamicSet<B> =
     DynamicSet.diff(
-        content.switchMap {  content ->
+        content.switchMap { content ->
             Cell.traverse(content, transform).map { it.toSet() }
         }
     )
