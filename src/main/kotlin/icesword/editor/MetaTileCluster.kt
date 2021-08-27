@@ -47,7 +47,12 @@ class MetaTileCluster(
         get() = globalTileCoordsFuseMap
 
     fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
-        tileOffset.map { localMetaTilesDynamic.getNow(globalTileCoord - it) }
+        tileOffset.switchMap { localMetaTilesDynamic.get(globalTileCoord - it) }
+//            .also {
+//                it.subscribe { metaTile ->
+//                    println("getMetaTileAt($globalTileCoord) -> $metaTile")
+//                }
+//            }
 
 
 //    fun isSelectableAt(worldPoint: IntVec2): Boolean {
@@ -185,6 +190,7 @@ class PlaneTiles {
 //                    println("[$globalTileCoord] filterValuesNotNull change: $change")
 //                }
 //            }
+
             .valuesSet
 
         return metaTiles.content.map { metaTilesContent ->

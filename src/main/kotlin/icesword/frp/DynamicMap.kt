@@ -149,6 +149,9 @@ val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
 //val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
 //    get() = ValuesSetDynamicSet(this)
 
+
+fun <K, V> DynamicMap<K, V>.get(key: K): Cell<V?> = this.content.map { it[key] }
+
 fun <K, V> DynamicMap<K, V>.getNow(key: K): V? = this.volatileContentView[key]
 
 abstract class SimpleDynamicMap<K, V>(

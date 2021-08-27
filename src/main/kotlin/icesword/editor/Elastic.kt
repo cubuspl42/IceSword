@@ -72,7 +72,15 @@ class Elastic(
 
     val metaTileCluster = MetaTileCluster(
         tileOffset = tileOffset,
-        localMetaTilesDynamic = DynamicMap.diff(size.map { prototype.buildMetaTiles(it) })
+        localMetaTilesDynamic = DynamicMap.diff(
+            size.map { prototype.buildMetaTiles(it) },
+        )
+
+//            .also {
+//                it.changes.subscribe {
+//                    println("Elastic localMetaTilesDynamic change: $it")
+//                }
+//            }
     )
 
     override fun isSelectableAt(worldPoint: IntVec2): Boolean {
