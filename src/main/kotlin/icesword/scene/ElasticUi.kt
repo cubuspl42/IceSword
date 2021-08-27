@@ -7,6 +7,7 @@ import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import kotlinx.css.Cursor
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 
@@ -86,7 +87,9 @@ fun createElasticOverlayElement(
         }
     }
 
-    fun createHandle(): HTMLElement {
+    fun createHandle(
+        cursor: Cursor,
+    ): HTMLElement {
         val handle = createHtmlElement("div").apply {
             style.apply {
                 transform = "translate(-50%,-50%)"
@@ -100,7 +103,10 @@ fun createElasticOverlayElement(
                 borderColor = "red"
 
                 backgroundColor = "grey"
+
             }
+
+            style.cursor = cursor.toString()
         }
 
         val wrapper = createHtmlElement("div").apply {
@@ -121,19 +127,19 @@ fun createElasticOverlayElement(
         val offset = "-2px"
 
         val handles = listOf(
-            createHandle().apply {
+            createHandle(cursor = Cursor.nwseResize).apply {
                 style.left = offset
                 style.top = offset
             },
-            createHandle().apply {
+            createHandle(cursor = Cursor.neswResize).apply {
                 style.right = offset
                 style.top = offset
             },
-            createHandle().apply {
+            createHandle(cursor = Cursor.nwseResize).apply {
                 style.right = offset
                 style.bottom = offset
             },
-            createHandle().apply {
+            createHandle(cursor = Cursor.neswResize).apply {
                 style.left = offset
                 style.bottom = offset
             }
