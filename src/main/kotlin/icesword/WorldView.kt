@@ -178,7 +178,9 @@ fun setupKnotBrushToolController(
     val world = editor.world
 
     root.onMouseDrag(button = 0, till = tillDetach).reactTill(tillDetach) { mouseDrag ->
-        world.transformToWorld(mouseDrag.position)
+        val viewportPosition = mouseDrag.position.map(root::calculateRelativePosition)
+        
+        world.transformToWorld(viewportPosition)
             .reactTill(mouseDrag.tillEnd) { worldPosition ->
                 val knotCoord = closestKnot(worldPosition)
                 world.knotMesh.putKnot(knotCoord)
@@ -193,6 +195,11 @@ private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
     return this.clientPosition - originPosition
 }
 
+private fun HTMLElement.calculateRelativePosition(clientPosition: IntVec2): IntVec2 {
+    val rect = getBoundingClientRect()
+    val originPosition = IntVec2(rect.x.roundToInt(), rect.y.roundToInt())
+    return clientPosition - originPosition
+}
 
 class MouseDrag(
     val position: Cell<IntVec2>,
