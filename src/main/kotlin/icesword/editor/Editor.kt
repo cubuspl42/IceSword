@@ -69,15 +69,15 @@ class Editor(
         _selectedEntity.set(entity.also { it.select() })
     }
 
-    fun insertLog() {
+    fun insertElastic(prototype: ElasticPrototype) {
         val focusPoint = world.cameraFocusPoint.sample()
         val insertionPoint = focusPoint + IntVec2(512, 512)
 
         val elastic = Elastic(
-            prototype = LogPrototype,
+            prototype = prototype,
             initialBounds = IntRect(
                 position = tileAtPoint(insertionPoint),
-                size = IntSize(1, 8),
+                size = prototype.defaultSize,
             ),
         )
 

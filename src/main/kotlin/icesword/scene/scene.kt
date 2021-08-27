@@ -178,6 +178,8 @@ fun scene(
     requestAnimationFrames()
 
     val root = createHtmlElement("div").apply {
+        className = "scene"
+
         style.width = "100%"
         style.height = "100%"
         style.display = "grid"

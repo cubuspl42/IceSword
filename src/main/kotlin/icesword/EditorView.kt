@@ -14,31 +14,46 @@ fun editorView(
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
-    val root = createHtmlElement("div").apply {
-        style.width = "100%"
-        style.height = "100%"
-
-        style.display = "flex"
-        style.flexDirection = "column"
-    }
-
-    val toolBarDiv = editorToolBar(
+    val toolBar = editorToolBar(
         editor = editor,
         tillDetach = tillDetach,
     )
 
-    return root.apply {
+    val bottomRow = createHtmlElement("div").apply {
+        style.apply {
+            display = "flex"
+            flexDirection = "row"
+        }
+
         appendChild(
-            toolBarDiv,
+            editorSideBar(
+                editor = editor,
+                tillDetach = tillDetach,
+            )
         )
         appendChild(
             worldView(
                 editor = editor,
                 tileset = editor.tileset,
                 tillDetach = tillDetach,
-            )
+            ),
         )
     }
+
+    val root = createHtmlElement("div").apply {
+        className = "editorView"
+
+        style.width = "100%"
+        style.height = "100%"
+
+        style.display = "flex"
+        style.flexDirection = "column"
+
+        appendChild(toolBar)
+        appendChild(bottomRow)
+    }
+
+    return root
 }
 
 fun toolButton(
@@ -60,25 +75,13 @@ fun toolButton(
     )
 }
 
-fun insertMetaTileClusterButton(
-    editor: Editor,
-    tillDetach: Till,
-): HTMLElement {
-    return createButton(
-        text = "Insert Log",
-        onPressed = {
-            editor.insertLog()
-        },
-        tillDetach = tillDetach,
-    )
-}
-
-
 fun editorToolBar(
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
     val root = createHtmlElement("div").apply {
+        className = "editorToolBar"
+
         style.width = "100%"
 //        style.minHeight = "32px"
         style.backgroundColor = "grey"
@@ -103,15 +106,9 @@ fun editorToolBar(
         tillDetach = tillDetach,
     )
 
-    val leavesButton = insertMetaTileClusterButton(
-        editor = editor,
-        tillDetach = tillDetach,
-    )
-
     return root.apply {
         appendChild(selectButton)
         appendChild(moveButton)
         appendChild(knotBrushButton)
-        appendChild(leavesButton)
     }
 }

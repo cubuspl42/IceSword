@@ -23,6 +23,8 @@ fun worldView(
     val world = editor.world
 
     val root = createHtmlElement("div").apply {
+        className = "worldView"
+
         tabIndex = 0
         style.width = "100%"
         style.height = "100%"

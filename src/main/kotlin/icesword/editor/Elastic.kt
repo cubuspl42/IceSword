@@ -11,12 +11,13 @@ import kotlinx.css.del
 sealed class ElasticPrototype {
 //    abstract val metaTiles: Map<IntVec2, MetaTile>
 
+    abstract val defaultSize: IntSize
+
     abstract fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile>
 }
 
 object LogPrototype : ElasticPrototype() {
-//    override val metaTiles: Map<IntVec2, MetaTile> =
-//        (0..16).flatMap(::logLevel).toMap()
+    override val defaultSize: IntSize = IntSize(1, 4)
 
     override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> =
         (0 until size.height).flatMap(::logLevel).toMap()
@@ -24,6 +25,8 @@ object LogPrototype : ElasticPrototype() {
 }
 
 object TreeCrownPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(5, 2)
+
     override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
 
         val columns =
