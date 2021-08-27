@@ -3,6 +3,7 @@ package icesword
 
 import createHtmlElement
 import icesword.editor.Editor
+import icesword.editor.Elastic
 import icesword.editor.Tool
 import icesword.editor.closestKnot
 import icesword.frp.*
@@ -10,6 +11,7 @@ import icesword.geometry.IntVec2
 import icesword.scene.*
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
+import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
 import kotlin.math.roundToInt
 
@@ -22,6 +24,7 @@ fun worldView(
     val world = editor.world
 
     val root = createHtmlElement("div").apply {
+        tabIndex = 0
         style.width = "100%"
         style.height = "100%"
     }
@@ -145,6 +148,16 @@ fun setupMoveToolController(
             )
         }
     }
+
+    root.onKeyDown().reactTill(tillDetach) { event ->
+        val selectedElastic = editor.selectedEntity.sample() as? Elastic
+
+        if (selectedElastic != null) {
+            when (event.key) {
+                "ArrowRight" -> selectedElastic.expandRight()
+            }
+        }
+    }
 }
 
 fun setupKnotBrushToolController(
@@ -187,8 +200,16 @@ private fun HTMLElement.onMouseUp(button: Short): Stream<MouseEvent> =
 private fun HTMLElement.onClick(): Stream<MouseEvent> =
     this.onEvent("click")
 
-private fun <E : Event> HTMLElement.onEvent(eventType: String): Stream<E> =
-    Stream.source<Event> { notify -> this.subscribeToEvent(eventType, notify) }.cast()
+private fun HTMLElement.onKeyDown(): Stream<KeyboardEvent> =
+    this.onEvent("keydown", useCapture = true)
+
+private fun <E : Event> HTMLElement.onEvent(
+    eventType: String,
+    useCapture: Boolean = false,
+): Stream<E> =
+    Stream.source<Event> { notify ->
+        this.subscribeToEvent(eventType, notify, useCapture = useCapture)
+    }.cast()
 
 private val MouseEvent.clientPosition: IntVec2
     get() = IntVec2(this.clientX, this.clientY)
@@ -202,8 +223,9 @@ private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
 private fun HTMLElement.subscribeToEvent(
     eventType: String,
     callback: ((Event) -> Unit),
+    useCapture: Boolean = false,
 ): Subscription {
-    this.addEventListener(eventType, callback)
+    this.addEventListener(eventType, callback, useCapture)
 
     return object : Subscription {
         override fun unsubscribe() {

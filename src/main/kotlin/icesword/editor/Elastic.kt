@@ -5,6 +5,7 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
+import kotlinx.css.col
 
 sealed class ElasticPrototype {
 //    abstract val metaTiles: Map<IntVec2, MetaTile>
@@ -22,23 +23,32 @@ object LogPrototype : ElasticPrototype() {
 }
 
 object TreeCrownPrototype : ElasticPrototype() {
-    override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> =
-        mapOf(
-            IntVec2(0, 0) to MetaTile.LEAVES_UPPER_LEFT,
-            IntVec2(1, 0) to MetaTile.LEAVES_UPPER,
-            IntVec2(2, 0) to MetaTile.LEAVES_UPPER,
-            IntVec2(3, 0) to MetaTile.LEAVES_UPPER,
-            IntVec2(4, 0) to MetaTile.LEAVES_UPPER_RIGHT,
+    override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
 
-            IntVec2(0, 1) to MetaTile.LEAVES_LOWER_LEFT,
-            IntVec2(1, 1) to MetaTile.LEAVES_LOWER,
-            IntVec2(2, 1) to MetaTile.LEAVES_LOWER,
-            IntVec2(3, 1) to MetaTile.LEAVES_LOWER,
-            IntVec2(4, 1) to MetaTile.LEAVES_LOWER_RIGHT,
-        )
+        val columns =
+            listOf(
+                setOf(
+                    IntVec2(0, 0) to MetaTile.LEAVES_UPPER_LEFT,
+                    IntVec2(0, 1) to MetaTile.LEAVES_LOWER_LEFT,
+                ),
+            ) +
+                    (1..(size.width - 2)).map { j ->
 
+                        setOf(
+                            IntVec2(j, 0) to MetaTile.LEAVES_UPPER,
+                            IntVec2(j, 1) to MetaTile.LEAVES_LOWER,
+                        )
+                    } +
+                    listOf(
+                        setOf(
+                            IntVec2(size.width - 1, 0) to MetaTile.LEAVES_UPPER_RIGHT,
+                            IntVec2(size.width - 1, 1) to MetaTile.LEAVES_LOWER_RIGHT,
+                        ),
+                    )
+
+        return columns.take(size.width).flatten().toMap()
+    }
 }
-
 
 private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
     IntVec2(-1, i) to MetaTile.LOG_LEFT,
@@ -78,5 +88,15 @@ class Elastic(
     }
 
     override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
+
+    fun expandRight() {
+        _bounds.update { b: IntRect ->
+            val oldSize = b.size
+
+            b.copy(
+                size = oldSize.copy(width = oldSize.width + 1),
+            )
+        }
+    }
 }
 

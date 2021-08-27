@@ -23,6 +23,9 @@ fun createButton(
         }
     }
 
+    root.addEventListener("mousedown", {
+        it.preventDefault()
+    })
 
     root.addEventListener("click", {
         onPressed()
