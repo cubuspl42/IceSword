@@ -4,6 +4,7 @@ import fetchWorld
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.sample
+import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.scene.Tileset
@@ -74,8 +75,10 @@ class Editor(
 
         val elastic = Elastic(
             prototype = LogPrototype,
-            initialTileOffset = tileAtPoint(insertionPoint),
-            initialSize = IntSize(1, 8),
+            initialBounds = IntRect(
+                position = tileAtPoint(insertionPoint),
+                size = IntSize(1, 8),
+            ),
         )
 
         world.planeTiles.insertElastic(elastic)

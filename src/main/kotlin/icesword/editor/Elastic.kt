@@ -1,8 +1,7 @@
 package icesword.editor
 
-import icesword.frp.Cell
-import icesword.frp.DynamicMap
-import icesword.frp.map
+import icesword.frp.*
+import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
@@ -50,16 +49,16 @@ private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
 
 class Elastic(
     prototype: ElasticPrototype,
-    initialTileOffset: IntVec2,
-    initialSize: IntSize,
-) : Entity(
-    initialTileOffset = initialTileOffset,
-) {
-//    private val _tileOffset = MutCell(initialTileOffset)
+    initialBounds: IntRect,
+) :
+    Entity(),
+    EntityTileOffset {
+
+    private val _bounds = MutCell(initialBounds)
 
 //    val tileOffset: Cell<IntVec2> = _tileOffset
 
-    val size = Cell.constant(initialSize)
+    val size = _bounds.map { it.size }
 
     val metaTileCluster = MetaTileCluster(
         tileOffset = tileOffset,
@@ -71,5 +70,13 @@ class Elastic(
         return metaTileCluster.getMetaTileAt(globalTileCoord).sample() != null
     }
 
+    override val tileOffset: Cell<IntVec2>
+        get() = _bounds.map { it.position }
+
+    override fun setTileOffset(newOffset: IntVec2) {
+        _bounds.update { b: IntRect -> b.copy(position = newOffset) }
+    }
+
     override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
 }
+

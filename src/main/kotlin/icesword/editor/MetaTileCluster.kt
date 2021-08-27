@@ -1,6 +1,7 @@
 package icesword.editor
 
 import icesword.frp.*
+import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
@@ -103,23 +104,32 @@ class PlaneTiles {
         setOf(
             Elastic(
                 prototype = LogPrototype,
-                initialTileOffset = IntVec2(83, 82),
-                initialSize = IntSize(1, 16),
+                initialBounds = IntRect(
+                    position = IntVec2(83, 82),
+                    size = IntSize(1, 16),
+                ),
             ),
             Elastic(
                 prototype = TreeCrownPrototype,
-                initialTileOffset = IntVec2(81, 92),
-                initialSize = IntSize(5, 2),
+
+                initialBounds = IntRect(
+                    position = IntVec2(81, 92),
+                    size = IntSize(5, 2),
+                ),
             ),
             Elastic(
                 prototype = TreeCrownPrototype,
-                initialTileOffset = IntVec2(79, 87),
-                initialSize = IntSize.ZERO,
+                initialBounds = IntRect(
+                    position = IntVec2(79, 87),
+                    size = IntSize.ZERO,
+                ),
             ),
             Elastic(
                 prototype = TreeCrownPrototype,
-                initialTileOffset = IntVec2(83, 84),
-                initialSize = IntSize.ZERO,
+                initialBounds = IntRect(
+                    position = IntVec2(83, 84),
+                    size = IntSize.ZERO,
+                ),
             ),
         )
     )

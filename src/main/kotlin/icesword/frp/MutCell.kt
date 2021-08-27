@@ -10,3 +10,7 @@ class MutCell<A>(initialValue: A) : SimpleCell<A>(tag = "MutCell") {
         notifyListeners(newValue)
     }
 }
+
+fun <A> MutCell<A>.update(transform: (A) -> A) {
+    set(transform(sample()))
+}

@@ -56,9 +56,11 @@ fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
 class KnotMesh(
     initialTileOffset: IntVec2,
     till: Till,
-) : Entity(
-    initialTileOffset = initialTileOffset,
-) {
+) :
+    Entity(),
+    EntityTileOffset by SimpleEntityTileOffset(
+        initialTileOffset = initialTileOffset,
+    ) {
 //    val tileOffset = Cell.constant(initialTileOffset)
 
     private val _localKnots = MutableDynamicSet.of(
