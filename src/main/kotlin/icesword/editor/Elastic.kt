@@ -66,7 +66,19 @@ class Elastic(
 
     private val _bounds = MutCell(initialBounds)
 
-//    val tileOffset: Cell<IntVec2> = _tileOffset
+    val bounds: Cell<IntRect>
+        get() = _bounds
+
+    fun resizeBottomRight(tileCoord: Cell<IntVec2>, till: Till) {
+        tileCoord.reactTill(till) { tc ->
+            val oldRect = bounds.sample()
+            val newRect = oldRect.copyWithBottomRight(tc)
+
+            if (newRect != oldRect) {
+                _bounds.set(newRect)
+            }
+        }
+    }
 
     val size = _bounds.map { it.size }
 

@@ -30,7 +30,7 @@ fun worldView(
         addEventListener("contextmenu", { it.preventDefault() })
     }
 
-    root.onMouseDrag(button = 2, tillDetach).reactTill(tillDetach) { mouseDrag ->
+    root.onMouseDrag(button = 2, till = tillDetach).reactTill(tillDetach) { mouseDrag ->
         val initialXy = mouseDrag.position.sample()
         val delta = mouseDrag.position.map { initialXy - it }
 
@@ -108,7 +108,12 @@ fun worldView(
                         planeUiLayer,
                     ),
                     overlayElements = world.elastics.map {
-                        createElasticOverlayElement(it, viewTransform, tillDetach)
+                        createElasticOverlayElement(
+                            elastic = it,
+                            viewport = this,
+                            viewTransform = viewTransform,
+                            tillDetach = tillDetach,
+                        )
                     },
                 )
             },
@@ -138,7 +143,7 @@ fun setupMoveToolController(
 ) {
     val world = editor.world
 
-    root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
+    root.onMouseDrag(button = 0, till = tillDetach).reactTill(tillDetach) { mouseDrag ->
         editor.selectedEntity.sample()?.let { selectedEntity ->
             val worldPosition = world.transformToWorld(mouseDrag.position)
             val initialWorldPosition = worldPosition.sample()
@@ -171,7 +176,7 @@ fun setupKnotBrushToolController(
 ) {
     val world = editor.world
 
-    root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
+    root.onMouseDrag(button = 0, till = tillDetach).reactTill(tillDetach) { mouseDrag ->
         world.transformToWorld(mouseDrag.position)
             .reactTill(mouseDrag.tillEnd) { worldPosition ->
                 val knotCoord = closestKnot(worldPosition)
@@ -180,43 +185,6 @@ fun setupKnotBrushToolController(
     }
 }
 
-private fun HTMLElement.onMouseDrag(button: Short, till: Till): Stream<MouseDrag> =
-    this.onMouseDown(button = button).until(till).map { event ->
-        MouseDrag.start(
-            element = this,
-            initialPosition = event.clientPosition,
-            button = button,
-            tillAbort = till,
-        )
-    }
-
-private fun HTMLElement.onMouseDown(button: Short): Stream<MouseEvent> =
-    this.onEvent<MouseEvent>("mousedown")
-        .filter { e: MouseEvent -> e.button == button }
-
-private fun HTMLElement.onMouseMove(): Stream<MouseEvent> =
-    this.onEvent<MouseEvent>("mousemove")
-
-private fun HTMLElement.onMouseUp(button: Short): Stream<MouseEvent> =
-    this.onEvent<MouseEvent>("mouseup")
-        .filter { e: MouseEvent -> e.button == button }
-
-private fun HTMLElement.onClick(): Stream<MouseEvent> =
-    this.onEvent("click")
-
-private fun HTMLElement.onKeyDown(): Stream<KeyboardEvent> =
-    this.onEvent("keydown", useCapture = true)
-
-private fun <E : Event> HTMLElement.onEvent(
-    eventType: String,
-    useCapture: Boolean = false,
-): Stream<E> =
-    Stream.source<Event> { notify ->
-        this.subscribeToEvent(eventType, notify, useCapture = useCapture)
-    }.cast()
-
-private val MouseEvent.clientPosition: IntVec2
-    get() = IntVec2(this.clientX, this.clientY)
 
 private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
     val rect = origin.getBoundingClientRect()
@@ -224,19 +192,6 @@ private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
     return this.clientPosition - originPosition
 }
 
-private fun HTMLElement.subscribeToEvent(
-    eventType: String,
-    callback: ((Event) -> Unit),
-    useCapture: Boolean = false,
-): Subscription {
-    this.addEventListener(eventType, callback, useCapture)
-
-    return object : Subscription {
-        override fun unsubscribe() {
-            this@subscribeToEvent.removeEventListener(eventType, callback)
-        }
-    }
-}
 
 class MouseDrag(
     val position: Cell<IntVec2>,

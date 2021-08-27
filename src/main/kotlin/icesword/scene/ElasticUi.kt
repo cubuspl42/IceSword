@@ -8,6 +8,7 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.css.Cursor
+import kotlinx.css.del
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 
@@ -70,6 +71,7 @@ class ElasticUi(
 
 fun createElasticOverlayElement(
     elastic: Elastic,
+    viewport: HTMLElement,
     viewTransform: Cell<IntVec2>,
     tillDetach: Till,
 ): HTMLElement {
@@ -107,6 +109,26 @@ fun createElasticOverlayElement(
             }
 
             style.cursor = cursor.toString()
+        }
+
+        handle.onMouseDrag(
+            button = 0,
+            outer = viewport,
+            till = tillDetach,
+        ).reactTill(tillDetach) { mouseDrag ->
+            val initialPosition = mouseDrag.position.sample()
+            val initialTileCoord = elastic.bounds.sample().xyMax
+
+            val tileCoord = mouseDrag.position.map {
+                val deltaPosition = it - initialPosition
+                val deltaTileCoord = deltaPosition.divRound(TILE_SIZE)
+                initialTileCoord + deltaTileCoord
+            }
+
+            elastic.resizeBottomRight(
+                tileCoord = tileCoord,
+                mouseDrag.tillEnd,
+            )
         }
 
         val wrapper = createHtmlElement("div").apply {
