@@ -36,6 +36,18 @@ data class IntRect(
     val xyMax: IntVec2 =
         IntVec2(this.xMax, this.yMax)
 
+    val topLeft: IntVec2
+        get() = xyMin
+
+    val topRight: IntVec2
+        get() = IntVec2(this.xMax, this.yMin)
+
+    val bottomRight: IntVec2
+        get() = xyMax
+
+    val bottomLeft: IntVec2
+        get() = IntVec2(this.xMin, this.yMax)
+
     fun overlaps(b: IntRect): Boolean =
         this.xMin < b.xMax && b.xMin < this.xMax &&
                 this.yMin < b.yMax && b.yMin < this.yMax
@@ -43,5 +55,12 @@ data class IntRect(
     fun translate(t: IntVec2): IntRect =
         IntRect(position + t, size)
 
-    fun copyWithBottomRight(p: IntVec2) = IntRect.fromDiagonal(xyMin, p)
+
+    fun copyWithTopLeft(p: IntVec2) = IntRect.fromDiagonal(bottomRight, p)
+
+    fun copyWithTopRight(p: IntVec2) = IntRect.fromDiagonal(bottomLeft, p)
+
+    fun copyWithBottomRight(p: IntVec2) = IntRect.fromDiagonal(topLeft, p)
+
+    fun copyWithBottomLeft(p: IntVec2) = IntRect.fromDiagonal(topRight, p)
 }

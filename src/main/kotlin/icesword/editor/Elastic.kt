@@ -6,6 +6,7 @@ import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import kotlinx.css.col
+import kotlinx.css.del
 
 sealed class ElasticPrototype {
 //    abstract val metaTiles: Map<IntVec2, MetaTile>
@@ -69,10 +70,46 @@ class Elastic(
     val bounds: Cell<IntRect>
         get() = _bounds
 
-    fun resizeBottomRight(tileCoord: Cell<IntVec2>, till: Till) {
+    fun resizeTopLeft(deltaTileCoord: Cell<IntVec2>, till: Till) = resize(
+        deltaTileCoord = deltaTileCoord,
+        sampleTileCoord = IntRect::topLeft,
+        transform = { rect, tc -> rect.copyWithTopLeft(tc) },
+        till = till,
+    )
+
+    fun resizeTopRight(deltaTileCoord: Cell<IntVec2>, till: Till) = resize(
+        deltaTileCoord = deltaTileCoord,
+        sampleTileCoord = IntRect::topRight,
+        transform = { rect, tc -> rect.copyWithTopRight(tc) },
+        till = till,
+    )
+
+    fun resizeBottomRight(deltaTileCoord: Cell<IntVec2>, till: Till) = resize(
+        deltaTileCoord = deltaTileCoord,
+        sampleTileCoord = IntRect::bottomRight,
+        transform = { rect, tc -> rect.copyWithBottomRight(tc) },
+        till = till,
+    )
+
+    fun resizeBottomLeft(deltaTileCoord: Cell<IntVec2>, till: Till) = resize(
+        deltaTileCoord = deltaTileCoord,
+        sampleTileCoord = IntRect::bottomLeft,
+        transform = { rect, tc -> rect.copyWithBottomLeft(tc) },
+        till = till,
+    )
+
+    private fun resize(
+        deltaTileCoord: Cell<IntVec2>,
+        sampleTileCoord: (rect: IntRect) -> IntVec2,
+        transform: (rect: IntRect, tileCoord: IntVec2) -> IntRect,
+        till: Till,
+    ) {
+        val initialTileCoord = sampleTileCoord(bounds.sample())
+        val tileCoord = deltaTileCoord.map { initialTileCoord + it }
+
         tileCoord.reactTill(till) { tc ->
             val oldRect = bounds.sample()
-            val newRect = oldRect.copyWithBottomRight(tc)
+            val newRect = transform(oldRect, tc)
 
             if (newRect != oldRect) {
                 _bounds.set(newRect)

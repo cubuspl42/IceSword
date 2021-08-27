@@ -91,6 +91,7 @@ fun createElasticOverlayElement(
 
     fun createHandle(
         cursor: Cursor,
+        resize: (tileCoord: Cell<IntVec2>, till: Till) -> Unit,
     ): HTMLElement {
         val handle = createHtmlElement("div").apply {
             style.apply {
@@ -117,16 +118,14 @@ fun createElasticOverlayElement(
             till = tillDetach,
         ).reactTill(tillDetach) { mouseDrag ->
             val initialPosition = mouseDrag.position.sample()
-            val initialTileCoord = elastic.bounds.sample().xyMax
 
-            val tileCoord = mouseDrag.position.map {
+            val deltaTileCoord = mouseDrag.position.map {
                 val deltaPosition = it - initialPosition
-                val deltaTileCoord = deltaPosition.divRound(TILE_SIZE)
-                initialTileCoord + deltaTileCoord
+                deltaPosition.divRound(TILE_SIZE)
             }
 
-            elastic.resizeBottomRight(
-                tileCoord = tileCoord,
+            resize(
+                deltaTileCoord,
                 mouseDrag.tillEnd,
             )
         }
@@ -149,19 +148,31 @@ fun createElasticOverlayElement(
         val offset = "-2px"
 
         val handles = listOf(
-            createHandle(cursor = Cursor.nwseResize).apply {
+            createHandle(
+                cursor = Cursor.nwseResize,
+                resize = elastic::resizeTopLeft,
+            ).apply {
                 style.left = offset
                 style.top = offset
             },
-            createHandle(cursor = Cursor.neswResize).apply {
+            createHandle(
+                cursor = Cursor.neswResize,
+                resize = elastic::resizeTopRight,
+            ).apply {
                 style.right = offset
                 style.top = offset
             },
-            createHandle(cursor = Cursor.nwseResize).apply {
+            createHandle(
+                cursor = Cursor.nwseResize,
+                resize = elastic::resizeBottomRight,
+            ).apply {
                 style.right = offset
                 style.bottom = offset
             },
-            createHandle(cursor = Cursor.neswResize).apply {
+            createHandle(
+                cursor = Cursor.neswResize,
+                resize = elastic::resizeBottomLeft,
+            ).apply {
                 style.left = offset
                 style.bottom = offset
             }
