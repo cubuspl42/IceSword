@@ -82,6 +82,8 @@ class Editor(
         )
 
         world.planeTiles.insertElastic(elastic)
+
+        selectEntity(elastic)
     }
 }
 

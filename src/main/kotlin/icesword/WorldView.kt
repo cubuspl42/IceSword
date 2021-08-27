@@ -59,13 +59,12 @@ fun worldView(
         }
     }
 
-//    root.onMouseDrag(button = 0, tillDetach).reactTill(tillDetach) { mouseDrag ->
-//        world.transformToWorld(mouseDrag.position)
-//            .reactTill(mouseDrag.tillEnd) { worldPosition ->
-//                val knotCoord = closestKnot(worldPosition)
-//                world.knotMesh.putKnot(knotCoord)
-//            }
-//    }
+    root.onKeyDown().reactTill(tillDetach) {
+        when (it.key) {
+            "s" -> editor.selectTool(Tool.SELECT)
+            "v" -> editor.selectTool(Tool.MOVE)
+        }
+    }
 
     return root.apply {
         val viewTransform = world.cameraFocusPoint.map { -it }
