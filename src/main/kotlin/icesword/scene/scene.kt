@@ -1,5 +1,7 @@
 package icesword.scene
 
+import icesword.createContainer
+import icesword.createHtmlElement
 import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
@@ -56,6 +58,7 @@ class SceneContext {
 
 class Scene(
     val layers: List<Layer>,
+    val overlayElements: DynamicSet<HTMLElement>,
 )
 
 fun scene(
@@ -72,12 +75,31 @@ fun scene(
             style.apply {
                 width = "100%"
                 height = "100%"
+
+                setProperty("grid-column", "1")
+                setProperty("grid-row", "1")
+                zIndex = "0"
             }
         }
 
-        canvas.addEventListener("contextmenu", { it.preventDefault() })
-
         return canvas
+    }
+
+    fun createSceneOverlay(scene: Scene): HTMLElement {
+
+
+        val overlay = createContainer(
+            children = scene.overlayElements,
+            tillDetach,
+        ).apply {
+            style.apply {
+                setProperty("grid-column", "1")
+                setProperty("grid-row", "1")
+                zIndex = "1"
+            }
+        }
+
+        return overlay
     }
 
     fun buildScene(): Scene {
@@ -101,6 +123,8 @@ fun scene(
     val scene = buildScene()
 
     val canvas = createSceneCanvas()
+
+    val overlay = createSceneOverlay(scene)
 
     val isDirty = buildDirtyFlag(scene)
 
@@ -153,7 +177,16 @@ fun scene(
 
     requestAnimationFrames()
 
-    return canvas
+    val root = createHtmlElement("div").apply {
+        style.width = "100%"
+        style.height = "100%"
+        style.display = "grid"
+
+        appendChild(canvas)
+        appendChild(overlay)
+    }
+
+    return root
 }
 
 private val DOMRect.size: IntSize

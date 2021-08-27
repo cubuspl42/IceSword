@@ -1,7 +1,6 @@
 package icesword
 
 
-import createHtmlElement
 import icesword.editor.Editor
 import icesword.editor.Elastic
 import icesword.editor.Tool
@@ -27,6 +26,8 @@ fun worldView(
         tabIndex = 0
         style.width = "100%"
         style.height = "100%"
+
+        addEventListener("contextmenu", { it.preventDefault() })
     }
 
     root.onMouseDrag(button = 2, tillDetach).reactTill(tillDetach) { mouseDrag ->
@@ -106,6 +107,9 @@ fun worldView(
                         planeLayer,
                         planeUiLayer,
                     ),
+                    overlayElements = world.elastics.map {
+                        createElasticOverlayElement(it, viewTransform, tillDetach)
+                    },
                 )
             },
         )

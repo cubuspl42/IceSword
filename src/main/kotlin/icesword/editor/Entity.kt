@@ -2,6 +2,7 @@ package icesword.editor
 
 import icesword.frp.*
 import icesword.geometry.IntVec2
+import icesword.tileTopLeftCorner
 
 interface EntityTileOffset {
     val tileOffset: Cell<IntVec2>
@@ -23,6 +24,8 @@ class SimpleEntityTileOffset(
 }
 
 abstract class Entity : EntityTileOffset {
+    val position by lazy { tileOffset.map { tileTopLeftCorner(it) } }
+
     private val _isSelected = MutCell(false)
 
     val isSelected: Cell<Boolean>

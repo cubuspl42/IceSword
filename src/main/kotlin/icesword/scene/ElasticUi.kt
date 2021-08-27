@@ -1,15 +1,14 @@
 package icesword.scene
 
-import icesword.TILE_SIZE
+import icesword.*
 import icesword.editor.Elastic
 import icesword.editor.MetaTileCluster
 import icesword.frp.*
 import icesword.geometry.IntRect
+import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
-import icesword.tileAtPoint
-import icesword.tileRect
-import icesword.tileTopLeftCorner
 import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.HTMLElement
 
 
 class ElasticUi(
@@ -65,4 +64,125 @@ class ElasticUi(
             .mergeWith(elastic.tileOffset.values().units())
             .mergeWith(elastic.size.values().units())
             .mergeWith(elastic.isSelected.values().units())
+}
+
+
+fun createElasticOverlayElement(
+    elastic: Elastic,
+    viewTransform: Cell<IntVec2>,
+    tillDetach: Till,
+): HTMLElement {
+    val box = createHtmlElement("div").apply {
+        style.apply {
+            position = "absolute"
+
+            boxSizing = "border-box"
+            width = "64px"
+            height = "64px"
+
+            borderStyle = "dashed"
+            borderRadius = "4px"
+            borderColor = "red"
+        }
+    }
+
+    fun createHandle(): HTMLElement {
+        val handle = createHtmlElement("div").apply {
+            style.apply {
+                transform = "translate(-50%,-50%)"
+
+                boxSizing = "border-box"
+                width = "16px"
+                height = "16px"
+
+                borderStyle = "solid"
+                borderRadius = "50%"
+                borderColor = "red"
+
+                backgroundColor = "grey"
+            }
+        }
+
+        val wrapper = createHtmlElement("div").apply {
+
+            style.apply {
+                position = "absolute"
+                width = "0"
+                height = "0"
+
+                appendChild(handle)
+            }
+        }
+
+        return wrapper
+    }
+
+    fun buildHandles(): List<HTMLElement> {
+        val offset = "-2px"
+
+        val handles = listOf(
+            createHandle().apply {
+                style.left = offset
+                style.top = offset
+            },
+            createHandle().apply {
+                style.right = offset
+                style.top = offset
+            },
+            createHandle().apply {
+                style.right = offset
+                style.bottom = offset
+            },
+            createHandle().apply {
+                style.left = offset
+                style.bottom = offset
+            }
+        )
+
+        return handles
+    }
+
+    buildHandles().forEach(box::appendChild)
+
+    linkTranslate(
+        box,
+        translate = Cell.map2(
+            viewTransform,
+            elastic.position,
+        ) { vt, ep ->
+            ep + vt
+        },
+        tillDetach,
+    )
+
+    linkSize(
+        box,
+        size = elastic.size.map { it * TILE_SIZE },
+        tillDetach,
+    )
+
+    return box
+}
+
+private fun linkTranslate(
+    element: HTMLElement,
+    translate: Cell<IntVec2>,
+    till: Till,
+) {
+    translate.reactTill(till) {
+        element.style.transform = "translate(${it.x}px, ${it.y}px)"
+    }
+}
+
+private fun linkSize(
+    element: HTMLElement,
+    size: Cell<IntSize>,
+    till: Till,
+) {
+    size.reactTill(till) {
+        element.style.apply {
+            width = "${it.width}px"
+            height = "${it.height}px"
+        }
+    }
 }

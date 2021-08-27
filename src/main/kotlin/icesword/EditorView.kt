@@ -1,6 +1,5 @@
 package icesword
 
-import createHtmlElement
 import html.CSSStyle
 import html.FontWeight
 import html.createButton

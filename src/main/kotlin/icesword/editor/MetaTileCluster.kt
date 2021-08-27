@@ -126,14 +126,14 @@ class PlaneTiles {
                 prototype = TreeCrownPrototype,
                 initialBounds = IntRect(
                     position = IntVec2(79, 87),
-                    size = IntSize.ZERO,
+                    size = IntSize(5, 2),
                 ),
             ),
             Elastic(
                 prototype = TreeCrownPrototype,
                 initialBounds = IntRect(
                     position = IntVec2(83, 84),
-                    size = IntSize.ZERO,
+                    size = IntSize(5, 2),
                 ),
             ),
         )

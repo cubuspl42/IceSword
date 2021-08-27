@@ -1,6 +1,6 @@
 package html
 
-import createHtmlElement
+import icesword.createHtmlElement
 import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.reactTill
