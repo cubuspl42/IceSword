@@ -1,5 +1,5 @@
 plugins {
-    kotlin("js") version "1.5.20"
+    kotlin("js") version "1.5.30"
 }
 
 group = "me.kuba"
