@@ -26,6 +26,8 @@ class KnotMeshUi(
 //        ctx.strokeStyle = "black"
         ctx.lineWidth = 4.0
 
+        // DRAW LOCAL TILES
+
         localTiles.forEach { localTileCoord ->
             val globalTileCoord = tileOffset + localTileCoord
             val rect = tileRect(globalTileCoord).translate(viewTransform)
@@ -44,6 +46,8 @@ class KnotMeshUi(
                 h = rect.height.toDouble(),
             )
         }
+
+        // DRAW LOCAL KNOTS
 
         localKnots.forEach { localKnotCoord ->
             val globalKnotCoord = tileOffset + localKnotCoord

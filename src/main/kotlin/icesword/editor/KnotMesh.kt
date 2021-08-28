@@ -1,9 +1,44 @@
 package icesword.editor
 
+import icesword.TILE_SIZE
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.tileTopLeftCorner
+
+abstract class KnotPrototype {
+    override fun toString(): String =
+        this::class.simpleName ?: "?"
+}
+
+abstract class RockPrototype : KnotPrototype()
+
+object UndergroundRockPrototype : RockPrototype()
+
+object OvergroundRockPrototype : RockPrototype()
+
+//interface KnotFormula {
+//    // Knot filter. Vectors represent knot coordinates relative to the meta tile to be generated. Coordinate (0, 0) is
+//    // the knot on the bottom right of the tile. Non-null entry represent the knot required to be present at the given
+//    // coordinate. Null entry means that the given knot coordinate must be unoccupied.
+//    val filter: Map<IntVec2, KnotPrototype?>
+//
+//    // Meta tile that is generated if the filter passes.
+//    val output: MetaTile
+//}
+
+interface KnotFormula {
+//    companion object {
+//
+//        fun buildTile(relativeKnots: Map<IntVec2, KnotPrototype>): Int? {
+//            TODO()
+//        }
+//    }
+
+    // Vectors represent knot-coordinates relative to the meta tile to be generated. Coordinate (0, 0) is
+    // the knot on the bottom right of the tile.
+    fun buildMetaTile(relativeKnots: Map<IntVec2, KnotPrototype>): Int?
+}
 
 fun tilesAroundKnot(knotCoord: IntVec2): Set<IntVec2> {
     @Suppress("UnnecessaryVariable")
@@ -14,20 +49,6 @@ fun tilesAroundKnot(knotCoord: IntVec2): Set<IntVec2> {
         IntVec2(x = k.x, k.y + 1), IntVec2(x = k.x + 1, k.y + 1),
     )
 }
-
-//fun tilesAroundKnot(knotCoord: IntVec2, distance: Int = 0): List<IntVec2> {
-//    @Suppress("UnnecessaryVariable")
-//    val d = distance
-//
-//    val range = (-d..(1 + d))
-//
-//    return range.flatMap { y ->
-//        range.map { x ->
-//            knotCoord + IntVec2(x, y)
-//        }
-//    }
-//}
-
 
 fun closestKnot(point: IntVec2): IntVec2 =
     tileAtPoint(point - IntVec2(32, 32))
@@ -55,13 +76,12 @@ fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
 
 class KnotMesh(
     initialTileOffset: IntVec2,
-    till: Till,
+    knotPrototype: KnotPrototype,
 ) :
     Entity(),
     EntityTileOffset by SimpleEntityTileOffset(
         initialTileOffset = initialTileOffset,
     ) {
-//    val tileOffset = Cell.constant(initialTileOffset)
 
     private val _localKnots = MutableDynamicSet.of(
         setOf(
@@ -72,19 +92,27 @@ class KnotMesh(
         )
     )
 
-    val localKnots: DynamicSet<IntVec2> = _localKnots
+    val localKnots: DynamicSet<IntVec2>
+        get() = _localKnots
+
+    val globalKnots: DynamicMap<IntVec2, KnotPrototype> =
+        DynamicMap.fromEntries(
+            _localKnots.fuseMap { localKnotCoord ->
+                tileOffset.map { (it + localKnotCoord) to knotPrototype }
+            }
+        )
 
     fun putKnot(globalKnotCoord: IntVec2) {
         val localKnotCoord = globalKnotCoord - tileOffset.sample()
         _localKnots.add(localKnotCoord)
 
-        val tileCoords = tilesAroundKnot(localKnotCoord)
+//        val tileCoords = tilesAroundKnot(localKnotCoord)
+//
+//        val localKnots = this._localKnots.sample()
 
-        val localKnots = this._localKnots.sample()
-
-        tileCoords.forEach { tileCoord ->
-            localTiles.put(tileCoord, buildTileAt(localKnots, tileCoord))
-        }
+//        tileCoords.forEach { tileCoord ->
+//            localTiles.put(tileCoord, buildTileAt(localKnots, tileCoord))
+//        }
     }
 
 //    private val localTileCoords = localKnots.unionMap(::tilesAroundKnot)
@@ -117,28 +145,30 @@ class KnotMesh(
 //        return a
 //    }
 
-    private val localTiles = run {
-        val localKnots = _localKnots.sample()
-        val localTileCoords = localKnots.flatMap(::tilesAroundKnot)
+// LOCAL TILES
 
-        MutableDynamicMap.of(
-            localTileCoords.associateWith { tileCoord ->
-                buildTileAt(localKnots, tileCoord)
-            }
-        )
-    }
+//    private val localTiles = run {
+//        val localKnots = _localKnots.sample()
+//        val localTileCoords = localKnots.flatMap(::tilesAroundKnot)
+//
+//        MutableDynamicMap.of(
+//            localTileCoords.associateWith { tileCoord ->
+//                buildTileAt(localKnots, tileCoord)
+//            }
+//        )
+//    }
 
-    private fun buildTileAt(
-        localKnots: Set<IntVec2>,
-        tileCoord: IntVec2,
-    ): Int {
-        val nearbyKnots = knotsAroundTile(tileCoord, distance = 1)
-            .filter(localKnots::contains)
-
-        val relativeKnots = nearbyKnots.map { it - tileCoord }
-
-        return buildTile(relativeKnots)
-    }
+//    private fun buildTileAt(
+//        localKnots: Set<IntVec2>,
+//        tileCoord: IntVec2,
+//    ): Int {
+//        val nearbyKnots = knotsAroundTile(tileCoord, distance = 1)
+//            .filter(localKnots::contains)
+//
+//        val relativeKnots = nearbyKnots.map { it - tileCoord }
+//
+//        return buildTile(relativeKnots)
+//    }
 
 //    private val localTiles = DynamicMap.diff(
 //        Cell.map2(
@@ -163,19 +193,23 @@ class KnotMesh(
 //        initialTileOffset + localTileOffset
 //    }
 
-    val tilesDynamic = localTiles.mapKeysDynamic { (localTileOffset, _) ->
-        tileOffset.map { it + localTileOffset }
-    }
+//    val tilesDynamic = localTiles.mapKeysDynamic { (localTileOffset, _) ->
+//        tileOffset.map { it + localTileOffset }
+//    }
+
+    private val globalTileCoords = globalKnots.keys.unionMapDynamic { DynamicSet.of(tilesAroundKnot(it)) }
 
     override fun isSelectableAt(worldPoint: IntVec2): Boolean {
-        val globalTileCoord = tileAtPoint(worldPoint)
-        return tilesDynamic.getNow(globalTileCoord) != null
+        return globalKnots.volatileContentView.keys.any {
+            (knotCenter(it) - worldPoint).length < TILE_SIZE
+        }
     }
 }
 
 
-private fun buildTile(relativeKnots: List<IntVec2>): Int {
+fun buildTile(relativeKnots: List<IntVec2>): Int {
 //    return 620
+
 
     fun intVec2(y: Int, x: Int) = IntVec2(x, y)
 

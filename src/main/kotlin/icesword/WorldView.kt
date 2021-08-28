@@ -1,10 +1,7 @@
 package icesword
 
 
-import icesword.editor.Editor
-import icesword.editor.Elastic
-import icesword.editor.Tool
-import icesword.editor.closestKnot
+import icesword.editor.*
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.scene.*
@@ -84,14 +81,12 @@ fun worldView(
         // TODO: React
         val planeUiLayer = Layer(
             transform = Cell.constant(IntVec2.ZERO),
-            nodes = DynamicSet.of(
-                setOf(
-                    KnotMeshUi(
-                        viewTransform = viewTransform,
-                        world.knotMesh,
-                    ),
+            nodes = world.knotMeshLayer.knotMeshes.map { knotMesh ->
+                KnotMeshUi(
+                    viewTransform = viewTransform,
+                    knotMesh,
                 )
-            ).unionWith(
+            }.unionWith(
                 world.elastics.map {
                     ElasticUi(
                         viewTransform = viewTransform,
@@ -179,12 +174,14 @@ fun setupKnotBrushToolController(
 
     root.onMouseDrag(button = 0, till = tillDetach).reactTill(tillDetach) { mouseDrag ->
         val viewportPosition = mouseDrag.position.map(root::calculateRelativePosition)
-        
-        world.transformToWorld(viewportPosition)
-            .reactTill(mouseDrag.tillEnd) { worldPosition ->
-                val knotCoord = closestKnot(worldPosition)
-                world.knotMesh.putKnot(knotCoord)
-            }
+
+        (editor.selectedEntity.sample() as? KnotMesh)?.let { selectedKnotMesh ->
+            world.transformToWorld(viewportPosition)
+                .reactTill(mouseDrag.tillEnd) { worldPosition ->
+                    val knotCoord = closestKnot(worldPosition)
+                    selectedKnotMesh.putKnot(knotCoord)
+                }
+        }
     }
 }
 

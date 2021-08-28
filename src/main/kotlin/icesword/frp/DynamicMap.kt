@@ -2,6 +2,7 @@ package icesword.frp
 
 import icesword.frp.DynamicMap.Companion.fromEntries
 import icesword.frp.dynamic_map.*
+import kotlinx.css.map
 
 interface DynamicMap<K, V> {
     val content: Cell<Map<K, V>>
@@ -30,6 +31,21 @@ interface DynamicMap<K, V> {
                     staticEntries.associate { it }
                 }
             )
+
+        fun <K, V> unionMerge(
+            maps: DynamicSet<DynamicMap<K, V>>,
+        ): DynamicMap<K, V> =
+            diff(
+                maps.content.switchMap { sd ->
+                    val clm: Cell<List<Map<K, V>>> =
+                        Cell.traverse(sd) { it.content }
+                    val cm = clm.map { lm ->
+                        lm.fold(emptyMap<K, V>()) { acc, m -> acc + m }
+                    }
+                    cm
+                }
+            )
+
 
 //        fun <K, V> diffDynamic(vm: Cell<Map<K, V>>): DynamicMap<K, V> {
 //            val initialContent = vm.sample();
@@ -60,7 +76,7 @@ fun <K, V> DynamicMap<K, V>.changesUnits(): Stream<Unit> =
 
 fun <K, V> DynamicMap<K, V>.sample(): Map<K, V> = volatileContentView.toMap()
 
-fun <K, V> DynamicMap<K, V>.union(other: DynamicMap<K, V>, tag: String): DynamicMap<K, V> =
+fun <K, V> DynamicMap<K, V>.unionMerge(other: DynamicMap<K, V>, tag: String): DynamicMap<K, V> =
     DynamicMapUnion(this, other, tag = tag)
 
 fun <K, V, R> DynamicMap<K, V>.mapKeys(tag: String, transform: (Map.Entry<K, V>) -> R): DynamicMap<R, V> =

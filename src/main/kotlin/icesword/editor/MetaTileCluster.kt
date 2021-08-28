@@ -26,13 +26,6 @@ class MetaTileCluster(
     private val tileOffset: Cell<IntVec2>,
     val localMetaTilesDynamic: DynamicMap<IntVec2, MetaTile>,
 ) {
-//    private val _tileOffset = MutCell(initialTileOffset)
-
-//    val tileOffset: Cell<IntVec2> = _tileOffset
-
-
-//    private val localMetaTilesDynamic = DynamicMap.of(localMetaTiles)
-
 //    private val globalTileCoordsDiff: DynamicSet<IntVec2> =
 //        DynamicSet.diff(tileOffset.map { tileOffset ->
 //            localMetaTiles.keys.map { tileOffset + it }.toSet()
@@ -54,57 +47,10 @@ class MetaTileCluster(
 //                }
 //            }
 
-
-//    fun isSelectableAt(worldPoint: IntVec2): Boolean {
-//        val globalTileCoord = tileAtPoint(worldPoint)
-//        return getMetaTileAt(globalTileCoord).sample() != null
-//    }
-
     override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
 }
 
-//private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
-//    IntVec2(-1, i) to MetaTile.LOG_LEFT,
-//    IntVec2(0, i) to MetaTile.LOG,
-//    IntVec2(1, i) to MetaTile.LOG_RIGHT,
-//)
-
 class PlaneTiles {
-//    private val treeCrown = mapOf(
-//        IntVec2(0, 0) to MetaTile.LEAVES_UPPER_LEFT,
-//        IntVec2(1, 0) to MetaTile.LEAVES_UPPER,
-//        IntVec2(2, 0) to MetaTile.LEAVES_UPPER,
-//        IntVec2(3, 0) to MetaTile.LEAVES_UPPER,
-//        IntVec2(4, 0) to MetaTile.LEAVES_UPPER_RIGHT,
-//
-//        IntVec2(0, 1) to MetaTile.LEAVES_LOWER_LEFT,
-//        IntVec2(1, 1) to MetaTile.LEAVES_LOWER,
-//        IntVec2(2, 1) to MetaTile.LEAVES_LOWER,
-//        IntVec2(3, 1) to MetaTile.LEAVES_LOWER,
-//        IntVec2(4, 1) to MetaTile.LEAVES_LOWER_RIGHT,
-//    )
-
-//    private val _elastics = MutableDynamicSet.of(
-//        setOf(
-//            MetaTileCluster(
-//                initialTileOffset = IntVec2(83, 82),
-//                localMetaTiles = (0..16).flatMap(::logLevel).toMap()
-//            ),
-//            MetaTileCluster(
-//                initialTileOffset = IntVec2(81, 92),
-//                localMetaTiles = treeCrown,
-//            ),
-//            MetaTileCluster(
-//                initialTileOffset = IntVec2(79, 87),
-//                localMetaTiles = treeCrown,
-//            ),
-//            MetaTileCluster(
-//                initialTileOffset = IntVec2(83, 84),
-//                localMetaTiles = treeCrown,
-//            ),
-//        )
-//    )
-
     private val _elastics = MutableDynamicSet.of(
         setOf(
             Elastic(
