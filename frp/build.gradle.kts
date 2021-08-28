@@ -3,6 +3,8 @@ plugins {
 }
 
 dependencies {
+    implementation(npm("icesword-frp", fileDep("icesword-frp")))
+
     testImplementation(kotlin("test"))
 }
 
@@ -12,4 +14,9 @@ kotlin {
         nodejs {
         }
     }
+}
+
+fun fileDep(relativePath: String): String {
+    val absolutePath = rootProject.projectDir.resolve(relativePath).canonicalPath
+    return "file:$absolutePath"
 }

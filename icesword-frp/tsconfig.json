@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "outDir": "lib",
+    "strict": true,
+    "noImplicitAny": true,
+  },
+  "exclude": [
+    "node_modules",
+    "lib"
+  ]
+}

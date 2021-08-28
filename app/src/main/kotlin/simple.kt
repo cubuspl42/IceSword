@@ -1,5 +1,5 @@
+import icesword.frp2.printMsg
 import icesword.editor.Editor
-import icesword.editor.World
 import icesword.editorView
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
@@ -7,7 +7,6 @@ import icesword.geometry.IntVec2
 import icesword.scene.Texture
 import icesword.scene.Tileset
 import icesword.frp.Till
-import icesword.worldView
 import icesword.wwd.Wwd
 import icesword.wwd.Wwd.readWorld
 import kotlinx.browser.document
@@ -106,6 +105,8 @@ suspend fun fetchWorld(): Wwd.World {
 
 @OptIn(DelicateCoroutinesApi::class)
 fun main() {
+    printMsg()
+
     document.body?.style?.apply {
         margin = "0px"
         padding = "0px"

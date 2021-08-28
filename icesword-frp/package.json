@@ -1,0 +1,12 @@
+{
+  "name": "icesword-frp",
+  "version": "1.0.0",
+  "description": "",
+  "private": true,
+  "main": "lib/index.js",
+  "devDependencies": {
+    "typescript": "^4.4.3"
+  },
+  "author": "",
+  "license": "ISC"
+}
