@@ -163,7 +163,7 @@ abstract class SimpleDynamicSet<A>(
 //        get() = content.sample()
 //}
 
-class StaticDynamicSet<A>(
+data class StaticDynamicSet<A>(
     private val staticContent: Set<A>,
 ) : DynamicSet<A> {
     override val changes: Stream<SetChange<A>>
@@ -174,8 +174,6 @@ class StaticDynamicSet<A>(
 
     override val content: Cell<Set<A>>
         get() = Cell.constant(staticContent)
-
-    override fun toString(): String = "StaticDynamicSet"
 }
 
 class MutableDynamicSet<A>(
