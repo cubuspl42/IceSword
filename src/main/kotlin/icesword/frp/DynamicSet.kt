@@ -100,6 +100,7 @@ fun <K, B> DynamicSet<K>.fuseMap(transform: (K) -> Cell<B>): DynamicSet<B> =
 
 fun <K, V> DynamicSet<K>.associateWith(tag: String, valueSelector: (K) -> V): DynamicMap<K, V> =
     DynamicSetAssociateWith(this, valueSelector, tag = tag)
+        .validated(tag = tag)
 
 //fun <K, V> DynamicSet<K>.associateWithDynamic(valueSelector: (K) -> Cell<V>): DynamicMap<K, V> =
 //    DynamicMap.diff(content.switchMap { content ->

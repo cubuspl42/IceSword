@@ -78,9 +78,11 @@ fun <K, V> DynamicMap<K, V>.sample(): Map<K, V> = volatileContentView.toMap()
 
 fun <K, V> DynamicMap<K, V>.unionMerge(other: DynamicMap<K, V>, tag: String): DynamicMap<K, V> =
     DynamicMapUnion(this, other, tag = tag)
+        .validated(tag = tag)
 
 fun <K, V, R> DynamicMap<K, V>.mapKeys(tag: String, transform: (Map.Entry<K, V>) -> R): DynamicMap<R, V> =
     DynamicMapMapKeys(this, transform, tag = tag)
+        .validated(tag = tag)
 
 fun <K, V, K2> DynamicMap<K, V>.mapKeysDynamic(
     transform: (Map.Entry<K, V>) -> Cell<K2>,
@@ -113,8 +115,17 @@ fun <K, V, K2> DynamicMap<K, V>.mapKeysDynamic(
 //        },
 //    )
 
-fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(tag: String? = null): DynamicMap<K, V> =
-    DynamicMapFuseValues(this, tag = tag ?: "fuseValues")
+fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(tag: String? = null): DynamicMap<K, V> {
+    val effectiveTag = tag ?: "fuseValues"
+    return DynamicMapFuseValues(this, tag = effectiveTag)
+        .validated(tag = effectiveTag)
+}
+
+private const val enableValidation = true
+
+fun <K, V> DynamicMap<K, V>.validated(tag: String): DynamicMap<K, V> =
+    if (enableValidation) ValidatedDynamicMap(this, tag = tag)
+    else this
 
 fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(
     tag: String,
