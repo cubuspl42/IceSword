@@ -62,9 +62,12 @@ fun <E : Event> HTMLElement.onEvent(
     eventType: String,
     useCapture: Boolean = false,
 ): Stream<E> =
-    Stream.source<Event> { notify ->
-        this.subscribeToEvent(eventType, notify, useCapture = useCapture)
-    }.cast()
+    Stream.source<Event>(
+        subscribeToSource = { notify ->
+            this.subscribeToEvent(eventType, notify, useCapture = useCapture)
+        },
+        tag = "onEvent",
+    ).cast()
 
 fun HTMLElement.subscribeToEvent(
     eventType: String,

@@ -15,7 +15,7 @@ class ValuesSetDynamicSet<K, V>(
     private var subscription: Subscription? = null
 
     override val changes: Stream<SetChange<V>>
-        get() = Stream.source(this::subscribe)
+        get() = Stream.source(this::subscribe, tag = "ValuesSetDynamicSet.changes")
 
     override val content: Cell<Set<V>>
         get() = RawCell(

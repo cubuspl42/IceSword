@@ -22,7 +22,8 @@ interface Cell<out A> : Observable<A> {
 
         private fun <A> sequence(lca: List<Cell<A>>): Cell<List<A>> =
             CellSequenceList(lca)
-//
+
+        //
         fun <A, B> traverse(lca: Iterable<A>, f: (A) -> Cell<B>): Cell<List<B>> =
             sequence(lca.map { f(it) })
 
@@ -41,7 +42,7 @@ class ConstCell<out A>(
 }
 
 fun <A> Cell<A>.values(): Stream<A> =
-    Stream.source(this::subscribe)
+    Stream.source(this::subscribe, tag = "Cell.values")
 
 fun <A, B> Cell<A>.map(f: (A) -> B): Cell<B> =
     CellMap(this, f)

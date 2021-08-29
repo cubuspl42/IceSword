@@ -14,7 +14,7 @@ class MapDynamicSet<A, B>(
     private var subscription: Subscription? = null
 
     override val changes: Stream<SetChange<B>>
-        get() = Stream.source(this::subscribe)
+        get() = Stream.source(this::subscribe, tag = "MapDynamicSet.changes")
 
     override val content: Cell<Set<B>>
         get() = RawCell(

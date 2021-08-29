@@ -207,83 +207,91 @@ class KnotMesh(
 }
 
 
-fun buildTile(relativeKnots: List<IntVec2>): Int {
+fun buildTile(relativeKnots: Map<IntVec2, KnotPrototype>): Int {
 //    return 620
 
+    val relativeKnotCoords = relativeKnots.keys
 
     fun intVec2(y: Int, x: Int) = IntVec2(x, y)
 
-    return if (
+    return when {
+        relativeKnots[intVec2(0, 0)] == UndergroundRockPrototype &&
+                !relativeKnots.contains(intVec2(-1, -1)) &&
+                !relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(0, -1)) -> 620
+        relativeKnots[intVec2(0, 0)] == UndergroundRockPrototype &&
+                relativeKnots.contains(intVec2(0, -1)) &&
+                !relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(-1, -1)) -> 621
+        // &&
+//                !relativeKnots.contains(intVec2(0, -2)
+        relativeKnots[intVec2(0, 0)] == UndergroundRockPrototype &&
+                relativeKnots.contains(intVec2(0, -1)) &&
+                !relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(-1, -1)) -> 622
+        relativeKnots[intVec2(0, -1)] == UndergroundRockPrototype &&
+                !relativeKnots.contains(intVec2(-1, -1)) &&
+                !relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(0, 0)) -> 623
+        relativeKnots[intVec2(0, 0)] == OvergroundRockPrototype &&
+                !relativeKnots.contains(intVec2(-1, -1)) &&
+                !relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(0, -1)) -> 603
+        relativeKnots[intVec2(0, 0)] == OvergroundRockPrototype &&
+                relativeKnots.contains(intVec2(0, -1)) &&
+                !relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(-1, -1)) -> 604
+        // &&
+        //                !relativeKnots.contains(intVec2(0, -2))
+        relativeKnots[intVec2(0, -1)] == OvergroundRockPrototype &&
+                !relativeKnots.contains(intVec2(-1, -1)) &&
+                !relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(0, 0)) -> 607
         relativeKnots.contains(intVec2(0, 0)) &&
-        !relativeKnots.contains(intVec2(-1, -1)) &&
-        !relativeKnots.contains(intVec2(-1, 0)) &&
-        !relativeKnots.contains(intVec2(0, -1))
-    ) 620 else if (
+                relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(0, -1)) &&
+                !relativeKnots.contains(intVec2(-1, -1)) -> 624
+        relativeKnots.contains(intVec2(-1, -1)) &&
+                relativeKnots.contains(intVec2(-1, 0)) &&
+                relativeKnots.contains(intVec2(0, -1)) &&
+                relativeKnots.contains(intVec2(0, 0)) &&
+                !relativeKnots.contains(intVec2(-1, -2)) &&
+                !relativeKnots.contains(intVec2(0, -2)) -> 613
+        relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(-1, -1)) &&
+                !relativeKnots.contains(intVec2(0, -1)) &&
+                !relativeKnots.contains(intVec2(0, 0)) -> 632
+        relativeKnots.contains(intVec2(-1, -1)) &&
+                relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(-1, -2)) &&
+                !relativeKnots.contains(intVec2(0, -2)) &&
+                !relativeKnots.contains(intVec2(0, -1)) &&
+                !relativeKnots.contains(intVec2(0, 0)) -> 633
+        relativeKnots.contains(intVec2(-1, -1)) &&
+                relativeKnots.contains(intVec2(-1, 0)) &&
+                relativeKnots.contains(intVec2(-1, -2)) &&
+                !relativeKnots.contains(intVec2(0, -1)) &&
+                !relativeKnots.contains(intVec2(0, 0)) -> 634
+        relativeKnots.contains(intVec2(-1, -1)) &&
+                !relativeKnots.contains(intVec2(0, -1)) &&
+                !relativeKnots.contains(intVec2(0, 0)) &&
+                !relativeKnots.contains(intVec2(-1, 0)) -> 635
+        relativeKnots.contains(intVec2(-1, -1)) &&
+                relativeKnots.contains(intVec2(0, -1)) &&
+                !relativeKnots.contains(intVec2(-1, 0)) &&
+                !relativeKnots.contains(intVec2(0, 0)) -> 615
+        relativeKnots.contains(intVec2(0, -1)) &&
+                relativeKnots.contains(intVec2(-1, 0)) &&
+                relativeKnots.contains(intVec2(-1, -1)) &&
+                !relativeKnots.contains(intVec2(0, 0)) -> 617
         relativeKnots.contains(intVec2(0, 0)) &&
-        relativeKnots.contains(intVec2(0, -1)) &&
-        !relativeKnots.contains(intVec2(-1, 0)) &&
-        !relativeKnots.contains(intVec2(-1, -1)) &&
-        !relativeKnots.contains(intVec2(0, -2))
-    ) 621 else if (
-        relativeKnots.contains(intVec2(0, 0)) &&
-        relativeKnots.contains(intVec2(0, -1)) &&
-        !relativeKnots.contains(intVec2(-1, 0)) &&
-        !relativeKnots.contains(intVec2(-1, -1))
-    ) 622 else if (
-        relativeKnots.contains(intVec2(0, 0)) &&
-        relativeKnots.contains(intVec2(-1, 0)) &&
-        !relativeKnots.contains(intVec2(0, -1)) &&
-        !relativeKnots.contains(intVec2(-1, -1))
-    ) 624 else if (
-        relativeKnots.contains(intVec2(-1, -1)) &&
-        relativeKnots.contains(intVec2(-1, 0)) &&
-        relativeKnots.contains(intVec2(0, -1)) &&
-        relativeKnots.contains(intVec2(0, 0)) &&
-        !relativeKnots.contains(intVec2(-1, -2)) &&
-        !relativeKnots.contains(intVec2(0, -2))
-    ) 613 else if (
-        relativeKnots.contains(intVec2(-1, 0)) &&
-        !relativeKnots.contains(intVec2(-1, -1)) &&
-        !relativeKnots.contains(intVec2(0, -1)) &&
-        !relativeKnots.contains(intVec2(0, 0))
-    ) 632 else if (
-        relativeKnots.contains(intVec2(-1, -1)) &&
-        relativeKnots.contains(intVec2(-1, 0)) &&
-        !relativeKnots.contains(intVec2(-1, -2)) &&
-        !relativeKnots.contains(intVec2(0, -2)) &&
-        !relativeKnots.contains(intVec2(0, -1)) &&
-        !relativeKnots.contains(intVec2(0, 0))
-    ) 633 else if (
-        relativeKnots.contains(intVec2(-1, -1)) &&
-        relativeKnots.contains(intVec2(-1, 0)) &&
-        relativeKnots.contains(intVec2(-1, -2)) &&
-        !relativeKnots.contains(intVec2(0, -1)) &&
-        !relativeKnots.contains(intVec2(0, 0))
-    ) 634 else if (
-        relativeKnots.contains(intVec2(-1, -1)) &&
-        !relativeKnots.contains(intVec2(0, -1)) &&
-        !relativeKnots.contains(intVec2(0, 0)) &&
-        !relativeKnots.contains(intVec2(-1, 0))
-    ) 635 else if (
-        relativeKnots.contains(intVec2(-1, -1)) &&
-        relativeKnots.contains(intVec2(0, -1)) &&
-        !relativeKnots.contains(intVec2(-1, 0)) &&
-        !relativeKnots.contains(intVec2(0, 0))
-    ) 615 else if (
-        relativeKnots.contains(intVec2(0, -1)) &&
-        !relativeKnots.contains(intVec2(-1, -1)) &&
-        !relativeKnots.contains(intVec2(-1, 0)) &&
-        !relativeKnots.contains(intVec2(0, 0))
-    ) 623 else if (
-        relativeKnots.contains(intVec2(0, -1)) &&
-        relativeKnots.contains(intVec2(-1, 0)) &&
-        relativeKnots.contains(intVec2(-1, -1)) &&
-        !relativeKnots.contains(intVec2(0, 0))
-    ) 617 else if (
-        relativeKnots.contains(intVec2(0, 0)) &&
-        relativeKnots.contains(intVec2(-1, 0)) &&
-        relativeKnots.contains(intVec2(-1, -1)) &&
-        !relativeKnots.contains(intVec2(0, -1))
-    ) 618
-    else 630
+                relativeKnots.contains(intVec2(-1, 0)) &&
+                relativeKnots.contains(intVec2(-1, -1)) &&
+                !relativeKnots.contains(intVec2(0, -1)) -> 618
+        relativeKnots[intVec2(-1, -1)] is RockPrototype &&
+                relativeKnots[intVec2(0, -1)] is RockPrototype &&
+                relativeKnots[intVec2(0, 0)] is RockPrototype &&
+                !relativeKnots.contains(intVec2(-1, 0)) -> 638
+        else -> 630
+    }
 }

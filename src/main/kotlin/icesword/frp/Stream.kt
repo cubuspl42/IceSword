@@ -4,7 +4,8 @@ interface Stream<out A> : Observable<A> {
     companion object {
         fun <A> source(
             subscribeToSource: (notify: (a: A) -> Unit) -> Subscription,
-        ): Stream<A> = SourceStream(subscribeToSource)
+            tag: String,
+        ): Stream<A> = SourceStream(subscribeToSource, tag = tag)
 
         fun <A> merge(
             streams: Iterable<Stream<A>>,

@@ -2,7 +2,8 @@ package icesword.frp
 
 class SourceStream<A>(
     private val subscribeToSource: (notify: (A) -> Unit) -> Subscription,
-) : SimpleStream<A>(tag = "SourceStream") {
+    tag: String,
+) : SimpleStream<A>(tag = tag) {
     private var subscription: Subscription? = null
 
     override fun onStart() {

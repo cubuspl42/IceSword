@@ -126,6 +126,7 @@ class Elastic(
         tileOffset = tileOffset,
         localMetaTilesDynamic = DynamicMap.diff(
             size.map { prototype.buildMetaTiles(it) },
+            tag = "metaTileCluster.localMetaTilesDynamic",
         )
 
 //            .also {

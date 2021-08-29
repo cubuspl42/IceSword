@@ -1,7 +1,6 @@
 package icesword.frp
 
 import icesword.frp.dynamic_map.DynamicSetAssociateWith
-import icesword.frp.dynamic_map.ValidatedDynamicMap
 import icesword.frp.dynamic_set.DiffDynamicSet
 import icesword.frp.dynamic_set.DynamicSetUnion
 import icesword.frp.dynamic_set.MapDynamicSet
@@ -132,10 +131,10 @@ fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) ->
 //
 //}
 
-const val enableValidation: Boolean = true
+const val enableMapValidation: Boolean = false
 
 fun <A> DynamicSet<A>.validated(tag: String): DynamicSet<A> =
-    if (enableValidation) ValidatedDynamicSet(this, tag = tag)
+    if (enableMapValidation) ValidatedDynamicSet(this, tag = tag)
     else this
 
 
@@ -148,7 +147,7 @@ abstract class SimpleDynamicSet<A>(
 //        get() = TODO("Not yet implemented")
 
     override val changes: Stream<SetChange<A>>
-        get() = Stream.source(this::subscribe)
+        get() = Stream.source(this::subscribe, tag = "SimpleDynamicSet.changes")
 
     override fun toString(): String = "SimpleDynamicSet(name = $name)"
 }

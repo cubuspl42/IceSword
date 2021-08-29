@@ -20,8 +20,14 @@ interface DynamicMap<K, V> {
         fun <K, V> of(content: Map<K, V>): DynamicMap<K, V> =
             StaticDynamicMap(content)
 
-        fun <K, V> diff(content: Cell<Map<K, V>>): DynamicMap<K, V> =
-            DiffDynamicMap(content)
+        fun <K, V> diff(
+            content: Cell<Map<K, V>>,
+            tag: String,
+        ): DynamicMap<K, V> =
+            DiffDynamicMap(
+                content,
+                tag = "$tag/diff",
+            )
 
         fun <K, V> fromEntries(
             entries: DynamicSet<Pair<K, V>>
@@ -29,11 +35,13 @@ interface DynamicMap<K, V> {
             diff(
                 entries.content.map { staticEntries ->
                     staticEntries.associate { it }
-                }
+                },
+                tag = "fromEntries",
             )
 
         fun <K, V> unionMerge(
             maps: DynamicSet<DynamicMap<K, V>>,
+            tag: String,
         ): DynamicMap<K, V> =
             diff(
                 maps.content.switchMap { sd ->
@@ -43,8 +51,11 @@ interface DynamicMap<K, V> {
                         lm.fold(emptyMap<K, V>()) { acc, m -> acc + m }
                     }
                     cm
-                }
-            )
+                },
+                tag = "$tag/unionMerge",
+            ).also {
+                println("unionMerge called")
+            }
 
 
 //        fun <K, V> diffDynamic(vm: Cell<Map<K, V>>): DynamicMap<K, V> {
@@ -121,7 +132,7 @@ fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(tag: String? = null): DynamicMap<K,
         .validated(tag = effectiveTag)
 }
 
-private const val enableSetValidation = true
+private const val enableSetValidation = false
 
 fun <K, V> DynamicMap<K, V>.validated(tag: String): DynamicMap<K, V> =
     if (enableSetValidation) ValidatedDynamicMap(this, tag = tag)
@@ -137,6 +148,7 @@ fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(
                 transform(e)?.let { e.key to it }
             }.toMap()
         },
+        tag = "mapValuesNotNull",
     )
 
 //fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(
@@ -190,7 +202,7 @@ abstract class SimpleDynamicMap<K, V>(
 //        get() = TODO("Not yet implemented")
 
     override val changes: Stream<MapChange<K, V>>
-        get() = Stream.source(this::subscribe)
+        get() = Stream.source(this::subscribe, tag = "SimpleDynamicMap.changes")
 }
 
 class RawCell<A>(
@@ -216,7 +228,8 @@ class RawCell<A>(
 
 class DiffDynamicMap<K, V>(
     private val inputContent: Cell<Map<K, V>>,
-) : SimpleDynamicMap<K, V>("DiffDynamicMap") {
+    tag: String,
+) : SimpleDynamicMap<K, V>(tag) {
     private var mutableContent: MutableMap<K, V>? = null
 
     override val volatileContentView: Map<K, V>
@@ -224,14 +237,16 @@ class DiffDynamicMap<K, V>(
 
     private var subscription: Subscription? = null
 
-    override val changes: Stream<MapChange<K, V>>
-        get() = Stream.source(this::subscribe)
+    override val changes: Stream<MapChange<K, V>> by lazy {
+        Stream.source(this::subscribe, tag = "$tag.changes")
+    }
 
-    override val content: Cell<Map<K, V>>
-        get() = RawCell(
+    override val content: Cell<Map<K, V>> by lazy {
+        RawCell(
             { mutableContent!!.toMap() },
             changes.map { mutableContent!!.toMap() },
         )
+    }
 
     override fun onStart() {
         subscription = inputContent.subscribe { newContent ->
@@ -288,12 +303,12 @@ class MutableDynamicMap<K, V>(
     override val volatileContentView: Map<K, V>
         get() = mutableContent
 
+    // FIXME: Make lazy and reuse across all dynamic maps!
     override val content: Cell<Map<K, V>>
         get() = RawCell(
             { mutableContent },
             changes.map { mutableContent },
         )
-
 
     fun put(key: K, value: V) {
         val oldContent = mutableContent

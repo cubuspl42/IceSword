@@ -6,8 +6,6 @@ import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.scene.*
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.events.Event
-import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
 import kotlin.math.roundToInt
 
@@ -155,11 +153,13 @@ fun setupMoveToolController(
     }
 
     root.onKeyDown().reactTill(tillDetach) { event ->
-        val selectedElastic = editor.selectedEntity.sample() as? Elastic
+        val selectedEntity = editor.selectedEntity.sample()
 
-        if (selectedElastic != null) {
+        if (selectedEntity != null) {
             when (event.key) {
-                "ArrowRight" -> selectedElastic.expandRight()
+                "ArrowRight" -> selectedEntity.setTileOffset(
+                    selectedEntity.tileOffset.sample() + IntVec2(1, 0)
+                )
             }
         }
     }

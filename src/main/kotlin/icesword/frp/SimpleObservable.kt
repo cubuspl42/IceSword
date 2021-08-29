@@ -84,7 +84,7 @@ abstract class SimpleObservable<A>(
             it(a)
         }
 
-        debugLog { "$name: Ended notifying listeners" }
+//        debugLog { "$name: Ended notifying listeners" }
     }
 
     protected open fun onStart() {}

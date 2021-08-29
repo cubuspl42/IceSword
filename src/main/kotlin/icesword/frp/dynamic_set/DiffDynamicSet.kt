@@ -13,7 +13,7 @@ class DiffDynamicSet<A>(
     private var subscription: Subscription? = null
 
     override val changes: Stream<SetChange<A>>
-        get() = Stream.source(this::subscribe)
+        get() = Stream.source(this::subscribe, tag = "DiffDynamicSet.changes")
 
     override val content: Cell<Set<A>>
         get() = RawCell(

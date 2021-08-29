@@ -26,6 +26,7 @@ class KnotMeshLayer(
     private val globalKnots: DynamicMap<IntVec2, KnotPrototype> = DynamicMap.unionMerge(
         _knotMeshes.map { it.globalKnots },
 //        merge = { knots: Set<KnotPrototype> -> knots.first() }
+        tag = "KnotMeshLayer.globalKnots",
     )
 //        .also {
 //            it.changes.subscribe { }
@@ -50,15 +51,17 @@ class KnotMeshLayer(
             knotsAroundTile(tileCoord, distance = 1).toSet(),
         )
 
-        val relativeKnots = nearbyKnotCoords.associateWithDynamic("relativeKnots") { knotCoord ->
+        val nearbyKnots = nearbyKnotCoords.associateWithDynamic("relativeKnots") { knotCoord ->
             globalKnots.get(knotCoord)
         }.filterValuesNotNull()
 
-        val tile = relativeKnots.content.map { relativeKnotsContent ->
-//            println("buildTileAt @ $tileCoord; relativeKnotsContent = $relativeKnotsContent")
+        val tile = nearbyKnots.content.map { nearbyKnotsContent ->
+//            println("buildTileAt @ $tileCoord; nearbyKnotsContent = $nearbyKnotsContent")
+
+            val relativeKnots = nearbyKnotsContent.mapKeys { (tc, _) -> tc - tileCoord }
 
             buildTile(
-                relativeKnots = relativeKnotsContent.keys.map { it - tileCoord }.toList(),
+                relativeKnots = relativeKnots,
             )
         }
 
