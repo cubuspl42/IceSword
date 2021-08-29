@@ -1,9 +1,11 @@
 package icesword.frp
 
 import icesword.frp.dynamic_map.DynamicSetAssociateWith
+import icesword.frp.dynamic_map.ValidatedDynamicMap
 import icesword.frp.dynamic_set.DiffDynamicSet
 import icesword.frp.dynamic_set.DynamicSetUnion
 import icesword.frp.dynamic_set.MapDynamicSet
+import icesword.frp.dynamic_set.ValidatedDynamicSet
 
 interface DynamicSet<out A> {
     companion object {
@@ -15,6 +17,7 @@ interface DynamicSet<out A> {
 
         fun <A> diff(content: Cell<Set<A>>): DynamicSet<A> =
             DiffDynamicSet(content)
+                .validated("diff")
 
 //        fun <A> union(sets: DynamicSet<Set<A>>): DynamicSet<A> = diff(
 //            sets.content.map { it.flatten().toSet() }
@@ -30,7 +33,9 @@ interface DynamicSet<out A> {
 //            }
 //        )
 
-        fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = DynamicSetUnion(sets)
+        fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> =
+            DynamicSetUnion(sets)
+                .validated("union")
 
         fun <A> merge(
             streams: DynamicSet<Stream<A>>,
@@ -75,7 +80,9 @@ fun <A> DynamicSet<A>.trackContent(till: Till): Cell<Set<A>> = content
 //    content.map { it.map(transform).toSet() },
 //)
 
-fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> = MapDynamicSet(this, transform)
+fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> =
+    MapDynamicSet(this.validated("map-this"), transform)
+        .validated("map")
 
 //fun <A, R> DynamicSet<A>.mapDynamic(transform: (A) -> Cell<R>): DynamicSet<R> =
 //    DynamicSet.diff(tileOffset.map { tileOffset ->
@@ -125,6 +132,13 @@ fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) ->
 //
 //}
 
+const val enableValidation: Boolean = true
+
+fun <A> DynamicSet<A>.validated(tag: String): DynamicSet<A> =
+    if (enableValidation) ValidatedDynamicSet(this, tag = tag)
+    else this
+
+
 abstract class SimpleDynamicSet<A>(
     tag: String,
 ) : DynamicSet<A>, SimpleObservable<SetChange<A>>(
@@ -160,6 +174,8 @@ class StaticDynamicSet<A>(
 
     override val content: Cell<Set<A>>
         get() = Cell.constant(staticContent)
+
+    override fun toString(): String = "StaticDynamicSet"
 }
 
 class MutableDynamicSet<A>(

@@ -121,10 +121,10 @@ fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(tag: String? = null): DynamicMap<K,
         .validated(tag = effectiveTag)
 }
 
-private const val enableValidation = true
+private const val enableSetValidation = true
 
 fun <K, V> DynamicMap<K, V>.validated(tag: String): DynamicMap<K, V> =
-    if (enableValidation) ValidatedDynamicMap(this, tag = tag)
+    if (enableSetValidation) ValidatedDynamicMap(this, tag = tag)
     else this
 
 fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(

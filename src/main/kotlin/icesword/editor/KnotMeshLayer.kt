@@ -35,6 +35,7 @@ class KnotMeshLayer(
     private val globalKnotCoords = globalKnots.keys
 
     private val globalTileCoords: DynamicSet<IntVec2> = globalKnotCoords.unionMapDynamic { globalKnotCoord ->
+        // FIXME: Impure (time-dependent) transform!
         DynamicSet.of(tilesAroundKnot(globalKnotCoord))
     }
 

@@ -2,7 +2,7 @@ package icesword.frp.dynamic_set
 
 import icesword.frp.*
 
-class DynamicSetUnion2<A>(
+class DynamicSetUnion2_<A>(
     private val source1: DynamicSet<A>,
     private val source2: DynamicSet<A>,
 ) : SimpleDynamicSet<A>(tag = "DynamicSetUnion2") {

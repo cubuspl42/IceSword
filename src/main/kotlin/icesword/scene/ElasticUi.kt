@@ -20,6 +20,8 @@ class ElasticUi(
     private val metaTileCluster: MetaTileCluster
         get() = elastic.metaTileCluster
 
+    private val localTileCoords = metaTileCluster.localMetaTilesDynamic.keys
+
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
 
         val viewTransform = this.viewTransform.sample()
@@ -27,7 +29,7 @@ class ElasticUi(
         val size = elastic.size.sample()
         val isSelected = elastic.isSelected.sample()
 
-        val localTileCoords = metaTileCluster.localMetaTilesDynamic.keys.volatileContentView
+        val localTileCoords = localTileCoords.volatileContentView
 
         ctx.strokeStyle = if (isSelected) "red" else "rgba(103, 103, 131, 0.3)"
 
@@ -66,6 +68,7 @@ class ElasticUi(
             .mergeWith(elastic.tileOffset.values().units())
             .mergeWith(elastic.size.values().units())
             .mergeWith(elastic.isSelected.values().units())
+            .mergeWith(localTileCoords.changes().units())
 }
 
 
