@@ -2,6 +2,7 @@ package icesword.frp
 
 import icesword.frp.DynamicMap.Companion.fromEntries
 import icesword.frp.dynamic_map.*
+import icesword.frp.dynamic_set.KeysDynamicSet
 
 interface DynamicMap<K, V> {
     val content: Cell<Map<K, V>>
@@ -225,10 +226,8 @@ fun <K, V : Any> DynamicMap<K, V?>.filterValuesNotNull(
 //    get() = DynamicSet.diff(content.map { it.keys })
 
 
-fun <K, V> DynamicMap<K, V>.getKeys(tag: String = "getKeys"): DynamicSet<K> = DynamicSet.diff(
-    content = content.map { it.keys },
-    tag = tag,
-)
+fun <K, V> DynamicMap<K, V>.getKeys(tag: String = "getKeys"): DynamicSet<K> =
+    KeysDynamicSet(this, tag = tag)
 
 val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
     get() = DynamicSet.diff(
