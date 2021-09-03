@@ -36,12 +36,17 @@ interface DynamicMap<K, V> {
         fun <K, V> fromEntries(
             entries: DynamicSet<Pair<K, V>>
         ): DynamicMap<K, V> =
-            diff(
-                entries.content.map { staticEntries ->
-                    staticEntries.associate { it }
-                },
-                tag = "fromEntries",
-            )
+            FromEntriesDynamicMap(entries, tag = "fromEntries")
+
+//        fun <K, V> fromEntriesDiff(
+//            entries: DynamicSet<Pair<K, V>>
+//        ): DynamicMap<K, V> =
+//            diff(
+//                entries.content.map { staticEntries ->
+//                    staticEntries.associate { it }
+//                },
+//                tag = "fromEntries",
+//            )
 
         fun <K, V, R> unionMerge(
             maps: DynamicSet<DynamicMap<K, V>>,
