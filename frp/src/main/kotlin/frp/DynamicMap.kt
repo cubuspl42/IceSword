@@ -2,7 +2,6 @@ package icesword.frp
 
 import icesword.frp.DynamicMap.Companion.fromEntries
 import icesword.frp.dynamic_map.*
-import kotlinx.css.map
 
 interface DynamicMap<K, V> {
     val content: Cell<Map<K, V>>

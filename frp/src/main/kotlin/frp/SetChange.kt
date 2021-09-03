@@ -1,7 +1,5 @@
 package icesword.frp
 
-import kotlinx.css.ol
-
 data class SetChange<out A>(
     val added: Set<A>,
     val removed: Set<A>,

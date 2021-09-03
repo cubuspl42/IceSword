@@ -5,7 +5,6 @@ import icesword.SegregationTag3
 import icesword.frp.*
 import icesword.segregate
 import icesword.segregate3
-import kotlinx.css.map
 
 class DynamicMapUnionMerge<K, V, R>(
     private val maps: DynamicSet<DynamicMap<K, V>>,
