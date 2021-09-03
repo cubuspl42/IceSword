@@ -1,5 +1,5 @@
 package icesword.frp
-/// Currently, [added], [updated] and [removed] are assumed to be
+/// Currently, keys of [added], [updated] and [removed] are assumed to be
 /// mutually-exclusive.
 
 data class MapChange<K, V>(

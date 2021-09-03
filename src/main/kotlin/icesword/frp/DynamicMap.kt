@@ -16,6 +16,10 @@ interface DynamicMap<K, V> {
         return volatileContentView.containsKey(key)
     }
 
+    fun getNow(key: K): V? {
+        return volatileContentView[key]
+    }
+
     companion object {
         fun <K, V> of(content: Map<K, V>): DynamicMap<K, V> =
             StaticDynamicMap(content)
