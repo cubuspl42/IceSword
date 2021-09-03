@@ -14,9 +14,9 @@ interface DynamicSet<out A> {
 //        fun <A> diff(content: Cell<Set<A>>): DynamicSet<A> =
 //            ContentDynamicSet(content)
 
-        fun <A> diff(content: Cell<Set<A>>): DynamicSet<A> =
-            DiffDynamicSet(content)
-                .validated("diff")
+        fun <A> diff(content: Cell<Set<A>>, tag: String = "diff"): DynamicSet<A> =
+            DiffDynamicSet(content, tag = tag)
+                .validated("$tag-validated")
 
 //        fun <A> union(sets: DynamicSet<Set<A>>): DynamicSet<A> = diff(
 //            sets.content.map { it.flatten().toSet() }
@@ -131,10 +131,10 @@ fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) ->
 //
 //}
 
-const val enableMapValidation: Boolean = false
+const val enableSetValidation: Boolean = false
 
 fun <A> DynamicSet<A>.validated(tag: String): DynamicSet<A> =
-    if (enableMapValidation) ValidatedDynamicSet(this, tag = tag)
+    if (enableSetValidation) ValidatedDynamicSet(this, tag = tag)
     else this
 
 

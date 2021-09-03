@@ -5,7 +5,8 @@ import icesword.frp.*
 class DynamicMapUnionMerge<K, V, R>(
     private val maps: DynamicSet<DynamicMap<K, V>>,
     private val merge: (Set<V>) -> R,
-) : SimpleDynamicMap<K, R>(tag = "DynamicMapUnionMerge") {
+    tag: String? = null,
+) : SimpleDynamicMap<K, R>(tag = tag ?: "DynamicMapUnionMerge") {
 
     private var mutableContent: MutableMap<K, R>? = null
 
@@ -16,13 +17,15 @@ class DynamicMapUnionMerge<K, V, R>(
 
     private var subscriptionMap: MutableMap<DynamicMap<K, V>, Subscription>? = null
 
-    override val content: Cell<Map<K, R>>
-        get() = RawCell(
-            { volatileContentView },
-            changes.map { volatileContentView },
+    override val content: Cell<Map<K, R>> by lazy {
+        RawCell(
+            { mutableContent!!.toMap() },
+            changes.map { mutableContent!!.toMap() },
         )
+    }
 
     override fun onStart() {
+        // TODO: Emit changes for outer map change
         maps.changes.subscribe { outerChange: SetChange<DynamicMap<K, V>> ->
             outerChange.added.forEach { subscribeToInner(it) }
             outerChange.removed.forEach {

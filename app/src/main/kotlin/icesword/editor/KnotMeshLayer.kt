@@ -25,24 +25,44 @@ class KnotMeshLayer(
 
     private val globalKnots: DynamicMap<IntVec2, KnotPrototype> = DynamicMap.unionMerge(
         _knotMeshes.map { it.globalKnots },
-//        merge = { knots: Set<KnotPrototype> -> knots.first() }
+        merge = { knots: Set<KnotPrototype> -> knots.first() },
         tag = "KnotMeshLayer.globalKnots",
     )
 //        .also {
-//            it.changes.subscribe { }
-//            println("Global knots: ${it.volatileContentView}")
+//            it.changes.subscribe { change ->
+//                println("globalKnots change: $change / ${it.volatileContentView}")
+//            }
+//
+//            it.content.subscribe { change ->
+//                println("globalKnots.content change: $change")
+//            }
 //        }
 
-    private val globalKnotCoords = globalKnots.keys
+    private val globalKnotCoords = globalKnots.getKeys(tag = "globalKnotCoords")
+//        .also {
+//            it.changes.subscribe { change ->
+//                println("globalKnotCoords change: $change")
+//            }
+//        }
 
     private val globalTileCoords: DynamicSet<IntVec2> = globalKnotCoords.unionMapDynamic { globalKnotCoord ->
         // FIXME: Impure (time-dependent) transform!
         DynamicSet.of(tilesAroundKnot(globalKnotCoord))
     }
+//        .also {
+//            it.changes.subscribe { change ->
+//                println("globalTileCoords change: $change")
+//            }
+//        }
 
     val globalTiles = globalTileCoords.associateWithDynamic(tag = "globalTiles") { tileCoord ->
         buildTileAt(tileCoord)
     }
+//        .also {
+//            it.changes.subscribe { change ->
+//                println("globalTiles change: $change")
+//            }
+//        }
 
     private fun buildTileAt(
         tileCoord: IntVec2,
@@ -52,6 +72,7 @@ class KnotMeshLayer(
         )
 
         val nearbyKnots = nearbyKnotCoords.associateWithDynamic("relativeKnots") { knotCoord ->
+//            println("nearbyKnot, knotCoord: $knotCoord")
             globalKnots.get(knotCoord)
         }.filterValuesNotNull()
 

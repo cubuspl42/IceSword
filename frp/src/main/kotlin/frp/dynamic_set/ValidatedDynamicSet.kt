@@ -9,15 +9,18 @@ class ValidatedDynamicSet<A>(
     private var mutableContent: MutableSet<A>? = null
 
     override val volatileContentView: Set<A>
-        get() = mutableContent ?: source.sample()
+        get() = source.volatileContentView
 
     private var subscription: Subscription? = null
 
+//    override val content: Cell<Set<A>>
+//        get() = RawCell(
+//            { mutableContent!!.toSet() },
+//            changes.map { mutableContent!!.toSet() },
+//        )
+
     override val content: Cell<Set<A>>
-        get() = RawCell(
-            { mutableContent!!.toSet() },
-            changes.map { mutableContent!!.toSet() },
-        )
+        get() = source.content
 
     private fun sampleUncached(): Set<A> =
         source.sample()
@@ -25,13 +28,21 @@ class ValidatedDynamicSet<A>(
     override fun onStart() {
         subscription = source.changes.subscribe { change ->
             change.added.forEach {
-                if (volatileContentView.contains(it)) {
+                if (!source.containsNow(it)) {
+                    throw IllegalStateException("!source.containsNow(it)")
+                }
+
+                if (mutableContent!!.contains(it)) {
                     throw IllegalStateException("Dynamic set #${tag} already contains $it (attempted to add)")
                 }
             }
 
             change.removed.forEach {
-                if (!volatileContentView.contains(it)) {
+                if (source.containsNow(it)) {
+                    throw IllegalStateException("source.containsNow(it)")
+                }
+
+                if (!mutableContent!!.contains(it)) {
                     throw IllegalStateException("Dynamic set #${tag} does not contain $it (attempted to remove)")
                 }
             }

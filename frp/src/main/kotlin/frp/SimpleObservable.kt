@@ -75,7 +75,7 @@ abstract class SimpleObservable<A>(
     protected fun notifyListeners(a: A) {
         val oldListeners = Set(listeners)
 
-        debugLog { "$name: Starting notifying listeners..." }
+        debugLog { "$name: Starting notifying listeners (${oldListeners.size})..." }
 
         oldListeners.forEach {
             if (!listeners.has(it)) {

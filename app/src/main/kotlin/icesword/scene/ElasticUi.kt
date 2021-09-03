@@ -20,7 +20,7 @@ class ElasticUi(
     private val metaTileCluster: MetaTileCluster
         get() = elastic.metaTileCluster
 
-    private val localTileCoords = metaTileCluster.localMetaTilesDynamic.keys
+    private val localTileCoords = metaTileCluster.localMetaTilesDynamic.getKeys()
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
 

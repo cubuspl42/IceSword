@@ -32,7 +32,7 @@ class MetaTileCluster(
 //        })
 
     private val globalTileCoordsFuseMap: DynamicSet<IntVec2> =
-        localMetaTilesDynamic.keys.fuseMap { localTileCoord ->
+        localMetaTilesDynamic.getKeys().fuseMap { localTileCoord ->
             tileOffset.map { it + localTileCoord }
         }
 

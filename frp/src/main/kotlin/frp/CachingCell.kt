@@ -26,11 +26,13 @@ abstract class CachingCell<A>(tag: String) : SimpleCell<A>(tag = tag) {
     }
 
     protected fun cacheAndNotifyListeners(value: A) {
-        (cache as? Cache.FullCache)?.let { fullCache ->
-            if (fullCache.cachedValue != value) {
+        when (val c = this.cache) {
+            is Cache.FullCache -> if (c.cachedValue != value) {
                 cache = Cache.FullCache(value)
-
                 notifyListeners(value)
+            }
+            is Cache.EmptyCache -> {
+//                println("$name: Cache is empty! Doing nothing.")
             }
         }
     }
