@@ -4,8 +4,11 @@ import kotlinx.browser.window
 
 object DebugLog {
     init {
-        val g: dynamic = window
-        g.DebugLog = this
+        try {
+            val g: dynamic = window
+            g.DebugLog = this
+        } catch (e: Throwable) {
+        }
     }
 
     private var _isEnabled = false

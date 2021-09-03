@@ -1,41 +1,20 @@
 package icesword.frp.dynamic_map
 
-import icesword.SegregationTag
-import icesword.SegregationTag3
 import icesword.frp.*
-import icesword.segregate
-import icesword.segregate3
 
 class DynamicMapUnionMerge<K, V, R>(
     private val maps: DynamicSet<DynamicMap<K, V>>,
-    merge: (Set<V>) -> R,
+    private val merge: (Set<V>) -> R,
 ) : SimpleDynamicMap<K, R>(tag = "DynamicMapUnionMerge") {
 
-//    private var mutableContent: MutableSet<K>? = null
-
-//    private var linksMap: MutableMap<K, MutableSet<DynamicMap<K, V>>>? = null
+    private var mutableContent: MutableMap<K, R>? = null
 
     override val volatileContentView: Map<K, R>
-        get() = TODO()
-
-//    override val volatileContentView: Set<K>
-//        get() = mutableContent!!
+        get() = mutableContent!!
 
     private var subscriptionOuter: Subscription? = null
 
     private var subscriptionMap: MutableMap<DynamicMap<K, V>, Subscription>? = null
-
-
-//    private var subscription2: Subscription? = null
-
-//    override val content: Cell<Set<K>>
-//        get() = RawCell(
-//            { mutableContent!!.toSet() },
-//            changes.map { mutableContent!!.toSet() },
-//        )
-
-//    override val content: Cell<Map<K, R>>
-//        get() = TODO()
 
     override val content: Cell<Map<K, R>>
         get() = RawCell(
@@ -55,6 +34,14 @@ class DynamicMapUnionMerge<K, V, R>(
         subscriptionMap = maps.volatileContentView.associateWith { innerMap ->
             subscribeToInner(innerMap)
         }.toMutableMap()
+
+        val initialKeys = maps.volatileContentView.flatMap { it.volatileContentView.keys }.toSet()
+        val initialContent = initialKeys.associateWith { key ->
+            val values = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
+            merge(values)
+        }
+
+        mutableContent = initialContent.toMutableMap()
     }
 
     override fun onStop() {
@@ -73,43 +60,44 @@ class DynamicMapUnionMerge<K, V, R>(
             val allMaps = maps.volatileContentView
             val otherMaps = allMaps.filter { it != innerMap }
 
-//            val foo = change.added.keys + change.updated.ke
-
-            // added or updated, other map contains same entry -> nothing
-            // added, no other map contains same key -> added: marge(added values)
-            // added, other map contains same key -> updated: marge(all values under same key)
-
-            // removed: removed
-
-            val addedSegregated = change.added.entries.segregate3 { (k, v) ->
-                when {
-                    otherMaps.any { it.getNow(k) == v } -> SegregationTag3.A // shadowed
-                    otherMaps.none { it.containsKeyNow(k) } -> SegregationTag3.B // added
-                    else -> SegregationTag3.C // updated
-                }
-            }
-
-            val addedShadowed = addedSegregated.groupA
-            val addedActually = addedSegregated.groupB
-            val addedUpdated = addedSegregated.groupC
-
-            val updatedSegregated = change.updated.entries.segregate3 { (k, v) ->
-
-                when {
-                    otherMaps.any { it.getNow(k) == v } -> SegregationTag3.A // shadowed
-                    otherMaps.none { it.containsKeyNow(k) } -> SegregationTag3.B // added
-                    else -> SegregationTag3.C // updated
-                } // updated actually
-
-            }
-
-
-            val removed = change.added.filter { (k, _) ->
+            val addedActually = change.added.filter { (k, _) ->
                 otherMaps.none { it.containsKeyNow(k) }
             }
 
+            val addedUpdated = change.added.filter { (k, v) ->
+                otherMaps.any {
+                    val v2 = it.getNow(k)
+                    v2 != null && v2 != v
+                }
+            }
+
+            val removedEntriesActually = change.removedEntries.filter { (k, _) ->
+                otherMaps.none { it.containsKeyNow(k) }
+            }
+
+            val removedEntriesUpdated = change.removedEntries.filter { (k, v) ->
+                otherMaps.any {
+                    val v2 = it.getNow(k)
+                    v2 != null && v2 != v
+                }
+            }
+
+            val updated = addedUpdated + change.updated + removedEntriesUpdated
+
+            val outChange = MapChange<K, R>(
+                added = addedActually.mapValues { (_, v) ->
+                    merge(setOf(v))
+                },
+                updated = updated.mapValues { (k, _) ->
+                    merge(allMaps.mapNotNull { it.getNow(k) }.toSet())
+                },
+                removedEntries = removedEntriesActually.mapValues { (k, _) ->
+                    volatileContentView[k]!!
+                },
+            )
+
+            outChange.applyTo(mutableContent!!)
+
+            notifyListeners(outChange)
         }
-
 }
-
-

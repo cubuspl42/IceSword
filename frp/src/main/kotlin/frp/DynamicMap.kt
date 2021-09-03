@@ -327,5 +327,22 @@ class MutableDynamicMap<K, V>(
         notifyListeners(change)
     }
 
+    fun remove(key: K) {
+        val oldContent = mutableContent
+        if (oldContent.containsKey(key)) {
+            val value = oldContent.getOrElse(key) { throw IllegalStateException() }
+
+            val newContent = oldContent - key
+            mutableContent = newContent
+
+            val change = MapChange(
+                added = emptyMap(),
+                updated = emptyMap(),
+                removedEntries = mapOf(key to value),
+            )
+
+            notifyListeners(change)
+        }
+    }
 }
 
