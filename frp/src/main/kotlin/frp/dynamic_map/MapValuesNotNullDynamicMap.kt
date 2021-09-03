@@ -2,7 +2,7 @@ package icesword.frp.dynamic_map
 
 import icesword.frp.*
 
-class MapValuesNotNullDynamicMap_<K, V, V2 : Any>(
+class MapValuesNotNullDynamicMap<K, V, V2 : Any>(
     private val source: DynamicMap<K, V>,
     private val transform: (Map.Entry<K, V>) -> V2?,
     tag: String,
@@ -74,8 +74,15 @@ class MapValuesNotNullDynamicMap_<K, V, V2 : Any>(
                 removedEntries = removed1 + removed2,
             )
 
-            mappedChange.applyTo(mutableContent!!)
-            notifyListeners(mappedChange)
+//            println("mappedChange: $mappedChange")
+
+
+//            println("mutableContent: $mutableContent")
+
+            if (!mappedChange.isEmpty()) {
+                mappedChange.validated().applyTo(mutableContent!!)
+                notifyListeners(mappedChange)
+            }
         }
 
         val initialMutableContent: MutableMap<K, V2> = source.sample().entries

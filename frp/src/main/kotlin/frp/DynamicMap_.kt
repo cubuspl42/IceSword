@@ -79,6 +79,20 @@ data class MapChange<K, V>(
         )
     }
 
+    fun validated(): MapChange<K, V> {
+        fun intersects(m1: Map<K, V>, m2: Map<K, V>): Boolean =
+            m1.keys.intersect(m2.keys).isNotEmpty()
+
+        if (intersects(added, updated) || intersects(updated, removedEntries) || intersects(added, removedEntries)) {
+            println("Intersection in map change: $this")
+            throw IllegalStateException("Intersection in map chang")
+        }
+
+        return this
+    }
+
+    fun isEmpty(): Boolean =
+        added.isEmpty() && updated.isEmpty() && removed.isEmpty()
 
 //
 //  MapChange<K, V2> mapValues<V2>(V2 f(K key, V value)) {

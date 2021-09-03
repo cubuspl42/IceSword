@@ -178,16 +178,28 @@ fun <K, V> DynamicMap<K, V>.validated(tag: String): DynamicMap<K, V> =
 
 fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(
     tag: String,
-    transform: (Map.Entry<K, V>) -> V2?
+    transform: (Map.Entry<K, V>) -> V2?,
 ): DynamicMap<K, V2> =
-    DynamicMap.diff(
-        content.map { content ->
-            content.entries.mapNotNull { e ->
-                transform(e)?.let { e.key to it }
-            }.toMap()
-        },
-        tag = "mapValuesNotNull",
+    MapValuesNotNullDynamicMap(
+        source = this,
+        transform = transform,
+        tag = tag,
     )
+
+//fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNullDiff(
+//    tag: String,
+//    transform: (Map.Entry<K, V>) -> V2?
+//): DynamicMap<K, V2> =
+//    DynamicMap.diff(
+//        content.map { content ->
+//            content.entries.mapNotNull { e ->
+//                transform(e)?.let { e.key to it }
+//            }.toMap()
+//        },
+//        tag = "mapValuesNotNull",
+//    )
+
+//
 
 //fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(
 //    tag: String? = null,
