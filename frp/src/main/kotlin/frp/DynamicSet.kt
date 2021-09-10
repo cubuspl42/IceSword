@@ -120,6 +120,30 @@ fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) ->
     this.associateWith(tag = "$tag/associateWithDynamic/associateWith", valueSelector)
         .fuseValues(tag = "$tag/associateWithDynamic/fuseValues")
 
+class Ordered<A, K : Comparable<K>>(val value: A, val key: K)
+
+class OrderedDynamic<A, K : Comparable<K>>(val value: A, val key: Cell<K>)
+
+
+fun <A, K> DynamicSet<A>.sortedByDynamic(keySelector: (A) -> Cell<K>): DynamicList<A> =
+    TODO()
+
+
+fun <A, K : Comparable<K>> DynamicSet<OrderedDynamic<A, K>>.ordered(): DynamicList<A> =
+    TODO()
+
+fun <A, B, K : Comparable<K>> DynamicSet<A>.fuseMapOrdered(f: (A) -> OrderedDynamic<Cell<B>, K>): DynamicList<B> =
+    this.fuseMap { a ->
+        val od: OrderedDynamic<Cell<B>, K> = f(a)
+        val cb: Cell<B> = od.value
+        cb.map { b ->
+            OrderedDynamic(value = b, key = od.key)
+        }
+    }.ordered()
+
+val <A> DynamicSet<A>.contentView: Cell<Set<A>>
+    get() = TODO()
+
 //fun <A, B> DynamicSet<A>.mapNotNull(transform: (A) -> B?): DynamicSet<B> {
 //
 //}
