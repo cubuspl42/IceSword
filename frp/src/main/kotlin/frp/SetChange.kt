@@ -34,6 +34,8 @@ data class SetChange<out A>(
         )
     }
 
+    fun isEmpty(): Boolean =
+        added.isEmpty() && removed.isEmpty()
 }
 
 fun <A> SetChange<A>.applyTo(mutableSet: MutableSet<A>) {

@@ -1,10 +1,7 @@
 package icesword.frp
 
 import icesword.frp.dynamic_map.DynamicSetAssociateWith
-import icesword.frp.dynamic_set.DiffDynamicSet
-import icesword.frp.dynamic_set.DynamicSetUnion
-import icesword.frp.dynamic_set.MapDynamicSet
-import icesword.frp.dynamic_set.ValidatedDynamicSet
+import icesword.frp.dynamic_set.*
 
 interface DynamicSet<out A> {
     companion object {
@@ -94,12 +91,16 @@ fun <A> DynamicSet<A>.changes(): Stream<Unit> =
 
 fun <A> DynamicSet<A>.sample(): Set<A> = content.sample()
 
+
 fun <K, B> DynamicSet<K>.fuseMap(transform: (K) -> Cell<B>): DynamicSet<B> =
-    DynamicSet.diff(
-        content.switchMap { content ->
-            Cell.traverse(content, transform).map { it.toSet() }
-        }
-    )
+    FuseMapDynamicSet(this, transform)
+
+//fun <K, B> DynamicSet<K>.fuseMapDiff(transform: (K) -> Cell<B>): DynamicSet<B> =
+//    DynamicSet.diff(
+//        content.switchMap { content ->
+//            Cell.traverse(content, transform).map { it.toSet() }
+//        }
+//    )
 
 //fun <K, V> DynamicSet<K>.associateWith(valueSelector: (K) -> V): DynamicMap<K, V> =
 //    DynamicMap.diff(content.map { it.associateWith(valueSelector) })
@@ -215,6 +216,22 @@ class MutableDynamicSet<A>(
             notifyListeners(change)
         }
 
+    }
+
+    fun remove(element: A) {
+        val oldContent = mutableContent
+
+        if (oldContent.contains(element)) {
+
+            mutableContent = oldContent + element
+
+            val change = SetChange(
+                added = emptySet(),
+                removed = setOf(element),
+            )
+
+            notifyListeners(change)
+        }
     }
 
 //    override val content: Cell<Set<A>>

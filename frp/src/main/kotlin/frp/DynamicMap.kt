@@ -250,8 +250,9 @@ abstract class SimpleDynamicMap<K, V>(
 //    override val content: Cell<Map<K, V>>
 //        get() = TODO("Not yet implemented")
 
-    override val changes: Stream<MapChange<K, V>>
-        get() = Stream.source(this::subscribe, tag = "$tag.changes")
+    override val changes: Stream<MapChange<K, V>> by lazy {
+        Stream.source(this::subscribe, tag = "$tag.changes")
+    }
 }
 
 class RawCell<A>(

@@ -92,7 +92,7 @@ data class MapChange<K, V>(
     }
 
     fun isEmpty(): Boolean =
-        added.isEmpty() && updated.isEmpty() && removed.isEmpty()
+        added.isEmpty() && updated.isEmpty() && removedEntries.isEmpty()
 
 //
 //  MapChange<K, V2> mapValues<V2>(V2 f(K key, V value)) {
