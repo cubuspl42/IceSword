@@ -19,6 +19,10 @@ object DebugLog {
     fun enable() {
         _isEnabled = true
     }
+
+    fun disable() {
+        _isEnabled = false
+    }
 }
 
 fun debugLog(str: () -> String) {

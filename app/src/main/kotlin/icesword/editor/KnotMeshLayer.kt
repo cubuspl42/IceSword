@@ -71,10 +71,12 @@ class KnotMeshLayer(
             knotsAroundTile(tileCoord, distance = 1).toSet(),
         )
 
-        val nearbyKnots = nearbyKnotCoords.associateWithDynamic("relativeKnots") { knotCoord ->
+
+        val nearbyKnots =
+            nearbyKnotCoords.associateWithDynamic("buildTileAt($tileCoord)/associateWithDynamic") { knotCoord ->
 //            println("nearbyKnot, knotCoord: $knotCoord")
-            globalKnots.get(knotCoord)
-        }.filterValuesNotNull()
+                globalKnots.get(knotCoord)
+            }.filterValuesNotNull(tag = "buildTileAt($tileCoord)/filterValuesNotNull")
 
         val tile = nearbyKnots.content.map { nearbyKnotsContent ->
 //            println("buildTileAt @ $tileCoord; nearbyKnotsContent = $nearbyKnotsContent")

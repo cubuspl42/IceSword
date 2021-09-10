@@ -117,7 +117,8 @@ fun <K, V> DynamicSet<K>.associateWith(tag: String, valueSelector: (K) -> V): Dy
 //    })
 
 fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) -> Cell<V>): DynamicMap<K, V> =
-    this.associateWith(tag = tag, valueSelector).fuseValues()
+    this.associateWith(tag = "$tag/associateWithDynamic/associateWith", valueSelector)
+        .fuseValues(tag = "$tag/associateWithDynamic/fuseValues")
 
 //fun <A, B> DynamicSet<A>.mapNotNull(transform: (A) -> B?): DynamicSet<B> {
 //

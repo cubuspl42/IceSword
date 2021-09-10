@@ -116,7 +116,7 @@ class PlaneTiles {
         globalTileCoord: IntVec2,
     ): Cell<Int> {
         val metaTiles = elastics
-            .associateWith(tag = "metaTileClusters.associateWith") {
+            .associateWith(tag = "buildTileAt($globalTileCoord) / .associateWith") {
                 it.metaTileCluster.getMetaTileAt(globalTileCoord)
             }
 //            .also { dynMap ->
@@ -124,13 +124,13 @@ class PlaneTiles {
 //                    println("[$globalTileCoord] associateWith change: $change")
 //                }
 //            }
-            .fuseValues()
+            .fuseValues(tag = "buildTileAt($globalTileCoord) / .fuseValues")
 //            .also { dynMap ->
 //                dynMap.changes.subscribe { change ->
 //                    println("[$globalTileCoord] fuseValues change: $change")
 //                }
 //            }
-            .filterValuesNotNull()
+            .filterValuesNotNull(tag = "buildTileAt($globalTileCoord) / .filterValuesNotNull")
 //            .also { dynMap ->
 //                dynMap.changes.subscribe { change ->
 //                    println("[$globalTileCoord] filterValuesNotNull change: $change")
