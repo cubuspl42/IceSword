@@ -1,4 +1,4 @@
-import icesword.frp2.printMsg
+import icesword.frpjs.printMsg
 import icesword.editor.Editor
 import icesword.editorView
 import icesword.geometry.IntRect

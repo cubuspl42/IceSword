@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation(npm("icesword-frp", fileDep("icesword-frp")))
+    implementation(npm("frp-js", fileDep("frp-js")))
 
     testImplementation(kotlin("test"))
 }
