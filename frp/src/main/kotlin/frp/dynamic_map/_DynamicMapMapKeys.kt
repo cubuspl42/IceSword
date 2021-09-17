@@ -2,7 +2,7 @@ package icesword.frp.dynamic_map
 
 import icesword.frp.*
 
-class DynamicMapMapKeys<K, K2, V>(
+class _DynamicMapMapKeys<K, K2, V>(
     private val source: DynamicMap<K, V>,
     private val transform: (Map.Entry<K, V>) -> K2,
     tag: String,

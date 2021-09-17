@@ -129,9 +129,9 @@ fun <K, V> DynamicMap<K, V>.unionMerge(other: DynamicMap<K, V>, tag: String): Dy
     DynamicMapUnion(this, other, tag = tag)
         .validated(tag = tag)
 
-fun <K, V, R> DynamicMap<K, V>.mapKeys(tag: String, transform: (Map.Entry<K, V>) -> R): DynamicMap<R, V> =
-    DynamicMapMapKeys(this, transform, tag = tag)
-        .validated(tag = tag)
+//fun <K, V, R> DynamicMap<K, V>.mapKeys(tag: String, transform: (Map.Entry<K, V>) -> R): DynamicMap<R, V> =
+//    DynamicMapMapKeys(this, transform, tag = tag)
+//        .validated(tag = tag)
 
 //fun <K, V, K2> DynamicMap<K, V>.mapKeysDynamic(
 //    transform: (Map.Entry<K, V>) -> Cell<K2>,
