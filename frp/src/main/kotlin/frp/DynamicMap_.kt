@@ -94,6 +94,9 @@ data class MapChange<K, V>(
     fun isEmpty(): Boolean =
         added.isEmpty() && updated.isEmpty() && removedEntries.isEmpty()
 
+    fun containsKey(key: K): Boolean =
+        this.added.containsKey(key) || this.updated.containsKey(key) || this.removedEntries.containsKey(key)
+
 //
 //  MapChange<K, V2> mapValues<V2>(V2 f(K key, V value)) {
 //    final added = this.added.mapValues(f);

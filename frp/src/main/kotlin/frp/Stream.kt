@@ -1,5 +1,7 @@
 package icesword.frp
 
+import frp.cell.CorrelateCell
+
 interface Stream<out A> : Observable<A> {
     companion object {
         fun <A> source(
@@ -27,6 +29,9 @@ fun <A> Stream<A>.tillNext(orTill: Till): Till =
 
 fun <A> Stream<A>.hold(initialValue: A, till: Till): Cell<A> =
     CellHold(this, initialValue, till)
+
+fun <A> Stream<A>.correlate(sample: () -> A): Cell<A> =
+    CorrelateCell(sampleValue = sample, steps = this)
 
 fun <A, B> Stream<A>.map(f: (A) -> B): Stream<B> =
     StreamMap(this, f)

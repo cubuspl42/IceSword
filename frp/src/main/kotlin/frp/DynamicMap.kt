@@ -15,6 +15,12 @@ interface DynamicMap<K, V> {
         return volatileContentView.containsKey(key)
     }
 
+    fun get(key: K): Cell<V?> =
+        this.changes
+            .filter { it.containsKey(key) }
+            .map { it.added[key] ?: it.updated[key] }
+            .correlate { getNow(key) }
+
     fun getNow(key: K): V? {
         return volatileContentView[key]
     }
@@ -249,8 +255,6 @@ val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
 //val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
 //    get() = ValuesSetDynamicSet(this)
 
-
-fun <K, V> DynamicMap<K, V>.get(key: K): Cell<V?> = this.content.map { it[key] }
 
 fun <K, V> DynamicMap<K, V>.getNow(key: K): V? = this.volatileContentView[key]
 
