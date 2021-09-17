@@ -2,6 +2,11 @@ package icesword.frp.dynamic_map
 
 import icesword.frp.*
 
+private data class Entry<K, V>(
+    override val key: K,
+    override val value: V,
+) : Map.Entry<K, V>
+
 class MapValuesNotNullDynamicMap<K, V, V2 : Any>(
     private val source: DynamicMap<K, V>,
     private val transform: (Map.Entry<K, V>) -> V2?,
@@ -11,13 +16,25 @@ class MapValuesNotNullDynamicMap<K, V, V2 : Any>(
 ) {
 //    private var keyMap: MutableMap<K, V>? = null
 
-    private var mutableContent: MutableMap<K, V2>? = null
+//    private var mutableContent: MutableMap<K, V2>? = null
 
 //    override val volatileContentView: Map<K, V>
 //        get() = mutableContent ?: sampleUncached()
 
+//    override val volatileContentView: Map<K, V2>
+//        get() = mutableContent!!
+
     override val volatileContentView: Map<K, V2>
-        get() = mutableContent!!
+        get() = source.volatileContentView
+            .mapNotNull { entry ->
+                transform(entry)?.let { v2 -> entry.key to v2 }
+            }.toMap()
+
+    override fun containsKeyNow(key: K): Boolean =
+        getNow(key) != null
+
+    override fun getNow(key: K): V2? =
+        source.getNow(key)?.let { v -> transform(Entry(key, v)) }
 
     private var subscription: Subscription? = null
 
@@ -73,22 +90,28 @@ class MapValuesNotNullDynamicMap<K, V, V2 : Any>(
 
 //            println("mutableContent: $mutableContent")
 
-            if (!mappedChange.isEmpty()) {
-                mappedChange.validated().applyTo(mutableContent!!)
-                notifyListeners(mappedChange)
-            }
+
+            processChange(mappedChange)
+
         }
 
-        val initialMutableContent: MutableMap<K, V2> = source.sample().entries
-            .mapNotNull { entry -> transform(entry)?.let { entry.key to it } }
-            .toMap()
-            .toMutableMap()
+//        val initialMutableContent: MutableMap<K, V2> = source.sample().entries
+//            .mapNotNull { entry -> transform(entry)?.let { entry.key to it } }
+//            .toMap()
+//            .toMutableMap()
 
-        mutableContent = initialMutableContent
+//        mutableContent = initialMutableContent
+    }
+
+    private fun processChange(mappedChange: MapChange<K, V2>) {
+        if (!mappedChange.isEmpty()) {
+            // mappedChange.validated().applyTo(mutableContent!!)
+            notifyListeners(mappedChange)
+        }
     }
 
     override fun onStop() {
-        mutableContent = null
+//        mutableContent = null
 
         subscription!!.unsubscribe()
     }
