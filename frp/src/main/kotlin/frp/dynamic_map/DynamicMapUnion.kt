@@ -9,10 +9,16 @@ class DynamicMapUnion<K, V>(
 ) : SimpleDynamicMap<K, V>(tag = tag) {
     private var keyMap: MutableMap<K, K>? = null
 
-    private var mutableContent: MutableMap<K, V>? = null
+//    private var mutableContent: MutableMap<K, V>? = null
 
     override val volatileContentView: Map<K, V>
-        get() = mutableContent!!
+        get() = (source1.volatileContentView + source2.volatileContentView)
+
+    override fun containsKeyNow(key: K): Boolean =
+        source1.containsKeyNow(key) || source2.containsKeyNow(key)
+
+    override fun getNow(key: K): V? =
+        source1.getNow(key) ?: source2.getNow(key)
 
     private var subscription1: Subscription? = null
 
@@ -26,9 +32,9 @@ class DynamicMapUnion<K, V>(
                 removedEntries = change.removedEntries.filter { (key, _) -> !source2.containsKeyNow(key) },
             )
 
-            unionChange.applyTo(mutableContent!!)
+//            unionChange.applyTo(mutableContent!!)
 
-            notifyListeners(unionChange)
+            processChange(unionChange)
         }
 
         subscription2 = source2.changes.subscribe { change ->
@@ -47,22 +53,27 @@ class DynamicMapUnion<K, V>(
                 removedEntries = change.removedEntries.filter { (key, _) -> !source1.containsKeyNow(key) },
             )
 
-            unionChange.applyTo(mutableContent!!)
-
-            notifyListeners(unionChange)
+            processChange(unionChange)
         }
 
-        mutableContent = (source1.volatileContentView + source2.volatileContentView).toMutableMap()
+//        mutableContent = (source1.volatileContentView + source2.volatileContentView).toMutableMap()
     }
 
     override fun onStop() {
-        mutableContent = null
+//        mutableContent = null
 
         subscription2!!.unsubscribe()
         subscription2 = null
 
         subscription1!!.unsubscribe()
         subscription1 = null
+    }
+
+    private fun processChange(change: MapChange<K, V>) {
+        if (!change.isEmpty()) {
+//            change.applyTo(mutableContent)
+            notifyListeners(change)
+        }
     }
 
 }
