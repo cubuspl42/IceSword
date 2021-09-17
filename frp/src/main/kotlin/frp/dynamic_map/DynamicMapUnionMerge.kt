@@ -102,8 +102,8 @@ class DynamicMapUnionMerge<K, V, R>(
                 updated = updated.mapValues { (k, _) ->
                     merge(allMaps.mapNotNull { it.getNow(k) }.toSet())
                 },
-                removedEntries = removedEntriesActually.mapValues { (k, _) ->
-                    volatileContentView[k]!!
+                removedEntries = removedEntriesActually.mapValues { (k, v) ->
+                    merge(allMaps.mapNotNull { it.getNow(k) }.toSet() + setOf(v))
                 },
             )
 
