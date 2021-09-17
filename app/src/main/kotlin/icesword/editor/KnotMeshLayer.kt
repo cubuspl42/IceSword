@@ -12,6 +12,7 @@ class KnotMeshLayer(
             KnotMesh(
                 initialTileOffset = tileAtPoint(startPoint),
                 knotPrototype = UndergroundRockPrototype,
+                initialSize = 16,
             ),
             KnotMesh(
                 initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, 0),
@@ -57,6 +58,9 @@ class KnotMeshLayer(
 
     val globalTiles = globalTileCoords.associateWithDynamic(tag = "globalTiles") { tileCoord ->
         buildTileAt(tileCoord)
+    }.also {
+        // FIXME
+        it.changes.subscribe { }
     }
 //        .also {
 //            it.changes.subscribe { change ->
