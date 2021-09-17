@@ -8,10 +8,25 @@ class DynamicMapUnionMerge<K, V, R>(
     tag: String? = null,
 ) : SimpleDynamicMap<K, R>(tag = tag ?: "DynamicMapUnionMerge") {
 
-    private var mutableContent: MutableMap<K, R>? = null
+//    private var mutableContent: MutableMap<K, R>? = null
 
     override val volatileContentView: Map<K, R>
-        get() = mutableContent!!
+        get() {
+            val initialKeys = maps.volatileContentView.flatMap { it.volatileContentView.keys }.toSet()
+            return initialKeys.associateWith { key ->
+                val values = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
+                merge(values)
+            }
+        }
+
+    override fun containsKeyNow(key: K): Boolean =
+        maps.volatileContentView.any { it.containsKeyNow(key) }
+
+    override fun getNow(key: K): R? {
+        val values: Set<V> = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
+        return if (values.isEmpty()) null
+        else merge(values)
+    }
 
     private var subscriptionOuter: Subscription? = null
 
@@ -31,13 +46,13 @@ class DynamicMapUnionMerge<K, V, R>(
             subscribeToInner(innerMap)
         }.toMutableMap()
 
-        val initialKeys = maps.volatileContentView.flatMap { it.volatileContentView.keys }.toSet()
-        val initialContent = initialKeys.associateWith { key ->
-            val values = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
-            merge(values)
-        }
+//        val initialKeys = maps.volatileContentView.flatMap { it.volatileContentView.keys }.toSet()
+//        val initialContent = initialKeys.associateWith { key ->
+//            val values = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
+//            merge(values)
+//        }
 
-        mutableContent = initialContent.toMutableMap()
+//        mutableContent = initialContent.toMutableMap()
     }
 
     override fun onStop() {
@@ -92,8 +107,15 @@ class DynamicMapUnionMerge<K, V, R>(
                 },
             )
 
-            outChange.applyTo(mutableContent!!)
+//            outChange.applyTo(mutableContent!!)
 
-            notifyListeners(outChange)
+            processChange(outChange)
         }
+
+    private fun processChange(change: MapChange<K, R>) {
+        if (!change.isEmpty()) {
+//            change.applyTo(mutableContent)
+            notifyListeners(change)
+        }
+    }
 }
