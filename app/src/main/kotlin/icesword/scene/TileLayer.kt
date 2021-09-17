@@ -1,10 +1,8 @@
 package icesword.scene
 
 import icesword.TILE_SIZE
-import icesword.frp.DynamicMap
-import icesword.frp.Stream
-import icesword.frp.changesUnits
-import icesword.frp.sample
+import icesword.editor.TilesView
+import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
@@ -13,10 +11,10 @@ import org.w3c.dom.CanvasRenderingContext2D
 
 class TileLayer(
     val tileset: Tileset,
-    val tiles: DynamicMap<IntVec2, Int>,
+    val tiles: DynamicView<TilesView>,
 ) : Node {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-        val tiles = this.tiles.volatileContentView
+        val tilesView: TilesView = this.tiles.view
 
         val xyMinTileCoord = tileAtPoint(windowRect.xyMin)
         val xyMaxTileCoord = tileAtPoint(windowRect.xyMax)
@@ -24,7 +22,7 @@ class TileLayer(
         (xyMinTileCoord.y..xyMaxTileCoord.y).forEach { i ->
             (xyMinTileCoord.x..xyMaxTileCoord.x).forEach { j ->
                 val tileCoord = IntVec2(j, i)
-                val tileId = tiles[tileCoord] ?: -1
+                val tileId = tilesView.getTile(tileCoord) ?: -1
 
                 ctx.strokeStyle = "grey"
                 ctx.lineWidth = 1.0
@@ -57,5 +55,5 @@ class TileLayer(
         }
     }
 
-    override val onDirty: Stream<Unit> = tiles.changesUnits()
+    override val onDirty: Stream<Unit> = tiles.updates
 }

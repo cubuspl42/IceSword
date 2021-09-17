@@ -1,7 +1,7 @@
 package icesword.frp
 
-interface Cell<out A> : Observable<A> {
-    fun sample(): A
+interface Cell<out A> : Observable<A>, Behavior<A> {
+    override fun sample(): A
 
     companion object {
         fun <A> constant(a: A): Cell<A> =
@@ -81,3 +81,9 @@ fun <A> Cell<A>.reactTillNext(
 fun <A> Cell<A>.syncTill(target: MutCell<in A>, till: Till) {
     this.reactTill(till, target::set)
 }
+
+val <A> Cell<A>.asView: DynamicView<Behavior<A>>
+    get() = DynamicView(
+        updates = this.values().units(),
+        view = this,
+    )

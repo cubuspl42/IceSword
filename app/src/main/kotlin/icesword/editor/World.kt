@@ -63,6 +63,10 @@ class World(
         .unionMerge(knotMeshLayer.globalTiles, tag = ".union(knotMesh.tiles ...) ")
         .unionMerge(planeTiles.tiles, tag = ".union(planeTiles.tiles ...)")
 
+    val experimentalTileLayer = ExperimentalTileLayer(
+        startPoint = startPoint,
+    )
+
     private val _cameraFocusPoint = MutCell(startPoint)
 
     val cameraFocusPoint: Cell<IntVec2>

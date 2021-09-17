@@ -232,8 +232,15 @@ fun <K, V, V2> DynamicMap<K, V>.fuseMapValues(f: (K, V) -> V2): DynamicMap<K, V2
 fun <K, V> DynamicMap<K, V>.getKeys(tag: String = "getKeys"): DynamicSet<K> =
     KeysDynamicSet(this, tag = tag)
 
-val <K, V> DynamicMap<K, V>.contentView: Cell<Map<K, V>>
-    get() = TODO()
+//val <K, V> DynamicMap<K, V>.contentView: Cell<Map<K, V>>
+//    get() = TODO()
+
+val <K, V> DynamicMap<K, V>.contentDynamicView: DynamicView<Map<K, V>>
+    get() = DynamicView(
+        updates = this.changesUnits(),
+        // FIXME: This is glitch-prone, as that view is actually volatile (unreliable)
+        view = this.volatileContentView,
+    )
 
 val <K, V> DynamicMap<K, V>.valuesSet: DynamicSet<V>
     get() = DynamicSet.diff(
