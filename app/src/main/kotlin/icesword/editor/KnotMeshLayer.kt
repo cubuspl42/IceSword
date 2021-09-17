@@ -75,7 +75,6 @@ class KnotMeshLayer(
             knotsAroundTile(tileCoord, distance = 1).toSet(),
         )
 
-
         val nearbyKnots =
             nearbyKnotCoords.associateWithDynamic("buildTileAt($tileCoord)/associateWithDynamic") { knotCoord ->
 //            println("nearbyKnot, knotCoord: $knotCoord")

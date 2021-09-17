@@ -17,13 +17,6 @@ class DynamicMapUnionMerge<K, V, R>(
 
     private var subscriptionMap: MutableMap<DynamicMap<K, V>, Subscription>? = null
 
-    override val content: Cell<Map<K, R>> by lazy {
-        RawCell(
-            { mutableContent!!.toMap() },
-            changes.map { mutableContent!!.toMap() },
-        )
-    }
-
     override fun onStart() {
         // TODO: Emit changes for outer map change
         maps.changes.subscribe { outerChange: SetChange<DynamicMap<K, V>> ->

@@ -13,12 +13,6 @@ class FromEntriesDynamicMap<K, V>(
 
     private var subscription: Subscription? = null
 
-    override val content: Cell<Map<K, V>>
-        get() = RawCell(
-            { mutableContent!!.toMap() },
-            changes.map { mutableContent!!.toMap() },
-        )
-
     override fun onStart() {
         subscription = source.changes.subscribe { change ->
             val outChange = MapChange(

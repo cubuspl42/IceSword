@@ -1,6 +1,5 @@
 package icesword.frp
 
-import icesword.frp.DynamicMap.Companion.fromEntries
 import icesword.frp.dynamic_map.*
 import icesword.frp.dynamic_set.KeysDynamicSet
 
@@ -255,19 +254,6 @@ fun <K, V> DynamicMap<K, V>.get(key: K): Cell<V?> = this.content.map { it[key] }
 
 fun <K, V> DynamicMap<K, V>.getNow(key: K): V? = this.volatileContentView[key]
 
-abstract class SimpleDynamicMap<K, V>(
-    tag: String,
-) : DynamicMap<K, V>, SimpleObservable<MapChange<K, V>>(
-    tag = tag,
-) {
-//    override val content: Cell<Map<K, V>>
-//        get() = TODO("Not yet implemented")
-
-    override val changes: Stream<MapChange<K, V>> by lazy {
-        Stream.source(this::subscribe, tag = "$tag.changes")
-    }
-}
-
 class RawCell<A>(
     private val sampleValue: () -> A,
     private val changes: Stream<A>,
@@ -302,13 +288,6 @@ class DiffDynamicMap<K, V>(
 
     override val changes: Stream<MapChange<K, V>> by lazy {
         Stream.source(this::subscribe, tag = "$tag.changes")
-    }
-
-    override val content: Cell<Map<K, V>> by lazy {
-        RawCell(
-            { mutableContent!!.toMap() },
-            changes.map { mutableContent!!.toMap() },
-        )
     }
 
     override fun onStart() {
@@ -365,13 +344,6 @@ class MutableDynamicMap<K, V>(
 
     override val volatileContentView: Map<K, V>
         get() = mutableContent
-
-    // FIXME: Make lazy and reuse across all dynamic maps!
-    override val content: Cell<Map<K, V>>
-        get() = RawCell(
-            { mutableContent },
-            changes.map { mutableContent },
-        )
 
     fun put(key: K, value: V) {
         val oldContent = mutableContent

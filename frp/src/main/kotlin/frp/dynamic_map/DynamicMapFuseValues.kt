@@ -31,11 +31,6 @@ class DynamicMapFuseValues<K, V>(
 
     private var subscription: Subscription? = null
 
-    override val content: Cell<Map<K, V>>
-        get() = RawCell(
-            { mutableContent.toMap() },
-            changes.map { mutableContent.toMap() },
-        )
 
     private fun subscribeToCell(key: K, cell: Cell<V>) {
         debugLog { "$name: subscribe to cell @ key: $key" }

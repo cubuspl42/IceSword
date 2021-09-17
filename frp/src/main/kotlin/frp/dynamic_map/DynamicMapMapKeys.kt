@@ -19,12 +19,6 @@ class DynamicMapMapKeys<K, K2, V>(
 
     private var subscription: Subscription? = null
 
-    override val content: Cell<Map<K2, V>>
-        get() = RawCell(
-            { mutableContent!!.toMap() },
-            changes.map { mutableContent!!.toMap() },
-        )
-
     private fun sampleUncached(): Map<K2, V> {
         return source.sample().mapKeys(transform)
     }

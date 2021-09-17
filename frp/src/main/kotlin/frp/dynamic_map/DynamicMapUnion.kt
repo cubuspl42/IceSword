@@ -18,18 +18,6 @@ class DynamicMapUnion<K, V>(
 
     private var subscription2: Subscription? = null
 
-    //    override val content: Cell<Map<K, V>>
-//        get() = RawCell(
-//            { mutableContent!!.toMap() },
-//            changes.map { mutableContent!!.toMap() },
-//        )
-//
-    override val content: Cell<Map<K, V>>
-        get() = RawCell(
-            { mutableContent!! },
-            changes.map { mutableContent!! },
-        )
-
     override fun onStart() {
         subscription1 = source1.changes.subscribe { change ->
             val unionChange = MapChange(

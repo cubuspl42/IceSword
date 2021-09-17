@@ -21,12 +21,6 @@ class MapValuesNotNullDynamicMap<K, V, V2 : Any>(
 
     private var subscription: Subscription? = null
 
-    override val content: Cell<Map<K, V2>>
-        get() = RawCell(
-            { mutableContent!!.toMap() },
-            changes.map { mutableContent!!.toMap() },
-        )
-
 //    private fun sampleUncached(): Map<K, V2> {
 //        return source.sample().mapKeys(transform)
 //    }
