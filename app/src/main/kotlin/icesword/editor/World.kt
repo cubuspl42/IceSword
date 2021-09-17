@@ -4,6 +4,7 @@ import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.wwd.Wwd
+import kotlinx.browser.window
 import org.khronos.webgl.get
 
 class World(
@@ -32,6 +33,11 @@ class World(
                 wwdTiles = tiles,
             )
         }
+    }
+
+    init {
+        val w: dynamic = window
+        w.world = this
     }
 
     private val baseTiles = DynamicMap.of(wwdTiles)

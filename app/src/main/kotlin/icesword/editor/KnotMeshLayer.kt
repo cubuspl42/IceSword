@@ -21,6 +21,23 @@ class KnotMeshLayer(
         ),
     )
 
+    init {
+//        val knotMeshesContent = _knotMeshes.volatileContentView
+//
+//        val foo = knotMeshesContent.toCollection(LinkedHashSet<KnotMesh>(mapCapacity(size))
+//
+//        println("knotMeshesContent is Collection: ${knotMeshesContent is Collection}")
+//
+//        val knotMeshContentSet = knotMeshesContent.toSet()
+//
+//        println("knotMeshContentSet.size: ${knotMeshContentSet.size}")
+//        println("knotMeshContentSet: $knotMeshContentSet")
+//
+//        for (knotMesh in knotMeshesContent) {
+//            println("knotMesh: $knotMesh")
+//        }
+    }
+
     val knotMeshes: DynamicSet<KnotMesh>
         get() = _knotMeshes
 

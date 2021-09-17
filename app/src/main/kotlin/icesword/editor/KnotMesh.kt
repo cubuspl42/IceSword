@@ -239,6 +239,9 @@ class KnotMesh(
             (knotCenter(it) - worldPoint).length < TILE_SIZE
         }
     }
+
+    override fun toString(): String =
+        "KnotMesh(tileOffset=${tileOffset.sample()})"
 }
 fun buildTile(
     tileCoord: IntVec2,

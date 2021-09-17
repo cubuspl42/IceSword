@@ -4,6 +4,10 @@
     "outDir": "lib",
     "strict": true,
     "noImplicitAny": true,
+    "downlevelIteration": true,
+    "lib": [
+      "es2015"
+    ]
   },
   "exclude": [
     "node_modules",
