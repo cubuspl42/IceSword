@@ -32,13 +32,11 @@ class TileEntity(
         initialTileOffset = initialTileOffset,
     ) {
     override fun isSelectableAt(worldPoint: IntVec2): Boolean =
-        tilesView.view.getTile(worldPoint) != null
-
-    override val tileOffset = MutCell(IntVec2.ZERO)
+        tilesView.view.getTile(tileAtPoint(worldPoint)) != null
 
 //    val zOrder: Cell<Int> = Cell.constant(1)
 
-    private val a = 16
+    private val a = 160
 
     private val localTiles: DynamicMap<IntVec2, Int> = DynamicMap.of(
         (0 until a).flatMap { i ->
@@ -72,9 +70,11 @@ class TileEntity(
 class ExperimentalTileLayer(
     startPoint: IntVec2,
 ) {
-    private val tileEntities = DynamicSet.of(
+    val tileEntities = DynamicSet.of(
         setOf(
-            TileEntity(initialTileOffset = tileAtPoint(startPoint) + IntVec2(4, 0)),
+            TileEntity(
+                initialTileOffset = tileAtPoint(startPoint) + IntVec2(4, 0),
+            ),
         )
     )
 

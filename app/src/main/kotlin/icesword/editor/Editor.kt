@@ -67,6 +67,8 @@ class Editor(
     private fun selectEntity(entity: Entity) {
         _selectedEntity.sample()?.unselect()
         _selectedEntity.set(entity.also { it.select() })
+
+        println("Entity selected: $entity")
     }
 
     fun insertElastic(prototype: ElasticPrototype) {

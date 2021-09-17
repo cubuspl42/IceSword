@@ -100,7 +100,10 @@ class KnotMesh(
             _localKnots.fuseMap { localKnotCoord ->
                 tileOffset.map { (it + localKnotCoord) to knotPrototype }
             }
-        )
+        ).also {
+            // FIXME
+            it.changes.subscribe { }
+        }
 
     fun putKnot(globalKnotCoord: IntVec2) {
         val localKnotCoord = globalKnotCoord - tileOffset.sample()

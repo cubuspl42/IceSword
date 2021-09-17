@@ -44,11 +44,17 @@ class World(
 
     val elastics = planeTiles.elastics
 
+
+    val experimentalTileLayer = ExperimentalTileLayer(
+        startPoint = startPoint,
+    )
+
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
             setOf(
-                elastics,
+//                elastics,
                 knotMeshLayer.knotMeshes,
+                experimentalTileLayer.tileEntities,
             ),
         )
     ).also {
@@ -63,9 +69,6 @@ class World(
         .unionMerge(knotMeshLayer.globalTiles, tag = ".union(knotMesh.tiles ...) ")
         .unionMerge(planeTiles.tiles, tag = ".union(planeTiles.tiles ...)")
 
-    val experimentalTileLayer = ExperimentalTileLayer(
-        startPoint = startPoint,
-    )
 
     private val _cameraFocusPoint = MutCell(startPoint)
 

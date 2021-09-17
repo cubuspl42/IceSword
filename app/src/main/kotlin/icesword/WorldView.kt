@@ -102,14 +102,15 @@ fun worldView(
                         planeLayer,
                         planeUiLayer,
                     ),
-                    overlayElements = world.elastics.map {
-                        createElasticOverlayElement(
-                            elastic = it,
-                            viewport = this,
-                            viewTransform = viewTransform,
-                            tillDetach = tillDetach,
-                        )
-                    },
+//                    overlayElements = world.elastics.map {
+//                        createElasticOverlayElement(
+//                            elastic = it,
+//                            viewport = this,
+//                            viewTransform = viewTransform,
+//                            tillDetach = tillDetach,
+//                        )
+//                    },
+                    overlayElements = DynamicSet.of(emptySet()),
                 )
             },
         )

@@ -1,6 +1,6 @@
 package icesword.frp
 
-interface Behavior<A> {
+interface Behavior<out A> {
     fun sample(): A
 }
 

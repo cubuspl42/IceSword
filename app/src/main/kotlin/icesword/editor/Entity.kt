@@ -53,7 +53,7 @@ abstract class Entity : EntityTileOffset {
         val targetTileOffset = tileOffsetDelta.map { d -> initialTileOffset + d }
 
         targetTileOffset.reactTill(tillStop) {
-            println("Setting tile offset: $it")
+//            println("Setting tile offset: $it")
 
             if (tileOffset.sample() != it) {
                 setTileOffset(it)
