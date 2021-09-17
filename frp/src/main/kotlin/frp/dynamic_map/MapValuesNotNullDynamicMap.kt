@@ -36,7 +36,7 @@ class MapValuesNotNullDynamicMap<K, V, V2 : Any>(
             val added2 = change.updated.mapNotNull { entry ->
                 val key = entry.key
                 transform(entry)
-                    ?.takeIf { !mutableContent!!.containsKey(key) }
+                    ?.takeIf { !containsKeyNow(key) }
                     ?.let { key to it }
             }.toMap()
 
@@ -44,20 +44,20 @@ class MapValuesNotNullDynamicMap<K, V, V2 : Any>(
             val updated = change.updated.mapNotNull { entry ->
                 val key = entry.key
                 transform(entry)
-                    ?.takeIf { mutableContent!!.containsKey(key) }
+                    ?.takeIf { containsKeyNow(key) }
                     ?.let { key to it }
             }.toMap()
 
             // Removed in source
             val removed1 = change.removedEntries.mapNotNull { (key, _) ->
-                volatileContentView[key]?.let { value -> key to value }
+                getNow(key)?.let { value -> key to value }
             }.toMap()
 
             // Updated in source, not filtered-out before
             val removed2 = change.updated.mapNotNull { entry ->
                 val key = entry.key
                 when {
-                    transform(entry) == null -> volatileContentView[key]?.let { value -> key to value }
+                    transform(entry) == null -> getNow(key)?.let { value -> key to value }
                     else -> null
                 }
             }.toMap()
