@@ -2,7 +2,7 @@ package icesword.frp.dynamic_map
 
 import icesword.frp.*
 
-class ValuesSetDynamicSet<K, V>(
+class _ValuesSetDynamicSet<K, V>(
     private val source: DynamicMap<K, V>,
 ) : SimpleDynamicSet<V>(tag = "MapDynamicSet") {
 //    private var mutableContent: MutableSet<V>? = null
