@@ -167,6 +167,9 @@ fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) ->
 fun <A, R> DynamicSet<A>.blendMap(transform: (A) -> DynamicView<R>): DynamicView<Set<R>> =
     DynamicSet.blend(this.map(transform))
 
+fun <A, B> DynamicSet<A>.adjust(adjustment: Cell<B>, combine: (A, B) -> A): DynamicSet<A> =
+    AdjustDynamicSet(this, adjustment, combine, tag = "adjust")
+
 //fun <A, B> DynamicSet<A>.mapNotNull(transform: (A) -> B?): DynamicSet<B> {
 //
 //}

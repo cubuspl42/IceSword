@@ -96,15 +96,25 @@ class KnotMesh(
     val localKnots: DynamicSet<IntVec2>
         get() = _localKnots
 
-    val globalKnots: DynamicMap<IntVec2, KnotPrototype> =
-        DynamicMap.fromEntries(
-            _localKnots.fuseMap { localKnotCoord ->
-                tileOffset.map { (it + localKnotCoord) to knotPrototype }
-            }
-        ).also {
-            // FIXME
-            it.changes.subscribe { }
+    private val globalKnotCoords = localKnots
+        .adjust(tileOffset) { localKnotCoord: IntVec2, tileOffset: IntVec2 ->
+            tileOffset + localKnotCoord
         }
+
+
+//    val globalKnots: DynamicMap<IntVec2, KnotPrototype> =
+//        DynamicMap.fromEntries(
+//            _localKnots.fuseMap { localKnotCoord ->
+//                tileOffset.map { (it + localKnotCoord) to knotPrototype }
+//            }
+//        ).also {
+//            // FIXME
+//            it.changes.subscribe { }
+//        }
+
+    val globalKnots = globalKnotCoords.associateWith("globalKnots") {
+        knotPrototype
+    }
 
     fun putKnot(globalKnotCoord: IntVec2) {
         val localKnotCoord = globalKnotCoord - tileOffset.sample()
