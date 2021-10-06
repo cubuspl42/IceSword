@@ -221,91 +221,100 @@ class KnotMesh(
 }
 
 
-fun buildTile(relativeKnots: Map<IntVec2, KnotPrototype>): Int {
+fun buildTile(
+    tileCoord: IntVec2,
+    globalKnots: Map<IntVec2, KnotPrototype>,
+): Int {
 //    return 620
 
-    val relativeKnotCoords = relativeKnots.keys
+//    val relativeKnotCoords = relativeKnots.keys
+
+    fun getKnot  (relativeCoord: IntVec2): KnotPrototype? =
+    globalKnots.get(tileCoord.plus(relativeCoord));
+
+    fun hasKnot  (relativeCoord: IntVec2) =
+    getKnot(relativeCoord) != null;
 
     fun intVec2(y: Int, x: Int) = IntVec2(x, y)
 
     return when {
-        relativeKnots[intVec2(0, 0)] == UndergroundRockPrototype &&
-                !relativeKnots.contains(intVec2(-1, -1)) &&
-                !relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(0, -1)) -> 620
-        relativeKnots[intVec2(0, 0)] == UndergroundRockPrototype &&
-                relativeKnots.contains(intVec2(0, -1)) &&
-                !relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(-1, -1)) -> 621
+        getKnot(intVec2(0, 0)) == UndergroundRockPrototype &&
+                !hasKnot(intVec2(-1, -1)) &&
+                !hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(0, -1)) -> 620
+        getKnot(intVec2(0, 0)) == UndergroundRockPrototype &&
+                hasKnot(intVec2(0, -1)) &&
+                !hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(-1, -1)) -> 621
         // &&
-//                !relativeKnots.contains(intVec2(0, -2)
-        relativeKnots[intVec2(0, 0)] == UndergroundRockPrototype &&
-                relativeKnots.contains(intVec2(0, -1)) &&
-                !relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(-1, -1)) -> 622
-        relativeKnots[intVec2(0, -1)] == UndergroundRockPrototype &&
-                !relativeKnots.contains(intVec2(-1, -1)) &&
-                !relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(0, 0)) -> 623
-        relativeKnots[intVec2(0, 0)] == OvergroundRockPrototype &&
-                !relativeKnots.contains(intVec2(-1, -1)) &&
-                !relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(0, -1)) -> 603
-        relativeKnots[intVec2(0, 0)] == OvergroundRockPrototype &&
-                relativeKnots.contains(intVec2(0, -1)) &&
-                !relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(-1, -1)) -> 604
+//                !hasKnot(intVec2(0, -2)
+        getKnot(intVec2(0, 0)) == UndergroundRockPrototype &&
+                hasKnot(intVec2(0, -1)) &&
+                !hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(-1, -1)) -> 622
+        getKnot(intVec2(0, -1)) == UndergroundRockPrototype &&
+                !hasKnot(intVec2(-1, -1)) &&
+                !hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(0, 0)) -> 623
+        getKnot(intVec2(0, 0)) == OvergroundRockPrototype &&
+                !hasKnot(intVec2(-1, -1)) &&
+                !hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(0, -1)) -> 603
+        getKnot(intVec2(0, 0)) == OvergroundRockPrototype &&
+                hasKnot(intVec2(0, -1)) &&
+                !hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(-1, -1)) -> 604
         // &&
-        //                !relativeKnots.contains(intVec2(0, -2))
-        relativeKnots[intVec2(0, -1)] == OvergroundRockPrototype &&
-                !relativeKnots.contains(intVec2(-1, -1)) &&
-                !relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(0, 0)) -> 607
-        relativeKnots.contains(intVec2(0, 0)) &&
-                relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(0, -1)) &&
-                !relativeKnots.contains(intVec2(-1, -1)) -> 624
-        relativeKnots.contains(intVec2(-1, -1)) &&
-                relativeKnots.contains(intVec2(-1, 0)) &&
-                relativeKnots.contains(intVec2(0, -1)) &&
-                relativeKnots.contains(intVec2(0, 0)) &&
-                !relativeKnots.contains(intVec2(-1, -2)) &&
-                !relativeKnots.contains(intVec2(0, -2)) -> 613
-        relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(-1, -1)) &&
-                !relativeKnots.contains(intVec2(0, -1)) &&
-                !relativeKnots.contains(intVec2(0, 0)) -> 632
-        relativeKnots.contains(intVec2(-1, -1)) &&
-                relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(-1, -2)) &&
-                !relativeKnots.contains(intVec2(0, -2)) &&
-                !relativeKnots.contains(intVec2(0, -1)) &&
-                !relativeKnots.contains(intVec2(0, 0)) -> 633
-        relativeKnots.contains(intVec2(-1, -1)) &&
-                relativeKnots.contains(intVec2(-1, 0)) &&
-                relativeKnots.contains(intVec2(-1, -2)) &&
-                !relativeKnots.contains(intVec2(0, -1)) &&
-                !relativeKnots.contains(intVec2(0, 0)) -> 634
-        relativeKnots.contains(intVec2(-1, -1)) &&
-                !relativeKnots.contains(intVec2(0, -1)) &&
-                !relativeKnots.contains(intVec2(0, 0)) &&
-                !relativeKnots.contains(intVec2(-1, 0)) -> 635
-        relativeKnots.contains(intVec2(-1, -1)) &&
-                relativeKnots.contains(intVec2(0, -1)) &&
-                !relativeKnots.contains(intVec2(-1, 0)) &&
-                !relativeKnots.contains(intVec2(0, 0)) -> 615
-        relativeKnots.contains(intVec2(0, -1)) &&
-                relativeKnots.contains(intVec2(-1, 0)) &&
-                relativeKnots.contains(intVec2(-1, -1)) &&
-                !relativeKnots.contains(intVec2(0, 0)) -> 617
-        relativeKnots.contains(intVec2(0, 0)) &&
-                relativeKnots.contains(intVec2(-1, 0)) &&
-                relativeKnots.contains(intVec2(-1, -1)) &&
-                !relativeKnots.contains(intVec2(0, -1)) -> 618
-        relativeKnots[intVec2(-1, -1)] is RockPrototype &&
-                relativeKnots[intVec2(0, -1)] is RockPrototype &&
-                relativeKnots[intVec2(0, 0)] is RockPrototype &&
-                !relativeKnots.contains(intVec2(-1, 0)) -> 638
+        //                !hasKnot(intVec2(0, -2))
+        getKnot(intVec2(0, -1)) == OvergroundRockPrototype &&
+                !hasKnot(intVec2(-1, -1)) &&
+                !hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(0, 0)) -> 607
+        hasKnot(intVec2(0, 0)) &&
+                hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(0, -1)) &&
+                !hasKnot(intVec2(-1, -1)) -> 624
+        hasKnot(intVec2(-1, -1)) &&
+                hasKnot(intVec2(-1, 0)) &&
+                hasKnot(intVec2(0, -1)) &&
+                hasKnot(intVec2(0, 0)) &&
+                !hasKnot(intVec2(-1, -2)) &&
+                !hasKnot(intVec2(0, -2)) -> 613
+        hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(-1, -1)) &&
+                !hasKnot(intVec2(0, -1)) &&
+                !hasKnot(intVec2(0, 0)) -> 632
+        hasKnot(intVec2(-1, -1)) &&
+                hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(-1, -2)) &&
+                !hasKnot(intVec2(0, -2)) &&
+                !hasKnot(intVec2(0, -1)) &&
+                !hasKnot(intVec2(0, 0)) -> 633
+        hasKnot(intVec2(-1, -1)) &&
+                hasKnot(intVec2(-1, 0)) &&
+                hasKnot(intVec2(-1, -2)) &&
+                !hasKnot(intVec2(0, -1)) &&
+                !hasKnot(intVec2(0, 0)) -> 634
+        hasKnot(intVec2(-1, -1)) &&
+                !hasKnot(intVec2(0, -1)) &&
+                !hasKnot(intVec2(0, 0)) &&
+                !hasKnot(intVec2(-1, 0)) -> 635
+        hasKnot(intVec2(-1, -1)) &&
+                hasKnot(intVec2(0, -1)) &&
+                !hasKnot(intVec2(-1, 0)) &&
+                !hasKnot(intVec2(0, 0)) -> 615
+        hasKnot(intVec2(0, -1)) &&
+                hasKnot(intVec2(-1, 0)) &&
+                hasKnot(intVec2(-1, -1)) &&
+                !hasKnot(intVec2(0, 0)) -> 617
+        hasKnot(intVec2(0, 0)) &&
+                hasKnot(intVec2(-1, 0)) &&
+                hasKnot(intVec2(-1, -1)) &&
+                !hasKnot(intVec2(0, -1)) -> 618
+        getKnot(intVec2(-1, -1)) is RockPrototype &&
+                getKnot(intVec2(0, -1)) is RockPrototype &&
+                getKnot(intVec2(0, 0)) is RockPrototype &&
+                !hasKnot(intVec2(-1, 0)) -> 638
         else -> 630
     }
 }

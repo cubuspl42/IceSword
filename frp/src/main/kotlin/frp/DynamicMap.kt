@@ -176,6 +176,17 @@ fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(tag: String? = null): DynamicMap<K,
         .validated(tag = effectiveTag)
 }
 
+fun <K, V, K2, V2> DynamicMap<K, V>.project(
+    projectKey: (K) -> Set<K2>,
+    buildValue: (K2, Map<K, V>) -> V2,
+): DynamicMap<K2, V2> =
+    ProjectDynamicMap(
+        source = this,
+        projectKey = projectKey,
+        buildValue = buildValue,
+        tag = "project",
+    )
+
 private const val enableMapValidation = false
 
 fun <K, V> DynamicMap<K, V>.validated(tag: String): DynamicMap<K, V> =

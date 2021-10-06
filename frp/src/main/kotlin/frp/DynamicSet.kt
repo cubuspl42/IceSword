@@ -169,6 +169,7 @@ fun <A, R> DynamicSet<A>.blendMap(transform: (A) -> DynamicView<R>): DynamicView
 
 fun <A, B> DynamicSet<A>.adjust(adjustment: Cell<B>, combine: (A, B) -> A): DynamicSet<A> =
     AdjustDynamicSet(this, adjustment, combine, tag = "adjust")
+        .validated(tag = "adjust")
 
 //fun <A, B> DynamicSet<A>.mapNotNull(transform: (A) -> B?): DynamicSet<B> {
 //
@@ -183,7 +184,7 @@ fun <A, B> DynamicSet<A>.adjust(adjustment: Cell<B>, combine: (A, B) -> A): Dyna
 //
 //}
 
-const val enableSetValidation: Boolean = false
+const val enableSetValidation: Boolean = true
 
 fun <A> DynamicSet<A>.validated(tag: String): DynamicSet<A> =
     if (enableSetValidation) ValidatedDynamicSet(this, tag = tag)

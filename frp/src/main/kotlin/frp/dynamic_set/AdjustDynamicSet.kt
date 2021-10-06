@@ -52,7 +52,10 @@ class AdjustDynamicSet<K, A>(
             .mergeWith(adjustment.values().map(::processAdjustmentChange))
             .subscribe { change -> notifyListeners(change) }
 
-        mutableContent = source.volatileContentView.toMutableSet()
+        val initialAdjustment = adjustment.sample()
+
+        mutableContent = source.volatileContentView.asSequence()
+            .map { combine(it, initialAdjustment) }.toMutableSet()
     }
 
     override fun onStop() {

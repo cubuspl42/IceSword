@@ -39,59 +39,71 @@ class KnotMeshLayer(
 //            }
 //        }
 
-    private val globalKnotCoords = globalKnots.getKeys(tag = "globalKnotCoords")
+//    private val globalKnotCoords = globalKnots.getKeys(tag = "globalKnotCoords")
 //        .also {
 //            it.changes.subscribe { change ->
 //                println("globalKnotCoords change: $change")
 //            }
 //        }
 
-    private val globalTileCoords: DynamicSet<IntVec2> = globalKnotCoords.unionMapDynamic { globalKnotCoord ->
-        // FIXME: Impure (time-dependent) transform!
-        DynamicSet.of(tilesAroundKnot(globalKnotCoord))
-    }
+//    private val globalTileCoords: DynamicSet<IntVec2> = globalKnotCoords.unionMapDynamic { globalKnotCoord ->
+//        // FIXME: Impure (time-dependent) transform!
+//        DynamicSet.of(tilesAroundKnot(globalKnotCoord))
+//    }
 //        .also {
 //            it.changes.subscribe { change ->
 //                println("globalTileCoords change: $change")
 //            }
 //        }
 
-    val globalTiles = globalTileCoords.associateWithDynamic(tag = "globalTiles") { tileCoord ->
-        buildTileAt(tileCoord)
-    }.also {
-        // FIXME
-        it.changes.subscribe { }
-    }
+//    val globalTiles = globalTileCoords.associateWithDynamic(tag = "globalTiles") { tileCoord ->
+//        buildTileAt(tileCoord)
+//    }.also {
+//        // FIXME
+//        it.changes.subscribe { }
+//    }
 //        .also {
 //            it.changes.subscribe { change ->
 //                println("globalTiles change: $change")
 //            }
 //        }
 
-    private fun buildTileAt(
-        tileCoord: IntVec2,
-    ): Cell<Int> {
-        val nearbyKnotCoords = DynamicSet.of(
-            knotsAroundTile(tileCoord, distance = 1).toSet(),
-        )
-
-        val nearbyKnots =
-            nearbyKnotCoords.associateWithDynamic("buildTileAt($tileCoord)/associateWithDynamic") { knotCoord ->
-//            println("nearbyKnot, knotCoord: $knotCoord")
-                globalKnots.get(knotCoord)
-            }.filterValuesNotNull(tag = "buildTileAt($tileCoord)/filterValuesNotNull")
-
-        val tile = nearbyKnots.content.map { nearbyKnotsContent ->
-//            println("buildTileAt @ $tileCoord; nearbyKnotsContent = $nearbyKnotsContent")
-
-            val relativeKnots = nearbyKnotsContent.mapKeys { (tc, _) -> tc - tileCoord }
-
+    val globalTiles = globalKnots.project(
+        projectKey = { knotCoord -> tilesAroundKnot(knotCoord) },
+        buildValue = { tileCoord, globalKnots ->
             buildTile(
-                relativeKnots = relativeKnots,
+                tileCoord = tileCoord,
+                globalKnots = globalKnots,
             )
-        }
-
-        return tile
-
+        },
+    ).also {
+        it.changes.subscribe { }
     }
+
+//    private fun buildTileAt(
+//        tileCoord: IntVec2,
+//    ): Cell<Int> {
+//        val nearbyKnotCoords = DynamicSet.of(
+//            knotsAroundTile(tileCoord, distance = 1).toSet(),
+//        )
+//
+//        val nearbyKnots =
+//            nearbyKnotCoords.associateWithDynamic("buildTileAt($tileCoord)/associateWithDynamic") { knotCoord ->
+////            println("nearbyKnot, knotCoord: $knotCoord")
+//                globalKnots.get(knotCoord)
+//            }.filterValuesNotNull(tag = "buildTileAt($tileCoord)/filterValuesNotNull")
+//
+//        val tile = nearbyKnots.content.map { nearbyKnotsContent ->
+////            println("buildTileAt @ $tileCoord; nearbyKnotsContent = $nearbyKnotsContent")
+//
+//            val relativeKnots = nearbyKnotsContent.mapKeys { (tc, _) -> tc - tileCoord }
+//
+//            buildTile(
+//                relativeKnots = relativeKnots,
+//            )
+//        }
+//
+//        return tile
+//
+//    }
 }

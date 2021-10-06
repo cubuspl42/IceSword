@@ -65,10 +65,11 @@ class World(
 //    val selectedMetaTileCluster: MetaTileCluster
 //        get() = metaTileClusters.content.sample().single { it.isSelected.sample() }
 
-    val tiles = baseTiles
-        .unionMerge(knotMeshLayer.globalTiles, tag = ".union(knotMesh.tiles ...) ")
-        .unionMerge(planeTiles.tiles, tag = ".union(planeTiles.tiles ...)")
+//    val tiles = baseTiles
+//        .unionMerge(knotMeshLayer.globalTiles, tag = ".union(knotMesh.tiles ...) ")
+//        .unionMerge(planeTiles.tiles, tag = ".union(planeTiles.tiles ...)")
 
+    val tiles = knotMeshLayer.globalTiles
 
     private val _cameraFocusPoint = MutCell(startPoint)
 
