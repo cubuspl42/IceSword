@@ -61,7 +61,7 @@ interface DynamicMap<K, V> {
         ): DynamicMap<K, V> =
             unionMergeFast(
                 maps = maps,
-                merge = { it.first() },
+                merge = { it.iterator().next() },
                 tag = tag,
             )
 //                .also {
@@ -177,7 +177,7 @@ fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(tag: String? = null): DynamicMap<K,
 }
 
 fun <K, V, K2, V2> DynamicMap<K, V>.project(
-    projectKey: (K) -> Set<K2>,
+    projectKey: (K) -> Iterable<K2>,
     buildValue: (K2, Map<K, V>) -> V2,
 ): DynamicMap<K2, V2> =
     ProjectDynamicMap(

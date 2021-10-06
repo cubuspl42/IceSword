@@ -12,7 +12,7 @@ class KnotMeshLayer(
             KnotMesh(
                 initialTileOffset = tileAtPoint(startPoint),
                 knotPrototype = UndergroundRockPrototype,
-                initialSize = 16,
+                initialSize = 115,
             ),
             KnotMesh(
                 initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, 0),
@@ -69,7 +69,7 @@ class KnotMeshLayer(
 //        }
 
     val globalTiles = globalKnots.project(
-        projectKey = { knotCoord -> tilesAroundKnot(knotCoord) },
+        projectKey = { knotCoord -> tilesAroundKnotLst(knotCoord) },
         buildValue = { tileCoord, globalKnots ->
             buildTile(
                 tileCoord = tileCoord,

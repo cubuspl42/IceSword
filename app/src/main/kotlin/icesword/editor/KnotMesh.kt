@@ -50,6 +50,27 @@ fun tilesAroundKnot(knotCoord: IntVec2): Set<IntVec2> {
     )
 }
 
+fun tilesAroundKnotLst(knotCoord: IntVec2): List<IntVec2> {
+    val k = knotCoord
+
+    return listOf(
+        k,
+        IntVec2(x = k.x + 1, k.y),
+        IntVec2(x = k.x, k.y + 1),
+        IntVec2(x = k.x + 1, k.y + 1),
+    )
+}
+
+fun tilesAroundKnotSeq(knotCoord: IntVec2): Sequence<IntVec2> = sequence {
+    val k = knotCoord
+
+    yield(k)
+    yield(IntVec2(x = k.x + 1, k.y))
+    yield(IntVec2(x = k.x, k.y + 1))
+    yield(IntVec2(x = k.x + 1, k.y + 1))
+}
+
+
 fun closestKnot(point: IntVec2): IntVec2 =
     tileAtPoint(point - IntVec2(32, 32))
 
@@ -219,21 +240,24 @@ class KnotMesh(
         }
     }
 }
-
-
 fun buildTile(
     tileCoord: IntVec2,
     globalKnots: Map<IntVec2, KnotPrototype>,
 ): Int {
-//    return 620
+    return 620
+}
 
+fun buildTile_(
+    tileCoord: IntVec2,
+    globalKnots: Map<IntVec2, KnotPrototype>,
+): Int {
 //    val relativeKnotCoords = relativeKnots.keys
 
-    fun getKnot  (relativeCoord: IntVec2): KnotPrototype? =
-    globalKnots.get(tileCoord.plus(relativeCoord));
+    fun getKnot(relativeCoord: IntVec2): KnotPrototype? =
+        globalKnots.get(tileCoord.plus(relativeCoord));
 
-    fun hasKnot  (relativeCoord: IntVec2) =
-    getKnot(relativeCoord) != null;
+    fun hasKnot(relativeCoord: IntVec2) =
+        getKnot(relativeCoord) != null;
 
     fun intVec2(y: Int, x: Int) = IntVec2(x, y)
 

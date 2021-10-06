@@ -8,16 +8,20 @@ class DynamicMapUnionMerge<K, V, R>(
     tag: String? = null,
 ) : SimpleDynamicMap<K, R>(tag = tag ?: "DynamicMapUnionMerge") {
 
-//    private var mutableContent: MutableMap<K, R>? = null
+    private var mutableContent: MutableMap<K, R>? = null
+
+//    override val volatileContentView: Map<K, R>
+//        get() {
+//            val initialKeys = maps.volatileContentView.flatMap { it.volatileContentView.keys }.toSet()
+//            return initialKeys.associateWith { key ->
+//                val values = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
+//                merge(values)
+//            }
+//        }
 
     override val volatileContentView: Map<K, R>
-        get() {
-            val initialKeys = maps.volatileContentView.flatMap { it.volatileContentView.keys }.toSet()
-            return initialKeys.associateWith { key ->
-                val values = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
-                merge(values)
-            }
-        }
+        get() = this.mutableContent!!
+
 
     override fun containsKeyNow(key: K): Boolean =
         maps.volatileContentView.any { it.containsKeyNow(key) }
@@ -42,17 +46,21 @@ class DynamicMapUnionMerge<K, V, R>(
             }
         }
 
-        subscriptionMap = maps.volatileContentView.associateWith { innerMap ->
-            subscribeToInner(innerMap)
-        }.toMutableMap()
+        subscriptionMap = maps.volatileContentView.asSequence()
+            .associateWith { innerMap -> subscribeToInner(innerMap) }
+            .toMutableMap()
 
-//        val initialKeys = maps.volatileContentView.flatMap { it.volatileContentView.keys }.toSet()
-//        val initialContent = initialKeys.associateWith { key ->
-//            val values = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
-//            merge(values)
-//        }
+        val initialKeys = maps.volatileContentView.asSequence()
+            .flatMap { it.volatileContentView.keys }
 
-//        mutableContent = initialContent.toMutableMap()
+        val initialContent = initialKeys
+            .associateWithTo(mutableMapOf()) { key ->
+                val values = maps.volatileContentView.asSequence()
+                    .mapNotNull { it.getNow(key) }.toSet()
+                merge(values)
+            }
+
+        mutableContent = initialContent
     }
 
     override fun onStop() {
@@ -107,14 +115,12 @@ class DynamicMapUnionMerge<K, V, R>(
                 },
             )
 
-//            outChange.applyTo(mutableContent!!)
-
             processChange(outChange)
         }
 
     private fun processChange(change: MapChange<K, R>) {
         if (!change.isEmpty()) {
-//            change.applyTo(mutableContent)
+            change.applyTo(mutableContent!!)
             notifyListeners(change)
         }
     }

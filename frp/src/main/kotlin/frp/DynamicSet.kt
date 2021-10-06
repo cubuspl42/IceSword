@@ -184,7 +184,7 @@ fun <A, B> DynamicSet<A>.adjust(adjustment: Cell<B>, combine: (A, B) -> A): Dyna
 //
 //}
 
-const val enableSetValidation: Boolean = true
+const val enableSetValidation: Boolean = false
 
 fun <A> DynamicSet<A>.validated(tag: String): DynamicSet<A> =
     if (enableSetValidation) ValidatedDynamicSet(this, tag = tag)

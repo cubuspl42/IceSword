@@ -9,7 +9,7 @@ private enum class RemovedLinkKind {
 
 class ProjectDynamicMap<K, V, K2, V2>(
     private val source: DynamicMap<K, V>,
-    private val projectKey: (K) -> Set<K2>,
+    private val projectKey: (K) -> Iterable<K2>,
     private val buildValue: (K2, Map<K, V>) -> V2,
     tag: String? = null,
 ) : SimpleDynamicMap<K2, V2>(tag = tag ?: "ProjectDynamicMap") {
@@ -30,19 +30,29 @@ class ProjectDynamicMap<K, V, K2, V2>(
 
     override fun onStart(): Unit {
         this.subscription = this.source.changes.subscribe { change ->
-            change.added.forEach { (k, v) ->
-                val projectedKeys = projectKey(k)
-                projectedKeys.forEach { k2 ->
-                   addLink(k2, k)
-                }
-            }
+//            change.added.forEach { (k, v) ->
+//                val projectedKeys = projectKey(k)
+//                projectedKeys.forEach { k2 ->
+//                   addLink(k2, k)
+//                }
+//            }
 
-            val addedAffectedKeys = change.added
-                .flatMap { (k, v) -> projectKey(k) }
+            // const addedProjections: ReadonlyArray<[K, K2]> = [...change.removed].flatMap(
+            //   ([k,]) => [...Iterables.map(
+            //     this.projectKey(k),
+            //     (k2): [K, K2] => [k, k2],
+            //   )],
+            // );
+
+            val addedProjections = change.added
+                .flatMap { (k, v) -> projectKey(k).map { k2 -> k to k2 } }
+
+            addedProjections.forEach { (k, k2) -> addLink(k2, k) }
+
+            val addedAffectedKeys = addedProjections.map { (k, k2) -> k2 }.toList()
 
             val addedAddedKeys = addedAffectedKeys.asSequence()
                 .filter { !volatileContentView.containsKey(it) }
-                .toSet()
 
             val addedUpdatedKeys = addedAffectedKeys.asSequence()
                 .filter { volatileContentView.containsKey(it) }
