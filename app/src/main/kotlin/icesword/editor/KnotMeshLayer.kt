@@ -86,7 +86,7 @@ class KnotMeshLayer(
 //        }
 
     val globalTiles = globalKnots.project(
-        projectKey = { knotCoord -> tilesAroundKnotLst(knotCoord) },
+        projectKey = { knotCoord -> tilesAroundKnotForTileBuilding(knotCoord) },
         buildValue = { tileCoord, globalKnots ->
             buildTile(
                 tileCoord = tileCoord,

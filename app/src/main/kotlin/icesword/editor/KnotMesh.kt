@@ -61,14 +61,25 @@ fun tilesAroundKnotLst(knotCoord: IntVec2): List<IntVec2> {
     )
 }
 
-fun tilesAroundKnotSeq(knotCoord: IntVec2): Sequence<IntVec2> = sequence {
+fun tilesAroundKnotForTileBuilding(knotCoord: IntVec2): List<IntVec2> {
     val k = knotCoord
 
-    yield(k)
-    yield(IntVec2(x = k.x + 1, k.y))
-    yield(IntVec2(x = k.x, k.y + 1))
-    yield(IntVec2(x = k.x + 1, k.y + 1))
+    return listOf(
+        IntVec2(k.x - 1, k.y - 1), IntVec2(k.x + 0, k.y - 1), IntVec2(k.x + 1, k.y - 1), IntVec2(k.x + 2, k.y - 1),
+        IntVec2(k.x - 1, k.y + 0), IntVec2(k.x + 0, k.y + 0), IntVec2(k.x + 1, k.y + 0), IntVec2(k.x + 2, k.y + 0),
+        IntVec2(k.x - 1, k.y + 1), IntVec2(k.x + 0, k.y + 1), IntVec2(k.x + 1, k.y + 1), IntVec2(k.x + 2, k.y + 1),
+        IntVec2(k.x - 1, k.y + 2), IntVec2(k.x + 0, k.y + 2), IntVec2(k.x + 1, k.y + 2), IntVec2(k.x + 2, k.y + 2),
+    )
 }
+
+//fun tilesAroundKnotSeq(knotCoord: IntVec2): Sequence<IntVec2> = sequence {
+//    val k = knotCoord
+//
+//    yield(k)
+//    yield(IntVec2(x = k.x + 1, k.y))
+//    yield(IntVec2(x = k.x, k.y + 1))
+//    yield(IntVec2(x = k.x + 1, k.y + 1))
+//}
 
 
 fun closestKnot(point: IntVec2): IntVec2 =
@@ -248,6 +259,7 @@ class KnotMesh(
 
     init {
         localTileCoords.changes.subscribe { } // FIXME
+        localKnots.changes.subscribe { } // FIXME
     }
 }
 

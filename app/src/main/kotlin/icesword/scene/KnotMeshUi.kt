@@ -2,6 +2,7 @@ package icesword.scene
 
 import icesword.editor.KnotMesh
 import icesword.editor.knotCenter
+import icesword.editor.tilesAroundKnotLst
 import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
