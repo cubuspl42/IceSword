@@ -70,8 +70,10 @@ fun worldView(
                 setOf(
                     TileLayer(
                         tileset = tileset,
-//                        tiles = world.tiles.contentDynamicView,
-                        tiles = world.experimentalTileLayer.tilesView,
+                        tiles = world.tiles.contentDynamicView.map {
+                            OffsetTilesView(IntVec2.ZERO, it)
+                        },
+//                        tiles = world.experimentalTileLayer.tilesView,
                     ),
                 )
             ),

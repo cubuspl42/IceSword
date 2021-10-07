@@ -153,7 +153,7 @@ class KnotMesh(
 //        }
     }
 
-//    private val localTileCoords = localKnots.unionMap(::tilesAroundKnot)
+    val localTileCoords = localKnots.unionMap(::tilesAroundKnot).memorized()
 
 //    private val localTiles = localTileCoords.associateWith { tileCoord ->
 //        val nearbyKnots = knotsAroundTile(tileCoord, distance = 1)
@@ -245,16 +245,20 @@ class KnotMesh(
 
     override fun toString(): String =
         "KnotMesh(tileOffset=${tileOffset.sample()})"
+
+    init {
+        localTileCoords.changes.subscribe { } // FIXME
+    }
 }
 
-fun buildTile(
+fun buildTile__(
     tileCoord: IntVec2,
     globalKnots: Map<IntVec2, KnotPrototype>,
 ): Int {
     return 620
 }
 
-fun buildTile_(
+fun buildTile(
     tileCoord: IntVec2,
     globalKnots: Map<IntVec2, KnotPrototype>,
 ): Int {

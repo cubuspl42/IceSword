@@ -51,16 +51,16 @@ class World(
     val elastics = planeTiles.elastics
 
 
-    val experimentalTileLayer = ExperimentalTileLayer(
-        startPoint = startPoint,
-    )
+//    val experimentalTileLayer = ExperimentalTileLayer(
+//        startPoint = startPoint,
+//    )
 
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
             setOf(
 //                elastics,
                 knotMeshLayer.knotMeshes,
-                experimentalTileLayer.tileEntities,
+//                experimentalTileLayer.tileEntities,
             ),
         )
     ).also {

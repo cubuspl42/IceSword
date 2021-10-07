@@ -68,8 +68,8 @@ interface DynamicSet<out A> {
 //fun <K, V> DynamicMap<K, V>.get(key: K): Cell<V?> =
 //    content.map { it[key] }
 
-//fun <A, B> DynamicSet<A>.unionMap(transform: (A) -> Set<B>): DynamicSet<B> =
-//    DynamicSet.union(map(transform))
+fun <A, B> DynamicSet<A>.unionMap(transform: (A) -> Set<B>): DynamicSet<B> =
+    this.unionMapDynamic { DynamicSet.of(transform(it)) }
 
 fun <A, B> DynamicSet<A>.unionMapDynamic(transform: (A) -> DynamicSet<B>): DynamicSet<B> =
     DynamicSet.union(map(transform))
@@ -185,6 +185,9 @@ fun <A, B> DynamicSet<A>.adjust(
     )
         .validated(tag = "adjust")
 
+fun <A> DynamicSet<A>.memorized(): DynamicSet<A> =
+    MemorizedDynamicSet(this)
+
 //fun <A, B> DynamicSet<A>.mapNotNull(transform: (A) -> B?): DynamicSet<B> {
 //
 //}
@@ -212,6 +215,13 @@ abstract class SimpleDynamicSet<A>(
 ) {
 //    override val content: Cell<Set<K, V>>
 //        get() = TODO("Not yet implemented")
+
+    override val content: Cell<Set<A>>
+        get() = RawCell(
+            { volatileContentView.toSet() },
+            changes.map { volatileContentView.toSet() },
+        )
+
 
     override val changes: Stream<SetChange<A>>
         get() = Stream.source(this::subscribe, tag = "SimpleDynamicSet.changes")
