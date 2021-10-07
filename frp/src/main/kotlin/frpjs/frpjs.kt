@@ -2,13 +2,14 @@ package frpjs
 
 import icesword.frpjs.Hash
 import icesword.frpjs.HashTable
+import icesword.frpjs.JsMapEntry
 import kotlin.collections.MutableMap.MutableEntry
 
 class HashImpl<T> : Hash<T> {
-    override fun calculateHashCode(value: T): Int =
+    override fun hash(value: T): Int =
         value.hashCode()
 
-    override fun isEqualTo(value1: T, value2: T): Boolean =
+    override fun isEqual(value1: T, value2: T): Boolean =
         value1 == value2
 }
 

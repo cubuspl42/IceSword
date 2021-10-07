@@ -105,8 +105,6 @@ suspend fun fetchWorld(): Wwd.World {
 
 @OptIn(DelicateCoroutinesApi::class)
 fun main() {
-    printMsg()
-
     document.body?.style?.apply {
         margin = "0px"
         padding = "0px"

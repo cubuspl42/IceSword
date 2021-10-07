@@ -1,6 +1,7 @@
 package icesword.frp.dynamic_set
 
 import icesword.frp.*
+import icesword.toMutableSetFast
 
 class AdjustDynamicSet<K, A>(
     private val source: DynamicSet<K>,
@@ -31,7 +32,7 @@ class AdjustDynamicSet<K, A>(
     override fun onStart() {
         fun processAdjustmentChange(adj: A): SetChange<K> {
             val newContent = this.source.volatileContentView.asSequence()
-                .map { combine(it, adj) }.toMutableSet()
+                .map { combine(it, adj) }.toMutableSetFast()
 
             val outChange = SetChange.diff(mutableContent!!, newContent)
 

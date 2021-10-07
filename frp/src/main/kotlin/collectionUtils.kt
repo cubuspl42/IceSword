@@ -1,5 +1,7 @@
 package icesword
 
+import frpjs.FastSet
+
 enum class SegregationTag {
     A,
     B,
@@ -49,7 +51,7 @@ fun <T> Iterable<T>.segregate3(assign: (element: T) -> SegregationTag3): Segrega
         when (assign(it)) {
             SegregationTag3.A -> groupA.add(it)
             SegregationTag3.B -> groupB.add(it)
-            SegregationTag3.C-> groupB.add(it)
+            SegregationTag3.C -> groupB.add(it)
         }
     }
 
@@ -58,4 +60,16 @@ fun <T> Iterable<T>.segregate3(assign: (element: T) -> SegregationTag3): Segrega
         groupB = groupB,
         groupC = groupC,
     )
+}
+
+fun <T> Sequence<T>.toMutableSetFast(): MutableSet<T> {
+    val set = FastSet<T>()
+    for (item in this) set.add(item)
+    return set
+}
+
+
+fun <T> Set<T>.minusFast(other: Set<T>): Set<T> = when {
+    other.isEmpty() -> this.toSet()
+    else -> this.filterNotTo(FastSet()) { it in other }
 }

@@ -41,9 +41,9 @@ external class FastMapJs<K, V>(
 }
 
 external interface Hash<T> {
-    fun calculateHashCode(value: T): Int
+    fun hash(value: T): Int
 
-    fun isEqualTo(value1: T, value2: T): Boolean
+    fun isEqual(value1: T, value2: T): Boolean
 }
 
 external class HashTable<K, E>(
@@ -59,4 +59,32 @@ external class HashTable<K, E>(
     fun clear()
 
     fun iterate(): HashTableIterator<K, E>
+}
+
+external interface PeekIterator<E> {
+    fun next(): E
+
+    fun hasNext(): Boolean
+}
+
+external interface JsMapEntry<K, V>
+
+@JsName("HashMap")
+external class HashMapJs<K, V>(
+    entries: Any?,
+    hash: HashImpl<K>,
+) {
+    val size: Int
+
+    fun iterate(): PeekIterator<JsMapEntry<K, V>>
+
+    fun get(key: K): V?
+
+    fun has(key: K): Boolean
+
+    fun clear(): Unit
+
+    fun delete(key: K): V?
+
+    fun set(key: K, value: V): V?
 }

@@ -1,5 +1,7 @@
 package icesword.frp
 
+import icesword.minusFast
+
 data class SetChange<out A>(
     val added: Set<A>,
     val removed: Set<A>,
@@ -17,8 +19,8 @@ data class SetChange<out A>(
             newSet: Set<A>,
         ): SetChange<A> =
             SetChange(
-                added = newSet - oldSet,
-                removed = oldSet - newSet,
+                added = newSet.minusFast(oldSet),
+                removed = oldSet.minusFast(newSet),
             )
     }
 

@@ -1,9 +1,4 @@
-export interface Hash<T> {
-    calculateHashCode(value: T): number;
-
-    isEqualTo(value1: T, value2: T): boolean
-}
-
+import { Hash } from "./Hashable";
 
 class Entry<K, V> {
     constructor(
@@ -36,12 +31,12 @@ export class FastMap<K, V> {
     readonly size: number;
 
     containsKey(key: K): Boolean {
-        const hashCode = this._hashK.calculateHashCode(key);
+        const hashCode = this._hashK.hash(key);
         const bucket = this._map.get(hashCode);
 
         if (bucket !== undefined) {
             for (const e of bucket) {
-                if (this._hashK.isEqualTo(key, e.key)) {
+                if (this._hashK.isEqual(key, e.key)) {
                     return true;
                 }
             }
@@ -53,7 +48,7 @@ export class FastMap<K, V> {
     containsValue(value: V): Boolean {
         for (const [, bucket] of this._map) {
             for (const entry of bucket) {
-                if (this._hashV.isEqualTo(value, entry.value)) {
+                if (this._hashV.isEqual(value, entry.value)) {
                     return true;
                 }
             }
@@ -63,12 +58,12 @@ export class FastMap<K, V> {
     }
 
     get(key: K): V | null {
-        const hashCode = this._hashK.calculateHashCode(key);
+        const hashCode = this._hashK.hash(key);
         const bucket = this._map.get(hashCode);
 
         if (bucket !== undefined) {
             for (const e of bucket) {
-                if (this._hashK.isEqualTo(key, e.key)) {
+                if (this._hashK.isEqual(key, e.key)) {
                     return e.value;
                 }
             }
@@ -166,7 +161,7 @@ export class HashTable<K, E> {
     }
 
     get(key: K): E | null {
-        const hashCode = this._hashK.calculateHashCode(key);
+        const hashCode = this._hashK.hash(key);
         const bucket = this._map.get(hashCode);
 
         if (bucket !== undefined) {
@@ -177,7 +172,7 @@ export class HashTable<K, E> {
     }
 
     put(key: K, entry: E): E | null {
-        const hashCode = this._hashK.calculateHashCode(key);
+        const hashCode = this._hashK.hash(key);
         const bucket = this._map.get(hashCode);
 
         if (bucket !== undefined) {
@@ -211,7 +206,7 @@ export class HashTable<K, E> {
     private _getFromBucket(bucket: Set<E>, key: K): E | null {
         for (const entry of bucket) {
             const entryKey = this._extract(entry)
-            if (this._hashK.isEqualTo(key, entryKey)) {
+            if (this._hashK.isEqual(key, entryKey)) {
                 return entry;
             }
         }
