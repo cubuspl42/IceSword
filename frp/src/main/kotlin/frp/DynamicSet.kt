@@ -1,5 +1,9 @@
 package icesword.frp
 
+import frpjs.Hash
+import icesword.collections.DefaultSetFactory
+import icesword.collections.FastSetFactory
+import icesword.collections.SetFactory
 import icesword.frp.dynamic_map.DynamicSetAssociateWith
 import icesword.frp.dynamic_set.*
 
@@ -167,8 +171,18 @@ fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) ->
 fun <A, R> DynamicSet<A>.blendMap(transform: (A) -> DynamicView<R>): DynamicView<Set<R>> =
     DynamicSet.blend(this.map(transform))
 
-fun <A, B> DynamicSet<A>.adjust(adjustment: Cell<B>, combine: (A, B) -> A): DynamicSet<A> =
-    AdjustDynamicSet(this, adjustment, combine, tag = "adjust")
+fun <A, B> DynamicSet<A>.adjust(
+    hash: Hash<A>? = null,
+    adjustment: Cell<B>,
+    combine: (A, B) -> A,
+): DynamicSet<A> =
+    AdjustDynamicSet(
+        through = hash?.let { FastSetFactory(it) } ?: DefaultSetFactory(),
+        source = this,
+        adjustment = adjustment,
+        combine = combine,
+        tag = "adjust",
+    )
         .validated(tag = "adjust")
 
 //fun <A, B> DynamicSet<A>.mapNotNull(transform: (A) -> B?): DynamicSet<B> {

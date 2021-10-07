@@ -1,6 +1,7 @@
 package icesword.frp
 
-import icesword.minusFast
+import icesword.collections.SetFactory
+import icesword.collections.minusThrough
 
 data class SetChange<out A>(
     val added: Set<A>,
@@ -19,8 +20,18 @@ data class SetChange<out A>(
             newSet: Set<A>,
         ): SetChange<A> =
             SetChange(
-                added = newSet.minusFast(oldSet),
-                removed = oldSet.minusFast(newSet),
+                added = newSet.minus(oldSet),
+                removed = oldSet.minus(newSet),
+            )
+
+        fun <A> diffThrough(
+            through: SetFactory<A>,
+            oldSet: Set<A>,
+            newSet: Set<A>,
+        ): SetChange<A> =
+            SetChange(
+                added = newSet.minusThrough(through, oldSet),
+                removed = oldSet.minusThrough(through, newSet),
             )
     }
 

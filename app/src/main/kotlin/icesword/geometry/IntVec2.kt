@@ -1,7 +1,15 @@
 package icesword.geometry;
 
+import frpjs.Hash
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
+
+class IntVec2Hash : Hash<IntVec2> {
+    override fun hash(value: IntVec2): Int = value.hashCode()
+
+    override fun isEqual(l: IntVec2, r: IntVec2): Boolean =
+        l.x == r.x && l.y == r.y
+}
 
 data class IntVec2(
     val x: Int,
@@ -32,5 +40,7 @@ data class IntVec2(
 
     companion object {
         val ZERO = IntVec2(0, 0)
+
+        val HASH = IntVec2Hash()
     }
 }

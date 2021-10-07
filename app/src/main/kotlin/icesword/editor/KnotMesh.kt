@@ -118,7 +118,10 @@ class KnotMesh(
         get() = _localKnots
 
     private val globalKnotCoords = localKnots
-        .adjust(tileOffset) { localKnotCoord: IntVec2, tileOffset: IntVec2 ->
+        .adjust(
+            hash = IntVec2.HASH,
+            adjustment = tileOffset,
+        ) { localKnotCoord: IntVec2, tileOffset: IntVec2 ->
             tileOffset + localKnotCoord
         }
 
@@ -243,6 +246,7 @@ class KnotMesh(
     override fun toString(): String =
         "KnotMesh(tileOffset=${tileOffset.sample()})"
 }
+
 fun buildTile(
     tileCoord: IntVec2,
     globalKnots: Map<IntVec2, KnotPrototype>,

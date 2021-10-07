@@ -3,6 +3,7 @@
 
 package icesword.frpjs
 
+import frpjs.Hash
 import frpjs.HashImpl
 import frpjs.HashTableIterator
 
@@ -40,14 +41,9 @@ external class FastMapJs<K, V>(
     fun get(key: K): V?
 }
 
-external interface Hash<T> {
-    fun hash(value: T): Int
-
-    fun isEqual(value1: T, value2: T): Boolean
-}
 
 external class HashTable<K, E>(
-    hash: HashImpl<K>,
+    hash: Hash<K>,
     extract: (E) -> K,
 ) {
     val size: Int

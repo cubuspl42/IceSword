@@ -1,9 +1,13 @@
 package frpjs
 
-import icesword.frpjs.Hash
 import icesword.frpjs.HashTable
-import icesword.frpjs.JsMapEntry
 import kotlin.collections.MutableMap.MutableEntry
+
+external interface Hash<T> {
+    fun hash(value: T): Int
+
+    fun isEqual(value1: T, value2: T): Boolean
+}
 
 class HashImpl<T> : Hash<T> {
     override fun hash(value: T): Int =
@@ -34,10 +38,7 @@ value class FastSetIterator<E>(
 }
 
 value class FastSet<E>(
-    private val hashTable: HashTable<E, E> = HashTable(
-        hash = HashImpl(),
-        extract = { it },
-    ),
+    private val hashTable: HashTable<E, E>,
 ) : MutableSet<E> {
     override val size: Int
         get() = hashTable.size
@@ -76,6 +77,15 @@ value class FastSet<E>(
         TODO("Not yet implemented")
     }
 }
+
+
+fun <E> fastSetOf(hash: Hash<E>): MutableSet<E> =
+    FastSet<E>(
+        hashTable = HashTable(
+            hash = hash,
+            extract = { it },
+        ),
+    )
 
 data class FastMapEntry<K, V>(
     override val key: K,
