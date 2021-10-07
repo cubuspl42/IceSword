@@ -1,6 +1,8 @@
 package icesword.frp.dynamic_map
 
+import frpjs.FastMap
 import icesword.frp.*
+import icesword.frpjs.hybridMapOf
 
 private enum class RemovedLinkKind {
     LAST,
@@ -63,7 +65,7 @@ class ProjectDynamicMap<K, V, K2, V2>(
             val removedProjections = change.removedEntries.asSequence()
                 .flatMap { (k, _) -> projectKey(k).map { k2 -> k to k2 } }
 
-            val removedProjectionsGrouped = removedProjections.groupBy { (k, k2) ->
+            val removedProjectionsGrouped = removedProjections.groupByTo(hybridMapOf()) { (k, k2) ->
                 if (removeLink(k2, k)) RemovedLinkKind.LAST else RemovedLinkKind.NOT_LAST
             }
 
@@ -72,14 +74,14 @@ class ProjectDynamicMap<K, V, K2, V2>(
 
             val removedUpdatedKeys = notLastLinks.asSequence().map { (k, k2) -> k2 }
 
-            val added = addedAddedKeys.associateWith { k2 ->
+            val added = addedAddedKeys.associateWithTo(hybridMapOf()) { k2 ->
                 buildValue(k2, source.volatileContentView)
             }
 
             val updated = (addedUpdatedKeys + updatedKeys + removedUpdatedKeys)
-                .associateWith { buildValue(it, source.volatileContentView) }
+                .associateWithTo(hybridMapOf()) { buildValue(it, source.volatileContentView) }
 
-            val removed = lastLinks.map { (k, k2) -> k2 }.associateWith { k2 ->
+            val removed = lastLinks.map { (k, k2) -> k2 }.associateWithTo(hybridMapOf()) { k2 ->
                 volatileContentView[k2]!!
             }
 
@@ -103,12 +105,12 @@ class ProjectDynamicMap<K, V, K2, V2>(
             .map { (k2, group) ->
                 k2 to group.asSequence().map { (k, k2) -> k }.toMutableSet()
             }
-            .toMap(mutableMapOf())
+            .toMap(hybridMapOf())
 
         this.linksMap = initialLinksMap
 
         val initialContent = initialLinksMap.keys
-            .associateWithTo(mutableMapOf()) { buildValue(it, sourceContent) }
+            .associateWithTo(hybridMapOf()) { buildValue(it, sourceContent) }
 
         this.mutableContent = initialContent
     }
