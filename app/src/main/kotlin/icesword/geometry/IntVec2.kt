@@ -1,6 +1,8 @@
 package icesword.geometry;
 
 import frpjs.Hash
+import icesword.collections.HybridMapFactory
+import icesword.collections.MapFactory
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -42,5 +44,8 @@ data class IntVec2(
         val ZERO = IntVec2(0, 0)
 
         val HASH = IntVec2Hash()
+
+        fun <V> mapFactory(): MapFactory<IntVec2, V> =
+            HybridMapFactory(HASH)
     }
 }

@@ -1,5 +1,6 @@
 package icesword.frpjs
 
+import frpjs.Hash
 import frpjs.HashImpl
 import kotlin.collections.MutableMap.MutableEntry
 
@@ -168,10 +169,7 @@ value class HybridMapKeySet<K, V>(
 }
 
 private value class HybridMap<K, V>(
-    private val hashMap: HashMapJs<K, V> = HashMapJs(
-        entries = null,
-        hash = HashImpl(),
-    ),
+    private val hashMap: HashMapJs<K, V>,
 ) : MutableMap<K, V> {
     override val entries: MutableSet<MutableEntry<K, V>>
         get() = HybridMapEntrySet<K, V>(hashMap)
@@ -212,4 +210,9 @@ private value class HybridMap<K, V>(
         hashMap.delete(key)
 }
 
-fun <K, V> hybridMapOf(): MutableMap<K, V> = HybridMap()
+fun <K, V> hybridMapOf(keyHash: Hash<K> = HashImpl()): MutableMap<K, V> = HybridMap(
+    hashMap = HashMapJs(
+        entries = null,
+        hash = keyHash,
+    ),
+)

@@ -1,8 +1,11 @@
 package icesword.frp.dynamic_map
 
+import icesword.collections.MapFactory
+import icesword.collections.associateWithThrough
 import icesword.frp.*
 
 class DynamicMapUnionMerge<K, V, R>(
+    private val through: MapFactory<K, R>,
     private val maps: DynamicSet<DynamicMap<K, V>>,
     private val merge: (Set<V>) -> R,
     tag: String? = null,
@@ -54,7 +57,7 @@ class DynamicMapUnionMerge<K, V, R>(
             .flatMap { it.volatileContentView.keys }
 
         val initialContent = initialKeys
-            .associateWithTo(mutableMapOf()) { key ->
+            .associateWithThrough(through) { key ->
                 val values = maps.volatileContentView.asSequence()
                     .mapNotNull { it.getNow(key) }.toSet()
                 merge(values)

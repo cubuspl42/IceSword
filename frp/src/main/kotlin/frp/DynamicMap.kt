@@ -1,5 +1,6 @@
 package icesword.frp
 
+import icesword.collections.MapFactory
 import icesword.frp.dynamic_map.*
 import icesword.frp.dynamic_set.KeysDynamicSet
 
@@ -54,12 +55,15 @@ interface DynamicMap<K, V> {
 //                tag = "fromEntries",
 //            )
 
+        // FIXME: V/R / merge mess...
         fun <K, V, R> unionMerge(
+            through: MapFactory<K, V>,
             maps: DynamicSet<DynamicMap<K, V>>,
             merge: (Set<V>) -> R,
             tag: String,
         ): DynamicMap<K, V> =
             unionMergeFast(
+                through = through,
                 maps = maps,
                 merge = { it.iterator().next() },
                 tag = tag,
@@ -71,11 +75,13 @@ interface DynamicMap<K, V> {
 //                }
 
         private fun <K, V, R> unionMergeFast(
+            through: MapFactory<K, R>,
             maps: DynamicSet<DynamicMap<K, V>>,
             merge: (Set<V>) -> R,
             tag: String,
         ): DynamicMap<K, R> =
             DynamicMapUnionMerge(
+                through = through,
                 maps = maps,
                 merge = merge,
                 tag = tag,

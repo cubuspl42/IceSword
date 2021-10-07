@@ -42,7 +42,8 @@ class KnotMeshLayer(
         get() = _knotMeshes
 
     private val globalKnots: DynamicMap<IntVec2, KnotPrototype> = DynamicMap.unionMerge(
-        _knotMeshes.map { it.globalKnots },
+        through = IntVec2.mapFactory(),
+        maps = _knotMeshes.map { it.globalKnots },
         merge = { knots: Set<KnotPrototype> -> knots.first() },
         tag = "KnotMeshLayer.globalKnots",
     )

@@ -362,6 +362,19 @@ fun buildTile(
                 getKnot(intVec2(0, -1)) is RockPrototype &&
                 getKnot(intVec2(0, 0)) is RockPrototype &&
                 !hasKnot(intVec2(-1, 0)) -> 638
-        else -> 630
+        getKnot(intVec2(-1, -1)) == null &&
+                getKnot(intVec2(-1, 0)) is RockPrototype &&
+                getKnot(intVec2(0, -1)) is RockPrototype &&
+                getKnot(intVec2(0, 0)) is RockPrototype -> 642
+        getKnot(intVec2(-1, -2)) == null &&
+                getKnot(intVec2(-1, -1)) is RockPrototype &&
+                getKnot(intVec2(-1, 0)) is RockPrototype &&
+                getKnot(intVec2(0, -1)) is RockPrototype &&
+                getKnot(intVec2(0, 0)) is RockPrototype -> 643
+        getKnot(intVec2(-1, -1)) is RockPrototype &&
+                getKnot(intVec2(-1, 0)) is RockPrototype &&
+                getKnot(intVec2(0, -1)) is RockPrototype &&
+                getKnot(intVec2(0, 0)) is RockPrototype -> 630
+        else -> -1
     }
 }

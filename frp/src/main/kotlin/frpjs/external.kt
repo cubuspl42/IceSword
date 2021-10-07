@@ -68,7 +68,7 @@ external interface JsMapEntry<K, V>
 @JsName("HashMap")
 external class HashMapJs<K, V>(
     entries: Any?,
-    hash: HashImpl<K>,
+    hash: Hash<K>,
 ) {
     val size: Int
 
