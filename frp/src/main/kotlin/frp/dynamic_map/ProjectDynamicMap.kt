@@ -24,12 +24,6 @@ class ProjectDynamicMap<K, V, K2, V2>(
     override val volatileContentView: Map<K2, V2>
         get() = this.mutableContent!!
 
-    override fun containsKeyNow(key: K2): Boolean =
-        volatileContentView.containsKey(key)
-
-    override fun getNow(key: K2): V2? =
-        volatileContentView.get(key)
-
     override fun onStart(): Unit {
         this.subscription = this.source.changes.subscribe { change ->
 //            change.added.forEach { (k, v) ->
@@ -49,15 +43,20 @@ class ProjectDynamicMap<K, V, K2, V2>(
             val addedProjections = change.added
                 .flatMap { (k, v) -> projectKey(k).map { k2 -> k to k2 } }
 
-            addedProjections.forEach { (k, k2) -> addLink(k2, k) }
 
             val addedAffectedKeys = addedProjections.map { (k, k2) -> k2 }.toList()
 
+//            val addedAddedKeys = addedAffectedKeys.asSequence()
+//                .filter { !volatileContentView.containsKey(it) }
+//
+//            val addedUpdatedKeys = addedAffectedKeys.asSequence()
+//                .filter { volatileContentView.containsKey(it) }
+
             val addedAddedKeys = addedAffectedKeys.asSequence()
-                .filter { !volatileContentView.containsKey(it) }
+                .filter { !linksMap!!.containsKey(it) }
 
             val addedUpdatedKeys = addedAffectedKeys.asSequence()
-                .filter { volatileContentView.containsKey(it) }
+                .filter { linksMap!!.containsKey(it) }
 
             val updatedKeys = change.updated.asSequence()
                 .flatMap { (k, v) -> projectKey(k) }
@@ -84,6 +83,8 @@ class ProjectDynamicMap<K, V, K2, V2>(
             val removed = lastLinks.map { (k, k2) -> k2 }.associateWithTo(hybridMapOf()) { k2 ->
                 volatileContentView[k2]!!
             }
+
+            addedProjections.forEach { (k, k2) -> addLink(k2, k) }
 
             val outChange = MapChange(
                 added = added,

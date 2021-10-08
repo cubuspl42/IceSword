@@ -168,7 +168,7 @@ value class HybridMapKeySet<K, V>(
     }
 }
 
-private value class HybridMap<K, V>(
+private class HybridMap<K, V>(
     private val hashMap: HashMapJs<K, V>,
 ) : MutableMap<K, V> {
     override val entries: MutableSet<MutableEntry<K, V>>
@@ -208,6 +208,17 @@ private value class HybridMap<K, V>(
 
     override fun remove(key: K): V? =
         hashMap.delete(key)
+
+    override fun equals(other: Any?): Boolean {
+        return toMap() == other
+    }
+
+    override fun hashCode(): Int {
+        return toMap().hashCode()
+    }
+
+    override fun toString(): String =
+        this.toMap().toString()
 }
 
 fun <K, V> hybridMapOf(keyHash: Hash<K> = HashImpl()): MutableMap<K, V> = HybridMap(

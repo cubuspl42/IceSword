@@ -95,7 +95,9 @@ class KnotMeshLayer(
             )
         },
     ).also {
-        it.changes.subscribe { }
+        it.changes.subscribe { change ->
+            println("KnotMeshLayer.globalTiles change: $change")
+        }
     }
 
 //    private fun buildTileAt(

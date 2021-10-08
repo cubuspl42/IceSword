@@ -99,5 +99,9 @@ class World(
 
         targetFocusPoint.syncTill(_cameraFocusPoint, till = tillStop)
     }
+
+    init {
+        tiles.changes.subscribe { } // FIXME
+    }
 }
 
