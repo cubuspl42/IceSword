@@ -110,7 +110,9 @@ class PlaneTiles {
         globalTileCoords.associateWithDynamic(
             tag = "globalTileCoords.associateWithDynamic",
             this::buildTileAt,
-        )
+        ).also {
+            it.changes.subscribe { } // FIXME
+        }
 
     private fun buildTileAt(
         globalTileCoord: IntVec2,

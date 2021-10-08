@@ -50,6 +50,27 @@ data class MapChange<K, V>(
         }
     }
 
+    fun applyToChecked(mutableMap: MutableMap<K, V>) {
+        added.forEach { (key, value) ->
+            val oldValue = mutableMap.put(key, value)
+            if (oldValue != null) {
+                throw IllegalStateException()
+            }
+        }
+
+        updated.forEach { (key, value) ->
+            mutableMap.put(key, value) ?: throw IllegalStateException()
+        }
+
+        removedEntries.forEach { (key, value) ->
+            val oldValue = mutableMap.remove(key)
+            if (oldValue != value) {
+                throw IllegalStateException()
+            }
+        }
+    }
+
+
     fun <K2> mapKeys(
         f: (Map.Entry<K, V>) -> K2,
         keyMap: Map<K, K2>,

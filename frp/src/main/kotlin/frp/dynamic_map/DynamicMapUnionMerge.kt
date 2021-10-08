@@ -26,14 +26,14 @@ class DynamicMapUnionMerge<K, V, R>(
         get() = this.mutableContent!!
 
 
-    override fun containsKeyNow(key: K): Boolean =
-        maps.volatileContentView.any { it.containsKeyNow(key) }
-
-    override fun getNow(key: K): R? {
-        val values: Set<V> = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
-        return if (values.isEmpty()) null
-        else merge(values)
-    }
+//    override fun containsKeyNow(key: K): Boolean =
+//        maps.volatileContentView.any { it.containsKeyNow(key) }
+//
+//    override fun getNow(key: K): R? {
+//        val values: Set<V> = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
+//        return if (values.isEmpty()) null
+//        else merge(values)
+//    }
 
     private var subscriptionOuter: Subscription? = null
 

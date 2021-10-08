@@ -137,9 +137,9 @@ fun <K, V> DynamicMap<K, V>.changesUnits(): Stream<Unit> =
 
 fun <K, V> DynamicMap<K, V>.sample(): Map<K, V> = volatileContentView.toMap()
 
-fun <K, V> DynamicMap<K, V>.unionMerge(other: DynamicMap<K, V>, tag: String): DynamicMap<K, V> =
-    DynamicMapUnion(this, other, tag = tag)
-        .validated(tag = tag)
+//fun <K, V> DynamicMap<K, V>.unionMerge(other: DynamicMap<K, V>, tag: String): DynamicMap<K, V> =
+//    DynamicMapUnion(this, other, tag = tag)
+//        .validated(tag = tag)
 
 //fun <K, V, R> DynamicMap<K, V>.mapKeys(tag: String, transform: (Map.Entry<K, V>) -> R): DynamicMap<R, V> =
 //    DynamicMapMapKeys(this, transform, tag = tag)
@@ -185,13 +185,14 @@ fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(tag: String? = null): DynamicMap<K,
 fun <K, V, K2, V2> DynamicMap<K, V>.project(
     projectKey: (K) -> Iterable<K2>,
     buildValue: (K2, Map<K, V>) -> V2,
+    tag: String = "project",
 ): DynamicMap<K2, V2> =
     ProjectDynamicMap(
         source = this,
         projectKey = projectKey,
         buildValue = buildValue,
-        tag = "project",
-    )
+        tag = tag,
+    ).validated(tag = tag)
 
 private const val enableMapValidation = false
 
@@ -353,45 +354,54 @@ class StaticDynamicMap<K, V>(
         get() = Cell.constant(staticContent)
 }
 
-class MutableDynamicMap<K, V>(
+class MutableDynamicMap<K, V : Any>(
     initialContent: Map<K, V>,
 ) : SimpleDynamicMap<K, V>(tag = "MutableDynamicMap") {
     companion object {
-        fun <K, V> of(content: Map<K, V>): MutableDynamicMap<K, V> =
+        fun <K, V : Any> of(content: Map<K, V>): MutableDynamicMap<K, V> =
             MutableDynamicMap(content)
     }
 
-    private var mutableContent: Map<K, V> = initialContent
+    private var mutableContent: MutableMap<K, V> = initialContent.toMutableMap()
 
     override val volatileContentView: Map<K, V>
         get() = mutableContent
 
     fun put(key: K, value: V) {
-        val oldContent = mutableContent
-        val newContent = oldContent + (key to value)
-        mutableContent = newContent
+        val oldValue = mutableContent.put(key, value)
 
-        val change = MapChange.diff(oldContent, newContent)
-
-        if (change.added.keys.intersect(oldContent.keys).isNotEmpty()) {
-            throw IllegalStateException("MutableDynamicMap: change.added.keys.intersect")
+        if (oldValue == null) {
+            notifyListeners(
+                MapChange(
+                    added = mapOf(key to value),
+                    updated = emptyMap(),
+                    removedEntries = emptyMap(),
+                ),
+            )
+        } else {
+            notifyListeners(
+                MapChange(
+                    added = emptyMap(),
+                    updated = mapOf(key to value),
+                    removedEntries = emptyMap(),
+                ),
+            )
         }
+    }
 
+    fun applyChange(change: MapChange<K, V>) {
+        change.applyToChecked(mutableContent)
         notifyListeners(change)
     }
 
     fun remove(key: K) {
-        val oldContent = mutableContent
-        if (oldContent.containsKey(key)) {
-            val value = oldContent.getOrElse(key) { throw IllegalStateException() }
-
-            val newContent = oldContent - key
-            mutableContent = newContent
+        if (mutableContent.containsKey(key)) {
+            val oldValue = mutableContent.remove(key) ?: throw IllegalStateException()
 
             val change = MapChange(
                 added = emptyMap(),
                 updated = emptyMap(),
-                removedEntries = mapOf(key to value),
+                removedEntries = mapOf(key to oldValue),
             )
 
             notifyListeners(change)

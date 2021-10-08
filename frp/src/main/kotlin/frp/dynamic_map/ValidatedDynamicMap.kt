@@ -27,6 +27,22 @@ class ValidatedDynamicMap<K, V>(
 
     override fun onStart() {
         subscription = source.changes.subscribe { change ->
+            val addedUpdatedIntersection = change.added.keys.intersect(change.updated.keys)
+            if (addedUpdatedIntersection.isNotEmpty()) {
+                throw IllegalStateException("Dynamic map #${tag} adds and updates same keys: $addedUpdatedIntersection")
+            }
+
+            val updatedRemovedIntersection = change.updated.keys.intersect(change.removedEntries.keys)
+            if (updatedRemovedIntersection.isNotEmpty()) {
+                throw IllegalStateException("Dynamic map #${tag} updates and removes same keys: $updatedRemovedIntersection")
+            }
+
+            val addedRemovedIntersection = change.added.keys.intersect(change.removedEntries.keys)
+            if (addedRemovedIntersection.isNotEmpty()) {
+                throw IllegalStateException("Dynamic map #${tag} adds and removes same keys: $addedRemovedIntersection")
+            }
+
+
             change.added.forEach {
                 if (source.getNow(it.key) != it.value) {
                     throw IllegalStateException("source.getNow(it.key) != it.value")
@@ -38,12 +54,15 @@ class ValidatedDynamicMap<K, V>(
             }
 
             change.updated.forEach {
-                if (source.getNow(it.key) != it.value) {
-                    throw IllegalStateException("source.getNow(it.key) != it.value")
+                val exposedValue = source.getNow(it.key)
+                val updatedValue = it.value
+
+                if (exposedValue != updatedValue) {
+                    throw IllegalStateException("Dynamic map #${tag}, for key ${it.key}, exposes value: $exposedValue, while emits update: $updatedValue")
                 }
 
                 if (!mutableContent!!.containsKey(it.key)) {
-                    throw IllegalStateException("Dynamic map #${tag} does not contain key ${it.key} (attempted to update)")
+                    throw IllegalStateException("Dynamic map #${tag} dependent does not contain key ${it.key} (attempted to update)")
                 }
             }
 

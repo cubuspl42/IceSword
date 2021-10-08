@@ -25,32 +25,11 @@ class ProjectDynamicMap<K, V, K2, V2>(
         get() = this.mutableContent!!
 
     override fun onStart(): Unit {
-        this.subscription = this.source.changes.subscribe { change ->
-//            change.added.forEach { (k, v) ->
-//                val projectedKeys = projectKey(k)
-//                projectedKeys.forEach { k2 ->
-//                   addLink(k2, k)
-//                }
-//            }
-
-            // const addedProjections: ReadonlyArray<[K, K2]> = [...change.removed].flatMap(
-            //   ([k,]) => [...Iterables.map(
-            //     this.projectKey(k),
-            //     (k2): [K, K2] => [k, k2],
-            //   )],
-            // );
-
+        fun processChange(change: MapChange<K, V>) {
             val addedProjections = change.added
                 .flatMap { (k, v) -> projectKey(k).map { k2 -> k to k2 } }
 
-
             val addedAffectedKeys = addedProjections.map { (k, k2) -> k2 }.toList()
-
-//            val addedAddedKeys = addedAffectedKeys.asSequence()
-//                .filter { !volatileContentView.containsKey(it) }
-//
-//            val addedUpdatedKeys = addedAffectedKeys.asSequence()
-//                .filter { volatileContentView.containsKey(it) }
 
             val addedAddedKeys = addedAffectedKeys.asSequence()
                 .filter { !linksMap!!.containsKey(it) }
@@ -64,14 +43,20 @@ class ProjectDynamicMap<K, V, K2, V2>(
             val removedProjections = change.removedEntries.asSequence()
                 .flatMap { (k, _) -> projectKey(k).map { k2 -> k to k2 } }
 
-            val removedProjectionsGrouped = removedProjections.groupByTo(hybridMapOf()) { (k, k2) ->
-                if (removeLink(k2, k)) RemovedLinkKind.LAST else RemovedLinkKind.NOT_LAST
-            }
+            val removedProjectionsGrouped = removedProjections
+                .groupByTo(hybridMapOf()) { (k, k2) -> k2 }
+                .map { (k2, links) ->
+                    val linksKeys = links.map { (k, k2) -> k }
+                    val wereLast = removeLinks(k2, linksKeys)
+                    if (wereLast) (RemovedLinkKind.LAST to k2) else (RemovedLinkKind.NOT_LAST to k2)
+                }
+                .groupBy { it.first }
 
-            val lastLinks = removedProjectionsGrouped[RemovedLinkKind.LAST] ?: emptyList()
-            val notLastLinks = removedProjectionsGrouped[RemovedLinkKind.NOT_LAST] ?: emptyList()
+            val lastLinks = (removedProjectionsGrouped[RemovedLinkKind.LAST] ?: emptyList()).map { (k, k2) -> k2 }
+            val notLastLinks =
+                (removedProjectionsGrouped[RemovedLinkKind.NOT_LAST] ?: emptyList()).map { (k, k2) -> k2 }
 
-            val removedUpdatedKeys = notLastLinks.asSequence().map { (k, k2) -> k2 }
+            val removedUpdatedKeys = notLastLinks.asSequence()
 
             val added = addedAddedKeys.associateWithTo(hybridMapOf()) { k2 ->
                 buildValue(k2, source.volatileContentView)
@@ -80,9 +65,25 @@ class ProjectDynamicMap<K, V, K2, V2>(
             val updated = (addedUpdatedKeys + updatedKeys + removedUpdatedKeys)
                 .associateWithTo(hybridMapOf()) { buildValue(it, source.volatileContentView) }
 
-            val removed = lastLinks.map { (k, k2) -> k2 }.associateWithTo(hybridMapOf()) { k2 ->
+            val removed = lastLinks.associateWithTo(hybridMapOf()) { k2 ->
                 volatileContentView[k2]!!
             }
+
+//            if (updated.keys.intersect(removed.keys).isNotEmpty()) {
+//                println("updated intersects removed")
+//            }
+//
+//            if (removedUpdatedKeys.toSet().intersect(removed.keys).isNotEmpty()) {
+//                println("removedUpdatedKeys intersects removed")
+//            }
+//
+//            if (updatedKeys.toSet().intersect(removed.keys).isNotEmpty()) {
+//                println("updatedKeys intersects removed")
+//            }
+//
+//            if (lastLinks.intersect(notLastLinks.toSet()).isNotEmpty()) {
+//                println("lastLinks intersects notLastLinks")
+//            }
 
             addedProjections.forEach { (k, k2) -> addLink(k2, k) }
 
@@ -93,6 +94,10 @@ class ProjectDynamicMap<K, V, K2, V2>(
             )
 
             processChange(outChange)
+        }
+
+        this.subscription = this.source.changes.subscribe {
+            processChange(it)
         }
 
         val sourceContent = source.volatileContentView
@@ -144,22 +149,6 @@ class ProjectDynamicMap<K, V, K2, V2>(
 
     // Returns: if it was the last link
     private fun removeLink(b: K2, a: K): Boolean {
-//        const linksMap = this.linksMap!;
-//        const links = linksMap.get(b)!;
-//
-//        const wasThere = links.delete(a);
-//
-//        if (!wasThere) {
-//            throw new Error("Link isn't present");
-//        }
-//
-//        if (links.size === 0) {
-//            linksMap.delete(b);
-//            return true;
-//        } else {
-//            return false;
-//        }
-
         val linksMap = this.linksMap!!
         val links = linksMap[b]!!
 
@@ -177,6 +166,27 @@ class ProjectDynamicMap<K, V, K2, V2>(
             return false
         }
     }
+
+    // Returns: if it were last links
+    private fun removeLinks(k2: K2, keys: Iterable<K>): Boolean {
+        val linksMap = this.linksMap!!
+        val links = linksMap[k2]!!
+
+        keys.forEach {
+            val wasThere = links.remove(it)
+
+            if (!wasThere) {
+                throw IllegalStateException("Link isn't present");
+            }
+        }
+
+        return if (links.isEmpty()) {
+            val removed = linksMap.remove(k2)
+            if (removed !== links) throw IllegalStateException()
+            true
+        } else false
+    }
+
 
     private fun processChange(change: MapChange<K2, V2>) {
         if (!change.isEmpty()) {

@@ -101,9 +101,37 @@ class ProjectDynamicMapTest {
 
         val changes = mutableListOf<MapChange<K2, V2>>()
 
-        result.changes.subscribe(changes::add)
+        var observedVolatileContent: Map<K2, V2>? = null
+
+        result.changes.subscribe {
+            observedVolatileContent = result.volatileContentView.toMap()
+            changes.add(it)
+        }
 
         source.put(K(8), V(81))
+
+        assertEquals(
+            expected = mapOf(
+                K2(3) to V2(50),
+                K2(4) to V2(50 + 60),
+                K2(5) to V2(50 + 60 + 70),
+                K2(6) to V2(50 + 60 + 70 + 81),
+                K2(7) to V2(50 + 60 + 70 + 81),
+
+                K2(8) to V2(60 + 70 + 81 + 100),
+                K2(9) to V2(70 + 81 + 100),
+                K2(10) to V2(81 + 100 + 120),
+                K2(11) to V2(100 + 120 + 130),
+                K2(12) to V2(100 + 120 + 130),
+
+                K2(13) to V2(120 + 130 + 150),
+                K2(14) to V2(120 + 130 + 150),
+                K2(15) to V2(130 + 150),
+                K2(16) to V2(150),
+                K2(17) to V2(150),
+            ),
+            actual = observedVolatileContent,
+        )
 
         assertEquals(
             expected = listOf(
@@ -398,6 +426,54 @@ class ProjectDynamicMapTest {
                         K2(10) to V2(100),
                         K2(11) to V2(100),
                         K2(12) to V2(100),
+                    ),
+                )
+            ),
+            actual = changes,
+        )
+    }
+
+
+    @Test
+    fun testSourceRemovedAllEntries() {
+        // source removed all entries at once
+
+        val source = MutableDynamicMap(
+            mapOf(
+                K(5) to V(50),
+                K(6) to V(60),
+            )
+        )
+
+        val result = projectDynamicMap(source)
+
+        val changes = mutableListOf<MapChange<K2, V2>>()
+
+        result.changes.subscribe(changes::add)
+
+        source.applyChange(
+            MapChange(
+                added = emptyMap(),
+                updated = emptyMap(),
+                removedEntries = mapOf(
+                    K(5) to V(50),
+                    K(6) to V(60),
+                ),
+            )
+        )
+
+        assertEquals(
+            expected = listOf(
+                MapChange(
+                    added = emptyMap(),
+                    updated = emptyMap(),
+                    removedEntries = mapOf(
+                        K2(3) to V2(50),
+                        K2(4) to V2(50 + 60),
+                        K2(5) to V2(50 + 60),
+                        K2(6) to V2(50 + 60),
+                        K2(7) to V2(50 + 60),
+                        K2(8) to V2(60),
                     ),
                 )
             ),

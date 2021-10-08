@@ -72,10 +72,28 @@ class World(
 //        get() = metaTileClusters.content.sample().single { it.isSelected.sample() }
 
 //    val tiles = baseTiles
-//        .unionMerge(knotMeshLayer.globalTiles, tag = ".union(knotMesh.tiles ...) ")
-//        .unionMerge(planeTiles.tiles, tag = ".union(planeTiles.tiles ...)")
+//        .unionMergeFast(knotMeshLayer.globalTiles, tag = ".union(knotMesh.tiles ...) ")
+//        .unionMergeFast(planeTiles.tiles, tag = ".union(planeTiles.tiles ...)")
+//
+//        .also {
+//            it.changes.subscribe { change ->
+//                println("Wolrd.tiles change: $change")
+//            }
+//        }
 
-    val tiles = knotMeshLayer.globalTiles
+    val tiles = DynamicMap.unionMerge(
+        through = IntVec2.mapFactory(),
+        maps = DynamicSet.of(
+            setOf(
+                knotMeshLayer.globalTiles,
+                planeTiles.tiles,
+            ),
+        ),
+        merge = { TODO() },
+        tag = "World.tiles",
+    )
+
+//    val tiles = knotMeshLayer.globalTiles
 
     private val _cameraFocusPoint = MutCell(startPoint)
 
