@@ -1,5 +1,6 @@
 package icesword.frp.dynamic_map
 
+import icesword.collections.mapValuesLazy
 import icesword.frp.*
 
 class DynamicMapFuseValues<K, V>(
@@ -30,7 +31,7 @@ class DynamicMapFuseValues<K, V>(
 //        get() = mutableContent
 
     override val volatileContentView: Map<K, V>
-        get() = source.volatileContentView.mapValues { (_, cell) -> cell.sample() }
+        get() = source.volatileContentView.mapValuesLazy { (_, cell) -> cell.sample() }
 
     override fun containsKeyNow(key: K): Boolean =
         source.containsKeyNow(key)

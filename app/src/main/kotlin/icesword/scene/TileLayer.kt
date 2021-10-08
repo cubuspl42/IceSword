@@ -24,6 +24,8 @@ class TileLayer(
                 val tileCoord = IntVec2(j, i)
                 val tileId = tilesView.getTile(tileCoord) ?: -1
 
+                println("Drawing tile at $tileCoord: $tileId")
+
                 ctx.strokeStyle = "grey"
                 ctx.lineWidth = 1.0
 

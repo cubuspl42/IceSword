@@ -58,6 +58,11 @@ fun worldView(
         when (it.key) {
             "s" -> editor.selectTool(Tool.SELECT)
             "v" -> editor.selectTool(Tool.MOVE)
+            "1" -> {
+                val tileCoord = IntVec2(79, 92)
+                val tileId = editor.world.tiles.volatileContentView[tileCoord]
+                println("Tile ID @ $tileCoord = $tileId")
+            }
         }
     }
 
@@ -104,15 +109,15 @@ fun worldView(
                         planeLayer,
                         planeUiLayer,
                     ),
-//                    overlayElements = world.elastics.map {
-//                        createElasticOverlayElement(
-//                            elastic = it,
-//                            viewport = this,
-//                            viewTransform = viewTransform,
-//                            tillDetach = tillDetach,
-//                        )
-//                    },
-                    overlayElements = DynamicSet.of(emptySet()),
+                    overlayElements = world.elastics.map {
+                        createElasticOverlayElement(
+                            elastic = it,
+                            viewport = this,
+                            viewTransform = viewTransform,
+                            tillDetach = tillDetach,
+                        )
+                    },
+//                    overlayElements = DynamicSet.of(emptySet()),
                 )
             },
         )

@@ -58,7 +58,7 @@ class World(
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
             setOf(
-//                elastics,
+                elastics,
                 knotMeshLayer.knotMeshes,
 //                experimentalTileLayer.tileEntities,
             ),
@@ -68,30 +68,20 @@ class World(
         it.changes.subscribe { }
     }
 
-//    val selectedMetaTileCluster: MetaTileCluster
-//        get() = metaTileClusters.content.sample().single { it.isSelected.sample() }
+//    val tiles = DynamicMap.unionMerge(
+//        through = IntVec2.mapFactory(),
+//        maps = DynamicSet.of(
+//            setOf(
+//                knotMeshLayer.globalTiles,
+//                planeTiles.tiles,
+//            ),
+//        ),
+//        merge = { TODO() },
+//        tag = "World.tiles",
+//    )
 
-//    val tiles = baseTiles
-//        .unionMergeFast(knotMeshLayer.globalTiles, tag = ".union(knotMesh.tiles ...) ")
-//        .unionMergeFast(planeTiles.tiles, tag = ".union(planeTiles.tiles ...)")
-//
-//        .also {
-//            it.changes.subscribe { change ->
-//                println("Wolrd.tiles change: $change")
-//            }
-//        }
+    val tiles = planeTiles.tiles.validated("World.tiles")
 
-    val tiles = DynamicMap.unionMerge(
-        through = IntVec2.mapFactory(),
-        maps = DynamicSet.of(
-            setOf(
-                knotMeshLayer.globalTiles,
-                planeTiles.tiles,
-            ),
-        ),
-        merge = { TODO() },
-        tag = "World.tiles",
-    )
 
 //    val tiles = knotMeshLayer.globalTiles
 
@@ -119,7 +109,9 @@ class World(
     }
 
     init {
-        tiles.changes.subscribe { } // FIXME
+        tiles.changes.subscribe { change ->
+            println("World.tiles change: $change")
+        } // FIXME
     }
 }
 
