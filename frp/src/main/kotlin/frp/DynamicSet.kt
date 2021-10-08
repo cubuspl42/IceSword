@@ -201,7 +201,7 @@ fun <A> DynamicSet<A>.memorized(): DynamicSet<A> =
 //
 //}
 
-const val enableSetValidation: Boolean = true
+const val enableSetValidation: Boolean = false
 
 fun <A> DynamicSet<A>.validated(tag: String): DynamicSet<A> =
     if (enableSetValidation) ValidatedDynamicSet(this, tag = tag)
