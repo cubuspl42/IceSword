@@ -31,13 +31,18 @@ class MetaTileCluster(
 //            localMetaTiles.keys.map { tileOffset + it }.toSet()
 //        })
 
-    private val globalTileCoordsFuseMap: DynamicSet<IntVec2> =
-        localMetaTilesDynamic.getKeys().fuseMap { localTileCoord ->
-            tileOffset.map { it + localTileCoord }
-        }
+//    private val globalTileCoordsFuseMap: DynamicSet<IntVec2> =
+//        localMetaTilesDynamic.getKeys().fuseMap { localTileCoord ->
+//            tileOffset.map { it + localTileCoord }
+//        }
 
-    val globalTileCoords: DynamicSet<IntVec2>
-        get() = globalTileCoordsFuseMap
+    val globalTileCoords: DynamicSet<IntVec2> =
+        localMetaTilesDynamic.getKeys().adjust(
+            hash = IntVec2.HASH,
+            adjustment = tileOffset,
+        ) { localKnotCoord: IntVec2, tileOffset: IntVec2 ->
+            tileOffset + localKnotCoord
+        }
 
     fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
         tileOffset.switchMap { localMetaTilesDynamic.get(globalTileCoord - it) }
