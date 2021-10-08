@@ -50,6 +50,8 @@ class AdjustDynamicSet<K, A>(
 
             val outChange = change.map { combine(it, adj) }
 
+            outChange.applyTo(mutableContent!!)
+
             return outChange
         }
 

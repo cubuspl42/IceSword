@@ -27,6 +27,11 @@ class ValidatedDynamicSet<A>(
 
     override fun onStart() {
         subscription = source.changes.subscribe { change ->
+            val addedUpdatedIntersection = change.added.intersect(change.removed)
+            if (addedUpdatedIntersection.isNotEmpty()) {
+                throw IllegalStateException("Dynamic set #${tag} adds and removes same keys: $addedUpdatedIntersection")
+            }
+
             change.added.forEach {
                 if (!source.containsNow(it)) {
                     throw IllegalStateException("Dynamic set #${tag} does not expose added value: $it")
@@ -44,7 +49,7 @@ class ValidatedDynamicSet<A>(
                 }
 
                 if (!mutableContent!!.contains(it)) {
-                    throw IllegalStateException("Dynamic set #${tag} does not contain $it (attempted to remove)")
+                    throw IllegalStateException("Dynamic set #${tag} removed a value that it shouldn't have contained: $it")
                 }
             }
 

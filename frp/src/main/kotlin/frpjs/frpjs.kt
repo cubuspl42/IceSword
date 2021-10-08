@@ -1,6 +1,6 @@
 package frpjs
 
-import icesword.frpjs.HashTable
+import icesword.frpjs.*
 import kotlin.collections.MutableMap.MutableEntry
 
 external interface Hash<T> {
@@ -37,8 +37,22 @@ value class FastSetIterator<E>(
     }
 }
 
+private value class WrapperIterator<E>(
+    private val iterator: PeekIterator<JsMapEntry<E, E>>,
+) : MutableIterator<E> {
+    override fun hasNext(): Boolean =
+        iterator.hasNext()
+
+    override fun next(): E =
+        iterator.next().key
+
+    override fun remove() {
+        TODO("Not yet implemented")
+    }
+}
+
 value class FastSet<E>(
-    private val hashTable: HashTable<E, E>,
+    private val hashTable: HashMapJs<E, E>,
 ) : MutableSet<E> {
     override val size: Int
         get() = hashTable.size
@@ -53,10 +67,10 @@ value class FastSet<E>(
         size == 0
 
     override fun iterator(): MutableIterator<E> =
-        FastSetIterator(hashTable.iterate())
+        WrapperIterator(hashTable.iterate())
 
     override fun add(element: E): Boolean =
-        hashTable.put(element, element) != null
+        hashTable.set(element, element) != null
 
     override fun addAll(elements: Collection<E>): Boolean =
         elements.map { add(it) }.any()
@@ -65,25 +79,27 @@ value class FastSet<E>(
         hashTable.clear()
     }
 
-    override fun remove(element: E): Boolean {
-        TODO("Not yet implemented")
-    }
+    override fun remove(element: E): Boolean =
+        hashTable.delete(element) != null
 
     override fun removeAll(elements: Collection<E>): Boolean {
-        TODO("Not yet implemented")
+        return elements.any { remove(it) }
     }
 
     override fun retainAll(elements: Collection<E>): Boolean {
         TODO("Not yet implemented")
     }
+
+    override fun toString(): String =
+        toSet().toString()
 }
 
 
 fun <E> fastSetOf(hash: Hash<E>): MutableSet<E> =
     FastSet<E>(
-        hashTable = HashTable(
+        hashTable = HashMapJs(
             hash = hash,
-            extract = { it },
+            entries = null,
         ),
     )
 

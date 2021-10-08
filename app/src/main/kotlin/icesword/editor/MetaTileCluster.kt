@@ -42,6 +42,10 @@ class MetaTileCluster(
             adjustment = tileOffset,
         ) { localKnotCoord: IntVec2, tileOffset: IntVec2 ->
             tileOffset + localKnotCoord
+        }.also {
+            it.changes.subscribe { change ->
+                println("MetaTileLayer.globalTileCoords change: $change")
+            }
         }
 
     fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
