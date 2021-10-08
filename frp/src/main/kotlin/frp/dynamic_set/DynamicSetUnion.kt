@@ -48,19 +48,25 @@ class DynamicSetUnion<A>(
 
         // Returns: true if value was actually removed
         fun processRemovedValue(innerSet: DynamicSet<A>, removedValue: A): Boolean {
-            val links = linksMap!![removedValue]!!
+            val linksMap = this.linksMap!!
+            val links = linksMap[removedValue]!!
 
             if (links.isEmpty()) {
                 throw IllegalStateException("links.isEmpty()")
             }
 
 
-            return (links.size == 1).also {
-                val wasThere = links.remove(innerSet)
+            val wasThere = links.remove(innerSet)
 
-                if (!wasThere) {
-                    throw IllegalStateException("!wasThere")
-                }
+            if (!wasThere) {
+                throw IllegalStateException("!wasThere")
+            }
+
+            if (links.isEmpty()) {
+                linksMap.remove(removedValue)
+                return true
+            } else {
+                return false
             }
         }
 
@@ -128,7 +134,7 @@ class DynamicSetUnion<A>(
             notifyListeners(outChange)
         }
 
-        linksMap = mutableMapOf()
+        this.linksMap = mutableMapOf()
 
         subscriptionMap = mutableMapOf()
 

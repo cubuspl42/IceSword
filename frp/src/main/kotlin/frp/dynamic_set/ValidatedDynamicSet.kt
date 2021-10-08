@@ -29,7 +29,7 @@ class ValidatedDynamicSet<A>(
         subscription = source.changes.subscribe { change ->
             change.added.forEach {
                 if (!source.containsNow(it)) {
-                    throw IllegalStateException("!source.containsNow(it)")
+                    throw IllegalStateException("Dynamic set #${tag} does not expose added value: $it")
                 }
 
                 if (mutableContent!!.contains(it)) {
@@ -39,7 +39,8 @@ class ValidatedDynamicSet<A>(
 
             change.removed.forEach {
                 if (source.containsNow(it)) {
-                    throw IllegalStateException("source.containsNow(it)")
+                    throw IllegalStateException("Dynamic set #${tag} still exposes removed element: $it")
+
                 }
 
                 if (!mutableContent!!.contains(it)) {

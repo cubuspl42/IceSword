@@ -41,9 +41,7 @@ class DynamicSetUnionTest {
         )
 
         assertEquals(
-            // TODO: Fix this, 1 shouldn't be included
-            // expected = setOf(2, 3, 4, 5),
-            expected = setOf(1, 2, 3, 4, 5),
+            expected = setOf(2, 3, 4, 5),
             actual = result.volatileContentView,
         )
     }
