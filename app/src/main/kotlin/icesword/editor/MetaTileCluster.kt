@@ -55,7 +55,7 @@ class MetaTileCluster(
     override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
 }
 
-class PlaneTiles {
+class MetaTileLayer {
     private val _elastics = MutableDynamicSet.of(
         setOf(
             Elastic(
@@ -99,11 +99,11 @@ class PlaneTiles {
 
     private val globalTileCoords: DynamicSet<IntVec2> =
         elastics.unionMapDynamic { it.metaTileCluster.globalTileCoords }
-//            .also {
-//                it.changes.subscribe { change ->
-//                    println("globalTileCoords change: $change")
-//                }
-//            }
+            .also {
+                it.changes.subscribe { change ->
+//                    println("MetaTileLayer.globalTileCoords change: $change")
+                }
+            }
 
 //            .also { dynSet ->
 //                dynSet.content.reactTill(Till.never) {
@@ -137,7 +137,7 @@ class PlaneTiles {
 //                    println("[$globalTileCoord] fuseValues change: $change")
 //                }
 //            }
-            .filterValuesNotNull(tag = "buildTileAt($globalTileCoord) / .filterValuesNotNull")
+//            .filterValuesNotNull(tag = "buildTileAt($globalTileCoord) / .filterValuesNotNull")
 //            .also { dynMap ->
 //                dynMap.changes.subscribe { change ->
 //                    println("[$globalTileCoord] filterValuesNotNull change: $change")
@@ -148,11 +148,11 @@ class PlaneTiles {
 
         return metaTiles.content.map { metaTilesContent ->
             val tileId = buildTile(metaTilesContent)
-            tileId ?: metaTilesContent.firstNotNullOfOrNull { it.tileId } ?: -1
+            tileId ?: metaTilesContent.firstNotNullOfOrNull { it?.tileId } ?: -1
         }
     }
 
-    private fun buildTile(metaTiles: Set<MetaTile>): Int? {
+    private fun buildTile(metaTiles: Set<MetaTile?>): Int? {
         fun containsAll(vararg ms: MetaTile): Boolean =
             ms.all { metaTiles.contains(it) }
 

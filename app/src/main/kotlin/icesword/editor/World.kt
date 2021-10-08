@@ -2,7 +2,6 @@ package icesword.editor
 
 import icesword.frp.*
 import icesword.geometry.IntVec2
-import icesword.tileAtPoint
 import icesword.wwd.Wwd
 import kotlinx.browser.window
 import org.khronos.webgl.get
@@ -42,13 +41,13 @@ class World(
 
     private val baseTiles = DynamicMap.of(wwdTiles)
 
-    val planeTiles = PlaneTiles()
+    val metaTileLayer = MetaTileLayer()
 
     val knotMeshLayer = KnotMeshLayer(
         startPoint = startPoint,
     )
 
-    val elastics = planeTiles.elastics
+    val elastics = metaTileLayer.elastics
 
 
 //    val experimentalTileLayer = ExperimentalTileLayer(
@@ -80,7 +79,7 @@ class World(
 //        tag = "World.tiles",
 //    )
 
-    val tiles = planeTiles.tiles.validated("World.tiles")
+    val tiles = metaTileLayer.tiles.validated("World.tiles")
 
 
 //    val tiles = knotMeshLayer.globalTiles
@@ -110,7 +109,7 @@ class World(
 
     init {
         tiles.changes.subscribe { change ->
-            println("World.tiles change: $change")
+//            println("World.tiles change: $change")
         } // FIXME
     }
 }

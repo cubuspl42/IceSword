@@ -70,6 +70,7 @@ class MapValuesNotNullDynamicMap<K, V, V2 : Any>(
                 getNow(key)?.let { value -> key to value }
             }.toMap()
 
+            // TODO: Check if the lazy volatile content view doesn't break this
             // Updated in source, not filtered-out before
             val removed2 = change.updated.mapNotNull { entry ->
                 val key = entry.key

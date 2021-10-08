@@ -5,7 +5,6 @@ import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.sample
 import icesword.geometry.IntRect
-import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.scene.Tileset
 import icesword.tileAtPoint
@@ -83,7 +82,7 @@ class Editor(
             ),
         )
 
-        world.planeTiles.insertElastic(elastic)
+        world.metaTileLayer.insertElastic(elastic)
 
         selectEntity(elastic)
     }
