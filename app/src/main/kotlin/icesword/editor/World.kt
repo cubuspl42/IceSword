@@ -67,19 +67,19 @@ class World(
         it.changes.subscribe { }
     }
 
-//    val tiles = DynamicMap.unionMerge(
-//        through = IntVec2.mapFactory(),
-//        maps = DynamicSet.of(
-//            setOf(
-//                knotMeshLayer.globalTiles,
-//                planeTiles.tiles,
-//            ),
-//        ),
-//        merge = { TODO() },
-//        tag = "World.tiles",
-//    )
+    val tiles = DynamicMap.unionMerge(
+        through = IntVec2.mapFactory(),
+        maps = DynamicSet.of(
+            setOf(
+                knotMeshLayer.globalTiles,
+                metaTileLayer.tiles,
+            ),
+        ),
+        merge = { TODO() },
+        tag = "World.tiles",
+    )
 
-    val tiles = metaTileLayer.tiles.validated("World.tiles")
+//    val tiles = metaTileLayer.tiles.validated("World.tiles")
 
 
 //    val tiles = knotMeshLayer.globalTiles
