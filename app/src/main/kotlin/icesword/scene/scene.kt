@@ -1,13 +1,9 @@
 package icesword.scene
 
-import html.DynamicStyleDeclaration
-import html.Transform
 import html.createContainer
 import html.createHtmlElement
-import html.createStyledHtmlElement
 import html.createSvgGroup
 import html.createSvgRoot
-import html.linkChildren
 import html.linkSvgChildren
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
@@ -80,6 +76,8 @@ class Layer(
         translate = transform,
         tillDetach = tillDetach,
     ).also { root ->
+        root.setAttribute("class", "layerOverlay")
+
         val buildOverlayElements = this.buildOverlayElements
 
         val overlayElements = if (buildOverlayElements != null) {
@@ -101,7 +99,7 @@ class SceneContext {
 
 class Scene(
     val layers: List<Layer>,
-    val overlayElements: DynamicSet<HTMLElement>,
+    val buildOverlayElements: BuildOverlayElements,
 )
 
 fun scene(
@@ -130,11 +128,11 @@ fun scene(
         return canvas
     }
 
-    fun createLayersOverlay(scene: Scene): SVGElement {
+    fun createSceneOverlay(scene: Scene): SVGElement {
         val overlay = createSvgRoot(
             tillDetach = tillDetach,
         ).apply {
-            setAttribute("class", "layers-overlay")
+            setAttribute("class", "svgOverlay")
 
             style.apply {
                 setProperty("grid-column", "1")
@@ -147,28 +145,23 @@ fun scene(
             }
         }
 
-        val children = scene.layers.map {
+        val layersOverlays = scene.layers.map {
             it.buildOverlayRoot(svg = overlay, tillDetach = tillDetach)
         }
 
-        children.forEach(overlay::appendChild)
+        val topOverlayElements = scene.buildOverlayElements(overlay)
 
-        return overlay
-    }
-
-    fun createSceneOverlay(scene: Scene): HTMLElement {
-        val overlay = createContainer(
-            children = scene.overlayElements,
-            tillDetach,
+        val topOverlay = createSvgGroup(
+            svg = overlay,
+            translate = Cell.constant(IntVec2.ZERO),
+            tillDetach = tillDetach,
         ).apply {
-            className = "scene-overlay"
-
-            style.apply {
-                setProperty("grid-column", "1")
-                setProperty("grid-row", "1")
-                zIndex = "2"
-            }
+            setAttribute("class", "topOverlay")
+            linkSvgChildren(this, topOverlayElements, till = tillDetach)
         }
+
+        layersOverlays.forEach(overlay::appendChild)
+        overlay.appendChild(topOverlay)
 
         return overlay
     }
@@ -194,8 +187,6 @@ fun scene(
     val scene = buildScene()
 
     val canvas = createSceneCanvas()
-
-    val layersOverlay = createLayersOverlay(scene)
 
     val sceneOverlay = createSceneOverlay(scene)
 
@@ -258,7 +249,6 @@ fun scene(
         style.display = "grid"
 
         appendChild(canvas)
-        appendChild(layersOverlay)
         appendChild(sceneOverlay)
     }
 

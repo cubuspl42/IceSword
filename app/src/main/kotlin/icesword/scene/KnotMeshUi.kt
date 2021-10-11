@@ -5,6 +5,7 @@ import icesword.TILE_SIZE
 import icesword.editor.*
 import icesword.frp.*
 import icesword.geometry.IntRect
+import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileRect
 import icesword.ui.EntityMoveDragController
@@ -138,16 +139,14 @@ fun createKnotMeshOverlayElement(
 
         val tileOverlay = createSvgRect(
             svg = svg,
-            width = TILE_SIZE,
-            height = TILE_SIZE,
+            size = Cell.constant(IntSize(TILE_SIZE, TILE_SIZE)),
             translate = Cell.constant(localTileCoord.times(TILE_SIZE)),
             style = DynamicStyleDeclaration(
                 cursor = moveController.map { it?.let { Cursor.move } },
             ),
             tillDetach = till,
         ).apply {
-            setAttributeNS(null, "fill", "rgba(255, 255, 255, 32)")
-            setAttributeNS(null, "fill-opacity", "0.2")
+            setAttributeNS(null, "fill-opacity", "0")
 
             style.apply {
                 borderStyle = "dashed"

@@ -2,6 +2,7 @@ package html
 
 import icesword.MouseDrag
 import icesword.frp.*
+import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
 import org.w3c.dom.Element
@@ -10,6 +11,7 @@ import org.w3c.dom.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
+import org.w3c.dom.svg.SVGCircleElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGGElement
 import org.w3c.dom.svg.SVGGraphicsElement
@@ -58,16 +60,17 @@ fun createSvgGroup(
 
 fun createSvgRect(
     svg: SVGSVGElement,
-    width: Int,
-    height: Int,
+    size: Cell<IntSize>,
     translate: Cell<IntVec2>,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
 ): SVGElement {
     val rect = document.createElementNS("http://www.w3.org/2000/svg", "rect") as SVGRectElement
 
-    rect.width.baseVal.value = width.toFloat()
-    rect.height.baseVal.value = width.toFloat()
+    size.reactTill(tillDetach) {
+        rect.width.baseVal.value = it.width.toFloat()
+        rect.height.baseVal.value = it.height.toFloat()
+    }
 
     linkSvgTranslate(
         svg = svg,
@@ -79,6 +82,29 @@ fun createSvgRect(
     style?.linkTo(rect.style, tillDetach)
 
     return rect
+}
+
+fun createSvgCircle(
+    svg: SVGSVGElement,
+    radius: Float,
+    translate: Cell<IntVec2>,
+    style: DynamicStyleDeclaration? = null,
+    tillDetach: Till,
+): SVGElement {
+    val circle = document.createElementNS("http://www.w3.org/2000/svg", "circle") as SVGCircleElement
+
+    circle.r.baseVal.value = radius
+
+    linkSvgTranslate(
+        svg = svg,
+        element = circle,
+        translate = translate,
+        tillDetach = tillDetach,
+    )
+
+    style?.linkTo(circle.style, tillDetach)
+
+    return circle
 }
 
 private fun linkSvgTranslate(

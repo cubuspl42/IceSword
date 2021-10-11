@@ -123,16 +123,18 @@ fun worldView(
                         planeLayer,
                         planeUiLayer,
                     ),
-                    overlayElements = world.elastics.map {
-                        createElasticOverlayElement(
-                            editor = editor,
-                            elastic = it,
-                            viewport = this,
-                            viewTransform = viewTransform,
-                            tillDetach = tillDetach,
-                        )
+                    buildOverlayElements = { svg ->
+                        world.elastics.map {
+                            createElasticOverlayElement(
+                                editor = editor,
+                                svg = svg,
+                                elastic = it,
+                                viewport = this,
+                                viewTransform = viewTransform,
+                                tillDetach = tillDetach,
+                            )
+                        }
                     },
-//                    overlayElements = DynamicSet.of(emptySet()),
                 )
             },
         )
