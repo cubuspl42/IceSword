@@ -246,8 +246,6 @@ class KnotMesh(
 //        tileOffset.map { it + localTileOffset }
 //    }
 
-//    private val globalTileCoords = globalKnots.keys.unionMapDynamic { DynamicSet.of(tilesAroundKnot(it)) }
-
     override fun isSelectableAt(worldPoint: IntVec2): Boolean {
         return globalKnots.volatileContentView.keys.any {
             (knotCenter(it) - worldPoint).length < TILE_SIZE

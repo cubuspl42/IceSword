@@ -1,14 +1,36 @@
 package icesword.scene
 
+import html.DynamicStyleDeclaration
+import html.Transform
 import html.createContainer
 import html.createHtmlElement
-import icesword.frp.*
+import html.createStyledHtmlElement
+import html.createSvgGroup
+import html.createSvgRoot
+import html.linkChildren
+import html.linkSvgChildren
+import icesword.frp.Cell
+import icesword.frp.DynamicSet
+import icesword.frp.MutCell
+import icesword.frp.Stream
+import icesword.frp.Till
+import icesword.frp.map
+import icesword.frp.mergeWith
+import icesword.frp.reactTill
+import icesword.frp.units
+import icesword.frp.values
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
 import kotlinx.browser.window
-import org.w3c.dom.*
+import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.DOMRect
+import org.w3c.dom.HTMLCanvasElement
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.ImageBitmap
+import org.w3c.dom.svg.SVGElement
+import org.w3c.dom.svg.SVGSVGElement
 import kotlin.math.roundToInt
 
 
@@ -27,9 +49,12 @@ interface Node {
     val onDirty: Stream<Unit>
 }
 
+typealias BuildOverlayElements = (SVGSVGElement) -> DynamicSet<SVGElement>
+
 class Layer(
     private val transform: Cell<IntVec2>,
     private val nodes: DynamicSet<Node>,
+    private val buildOverlayElements: BuildOverlayElements? = null,
 ) {
     fun draw(ctx: CanvasRenderingContext2D, viewportRect: IntRect) {
         val transform = this.transform.sample()
@@ -49,6 +74,24 @@ class Layer(
     val onDirty: Stream<Unit> =
         transform.values().units()
             .mergeWith(DynamicSet.merge(nodes.map { it.onDirty }))
+
+    fun buildOverlayRoot(svg: SVGSVGElement, tillDetach: Till): SVGElement = createSvgGroup(
+        svg = svg,
+        translate = transform,
+        tillDetach = tillDetach,
+    ).also { root ->
+        val buildOverlayElements = this.buildOverlayElements
+
+        val overlayElements = if (buildOverlayElements != null) {
+            buildOverlayElements(svg)
+        } else DynamicSet.of(emptySet())
+
+        linkSvgChildren(
+            element = root,
+            children = overlayElements,
+            till = tillDetach,
+        )
+    }
 }
 
 class SceneContext {
@@ -72,6 +115,8 @@ fun scene(
             width = 1024
             height = 1024
 
+            className = "scene-canvas"
+
             style.apply {
                 width = "100%"
                 height = "100%"
@@ -85,17 +130,43 @@ fun scene(
         return canvas
     }
 
+    fun createLayersOverlay(scene: Scene): SVGElement {
+        val overlay = createSvgRoot(
+            tillDetach = tillDetach,
+        ).apply {
+            setAttribute("class", "layers-overlay")
+
+            style.apply {
+                setProperty("grid-column", "1")
+                setProperty("grid-row", "1")
+
+                width = "100%"
+                height = "100%"
+
+                zIndex = "1"
+            }
+        }
+
+        val children = scene.layers.map {
+            it.buildOverlayRoot(svg = overlay, tillDetach = tillDetach)
+        }
+
+        children.forEach(overlay::appendChild)
+
+        return overlay
+    }
+
     fun createSceneOverlay(scene: Scene): HTMLElement {
-
-
         val overlay = createContainer(
             children = scene.overlayElements,
             tillDetach,
         ).apply {
+            className = "scene-overlay"
+
             style.apply {
                 setProperty("grid-column", "1")
                 setProperty("grid-row", "1")
-                zIndex = "1"
+                zIndex = "2"
             }
         }
 
@@ -124,7 +195,9 @@ fun scene(
 
     val canvas = createSceneCanvas()
 
-    val overlay = createSceneOverlay(scene)
+    val layersOverlay = createLayersOverlay(scene)
+
+    val sceneOverlay = createSceneOverlay(scene)
 
     val isDirty = buildDirtyFlag(scene)
 
@@ -185,7 +258,8 @@ fun scene(
         style.display = "grid"
 
         appendChild(canvas)
-        appendChild(overlay)
+        appendChild(layersOverlay)
+        appendChild(sceneOverlay)
     }
 
     return root

@@ -1,13 +1,18 @@
 package icesword.scene
 
-import icesword.editor.KnotMesh
-import icesword.editor.knotCenter
-import icesword.editor.tilesAroundKnotLst
+import html.*
+import icesword.TILE_SIZE
+import icesword.editor.*
 import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileRect
+import icesword.ui.EntityMoveDragController
+import kotlinx.css.Cursor
 import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.svg.SVGElement
+import org.w3c.dom.svg.SVGSVGElement
 import kotlin.math.PI
 
 
@@ -110,4 +115,78 @@ private fun drawCircle(
     )
     ctx.fill()
     ctx.stroke()
+}
+
+fun createKnotMeshOverlayElement(
+    editor: Editor,
+    svg: SVGSVGElement,
+    knotMesh: KnotMesh,
+    viewport: HTMLElement,
+    viewTransform: Cell<IntVec2>,
+    tillDetach: Till,
+): SVGElement {
+    fun createTileOverlay(
+        localTileCoord: IntVec2,
+        till: Till,
+    ): SVGElement {
+        val moveController = EntityMoveDragController.create(
+            editor = editor,
+            entity = knotMesh,
+        )
+
+//        val pixelCoord = localTileCoord.times(TILE_SIZE)
+
+        val tileOverlay = createSvgRect(
+            svg = svg,
+            width = TILE_SIZE,
+            height = TILE_SIZE,
+            translate = Cell.constant(localTileCoord.times(TILE_SIZE)),
+            style = DynamicStyleDeclaration(
+                cursor = moveController.map { it?.let { Cursor.move } },
+            ),
+            tillDetach = till,
+        ).apply {
+            setAttributeNS(null, "fill", "rgba(255, 255, 255, 32)")
+            setAttributeNS(null, "fill-opacity", "0.2")
+
+            style.apply {
+                borderStyle = "dashed"
+                borderRadius = "4px"
+                borderColor = "yellow"
+            }
+        }
+
+        EntityMoveDragController.linkDragHandler(
+            element = tileOverlay,
+            outer = viewport,
+            controller = moveController,
+            till = till,
+        )
+
+        return tileOverlay
+    }
+
+    val root = createSvgGroup(
+        svg = svg,
+        translate = knotMesh.tileOffset.map { it.times(TILE_SIZE) },
+        tillDetach = tillDetach,
+    ).apply {
+        setAttribute("class", "knotMeshOverlay")
+    }
+
+    val tileOverlays = knotMesh.localTileCoords
+        .mapTillRemoved(tillDetach) { localTileCoord, tillRemoved ->
+            createTileOverlay(
+                localTileCoord = localTileCoord,
+                till = tillRemoved,
+            )
+        }
+
+    linkSvgChildren(
+        element = root,
+        children = tileOverlays,
+        till = tillDetach,
+    )
+
+    return root
 }

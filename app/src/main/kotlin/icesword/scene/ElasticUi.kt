@@ -13,6 +13,7 @@ import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import icesword.ui.EntityMoveDragController
 import kotlinx.css.Cursor
 import kotlinx.css.button
 import kotlinx.css.style
@@ -86,21 +87,13 @@ fun createElasticOverlayElement(
     viewTransform: Cell<IntVec2>,
     tillDetach: Till,
 ): HTMLElement {
-    val boxMoveController = Cell.map2(
-        editor.selectedEntity,
-        editor.selectedTool,
-    ) { selectedEntity, selectedTool ->
-        if (selectedEntity == elastic && selectedTool == Tool.MOVE) {
-            BoxMoveController(editor)
-        } else null
-    }
+    val boxMoveController = EntityMoveDragController.create(
+        editor = editor,
+        entity = elastic,
+    )
 
     val boxCursor = boxMoveController.map {
         it?.let { Cursor.move }
-    }
-
-    boxCursor.reactTill(tillDetach) {
-        println("Box cursor: $it")
     }
 
     val box = createStyledHtmlElement(
@@ -123,13 +116,10 @@ fun createElasticOverlayElement(
         }
     }
 
-    box.onMouseDrag(
-        button = 0,
+    EntityMoveDragController.linkDragHandler(
+        element = box,
         outer = viewport,
-        filterTarget = true,
-        till = tillDetach,
-    ).reactDynamicNotNullTill(
-        dynamicHandler = boxMoveController.mapNotNull { it::handleDrag },
+        controller = boxMoveController,
         till = tillDetach,
     )
 
@@ -245,27 +235,6 @@ fun createElasticOverlayElement(
     )
 
     return box
-}
-
-class BoxMoveController(
-    private val editor: Editor,
-) {
-    fun handleDrag(mouseDrag: MouseDrag) {
-        val world = editor.world
-
-        editor.selectedEntity.sample()?.let { selectedEntity ->
-            val worldPosition = world.transformToWorld(mouseDrag.position)
-            val initialWorldPosition = worldPosition.sample()
-            val tileOffsetDelta = worldPosition.map {
-                (it - initialWorldPosition).divRound(TILE_SIZE)
-            }
-
-            selectedEntity.move(
-                tileOffsetDelta = tileOffsetDelta,
-                tillStop = mouseDrag.tillEnd,
-            )
-        }
-    }
 }
 
 private fun linkTranslate(

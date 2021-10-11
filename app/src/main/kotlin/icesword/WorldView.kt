@@ -6,6 +6,7 @@ import icesword.editor.*
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.scene.*
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.MouseEvent
 import kotlin.math.roundToInt
@@ -83,6 +84,18 @@ fun worldView(
                     ),
                 )
             ),
+            buildOverlayElements = { svg ->
+                world.knotMeshLayer.knotMeshes.map { knotMesh ->
+                    createKnotMeshOverlayElement(
+                        svg = svg,
+                        editor = editor,
+                        knotMesh = knotMesh,
+                        viewport = this,
+                        viewTransform = viewTransform,
+                        tillDetach = tillDetach,
+                    )
+                }
+            },
         )
 
         // TODO: React
@@ -198,7 +211,7 @@ class MouseDrag(
 ) {
     companion object {
         fun start(
-            element: HTMLElement,
+            element: Element,
             initialPosition: IntVec2,
             button: Short,
             tillAbort: Till,

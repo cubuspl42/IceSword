@@ -4,10 +4,17 @@ import icesword.MouseDrag
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.Node
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
+import org.w3c.dom.svg.SVGElement
+import org.w3c.dom.svg.SVGGElement
+import org.w3c.dom.svg.SVGGraphicsElement
+import org.w3c.dom.svg.SVGRectElement
+import org.w3c.dom.svg.SVGSVGElement
 
 fun createHtmlElement(tagName: String): HTMLElement =
     document.createElement(tagName) as HTMLElement
@@ -23,6 +30,72 @@ fun createStyledHtmlElement(
 
     return element
 }
+
+fun createSvgRoot(
+    tillDetach: Till,
+): SVGSVGElement {
+    val root = document.createElementNS("http://www.w3.org/2000/svg", "svg") as SVGSVGElement
+
+    return root
+}
+
+fun createSvgGroup(
+    svg: SVGSVGElement,
+    translate: Cell<IntVec2>,
+    tillDetach: Till,
+): SVGElement {
+    val group = document.createElementNS("http://www.w3.org/2000/svg", "g") as SVGGElement
+
+    linkSvgTranslate(
+        svg = svg,
+        element = group,
+        translate = translate,
+        tillDetach = tillDetach,
+    )
+
+    return group
+}
+
+fun createSvgRect(
+    svg: SVGSVGElement,
+    width: Int,
+    height: Int,
+    translate: Cell<IntVec2>,
+    style: DynamicStyleDeclaration? = null,
+    tillDetach: Till,
+): SVGElement {
+    val rect = document.createElementNS("http://www.w3.org/2000/svg", "rect") as SVGRectElement
+
+    rect.width.baseVal.value = width.toFloat()
+    rect.height.baseVal.value = width.toFloat()
+
+    linkSvgTranslate(
+        svg = svg,
+        element = rect,
+        translate = translate,
+        tillDetach = tillDetach,
+    )
+
+    style?.linkTo(rect.style, tillDetach)
+
+    return rect
+}
+
+private fun linkSvgTranslate(
+    svg: SVGSVGElement,
+    element: SVGGraphicsElement,
+    translate: Cell<IntVec2>,
+    tillDetach: Till,
+) {
+
+    val svgTransform = svg.createSVGTransform()
+    element.transform.baseVal.initialize(svgTransform)
+
+    translate.reactTill(tillDetach) { tv ->
+        svgTransform.setTranslate(tv.x.toFloat(), tv.y.toFloat())
+    }
+}
+
 
 fun createContainer(
     children: DynamicSet<HTMLElement>,
@@ -40,14 +113,14 @@ fun createContainer(
     return root
 }
 
-fun HTMLElement.onMouseDown(button: Short): Stream<MouseEvent> =
+fun Element.onMouseDown(button: Short): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mousedown")
         .filter { e: MouseEvent -> e.button == button }
 
-fun HTMLElement.onMouseMove(): Stream<MouseEvent> =
+fun Element.onMouseMove(): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mousemove")
 
-fun HTMLElement.onMouseUp(button: Short): Stream<MouseEvent> =
+fun Element.onMouseUp(button: Short): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mouseup")
         .filter { e: MouseEvent -> e.button == button }
 
@@ -57,7 +130,7 @@ fun HTMLElement.onClick(): Stream<MouseEvent> =
 fun HTMLElement.onKeyDown(): Stream<KeyboardEvent> =
     this.onEvent("keydown", useCapture = true)
 
-fun HTMLElement.onMouseDrag(
+fun Element.onMouseDrag(
     button: Short,
     outer: HTMLElement? = null,
     filterTarget: Boolean = false,
@@ -79,7 +152,7 @@ fun HTMLElement.onMouseDrag(
         }
 }
 
-fun <E : Event> HTMLElement.onEvent(
+fun <E : Event> Element.onEvent(
     eventType: String,
     useCapture: Boolean = false,
 ): Stream<E> =
@@ -90,7 +163,7 @@ fun <E : Event> HTMLElement.onEvent(
         tag = "onEvent",
     ).cast()
 
-fun HTMLElement.subscribeToEvent(
+fun Element.subscribeToEvent(
     eventType: String,
     callback: ((Event) -> Unit),
     useCapture: Boolean = false,
@@ -107,3 +180,47 @@ fun HTMLElement.subscribeToEvent(
 val MouseEvent.clientPosition: IntVec2
     get() = IntVec2(this.clientX, this.clientY)
 
+fun linkNodeChildren(
+    element: Node,
+    children: DynamicSet<Node>,
+    till: Till,
+) {
+    children.changes.reactTill(till) { change ->
+        change.added.forEach { child ->
+            element.appendChild(child)
+        }
+
+        change.removed.forEach { child ->
+            element.removeChild(child)
+        }
+    }
+
+    children.volatileContentView.forEach { child ->
+        element.appendChild(child)
+    }
+}
+
+
+fun linkChildren(
+    element: HTMLElement,
+    children: DynamicSet<HTMLElement>,
+    till: Till,
+) {
+    linkNodeChildren(
+        element = element,
+        children = children,
+        till = till,
+    )
+}
+
+fun linkSvgChildren(
+    element: SVGElement,
+    children: DynamicSet<SVGElement>,
+    till: Till,
+) {
+    linkNodeChildren(
+        element = element,
+        children = children,
+        till = till,
+    )
+}

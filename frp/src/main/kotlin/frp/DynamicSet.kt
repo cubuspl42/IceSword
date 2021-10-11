@@ -3,7 +3,6 @@ package icesword.frp
 import frpjs.Hash
 import icesword.collections.DefaultSetFactory
 import icesword.collections.FastSetFactory
-import icesword.collections.SetFactory
 import icesword.frp.dynamic_map.DynamicSetAssociateWith
 import icesword.frp.dynamic_set.*
 
@@ -90,6 +89,16 @@ fun <A> DynamicSet<A>.trackContent(till: Till): Cell<Set<A>> = content
 fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> =
     MapDynamicSet(this.validated("map-this"), transform)
         .validated("map")
+
+fun <A, R> DynamicSet<A>.mapTillRemoved(
+    tillAbort: Till,
+    transform: (element: A, tillRemoved: Till) -> R,
+): DynamicSet<R> =
+    MapTillRemovedDynamicSet(
+        source = this,
+        transform = transform,
+        tillAbort = tillAbort,
+    ).validated("mapTillNext")
 
 //fun <A, R> DynamicSet<A>.mapDynamic(transform: (A) -> Cell<R>): DynamicSet<R> =
 //    DynamicSet.diff(tileOffset.map { tileOffset ->
