@@ -53,6 +53,22 @@ fun <A> Stream<A>.reactTill(till: Till, handler: (A) -> Unit) {
     subscribeTill(this, till, handler)
 }
 
+fun <A> Stream<A>.reactDynamicTill(till: Till, dynamicHandler: Cell<(A) -> Unit>) {
+    dynamicHandler.mapTillNext(till) { handler, tillNext ->
+        subscribeTill(this, tillNext, handler)
+    }
+}
+
+typealias Handler<A> = (A) -> Unit
+
+fun <A> Stream<A>.reactDynamicNotNullTill(dynamicHandler: Cell<Handler<A>?>, till: Till) {
+    dynamicHandler.mapTillNext(till) { handler, tillNext ->
+        if (handler != null) {
+            subscribeTill(this, tillNext, handler)
+        }
+    }
+}
+
 fun <A> Stream<A>.syncTill(target: MutCell<in A>, till: Till) {
     this.reactTill(till, target::set)
 }

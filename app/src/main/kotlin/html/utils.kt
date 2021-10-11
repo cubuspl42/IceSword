@@ -1,5 +1,6 @@
-package icesword
+package html
 
+import icesword.MouseDrag
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
@@ -10,6 +11,18 @@ import org.w3c.dom.events.MouseEvent
 
 fun createHtmlElement(tagName: String): HTMLElement =
     document.createElement(tagName) as HTMLElement
+
+fun createStyledHtmlElement(
+    tagName: String,
+    style: DynamicStyleDeclaration? = null,
+    tillDetach: Till,
+): HTMLElement {
+    val element = document.createElement(tagName) as HTMLElement
+
+    style?.linkTo(element.style, tillDetach)
+
+    return element
+}
 
 fun createContainer(
     children: DynamicSet<HTMLElement>,
@@ -47,16 +60,24 @@ fun HTMLElement.onKeyDown(): Stream<KeyboardEvent> =
 fun HTMLElement.onMouseDrag(
     button: Short,
     outer: HTMLElement? = null,
+    filterTarget: Boolean = false,
     till: Till,
-): Stream<MouseDrag> =
-    this.onMouseDown(button = button).until(till).map { event ->
-        MouseDrag.start(
-            element = outer ?: this,
-            initialPosition = event.clientPosition,
-            button = button,
-            tillAbort = till,
-        )
-    }
+): Stream<MouseDrag> {
+    val onMouseDown = this.onMouseDown(button = button)
+    val onMouseDownFiltered =
+        if (filterTarget) onMouseDown.filter { it.target === this }
+        else onMouseDown
+    return onMouseDownFiltered
+        .until(till)
+        .map { event ->
+            MouseDrag.start(
+                element = outer ?: this,
+                initialPosition = event.clientPosition,
+                button = button,
+                tillAbort = till,
+            )
+        }
+}
 
 fun <E : Event> HTMLElement.onEvent(
     eventType: String,

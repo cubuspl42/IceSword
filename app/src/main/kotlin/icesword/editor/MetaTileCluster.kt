@@ -44,7 +44,7 @@ class MetaTileCluster(
             tileOffset + localKnotCoord
         }.also {
             it.changes.subscribe { change ->
-                println("MetaTileLayer.globalTileCoords change: $change")
+//                println("MetaTileLayer.globalTileCoords change: $change")
             }
         }
 

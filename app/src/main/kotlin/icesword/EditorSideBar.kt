@@ -1,11 +1,9 @@
 package icesword
 
-import html.CSSStyle
-import html.FontWeight
 import html.createButton
+import html.createHtmlElement
 import icesword.editor.*
 import icesword.frp.Till
-import icesword.frp.map
 import org.w3c.dom.HTMLElement
 
 

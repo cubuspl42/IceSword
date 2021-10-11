@@ -3,6 +3,7 @@ package icesword
 import html.CSSStyle
 import html.FontWeight
 import html.createButton
+import html.createHtmlElement
 import icesword.editor.Editor
 import icesword.editor.Tool
 import icesword.frp.Till

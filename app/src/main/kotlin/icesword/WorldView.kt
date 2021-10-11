@@ -1,6 +1,7 @@
 package icesword
 
 
+import html.*
 import icesword.editor.*
 import icesword.frp.*
 import icesword.geometry.IntVec2
@@ -111,6 +112,7 @@ fun worldView(
                     ),
                     overlayElements = world.elastics.map {
                         createElasticOverlayElement(
+                            editor = editor,
                             elastic = it,
                             viewport = this,
                             viewTransform = viewTransform,
@@ -144,23 +146,6 @@ fun setupMoveToolController(
     root: HTMLElement,
     tillDetach: Till,
 ) {
-    val world = editor.world
-
-    root.onMouseDrag(button = 0, till = tillDetach).reactTill(tillDetach) { mouseDrag ->
-        editor.selectedEntity.sample()?.let { selectedEntity ->
-            val worldPosition = world.transformToWorld(mouseDrag.position)
-            val initialWorldPosition = worldPosition.sample()
-            val tileOffsetDelta = worldPosition.map {
-                (it - initialWorldPosition).divRound(TILE_SIZE)
-            }
-
-            selectedEntity.move(
-                tileOffsetDelta = tileOffsetDelta,
-                tillStop = mouseDrag.tillEnd,
-            )
-        }
-    }
-
     root.onKeyDown().reactTill(tillDetach) { event ->
         val selectedEntity = editor.selectedEntity.sample()
 

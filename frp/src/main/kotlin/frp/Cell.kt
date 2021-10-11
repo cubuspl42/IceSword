@@ -47,6 +47,9 @@ fun <A> Cell<A>.values(): Stream<A> =
 fun <A, B> Cell<A>.map(f: (A) -> B): Cell<B> =
     CellMap(this, f)
 
+fun <A : Any, B : Any> Cell<A?>.mapNotNull(f: (A) -> B): Cell<B?> =
+    CellMap(this) { if (it != null) f(it) else null }
+
 fun <A, B> Cell<A>.switchMap(transform: (A) -> Cell<B>): Cell<B> =
     Cell.switch(map(transform))
 

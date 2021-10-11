@@ -1,14 +1,21 @@
 package icesword.scene
 
+import html.DynamicStyleDeclaration
+import html.createHtmlElement
+import html.createStyledHtmlElement
+import html.onMouseDrag
 import icesword.*
+import icesword.editor.Editor
 import icesword.editor.Elastic
 import icesword.editor.MetaTileCluster
+import icesword.editor.Tool
 import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.css.Cursor
-import kotlinx.css.del
+import kotlinx.css.button
+import kotlinx.css.style
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 
@@ -73,12 +80,36 @@ class ElasticUi(
 
 
 fun createElasticOverlayElement(
+    editor: Editor,
     elastic: Elastic,
     viewport: HTMLElement,
     viewTransform: Cell<IntVec2>,
     tillDetach: Till,
 ): HTMLElement {
-    val box = createHtmlElement("div").apply {
+    val boxMoveController = Cell.map2(
+        editor.selectedEntity,
+        editor.selectedTool,
+    ) { selectedEntity, selectedTool ->
+        if (selectedEntity == elastic && selectedTool == Tool.MOVE) {
+            BoxMoveController(editor)
+        } else null
+    }
+
+    val boxCursor = boxMoveController.map {
+        it?.let { Cursor.move }
+    }
+
+    boxCursor.reactTill(tillDetach) {
+        println("Box cursor: $it")
+    }
+
+    val box = createStyledHtmlElement(
+        tagName = "div",
+        style = DynamicStyleDeclaration(
+            cursor = boxCursor,
+        ),
+        tillDetach = tillDetach,
+    ).apply {
         style.apply {
             position = "absolute"
 
@@ -91,6 +122,16 @@ fun createElasticOverlayElement(
             borderColor = "red"
         }
     }
+
+    box.onMouseDrag(
+        button = 0,
+        outer = viewport,
+        filterTarget = true,
+        till = tillDetach,
+    ).reactDynamicNotNullTill(
+        dynamicHandler = boxMoveController.mapNotNull { it::handleDrag },
+        till = tillDetach,
+    )
 
     fun createHandle(
         cursor: Cursor,
@@ -204,6 +245,27 @@ fun createElasticOverlayElement(
     )
 
     return box
+}
+
+class BoxMoveController(
+    private val editor: Editor,
+) {
+    fun handleDrag(mouseDrag: MouseDrag) {
+        val world = editor.world
+
+        editor.selectedEntity.sample()?.let { selectedEntity ->
+            val worldPosition = world.transformToWorld(mouseDrag.position)
+            val initialWorldPosition = worldPosition.sample()
+            val tileOffsetDelta = worldPosition.map {
+                (it - initialWorldPosition).divRound(TILE_SIZE)
+            }
+
+            selectedEntity.move(
+                tileOffsetDelta = tileOffsetDelta,
+                tillStop = mouseDrag.tillEnd,
+            )
+        }
+    }
 }
 
 private fun linkTranslate(

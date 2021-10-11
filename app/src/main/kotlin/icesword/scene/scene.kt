@@ -1,7 +1,7 @@
 package icesword.scene
 
-import icesword.createContainer
-import icesword.createHtmlElement
+import html.createContainer
+import html.createHtmlElement
 import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
