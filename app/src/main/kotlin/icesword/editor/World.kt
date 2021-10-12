@@ -41,10 +41,12 @@ class World(
 
     private val baseTiles = DynamicMap.of(wwdTiles)
 
-    val metaTileLayer = MetaTileLayer()
-
     val knotMeshLayer = KnotMeshLayer(
         startPoint = startPoint,
+    )
+
+    val metaTileLayer = MetaTileLayer(
+        knotMeshLayer = knotMeshLayer,
     )
 
     val elastics = metaTileLayer.elastics
@@ -67,17 +69,7 @@ class World(
         it.changes.subscribe { }
     }
 
-    val tiles = DynamicMap.unionMerge(
-        through = IntVec2.mapFactory(),
-        maps = DynamicSet.of(
-            setOf(
-                knotMeshLayer.globalTiles,
-                metaTileLayer.tiles,
-            ),
-        ),
-        merge = { TODO() },
-        tag = "World.tiles",
-    )
+    val tiles = metaTileLayer.tiles
 
 //    val tiles = metaTileLayer.tiles.validated("World.tiles")
 

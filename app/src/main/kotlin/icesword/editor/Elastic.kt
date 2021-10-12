@@ -5,8 +5,6 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
-import kotlinx.css.col
-import kotlinx.css.del
 
 sealed class ElasticPrototype {
 //    abstract val metaTiles: Map<IntVec2, MetaTile>
@@ -32,21 +30,21 @@ object TreeCrownPrototype : ElasticPrototype() {
         val columns =
             listOf(
                 setOf(
-                    IntVec2(0, 0) to MetaTile.LEAVES_UPPER_LEFT,
-                    IntVec2(0, 1) to MetaTile.LEAVES_LOWER_LEFT,
+                    IntVec2(0, 0) to MetaTile.LeavesUpperLeft,
+                    IntVec2(0, 1) to MetaTile.LeavesLowerLeft,
                 ),
             ) +
                     (1..(size.width - 2)).map { j ->
 
                         setOf(
-                            IntVec2(j, 0) to MetaTile.LEAVES_UPPER,
-                            IntVec2(j, 1) to MetaTile.LEAVES_LOWER,
+                            IntVec2(j, 0) to MetaTile.LeavesUpper,
+                            IntVec2(j, 1) to MetaTile.LeavesLower,
                         )
                     } +
                     listOf(
                         setOf(
-                            IntVec2(size.width - 1, 0) to MetaTile.LEAVES_UPPER_RIGHT,
-                            IntVec2(size.width - 1, 1) to MetaTile.LEAVES_LOWER_RIGHT,
+                            IntVec2(size.width - 1, 0) to MetaTile.LeavesUpperRight,
+                            IntVec2(size.width - 1, 1) to MetaTile.LeavesLowerRight,
                         ),
                     )
 
@@ -55,9 +53,9 @@ object TreeCrownPrototype : ElasticPrototype() {
 }
 
 private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
-    IntVec2(-1, i) to MetaTile.LOG_LEFT,
-    IntVec2(0, i) to MetaTile.LOG,
-    IntVec2(1, i) to MetaTile.LOG_RIGHT,
+    IntVec2(-1, i) to MetaTile.LogLeft,
+    IntVec2(0, i) to MetaTile.Log,
+    IntVec2(1, i) to MetaTile.LogRight,
 )
 
 
@@ -124,7 +122,7 @@ class Elastic(
 
     val metaTileCluster = MetaTileCluster(
         tileOffset = tileOffset,
-        localMetaTilesDynamic = DynamicMap.diff(
+        localMetaTiles = DynamicMap.diff(
             size.map { prototype.buildMetaTiles(it) },
             tag = "metaTileCluster.localMetaTilesDynamic",
         )

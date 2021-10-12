@@ -88,18 +88,23 @@ class KnotMeshLayer(
 
     // <IntVec2, KnotPrototype, IntVec2, Int>
 
-    val globalTiles: DynamicMap<IntVec2, Int> = globalKnots.project(
+    private val globalTiles: DynamicMap<IntVec2, MetaTile> = globalKnots.project(
         projectKey = { knotCoord: IntVec2 -> tilesAroundKnotForTileBuilding(knotCoord) },
         buildValue = { tileCoord: IntVec2, globalKnots: Map<IntVec2, KnotPrototype> ->
             buildTile(
                 tileCoord = tileCoord,
                 globalKnots = globalKnots,
-            )
+            ) ?: MetaTile.None
         },
     ).also {
-        it.changes.subscribe { change ->
+        it.changes.subscribe {
         }
     }
+
+    val metaTileCluster = MetaTileCluster(
+        tileOffset = Cell.constant(IntVec2.ZERO),
+        localMetaTiles = globalTiles,
+    )
 
 //    private fun buildTileAt(
 //        tileCoord: IntVec2,

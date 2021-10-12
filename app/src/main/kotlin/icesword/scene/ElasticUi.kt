@@ -1,8 +1,6 @@
 package icesword.scene
 
 import html.DynamicStyleDeclaration
-import html.createHtmlElement
-import html.createStyledHtmlElement
 import html.createSvgCircle
 import html.createSvgGroup
 import html.createSvgRect
@@ -11,15 +9,11 @@ import icesword.*
 import icesword.editor.Editor
 import icesword.editor.Elastic
 import icesword.editor.MetaTileCluster
-import icesword.editor.Tool
 import icesword.frp.*
 import icesword.geometry.IntRect
-import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.ui.EntityMoveDragController
 import kotlinx.css.Cursor
-import kotlinx.css.button
-import kotlinx.css.style
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
@@ -33,7 +27,7 @@ class ElasticUi(
     private val metaTileCluster: MetaTileCluster
         get() = elastic.metaTileCluster
 
-    private val localTileCoords = metaTileCluster.localMetaTilesDynamic.getKeys()
+    private val localTileCoords = metaTileCluster.localMetaTiles.getKeys()
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
 
@@ -77,7 +71,7 @@ class ElasticUi(
 
     override val onDirty: Stream<Unit> =
         viewTransform.values().units()
-            .mergeWith(metaTileCluster.localMetaTilesDynamic.changesUnits())
+            .mergeWith(metaTileCluster.localMetaTiles.changesUnits())
             .mergeWith(elastic.tileOffset.values().units())
             .mergeWith(elastic.size.values().units())
             .mergeWith(elastic.isSelected.values().units())

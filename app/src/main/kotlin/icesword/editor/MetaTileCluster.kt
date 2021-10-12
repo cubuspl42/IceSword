@@ -4,27 +4,10 @@ import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
-import icesword.tileAtPoint
-
-enum class MetaTile(
-    val tileId: Int?,
-) {
-    LOG(657),
-    LOG_LEFT(null),
-    LOG_RIGHT(null),
-
-    LEAVES_UPPER(644),
-    LEAVES_LOWER(651),
-    LEAVES_UPPER_LEFT(645),
-    LEAVES_LOWER_LEFT(650),
-    LEAVES_UPPER_RIGHT(649),
-    LEAVES_LOWER_RIGHT(656),
-
-}
 
 class MetaTileCluster(
     private val tileOffset: Cell<IntVec2>,
-    val localMetaTilesDynamic: DynamicMap<IntVec2, MetaTile>,
+    val localMetaTiles: DynamicMap<IntVec2, MetaTile>,
 ) {
 //    private val globalTileCoordsDiff: DynamicSet<IntVec2> =
 //        DynamicSet.diff(tileOffset.map { tileOffset ->
@@ -37,7 +20,7 @@ class MetaTileCluster(
 //        }
 
     val globalTileCoords: DynamicSet<IntVec2> =
-        localMetaTilesDynamic.getKeys().adjust(
+        localMetaTiles.getKeys().adjust(
             hash = IntVec2.HASH,
             adjustment = tileOffset,
         ) { localKnotCoord: IntVec2, tileOffset: IntVec2 ->
@@ -49,7 +32,7 @@ class MetaTileCluster(
         }
 
     fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
-        tileOffset.switchMap { localMetaTilesDynamic.get(globalTileCoord - it) }
+        tileOffset.switchMap { localMetaTiles.get(globalTileCoord - it) }
 //            .also {
 //                it.subscribe { metaTile ->
 //                    println("getMetaTileAt($globalTileCoord) -> $metaTile")
@@ -59,7 +42,9 @@ class MetaTileCluster(
     override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
 }
 
-class MetaTileLayer {
+class MetaTileLayer(
+    knotMeshLayer: KnotMeshLayer,
+) {
     private val _elastics = MutableDynamicSet.of(
         setOf(
             Elastic(
@@ -101,8 +86,12 @@ class MetaTileLayer {
         _elastics.add(elastic)
     }
 
+
+    private val metaTileClusters = elastics.map { it.metaTileCluster }
+        .unionWith(DynamicSet.of(setOf(knotMeshLayer.metaTileCluster)))
+
     private val globalTileCoords: DynamicSet<IntVec2> =
-        elastics.unionMapDynamic { it.metaTileCluster.globalTileCoords }
+        metaTileClusters.unionMapDynamic { it.globalTileCoords }
             .also {
                 it.changes.subscribe { change ->
 //                    println("MetaTileLayer.globalTileCoords change: $change")
@@ -126,9 +115,9 @@ class MetaTileLayer {
     private fun buildTileAt(
         globalTileCoord: IntVec2,
     ): Cell<Int> {
-        val metaTiles = elastics
+        val metaTiles = metaTileClusters
             .associateWith(tag = "buildTileAt($globalTileCoord) / .associateWith") {
-                it.metaTileCluster.getMetaTileAt(globalTileCoord)
+                it.getMetaTileAt(globalTileCoord)
             }
 //            .also { dynMap ->
 //                dynMap.changes.subscribe { change ->
@@ -161,16 +150,18 @@ class MetaTileLayer {
             ms.all { metaTiles.contains(it) }
 
         return when {
-            containsAll(MetaTile.LOG, MetaTile.LEAVES_UPPER) -> 647
-            containsAll(MetaTile.LOG, MetaTile.LEAVES_LOWER) -> 653
-            containsAll(MetaTile.LOG_LEFT, MetaTile.LEAVES_LOWER) -> 652
-            containsAll(MetaTile.LOG_RIGHT, MetaTile.LEAVES_LOWER) -> 654
+            containsAll(MetaTile.Log, MetaTile.LeavesUpper) -> 647
+            containsAll(MetaTile.Log, MetaTile.LeavesLower) -> 653
+            containsAll(MetaTile.LogLeft, MetaTile.LeavesLower) -> 652
+            containsAll(MetaTile.LogRight, MetaTile.LeavesLower) -> 654
 
-            containsAll(MetaTile.LOG, MetaTile.LEAVES_UPPER_RIGHT) -> 663
-            containsAll(MetaTile.LOG, MetaTile.LEAVES_LOWER_RIGHT) -> 665
+            containsAll(MetaTile.Log, MetaTile.LeavesUpperRight) -> 663
+            containsAll(MetaTile.Log, MetaTile.LeavesLowerRight) -> 665
 
-            containsAll(MetaTile.LOG, MetaTile.LEAVES_UPPER_LEFT) -> 659
-            containsAll(MetaTile.LOG, MetaTile.LEAVES_LOWER_LEFT) -> 661
+            containsAll(MetaTile.Log, MetaTile.LeavesUpperLeft) -> 659
+            containsAll(MetaTile.Log, MetaTile.LeavesLowerLeft) -> 661
+
+            containsAll(MetaTile.Log, MetaTile.GrassUpper) -> 666
 
             else -> null
         }
