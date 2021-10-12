@@ -480,4 +480,53 @@ class ProjectDynamicMapTest {
             actual = changes,
         )
     }
+
+    @Test
+    fun testSourceAddedRemoved() {
+        // source removed an entry and added a new one at adjacent key at once
+
+        val source = MutableDynamicMap(
+            mapOf(
+                K(5) to V(50),
+            )
+        )
+
+        val result = projectDynamicMap(source)
+
+        val changes = mutableListOf<MapChange<K2, V2>>()
+
+        result.changes.subscribe(changes::add)
+
+        source.applyChange(
+            MapChange(
+                added = mapOf(
+                    K(6) to V(60),
+                ),
+                updated = emptyMap(),
+                removedEntries = mapOf(
+                    K(5) to V(50),
+                ),
+            )
+        )
+
+        assertEquals(
+            expected = listOf(
+                MapChange(
+                    added = mapOf(
+                        K2(8) to V2(60),
+                    ),
+                    updated = mapOf(
+                        K2(a = 4) to V2(a = 60),
+                        K2(a = 5) to V2(a = 60),
+                        K2(a = 6) to V2(a = 60),
+                        K2(a = 7) to V2(a = 60)
+                    ),
+                    removedEntries = mapOf(
+                        K2(3) to V2(50),
+                    ),
+                )
+            ),
+            actual = changes,
+        )
+    }
 }

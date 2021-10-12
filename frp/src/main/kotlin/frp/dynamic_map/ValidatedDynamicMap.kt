@@ -27,21 +27,10 @@ class ValidatedDynamicMap<K, V>(
 
     override fun onStart() {
         subscription = source.changes.subscribe { change ->
-            val addedUpdatedIntersection = change.added.keys.intersect(change.updated.keys)
-            if (addedUpdatedIntersection.isNotEmpty()) {
-                throw IllegalStateException("Dynamic map #${tag} adds and updates same keys: $addedUpdatedIntersection")
-            }
-
-            val updatedRemovedIntersection = change.updated.keys.intersect(change.removedEntries.keys)
-            if (updatedRemovedIntersection.isNotEmpty()) {
-                throw IllegalStateException("Dynamic map #${tag} updates and removes same keys: $updatedRemovedIntersection")
-            }
-
-            val addedRemovedIntersection = change.added.keys.intersect(change.removedEntries.keys)
-            if (addedRemovedIntersection.isNotEmpty()) {
-                throw IllegalStateException("Dynamic map #${tag} adds and removes same keys: $addedRemovedIntersection")
-            }
-
+            validateChange(
+                tag = tag,
+                change = change,
+            )
 
             change.added.forEach {
                 if (source.getNow(it.key) != it.value) {
@@ -83,10 +72,31 @@ class ValidatedDynamicMap<K, V>(
         mutableContent = sampleUncached().toMutableMap()
     }
 
+
     override fun onStop() {
         mutableContent = null
 
         subscription!!.unsubscribe()
         subscription = null
+    }
+}
+
+fun <K, V> validateChange(
+    tag: String,
+    change: MapChange<K, V>,
+) {
+    val addedUpdatedIntersection = change.added.keys.intersect(change.updated.keys)
+    if (addedUpdatedIntersection.isNotEmpty()) {
+        throw IllegalStateException("Dynamic map #${tag} adds and updates same keys: $addedUpdatedIntersection")
+    }
+
+    val updatedRemovedIntersection = change.updated.keys.intersect(change.removedEntries.keys)
+    if (updatedRemovedIntersection.isNotEmpty()) {
+        throw IllegalStateException("Dynamic map #${tag} updates and removes same keys: $updatedRemovedIntersection")
+    }
+
+    val addedRemovedIntersection = change.added.keys.intersect(change.removedEntries.keys)
+    if (addedRemovedIntersection.isNotEmpty()) {
+        throw IllegalStateException("Dynamic map #${tag} adds and removes same keys: $addedRemovedIntersection")
     }
 }

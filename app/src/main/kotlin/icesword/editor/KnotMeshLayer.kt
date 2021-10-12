@@ -15,8 +15,13 @@ class KnotMeshLayer(
                 initialSize = 16,
             ),
             KnotMesh(
-                initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, 0),
+                initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, -8),
                 knotPrototype = OvergroundRockPrototype,
+            ),
+            KnotMesh(
+                initialTileOffset = tileAtPoint(startPoint) + IntVec2(12, -8),
+                knotPrototype = OvergroundRockPrototype,
+                initialSize = 1,
             ),
         ),
     )

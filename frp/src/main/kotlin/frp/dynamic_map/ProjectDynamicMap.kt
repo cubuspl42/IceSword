@@ -32,10 +32,10 @@ class ProjectDynamicMap<K, V, K2, V2>(
             val addedAffectedKeys = addedProjections.map { (k, k2) -> k2 }.toList()
 
             val addedAddedKeys = addedAffectedKeys.asSequence()
-                .filter { !linksMap!!.containsKey(it) }
+                .filter { !volatileContentView.containsKey(it) }
 
             val addedUpdatedKeys = addedAffectedKeys.asSequence()
-                .filter { linksMap!!.containsKey(it) }
+                .filter { volatileContentView.containsKey(it) }
 
             val updatedKeys = change.updated.asSequence()
                 .flatMap { (k, v) -> projectKey(k) }
@@ -57,6 +57,7 @@ class ProjectDynamicMap<K, V, K2, V2>(
                 (removedProjectionsGrouped[RemovedLinkKind.NOT_LAST] ?: emptyList()).map { (k, k2) -> k2 }
 
             val removedUpdatedKeys = notLastLinks.asSequence()
+            val removedRemovedKeys = lastLinks.toSet()
 
             val added = addedAddedKeys.associateWithTo(hybridMapOf()) { k2 ->
                 buildValue(k2, source.volatileContentView)
@@ -65,7 +66,9 @@ class ProjectDynamicMap<K, V, K2, V2>(
             val updated = (addedUpdatedKeys + updatedKeys + removedUpdatedKeys)
                 .associateWithTo(hybridMapOf()) { buildValue(it, source.volatileContentView) }
 
-            val removed = lastLinks.associateWithTo(hybridMapOf()) { k2 ->
+            val actuallyRemovedKeys = removedRemovedKeys - addedAffectedKeys
+
+            val removed = actuallyRemovedKeys.associateWithTo(hybridMapOf()) { k2 ->
                 volatileContentView[k2]!!
             }
 
@@ -87,11 +90,17 @@ class ProjectDynamicMap<K, V, K2, V2>(
 
             addedProjections.forEach { (k, k2) -> addLink(k2, k) }
 
+//            val changeDump = change.dump()
+
             val outChange = MapChange(
                 added = added,
                 updated = updated,
                 removedEntries = removed,
             )
+
+//            val outChangeDump = outChange.dump()
+
+//            validateChange(tag = tag, change = outChange)
 
             processChange(outChange)
         }
@@ -144,26 +153,6 @@ class ProjectDynamicMap<K, V, K2, V2>(
 
         if (!wasAdded) {
             throw IllegalStateException("Link was already present")
-        }
-    }
-
-    // Returns: if it was the last link
-    private fun removeLink(b: K2, a: K): Boolean {
-        val linksMap = this.linksMap!!
-        val links = linksMap[b]!!
-
-        val wasThere = links.remove(a)
-
-        if (!wasThere) {
-            throw IllegalStateException("Link isn't present");
-        }
-
-        if (links.isEmpty()) {
-            val removed = linksMap.remove(b)
-            if (removed !== links) throw IllegalStateException()
-            return true
-        } else {
-            return false
         }
     }
 

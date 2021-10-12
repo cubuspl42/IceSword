@@ -1,4 +1,7 @@
 package icesword.frp
+
+import base.jsObjectOf
+
 /// Currently, keys of [added], [updated] and [removed] are assumed to be
 /// mutually-exclusive.
 
@@ -117,6 +120,20 @@ data class MapChange<K, V>(
 
     fun containsKey(key: K): Boolean =
         this.added.containsKey(key) || this.updated.containsKey(key) || this.removedEntries.containsKey(key)
+
+    fun dump(): Any? {
+        fun dumpPart(part: Map<K, V>) = jsObjectOf(
+            part.map { (k, v) -> k.toString() to v }.toMap(),
+        )
+
+        return jsObjectOf(
+            mapOf(
+                "added" to dumpPart(added),
+                "updated" to dumpPart(updated),
+                "removedEntries" to dumpPart(removedEntries),
+            )
+        )
+    }
 
     //
 //  MapChange<K, V2> mapValues<V2>(V2 f(K key, V value)) {
