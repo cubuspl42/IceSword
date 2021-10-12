@@ -5,40 +5,42 @@ import icesword.frp.dynamic_map.ProjectDynamicMap
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-data class K(val a: Int)
-
-data class K2(val a: Int)
-
-data class V(val a: Int)
-
-data class V2(val a: Int)
-
-private fun projectDynamicMap(source: MutableDynamicMap<K, V>) =
-    ProjectDynamicMap(
-        source = source,
-        projectKey = { k ->
-            setOf(
-                K2(k.a - 2),
-                K2(k.a - 1),
-                K2(k.a),
-                K2(k.a + 1),
-                K2(k.a + 2),
-            )
-        },
-        buildValue = { k2, map ->
-            val a = map[K(k2.a - 2)]?.a ?: 0;
-            val b = map[K(k2.a - 1)]?.a ?: 0;
-            val c = map[K(k2.a)]?.a ?: 0;
-            val d = map[K(k2.a + 1)]?.a ?: 0;
-            val e = map[K(k2.a + 2)]?.a ?: 0;
-
-            V2(a + b + c + d + e);
-        }
-    )
-
-private fun valueChange(oldValue: V2, newValue: V2): V2 = newValue
-
 class ProjectDynamicMapTest {
+    private data class K(val a: Int)
+
+    private data class K2(val a: Int)
+
+    private data class V(val a: Int)
+
+    private data class V2(val a: Int)
+
+    companion object {
+        private fun valueChange(oldValue: V2, newValue: V2): V2 = newValue
+
+        private fun projectDynamicMap(source: MutableDynamicMap<K, V>) =
+            ProjectDynamicMap(
+                source = source,
+                projectKey = { k ->
+                    setOf(
+                        K2(k.a - 2),
+                        K2(k.a - 1),
+                        K2(k.a),
+                        K2(k.a + 1),
+                        K2(k.a + 2),
+                    )
+                },
+                buildValue = { k2, map ->
+                    val a = map[K(k2.a - 2)]?.a ?: 0;
+                    val b = map[K(k2.a - 1)]?.a ?: 0;
+                    val c = map[K(k2.a)]?.a ?: 0;
+                    val d = map[K(k2.a + 1)]?.a ?: 0;
+                    val e = map[K(k2.a + 2)]?.a ?: 0;
+
+                    V2(a + b + c + d + e);
+                }
+            )
+    }
+
     @Test
     fun testInitialContent() {
         val source = MutableDynamicMap(

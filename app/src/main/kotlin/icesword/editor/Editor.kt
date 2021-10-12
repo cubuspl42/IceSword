@@ -86,6 +86,22 @@ class Editor(
 
         selectEntity(elastic)
     }
+
+    fun insertKnotMesh(knotPrototype: KnotPrototype) {
+        val focusPoint = world.cameraFocusPoint.sample()
+        val insertionPoint = focusPoint + IntVec2(512, 512)
+
+        val knotMesh = KnotMesh(
+            initialTileOffset = tileAtPoint(insertionPoint),
+            knotPrototype = knotPrototype,
+            initialSize = 2,
+        )
+
+        world.knotMeshLayer.insertKnotMesh(knotMesh)
+
+        selectEntity(knotMesh)
+    }
+
 }
 
 private fun <T> Iterable<T>.indexOfOrNull(element: T?): Int? {

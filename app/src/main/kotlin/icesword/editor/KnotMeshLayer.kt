@@ -7,6 +7,7 @@ import icesword.tileAtPoint
 class KnotMeshLayer(
     startPoint: IntVec2,
 ) {
+
     private val _knotMeshes = MutableDynamicSet(
         setOf(
             KnotMesh(
@@ -25,6 +26,11 @@ class KnotMeshLayer(
             ),
         ),
     )
+
+
+    fun insertKnotMesh(knotMesh: KnotMesh) {
+        _knotMeshes.add(knotMesh)
+    }
 
     init {
 //        val knotMeshesContent = _knotMeshes.volatileContentView

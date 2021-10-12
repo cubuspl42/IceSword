@@ -28,21 +28,31 @@ fun editorSideBar(
 
     return root.apply {
         listOf(
-            insertionButton(
+            createInsertElasticButton(
                 editor = editor,
                 prototype = LogPrototype,
                 tillDetach = tillDetach,
             ),
-            insertionButton(
+            createInsertElasticButton(
                 editor = editor,
                 prototype = TreeCrownPrototype,
+                tillDetach = tillDetach,
+            ),
+            createInsertKnotMeshButton(
+                editor = editor,
+                knotPrototype = UndergroundRockPrototype,
+                tillDetach = tillDetach,
+            ),
+            createInsertKnotMeshButton(
+                editor = editor,
+                knotPrototype = OvergroundRockPrototype,
                 tillDetach = tillDetach,
             ),
         ).forEach(::appendChild)
     }
 }
 
-private fun insertionButton(
+private fun createInsertElasticButton(
     editor: Editor,
     prototype: ElasticPrototype,
     tillDetach: Till,
@@ -58,3 +68,21 @@ private fun insertionButton(
         tillDetach = tillDetach,
     )
 }
+
+private fun createInsertKnotMeshButton(
+    editor: Editor,
+    knotPrototype: KnotPrototype,
+    tillDetach: Till,
+): HTMLElement {
+    val className = knotPrototype::class.simpleName ?: "???"
+    val text = className.replace("Prototype", "")
+
+    return createButton(
+        text = text,
+        onPressed = {
+            editor.insertKnotMesh(knotPrototype)
+        },
+        tillDetach = tillDetach,
+    )
+}
+

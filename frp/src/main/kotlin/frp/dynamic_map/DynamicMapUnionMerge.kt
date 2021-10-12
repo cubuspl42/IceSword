@@ -42,11 +42,45 @@ class DynamicMapUnionMerge<K, V, R>(
     override fun onStart() {
         // TODO: Emit changes for outer map change
         maps.changes.subscribe { outerChange: SetChange<DynamicMap<K, V>> ->
+
+            val allMaps = maps.volatileContentView
+
             outerChange.added.forEach { subscribeToInner(it) }
             outerChange.removed.forEach {
                 val subscription = subscriptionMap!!.remove(it)!!
                 subscription.unsubscribe()
             }
+
+            if (outerChange.added.size > 1) {
+                throw UnsupportedOperationException()
+            }
+
+            val addedMap = outerChange.added.single()
+
+            if (outerChange.removed.isNotEmpty()) {
+                throw UnsupportedOperationException()
+            }
+
+            val addedAffectedEntries = addedMap.volatileContentView.entries
+
+            val addedAddedEntries = addedAffectedEntries.asSequence()
+                .filter { (k, v) -> !volatileContentView.containsKey(k) }.toSet()
+
+            val addedUpdatedEntries = addedAffectedEntries.asSequence()
+                .filter { (k, v) -> volatileContentView.containsKey(k) }.toSet()
+
+            val added = addedAddedEntries.associate { (k, v) -> k to merge(setOf(v)) }
+
+            val updated = addedUpdatedEntries.associate { (k, _) ->
+                k to merge(allMaps.mapNotNull { it.getNow(k) }.toSet())
+            }
+
+            val outChange = MapChange(
+                added = added,
+                updated = updated,
+                removedEntries = emptyMap(),
+            )
+            processChange(outChange)
         }
 
         subscriptionMap = maps.volatileContentView.asSequence()

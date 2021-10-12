@@ -62,7 +62,7 @@ interface DynamicMap<K, V> {
             merge: (Set<V>) -> R,
             tag: String,
         ): DynamicMap<K, V> =
-            unionMergeFast(
+            unionMerge_(
                 through = through,
                 maps = maps,
                 merge = { it.iterator().next() },
@@ -74,7 +74,7 @@ interface DynamicMap<K, V> {
 //                    }
 //                }
 
-        private fun <K, V, R> unionMergeFast(
+        fun <K, V, R> unionMerge_(
             through: MapFactory<K, R>,
             maps: DynamicSet<DynamicMap<K, V>>,
             merge: (Set<V>) -> R,
@@ -194,7 +194,7 @@ fun <K, V, K2, V2> DynamicMap<K, V>.project(
         tag = tag,
     ).validated(tag = tag)
 
-private const val enableMapValidation = false
+private const val enableMapValidation = true
 
 fun <K, V> DynamicMap<K, V>.validated(tag: String): DynamicMap<K, V> =
     if (enableMapValidation) ValidatedDynamicMap(this, tag = tag)
