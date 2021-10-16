@@ -49,11 +49,11 @@ suspend fun fetchWorld(): Wwd.World {
 @OptIn(DelicateCoroutinesApi::class)
 fun main() {
     document.body?.style?.apply {
-        margin = "0px"
-        padding = "0px"
-
         width = "100vw"
         height = "100vh"
+
+        margin = "0px"
+        padding = "0px"
 
         asDynamic().overscrollBehavior = "none"
     }
@@ -61,12 +61,13 @@ fun main() {
     val root = document.getElementById("root")!! as HTMLElement
 
     root.style.apply {
-        position = "relative"
-        width = "100%"
-        height = "100%"
+        width = "100vw"
+        height = "100vh"
 
         overflowX = "hidden"
         overflowY = "hidden"
+
+        display = "flex"
     }
 
     GlobalScope.launch {
@@ -76,7 +77,11 @@ fun main() {
             createAppView(
                 app = app,
                 tillDetach = Till.never,
-            )
+            ).apply {
+                style.apply {
+                    flex = "1"
+                }
+            }
         )
     }
 }

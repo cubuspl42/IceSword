@@ -21,9 +21,13 @@ fun editorView(
     )
 
     val bottomRow = createHtmlElement("div").apply {
+        className = "bottomRow"
+
         style.apply {
             display = "flex"
             flexDirection = "row"
+
+            minHeight = "0"
         }
 
         appendChild(

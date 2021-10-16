@@ -250,6 +250,9 @@ fun scene(
         style.height = "100%"
         style.display = "grid"
 
+        style.setProperty("grid-template-columns", "minmax(0, 1fr)")
+        style.setProperty("grid-template-rows", "minmax(0, 1fr)")
+
         appendChild(canvas)
         appendChild(sceneOverlay)
     }
