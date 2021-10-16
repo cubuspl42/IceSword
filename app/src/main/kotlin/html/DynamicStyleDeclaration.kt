@@ -50,7 +50,7 @@ data class DynamicStyleDeclaration(
     }
 }
 
-private fun linkProperty(
+fun linkProperty(
     style: CSSStyleDeclaration,
     propertyName: String,
     property: Cell<String?>?,

@@ -2,10 +2,14 @@ package icesword
 
 import html.createHtmlElement
 import html.linkChild
+import html.linkProperty
 import html.onEvent
 import icesword.editor.App
 import icesword.frp.Till
+import icesword.frp.hold
+import icesword.frp.map
 import icesword.frp.mapTillNext
+import icesword.frp.mergeWith
 import icesword.frp.reactTill
 import kotlinx.browser.document
 import org.w3c.dom.DragEvent
@@ -31,32 +35,61 @@ fun createAppView(
         linkChild(this, theEditorView, till = tillDetach)
     }
 
-    val dragoverPreview = createDragoverPreview(
-        app = app,
-        tillDetach = tillDetach,
-    )
 
-//    val root = createHtmlElement("div").apply {
-//        className = "appView"
-//
-//        style.width = "100%"
-//        style.height = "100%"
-//
-//        linkChild(this, theEditorView, till = tillDetach)
-//    }
+    val dragoverPreviewWrapper = createHtmlElement("div").apply {
+        className = "dragoverPreviewWrapper"
+
+        style.apply {
+            display = "grid"
+            setProperty("grid-template-columns", "minmax(0, 1fr)")
+            setProperty("grid-template-rows", "minmax(0, 1fr)")
+
+            setProperty("pointer-events", "none")
+        }
+    }
 
     val root = createStackLayout(
         children = listOf(
             editorViewWrapper,
-//            dragoverPreview,
+            dragoverPreviewWrapper,
         )
     )
 
-    root.onEvent<DragEvent>("dragover").reactTill(tillDetach) { event ->
-        event.preventDefault()
+    val dragOverPreview = createDragoverPreview(
+        app = app,
+        tillDetach = tillDetach,
+    )
+
+    val onDragEnter = root.onEvent<DragEvent>("dragenter")
+    val onDragOver = dragOverPreview.onEvent<DragEvent>("dragover")
+    val onDragLeave = dragOverPreview.onEvent<DragEvent>("dragleave")
+    val onDrop = dragOverPreview.onEvent<DragEvent>("drop")
+
+    onDragOver.reactTill(tillDetach) { it.preventDefault() }
+
+    val isDragOver = onDragEnter.map { true }
+        .mergeWith(onDragLeave.map { false })
+        .mergeWith(onDrop.map { false })
+        .hold(false, tillDetach)
+
+    linkProperty(
+        style = dragoverPreviewWrapper.style,
+        propertyName = "pointer-events",
+        property = isDragOver.map { if (it) null else "none" },
+        till = tillDetach,
+    )
+
+    val dragoverPreviewCell = isDragOver.map { isDragged ->
+        if (isDragged) dragOverPreview else null
     }
 
-    root.onEvent<DragEvent>("drop").reactTill(tillDetach) { event ->
+    linkChild(
+        element = dragoverPreviewWrapper,
+        child = dragoverPreviewCell,
+        till = tillDetach,
+    )
+
+    onDrop.reactTill(tillDetach) { event ->
         event.preventDefault()
 
         event.dataTransfer?.items?.get(0)?.getAsFile()?.let { file ->
@@ -73,32 +106,24 @@ fun createStackLayout(children: List<HTMLElement>): HTMLElement =
 
         style.apply {
             display = "grid"
-
             setProperty("grid-template-columns", "minmax(0, 1fr)")
             setProperty("grid-template-rows", "minmax(0, 1fr)")
         }
 
-        children.mapIndexed { index, child ->
-            createHtmlElement("div").apply {
-                style.apply {
-                    setProperty("grid-column", "1")
-                    setProperty("grid-row", "1")
+        children.forEachIndexed { index, child ->
+            child.style.apply {
+                setProperty("grid-column", "1")
+                setProperty("grid-row", "1")
 
-                    display = "flex"
+                display = "grid"
+                setProperty("grid-template-columns", "minmax(0, 1fr)")
+                setProperty("grid-template-rows", "minmax(0, 1fr)")
 
-                    width = "100%"
-                    height = "100%"
-
-                    zIndex = index.toString()
-                }
-
-                appendChild(child.apply {
-                    style.apply {
-                        flex = "1"
-                    }
-                })
+                zIndex = index.toString()
             }
-        }.forEach(this::appendChild)
+
+            appendChild(child)
+        }
     }
 
 fun createDragoverPreview(
@@ -108,17 +133,21 @@ fun createDragoverPreview(
     val root = createHtmlElement("div").apply {
         className = "dragoverPreview"
 
-//        style.width = "100%"
-//        style.height = "100%"
-
         style.apply {
             display = "flex"
             justifyContent = "center"
             alignItems = "center"
+
+            backgroundColor = "#000000ad"
         }
 
         appendChild(
             createHtmlElement("p").apply {
+                style.apply {
+                    color = "white"
+                    setProperty("pointer-events", "none")
+                }
+
                 appendChild(document.createTextNode("Drop the file to load the world..."))
             }
         )
@@ -126,4 +155,3 @@ fun createDragoverPreview(
 
     return root
 }
-

@@ -67,7 +67,9 @@ fun main() {
         overflowX = "hidden"
         overflowY = "hidden"
 
-        display = "flex"
+        display = "grid"
+        setProperty("grid-template-columns", "minmax(0, 1fr)")
+        setProperty("grid-template-rows", "minmax(0, 1fr)")
     }
 
     GlobalScope.launch {
@@ -77,11 +79,7 @@ fun main() {
             createAppView(
                 app = app,
                 tillDetach = Till.never,
-            ).apply {
-                style.apply {
-                    flex = "1"
-                }
-            }
+            )
         )
     }
 }
