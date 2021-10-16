@@ -239,6 +239,24 @@ fun linkChildren(
     )
 }
 
+fun linkChild(
+    element: HTMLElement,
+    child: Cell<HTMLElement?>,
+    till: Till,
+) {
+    child.values().reactTill(till) { c ->
+        clearElement(element)
+        c?.let { element.appendChild(it) }
+    }
+
+    clearElement(element)
+    child.sample()?.let { element.appendChild(it) }
+}
+
+private fun clearElement(element: Element): Unit {
+    element.innerHTML = ""
+}
+
 fun linkSvgChildren(
     element: SVGElement,
     children: DynamicSet<SVGElement>,

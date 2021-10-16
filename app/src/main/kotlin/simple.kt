@@ -1,11 +1,5 @@
-import icesword.frpjs.printMsg
-import icesword.editor.Editor
-import icesword.editorView
-import icesword.geometry.IntRect
-import icesword.geometry.IntSize
-import icesword.geometry.IntVec2
-import icesword.scene.Texture
-import icesword.scene.Tileset
+import icesword.createAppView
+import icesword.editor.App
 import icesword.frp.Till
 import icesword.wwd.Wwd
 import icesword.wwd.Wwd.readWorld
@@ -16,7 +10,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.ImageBitmap
 
 const val textureImagePath = "images/spritesheets/LEVEL3_ACTION/texture.png"
 const val textureIndexPath = "images/spritesheets/LEVEL3_ACTION/texture.json"
@@ -40,56 +33,6 @@ external interface Frame {
 external interface FrameRect {
     val x: Int
     val y: Int
-}
-
-suspend fun loadTileset(): Tileset {
-    suspend fun loadImage(): ImageBitmap {
-        val textureImageResponse = window.fetch(textureImagePath).await()
-        val textureImageBlob = textureImageResponse.blob().await()
-        return window.createImageBitmap(textureImageBlob).await()
-    }
-
-    fun parseIndex(
-        indexJson: dynamic,
-    ): Map<Int, IntRect> {
-        val frames = mapOfObject(indexJson.frames)
-
-        return frames.map { (frameIdStr, frame) ->
-            val frameId = frameIdStr.toInt()
-
-            val frameRectJson = frame.asDynamic().frame
-            val frameRect = IntRect(
-                IntVec2(
-                    frameRectJson.x as Int,
-                    frameRectJson.y as Int,
-                ),
-                IntSize(
-                    frameRectJson.w as Int,
-                    frameRectJson.h as Int,
-                )
-            )
-
-            frameId to frameRect
-        }.toMap()
-    }
-
-    suspend fun loadIndex(): Map<Int, IntRect> {
-        val textureIndexResponse = window.fetch(textureIndexPath).await()
-        val json = textureIndexResponse.json().await().asDynamic()
-        return parseIndex(json)
-    }
-
-    val imageBitmap = loadImage()
-
-    val index = loadIndex()
-
-    val tileTextures = index.mapValues { (_, frameRect) ->
-        Texture(imageBitmap, frameRect)
-    }
-
-    return Tileset(
-        tileTextures = tileTextures,
-    )
 }
 
 
@@ -127,11 +70,11 @@ fun main() {
     }
 
     GlobalScope.launch {
-        val editor = Editor.load()
+        val app = App.load()
 
         root.appendChild(
-            editorView(
-                editor = editor,
+            createAppView(
+                app = app,
                 tillDetach = Till.never,
             )
         )

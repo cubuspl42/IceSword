@@ -8,6 +8,7 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.scene.Tileset
 import icesword.tileAtPoint
+import icesword.wwd.Wwd
 import loadTileset
 
 enum class Tool {
@@ -21,11 +22,10 @@ class Editor(
     val tileset: Tileset,
 ) {
     companion object {
-        suspend fun load(): Editor {
-            val tileset = loadTileset()
-
-            val wwdWorld = fetchWorld()
-
+        fun load(
+            tileset: Tileset,
+            wwdWorld: Wwd.World,
+        ): Editor {
             val world = World.load(wwdWorld)
 
             return Editor(

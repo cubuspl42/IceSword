@@ -234,8 +234,10 @@ fun scene(
 
     fun requestAnimationFrames() {
         window.requestAnimationFrame {
-            handleAnimationFrame()
-            requestAnimationFrames()
+            if (!tillDetach.wasReached()) {
+                handleAnimationFrame()
+                requestAnimationFrames()
+            }
         }
     }
 
