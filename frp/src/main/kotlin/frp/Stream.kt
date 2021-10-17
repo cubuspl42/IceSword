@@ -36,6 +36,9 @@ fun <A> Stream<A>.correlate(sample: () -> A): Cell<A> =
 fun <A, B> Stream<A>.map(f: (A) -> B): Stream<B> =
     StreamMap(this, f)
 
+fun <A, B> Stream<A>.mapTo(b: B): Stream<B> =
+    this.map { b }
+
 fun <A> Stream<A>.units(): Stream<Unit> =
     this.map { }
 
