@@ -114,15 +114,6 @@ fun scene(
             height = 1024
 
             className = "scene-canvas"
-
-            style.apply {
-                width = "100%"
-                height = "100%"
-
-                setProperty("grid-column", "1")
-                setProperty("grid-row", "1")
-                zIndex = "0"
-            }
         }
 
         return canvas
@@ -133,16 +124,6 @@ fun scene(
             tillDetach = tillDetach,
         ).apply {
             setAttribute("class", "svgOverlay")
-
-            style.apply {
-                setProperty("grid-column", "1")
-                setProperty("grid-row", "1")
-
-                width = "100%"
-                height = "100%"
-
-                zIndex = "1"
-            }
         }
 
         val layersOverlays = scene.layers.map {
@@ -246,15 +227,35 @@ fun scene(
     val root = createHtmlElement("div").apply {
         className = "scene"
 
-        style.width = "100%"
-        style.height = "100%"
-        style.display = "grid"
+        style.apply {
+            display = "grid"
 
-        style.setProperty("grid-template-columns", "minmax(0, 1fr)")
-        style.setProperty("grid-template-rows", "minmax(0, 1fr)")
+            setProperty("grid-template-columns", "minmax(0, 1fr)")
+            setProperty("grid-template-rows", "minmax(0, 1fr)")
+            setProperty("justify-items", "stretch")
+            setProperty("align-items", "stretch")
+        }
 
-        appendChild(canvas)
-        appendChild(sceneOverlay)
+        appendChild(
+            canvas.apply {
+                style.apply {
+                    setProperty("grid-column", "1")
+                    setProperty("grid-row", "1")
+                    zIndex = "0"
+                }
+            },
+        )
+
+        appendChild(
+            sceneOverlay.apply {
+                style.apply {
+                    setProperty("grid-column", "1")
+                    setProperty("grid-row", "1")
+
+                    zIndex = "1"
+                }
+            }
+        )
     }
 
     return root

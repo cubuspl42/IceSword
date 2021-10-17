@@ -41,15 +41,16 @@ fun editorView(
                 editor = editor,
                 tileset = editor.tileset,
                 tillDetach = tillDetach,
-            ),
+            ).apply {
+                style.apply {
+                    flex = "1"
+                }
+            },
         )
     }
 
     val root = createHtmlElement("div").apply {
         className = "editorView"
-
-        style.width = "100%"
-        style.height = "100%"
 
         style.display = "flex"
         style.flexDirection = "column"
@@ -93,7 +94,6 @@ fun editorToolBar(
     val root = createHtmlElement("div").apply {
         className = "editorToolBar"
 
-        style.width = "100%"
 //        style.minHeight = "32px"
         style.backgroundColor = "grey"
         style.padding = "4px"

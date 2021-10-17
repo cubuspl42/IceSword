@@ -21,10 +21,11 @@ fun worldView(
 
     val root = createHtmlElement("div").apply {
         className = "worldView"
-
         tabIndex = 0
-        style.width = "100%"
-        style.height = "100%"
+
+        style.apply {
+            display = "grid"
+        }
 
         addEventListener("contextmenu", { it.preventDefault() })
     }

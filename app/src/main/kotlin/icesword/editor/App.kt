@@ -7,9 +7,8 @@ import icesword.scene.Tileset
 import icesword.wwd.Wwd
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.await
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import loadTileset
 import org.khronos.webgl.ArrayBuffer
@@ -51,6 +50,8 @@ class App(
 
     fun loadWorld(file: File) {
         launch {
+            delay(100)
+
             val worldBuffer = file.arrayBuffer().await()
             val world = Wwd.readWorld(worldBuffer)
 
