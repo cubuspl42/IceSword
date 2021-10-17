@@ -55,7 +55,13 @@ fun editorView(
         style.flexDirection = "column"
 
         appendChild(toolBar)
-        appendChild(bottomRow)
+        appendChild(
+            bottomRow.apply {
+                style.apply {
+                    flex = "1"
+                }
+            },
+        )
     }
 
     return root
