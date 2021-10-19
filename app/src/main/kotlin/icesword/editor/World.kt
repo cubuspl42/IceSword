@@ -119,7 +119,11 @@ class World(
             tiles = newTiles,
         )
 
+        val startPoint = startPointEntity.position.sample()
+        
         val newWorld = wwdWorld.copy(
+            startX = startPoint.x,
+            startY = startPoint.y,
             planes = wwdWorld.planes.mapIndexed { index, plane ->
                 if (index == wwdPlaneIndex) newActionPlane
                 else plane
