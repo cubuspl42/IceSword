@@ -1,6 +1,7 @@
 package icesword.wwd
 
 import kotlin.math.absoluteValue
+import kotlin.math.max
 import kotlin.math.min
 
 object Geometry {
@@ -28,39 +29,40 @@ object Geometry {
             get() = y.absoluteValue
     }
 
-    data class Rectangle(val position: Vec2, val size: Vec2) {
+    data class Rectangle(
+        val left: Int,
+        val top: Int,
+        val right: Int,
+        val bottom: Int,
+
+        ) {
         companion object {
             val zero: Rectangle
-                get() = Rectangle(Vec2(0, 0), Vec2(0, 0))
-
-            fun fromCenter(center: Vec2, size: Vec2): Rectangle {
-                val sizeAbs = size.abs()
-                return Rectangle(sizeAbs.neg() / 2, sizeAbs)
-            }
+                get() = Rectangle(0, 0, 0, 0)
 
             fun fromBounds(left: Int, top: Int, right: Int, bottom: Int): Rectangle {
-                return Rectangle(Vec2(left, top), Vec2(right - left, bottom - top))
+                return Rectangle(left, top, right, bottom)
             }
 
             fun fromDiagonal(a: Vec2, b: Vec2): Rectangle =
-                Rectangle(Vec2(min(a.x, b.x), min(a.y, b.y)), b - a)
+                Rectangle(min(a.x, b.x), min(a.y, b.y), max(a.x, b.x), max(a.y, b.y))
         }
 
         val xMin: Int
-            get() = position.x
+            get() = left
 
         val yMin: Int
-            get() = position.y
+            get() = top
 
         private val width: Int
-            get() = size.width
+            get() = right - left
 
         private val height: Int
-            get() = size.height
+            get() = bottom - top
 
-        val xMax: Int = this.xMin + this.width
+        val xMax: Int = right
 
-        val yMax: Int = this.yMin + this.height
+        val yMax: Int = bottom
 
         private val xyMin: Vec2 = Vec2(this.xMin, this.yMin)
 

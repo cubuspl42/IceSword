@@ -11,16 +11,16 @@ class KnotMeshLayer(
     private val _knotMeshes = MutableDynamicSet(
         setOf(
             KnotMesh(
-                initialTileOffset = tileAtPoint(startPoint),
+                initialTileOffset = tileAtPoint(startPoint) + IntVec2(-2, 4),
                 knotPrototype = UndergroundRockPrototype,
                 initialSize = 16,
             ),
             KnotMesh(
-                initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, -8),
+                initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, -4),
                 knotPrototype = OvergroundRockPrototype,
             ),
             KnotMesh(
-                initialTileOffset = tileAtPoint(startPoint) + IntVec2(12, -8),
+                initialTileOffset = tileAtPoint(startPoint) + IntVec2(12, -4),
                 knotPrototype = OvergroundRockPrototype,
                 initialSize = 1,
             ),
@@ -30,23 +30,6 @@ class KnotMeshLayer(
 
     fun insertKnotMesh(knotMesh: KnotMesh) {
         _knotMeshes.add(knotMesh)
-    }
-
-    init {
-//        val knotMeshesContent = _knotMeshes.volatileContentView
-//
-//        val foo = knotMeshesContent.toCollection(LinkedHashSet<KnotMesh>(mapCapacity(size))
-//
-//        println("knotMeshesContent is Collection: ${knotMeshesContent is Collection}")
-//
-//        val knotMeshContentSet = knotMeshesContent.toSet()
-//
-//        println("knotMeshContentSet.size: ${knotMeshContentSet.size}")
-//        println("knotMeshContentSet: $knotMeshContentSet")
-//
-//        for (knotMesh in knotMeshesContent) {
-//            println("knotMesh: $knotMesh")
-//        }
     }
 
     val knotMeshes: DynamicSet<KnotMesh>

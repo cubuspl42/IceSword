@@ -4,23 +4,28 @@ import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
 import kotlinx.browser.window
+import org.khronos.webgl.Int32Array
 import org.khronos.webgl.get
+import org.khronos.webgl.set
 
 class World(
+    private val wwdWorld: Wwd.World,
     val startPoint: IntVec2,
     val wwdTiles: Map<IntVec2, Int>,
 ) {
     companion object {
+        private const val wwdPlaneIndex = 1
+
         fun load(wwdWorld: Wwd.World): World {
-            val action = wwdWorld.planes[1]
+            val actionPlane = wwdWorld.planes[wwdPlaneIndex]
 
             val startPoint = IntVec2(wwdWorld.startX, wwdWorld.startY)
 
-            val tiles = (0 until action.tilesHigh)
+            val tiles = (0 until actionPlane.tilesHigh)
                 .flatMap { i ->
-                    (0 until action.tilesWide).map { j ->
-                        val k = i * action.tilesWide + j
-                        val t = action.tiles[k]
+                    (0 until actionPlane.tilesWide).map { j ->
+                        val k = i * actionPlane.tilesWide + j
+                        val t = actionPlane.tiles[k]
                         IntVec2(j, i) to t
                     }
                 }
@@ -28,6 +33,7 @@ class World(
                 .toMap()
 
             return World(
+                wwdWorld = wwdWorld,
                 startPoint = startPoint,
                 wwdTiles = tiles,
             )
@@ -52,16 +58,11 @@ class World(
     val elastics = metaTileLayer.elastics
 
 
-//    val experimentalTileLayer = ExperimentalTileLayer(
-//        startPoint = startPoint,
-//    )
-
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
             setOf(
                 elastics,
                 knotMeshLayer.knotMeshes,
-//                experimentalTileLayer.tileEntities,
             ),
         )
     ).also {
@@ -70,11 +71,6 @@ class World(
     }
 
     val tiles = metaTileLayer.tiles
-
-//    val tiles = metaTileLayer.tiles.validated("World.tiles")
-
-
-//    val tiles = knotMeshLayer.globalTiles
 
     private val _cameraFocusPoint = MutCell(startPoint)
 
@@ -94,9 +90,31 @@ class World(
         val initialFocusPoint = _cameraFocusPoint.sample()
         val targetFocusPoint = offsetDelta.map { d -> initialFocusPoint + d }
 
-//        println("initialFocusPoint: $initialFocusPoint")
-
         targetFocusPoint.syncTill(_cameraFocusPoint, till = tillStop)
+    }
+
+    fun dump(): Wwd.World {
+        val actionPlane = wwdWorld.planes[wwdPlaneIndex]
+        
+        val newTiles = Int32Array(Array(actionPlane.tiles.length) { -1 })
+
+        tiles.volatileContentView.forEach { (tileOffset, tileId) ->
+            val k = tileOffset.y * actionPlane.tilesWide + tileOffset.x
+            newTiles[k] = tileId
+        }
+
+        val newActionPlane = actionPlane.copy(
+            tiles = newTiles,
+        )
+
+        val newWorld = wwdWorld.copy(
+            planes = wwdWorld.planes.mapIndexed { index, plane ->
+                if (index == wwdPlaneIndex) newActionPlane
+                else plane
+            }
+        )
+
+        return newWorld
     }
 
     init {

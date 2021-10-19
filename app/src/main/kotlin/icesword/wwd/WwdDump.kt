@@ -1,9 +1,26 @@
 package icesword.wwd
 
-import icesword.wwd.DataStream.ByteString
+import icesword.wwd.DataStreamObj.ByteString
 import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.OutputDataStream.OutputStream
-import pako.Pako
+import icesword.wwd.Wwd.Object_
+import icesword.wwd.Wwd.Plane
+import icesword.wwd.Wwd.TileDescription
+import icesword.wwd.Wwd.World
+import icesword.wwd.Wwd.WwdHeaderFlags
+import icesword.wwd.Wwd.authorLength
+import icesword.wwd.Wwd.birthLength
+import icesword.wwd.Wwd.imageDirLength
+import icesword.wwd.Wwd.imageSetLength
+import icesword.wwd.Wwd.launchAppLength
+import icesword.wwd.Wwd.levelNameLength
+import icesword.wwd.Wwd.palRezLength
+import icesword.wwd.Wwd.planeNameBufferSize
+import icesword.wwd.Wwd.prefixLength
+import icesword.wwd.Wwd.rezFileLength
+import org.khronos.webgl.ArrayBuffer
+import org.khronos.webgl.Uint8Array
+import org.khronos.webgl.get
 
 
 object DumpWwd {
@@ -20,7 +37,7 @@ object DumpWwd {
     val WAP_TILE_TYPE_SINGLE = 1
     val WAP_TILE_TYPE_DOUBLE = 2
 
-    class WwdOutputStream(private val _stream : OutputStream) {
+    class WwdOutputStream(private val _stream: OutputStream) {
 
 //    private fun writeNullByte(): Unit {
 //      _stream.writeUint8(0)
@@ -35,28 +52,29 @@ object DumpWwd {
             _stream.writeByteString(byteString, byteString.length)
         }
 
-        fun writeFixedString(byteString: ByteString ): Unit {
+        fun writeFixedString(byteString: ByteString): Unit {
             writeBuffer(byteString)
         }
 
-        fun writeStaticString(byteString: ByteString , bufferSize: Int): Unit {
+        fun writeStaticString(byteString: ByteString, bufferSize: Int): Unit {
             _stream.writeByteString(byteString, bufferSize)
         }
 
-        fun writeNullTerminatedString(byteString: ByteString ): Unit {
+        fun writeNullTerminatedString(byteString: ByteString): Unit {
             _stream.writeByteStringNullTerminated(byteString)
+
         }
 
         fun writeRect(r: Rectangle): Unit {
-            writeInt(r.xMin)
-            writeInt(r.yMin)
-            writeInt(r.xMax)
-            writeInt(r.yMax)
+            writeInt(r.left)
+            writeInt(r.top)
+            writeInt(r.right)
+            writeInt(r.bottom)
         }
     }
 
     class PlaneOffsets(
-        val plane: Wwd.Plane,
+        val plane: Plane,
         var tilesOffset: Int = 0,
         var imageSetsOffset: Int = 0,
         var objectsOffset: Int = 0,
@@ -69,11 +87,11 @@ object DumpWwd {
         var decompressedMainBlockSize: Int = 0,
     )
 
-    private fun calculateOffsets(wwd: Wwd.World): WorldOffsets {
+    private fun calculateOffsets(wwd: World): WorldOffsets {
         val planes = wwd.planes
 
-        val planesOffsets = planes.map( PlaneOffsets(_))
-        val worldOffsets =  WorldOffsets(planesOffsets)
+        val planesOffsets = planes.map { PlaneOffsets(it) }
+        val worldOffsets = WorldOffsets(planesOffsets)
 
         var offset = WAP_WWD_HEADER_SIZE
         worldOffsets.mainBlockOffset = offset
@@ -88,13 +106,13 @@ object DumpWwd {
         //      // TODO: Clone-on-dump + unserscores for "private" fields
         //    }
 
-        planesOffsets.foreach(po => {
+        planesOffsets.forEach { po ->
             val p = po.plane
 
             po.tilesOffset = offset
             offset += p.tilesWide * p.tilesHigh * SIZEOF_INT // TODO: -> tiles.size ? + other similar stuff
             // TODO: Clone-on-dump + unserscores for "private" fields
-        })
+        }
 
 
 //    for (p in planes) {
@@ -104,15 +122,16 @@ object DumpWwd {
 //      }
 //    }
 
-        planesOffsets.foreach(po => {
+
+        planesOffsets.forEach { po ->
             val p = po.plane
 
             po.imageSetsOffset = offset
 
-            p.imageSets.foreach(imageSet => {
+            p.imageSets.forEach { imageSet ->
                 offset += imageSet.length + SIZEOF_NULL_BYTE
-            })
-        })
+            }
+        }
 
 //    for (p in planes) {
 //      p.objectsOffset = offset
@@ -122,16 +141,16 @@ object DumpWwd {
 //      }
 //    }
 
-        planesOffsets.foreach(po => {
+        planesOffsets.forEach { po ->
             val p = po.plane
 
             po.objectsOffset = offset
 
-            p.objects.foreach(o => {
+            p.objects.forEach { o ->
                 offset += WAP_WWD_OBJECT_DESCRIPTION_SIZE
                 offset += o.name.length + o.logic.length + o.imageSet.length + o.animation.length
-            })
-        })
+            }
+        }
 
         worldOffsets.tileDescriptionsOffset = offset
         offset += 8 * SIZEOF_INT
@@ -142,13 +161,13 @@ object DumpWwd {
 //        else -> 10 * SIZEOF_INT
 //      }
 //    }
-        wwd.tileDescriptions.foreach(td => {
-            offset = offset + (
-                    if (td._type == WAP_TILE_TYPE_SINGLE) 5 * SIZEOF_INT
-                    else 10 * SIZEOF_INT
-                    )
 
-        })
+        wwd.tileDescriptions.forEach { td ->
+            offset +=
+                if (td._type == WAP_TILE_TYPE_SINGLE) 5 * SIZEOF_INT
+                else 10 * SIZEOF_INT
+        }
+
 //    for (td in wwd.tileDescriptions) {
 //      offset += when (td.type) {
 //        WAP_TILE_TYPE_SINGLE -> 5 * SIZEOF_INT
@@ -158,25 +177,25 @@ object DumpWwd {
 
         worldOffsets.decompressedMainBlockSize = offset - WAP_WWD_HEADER_SIZE
 
-        worldOffsets
+     return   worldOffsets
     }
 
-    fun compress(buffer: ArrayBuffer): Uint8Array =
-        Pako.funlate( Uint8Array(buffer))
+    private fun compress(buffer: ArrayBuffer): Uint8Array =
+        Pako.deflate(Uint8Array(buffer))
 
     fun dumpWwd(outputStream: OutputStream, wwd: World) {
-        val wwdOutputStream =  WwdOutputStream(outputStream)
+        val wwdOutputStream = WwdOutputStream(outputStream)
         val header = wwd
 
         val worldOffsets = calculateOffsets(wwd)
         dumpWwdHeader(wwdOutputStream, wwd, worldOffsets)
 
-        if ((header.flags & WwdHeaderFlags.COMPRESS) != 0) {
-            val mainBlockStream =  OutputStream()
-            dumpMainBlock( WwdOutputStream(mainBlockStream), wwd, worldOffsets)
+        if ((header.flags and WwdHeaderFlags.COMPRESS) != 0) {
+            val mainBlockStream = OutputStream()
+            dumpMainBlock(WwdOutputStream(mainBlockStream), wwd, worldOffsets)
             val mainBlockBuffer = mainBlockStream.toArrayBuffer()
             val compressedMainBlockBuffer = compress(mainBlockBuffer)
-            wwdOutputStream.writeBuffer( ByteString(compressedMainBlockBuffer))
+            wwdOutputStream.writeBuffer(ByteString(compressedMainBlockBuffer))
         } else {
             dumpMainBlock(wwdOutputStream, wwd, worldOffsets)
         }
@@ -220,11 +239,11 @@ object DumpWwd {
         dumpTileDescriptions(stream, wwd.tileDescriptions)
     }
 
-    fun dumpPlanes(stream: WwdOutputStream, planes: List[PlaneOffsets]) {
-        planes.foreach( p => dumpPlaneHeader(stream, p) )
-        planes.foreach( p => dumpTiles(stream, p.plane) )
-        planes.foreach( p => dumpImageSets(stream, p.plane.imageSets) )
-        planes.foreach( p => dumpObjects(stream, p.plane.objects) )
+    fun dumpPlanes(stream: WwdOutputStream, planes: List<PlaneOffsets>) {
+        planes.forEach { p-> dumpPlaneHeader (stream, p) }
+        planes.forEach { p-> dumpTiles (stream, p.plane) }
+        planes.forEach { p-> dumpImageSets (stream, p.plane.imageSets) }
+        planes.forEach { p-> dumpObjects (stream, p.plane.objects) }
     }
 
     fun dumpPlaneHeader(stream: WwdOutputStream, planeOffsets: PlaneOffsets) {
@@ -259,21 +278,20 @@ object DumpWwd {
 
     fun dumpTiles(stream: WwdOutputStream, plane: Plane) {
         var k = 0
-        (0 until plane.tilesHigh).foreach(i => {
-            (0 until plane.tilesWide).foreach(j => {
-                val t = plane.tiles(k)
-                k += 1
+        for (i in 0 until plane.tilesHigh) {
+            for (j in 0 until plane.tilesWide) {
+                val t = plane.tiles[k++]
                 stream.writeInt(t)
-            })
-        })
+            }
+        }
     }
 
-    fun dumpImageSets(stream: WwdOutputStream, imageSets: List[ByteString]) {
-        imageSets.foreach(stream.writeNullTerminatedString)
+    fun dumpImageSets(stream: WwdOutputStream, imageSets: List<ByteString>) {
+        imageSets.forEach { stream.writeNullTerminatedString(it) }
     }
 
-    fun dumpObjects(stream: WwdOutputStream, objects: List[Object_]) {
-        objects.foreach{ dumpObject(stream, _) }
+    fun dumpObjects(stream: WwdOutputStream, objects: List<Object_>) {
+        objects.forEach { dumpObject(stream, it) }
     }
 
     fun dumpObject(stream: WwdOutputStream, obj: Object_) {
@@ -338,7 +356,7 @@ object DumpWwd {
         stream.writeFixedString(obj.animation)
     }
 
-    fun dumpTileDescriptions(stream: WwdOutputStream, tileDescriptions: List[TileDescription]) {
+    fun dumpTileDescriptions(stream: WwdOutputStream, tileDescriptions: List<TileDescription>) {
         stream.writeInt(32)
         stream.writeInt(0)
         stream.writeInt(tileDescriptions.size)
@@ -348,8 +366,8 @@ object DumpWwd {
         stream.writeInt(0)
         stream.writeInt(0)
 
-        tileDescriptions.foreach {
-            dumpTileDescription(stream, _)
+        tileDescriptions.forEach {
+            dumpTileDescription(stream, it)
         }
     }
 
@@ -367,5 +385,4 @@ object DumpWwd {
             stream.writeRect(td.rect)
         }
     }
-
 }

@@ -45,24 +45,8 @@ object OutputDataStream {
 
             }
 
-
-
             _offset += (length - subArray.length)
         }
-
-        //
-        //      byteString.foreach(byte => {
-        //
-        //      })
-
-        //      val fullByteString =  Uint8Array(this._arrayBuffer, this._offset, length)
-        //      val firstZeroIndex = fullByteString.indexOf(0)
-        //      val byteString: Uint8Array = if (firstZeroIndex >= 0)
-        //        fullByteString.slice(0, firstZeroIndex) else
-        //        fullByteString
-        //      this._offset += length
-        //      return  ByteString(byteString)
-        //    }
 
         fun writeByteStringNullTerminated(byteString: ByteString) {
             val byteArray = byteString.byteArray
@@ -79,17 +63,6 @@ object OutputDataStream {
             _dataView.setUint8(_offset, 0)
             _offset += 1
         }
-
-        //
-        //    fun writeRectangle(): Rectangle {
-        //      Rectangle.fromBounds(
-        //        this.writeInt32(),
-        //        this.writeInt32(),
-        //        this.writeInt32(),
-        //        this.writeInt32(),
-        //      )
-        //    }
-        //  }
 
         fun toArrayBuffer(): ArrayBuffer =
             _arrayBuffer.slice(0, _offset)

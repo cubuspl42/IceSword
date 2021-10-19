@@ -1,6 +1,5 @@
 package icesword.editor
 
-import fetchWorld
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.sample
@@ -8,8 +7,14 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.scene.Tileset
 import icesword.tileAtPoint
+import icesword.wwd.DumpWwd.dumpWwd
+import icesword.wwd.OutputDataStream.OutputStream
 import icesword.wwd.Wwd
-import loadTileset
+import kotlinx.browser.document
+import org.w3c.dom.HTMLAnchorElement
+import org.w3c.dom.url.URL
+import org.w3c.files.File
+import org.w3c.files.FilePropertyBag
 
 enum class Tool {
     SELECT,
@@ -102,6 +107,32 @@ class Editor(
         selectEntity(knotMesh)
     }
 
+    fun exportWorld() {
+        val fileName = "test.wwd"
+
+        val wwd = world.dump()
+        val outputStream = OutputStream()
+
+        dumpWwd(outputStream = outputStream, wwd = wwd)
+
+        val worldBuffer = outputStream.toArrayBuffer()
+
+        val worldFile = File(
+            arrayOf(worldBuffer),
+            fileName,
+            FilePropertyBag(
+                type = "application/x-wwd",
+            ),
+        )
+
+        console.log("worldFile", worldFile)
+
+        val element = document.createElement("a") as HTMLAnchorElement
+        element.href = URL.createObjectURL(worldFile)
+        element.download = fileName
+
+        element.click()
+    }
 }
 
 private fun <T> Iterable<T>.indexOfOrNull(element: T?): Int? {
