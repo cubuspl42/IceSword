@@ -2,6 +2,7 @@ package icesword.editor
 
 import icesword.frp.*
 import icesword.geometry.IntVec2
+import icesword.tileAtPoint
 import icesword.wwd.Wwd
 import kotlinx.browser.window
 import org.khronos.webgl.Int32Array
@@ -47,6 +48,16 @@ class World(
 
     private val baseTiles = DynamicMap.of(wwdTiles)
 
+     val startPointEntity = StartPoint(
+        initialTileOffset = tileAtPoint(startPoint),
+    )
+
+    private val metaEntities: DynamicSet<Entity> = DynamicSet.of(
+        setOf(
+            startPointEntity,
+        ),
+    )
+
     val knotMeshLayer = KnotMeshLayer(
         startPoint = startPoint,
     )
@@ -61,6 +72,7 @@ class World(
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
             setOf(
+                metaEntities,
                 elastics,
                 knotMeshLayer.knotMeshes,
             ),
@@ -95,7 +107,7 @@ class World(
 
     fun dump(): Wwd.World {
         val actionPlane = wwdWorld.planes[wwdPlaneIndex]
-        
+
         val newTiles = Int32Array(Array(actionPlane.tiles.length) { -1 })
 
         tiles.volatileContentView.forEach { (tileOffset, tileId) ->

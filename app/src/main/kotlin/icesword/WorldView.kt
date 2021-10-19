@@ -104,18 +104,31 @@ fun worldView(
         // TODO: React
         val planeUiLayer = Layer(
             transform = Cell.constant(IntVec2.ZERO),
-            nodes = world.knotMeshLayer.knotMeshes.map { knotMesh ->
-                KnotMeshUi(
-                    viewTransform = viewTransform,
-                    knotMesh,
-                )
-            }.unionWith(
-                world.elastics.map {
-                    ElasticUi(
-                        viewTransform = viewTransform,
-                        it,
-                    )
-                },
+            nodes = DynamicSet.union(
+                DynamicSet.of(
+                    setOf(
+                        DynamicSet.of(
+                            setOf(
+                                StartPointUi(
+                                    viewTransform = viewTransform,
+                                    startPoint = world.startPointEntity,
+                                ),
+                            )
+                        ),
+                        world.knotMeshLayer.knotMeshes.map { knotMesh ->
+                            KnotMeshUi(
+                                viewTransform = viewTransform,
+                                knotMesh,
+                            )
+                        },
+                        world.elastics.map {
+                            ElasticUi(
+                                viewTransform = viewTransform,
+                                it,
+                            )
+                        },
+                    ),
+                ),
             ),
         )
 
