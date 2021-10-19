@@ -232,8 +232,7 @@ fun scene(
 
             setProperty("grid-template-columns", "minmax(0, 1fr)")
             setProperty("grid-template-rows", "minmax(0, 1fr)")
-            setProperty("justify-items", "stretch")
-            setProperty("align-items", "stretch")
+            setProperty("place-items", "stretch")
         }
 
         appendChild(

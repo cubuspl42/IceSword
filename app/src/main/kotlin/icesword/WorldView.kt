@@ -25,6 +25,8 @@ fun worldView(
 
         style.apply {
             display = "grid"
+            setProperty("grid-template-columns", "minmax(0, 1fr)")
+            setProperty("grid-template-rows", "minmax(0, 1fr)")
         }
 
         addEventListener("contextmenu", { it.preventDefault() })

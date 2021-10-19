@@ -21,7 +21,7 @@ fun editorView(
     )
 
     val bottomRow = createHtmlElement("div").apply {
-        className = "bottomRow"
+        className = "editorBottomRow"
 
         style.apply {
             display = "flex"

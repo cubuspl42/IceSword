@@ -20,6 +20,7 @@ fun editorSideBar(
 
             setProperty("gap", "4px")
 
+            width = "140px"
             padding = "8px"
             backgroundColor = "lightgrey"
         }
