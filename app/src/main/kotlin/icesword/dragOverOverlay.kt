@@ -4,6 +4,7 @@ import html.createHtmlElement
 import html.linkChild
 import html.linkProperty
 import html.onEvent
+import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.hold
 import icesword.frp.map
@@ -18,6 +19,7 @@ import org.w3c.files.File
 
 fun createDragoverOverlay(
     child: HTMLElement,
+    enableDrop: Cell<Boolean>,
     onFileDragged: (file: File) -> Unit,
     tillDetach: Till,
 ): HTMLElement {
@@ -75,39 +77,15 @@ fun createDragoverOverlay(
     onDrop.reactTill(tillDetach) { event ->
         event.preventDefault()
 
-        event.dataTransfer?.items?.get(0)?.getAsFile()?.let { file ->
-            onFileDragged(file)
+        if (enableDrop.sample()) {
+            event.dataTransfer?.items?.get(0)?.getAsFile()?.let { file ->
+                onFileDragged(file)
+            }
         }
     }
 
     return root
 }
-
-private fun createStackLayout(children: List<HTMLElement>): HTMLElement =
-    createHtmlElement("div").apply {
-        className = "stack"
-
-        style.apply {
-            display = "grid"
-            setProperty("grid-template-columns", "minmax(0, 1fr)")
-            setProperty("grid-template-rows", "minmax(0, 1fr)")
-        }
-
-        children.forEachIndexed { index, child ->
-            child.style.apply {
-                setProperty("grid-column", "1")
-                setProperty("grid-row", "1")
-
-                display = "grid"
-                setProperty("grid-template-columns", "minmax(0, 1fr)")
-                setProperty("grid-template-rows", "minmax(0, 1fr)")
-
-                zIndex = index.toString()
-            }
-
-            appendChild(child)
-        }
-    }
 
 private fun createDragoverPreview(): HTMLElement {
     val root = createHtmlElement("div").apply {

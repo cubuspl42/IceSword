@@ -4,6 +4,8 @@ import html.createHtmlElement
 import html.linkChild
 import icesword.editor.App
 import icesword.frp.Till
+import icesword.frp.map
+import icesword.frp.mapNotNull
 import icesword.frp.mapTillNext
 import org.w3c.dom.HTMLElement
 
@@ -26,8 +28,17 @@ fun createAppView(
         linkChild(this, theEditorView, till = tillDetach)
     }
 
+    val loadingWorldDialog = app.loadingWorldProcess.mapNotNull {
+        createLoadingWorldDialog(it)
+    }
+
     return createDragoverOverlay(
-        child = editorViewWrapper,
+        child = createDialogOverlay(
+            child = editorViewWrapper,
+            dialog = loadingWorldDialog,
+            tillDetach = tillDetach,
+        ),
+        enableDrop = app.canLoadWorld,
         onFileDragged = { file ->
             app.loadWorld(file)
         },
