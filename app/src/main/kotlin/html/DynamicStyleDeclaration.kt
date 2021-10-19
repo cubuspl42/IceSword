@@ -10,6 +10,7 @@ import kotlinx.css.PointerEvents
 import kotlinx.css.properties.Transforms
 import kotlinx.css.properties.translate
 import kotlinx.css.px
+import org.w3c.dom.Element
 import org.w3c.dom.css.CSSStyleDeclaration
 
 interface Transform {
@@ -73,3 +74,4 @@ fun linkProperty(
         }
     }
 }
+

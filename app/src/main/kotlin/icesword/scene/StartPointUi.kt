@@ -1,14 +1,25 @@
 package icesword.scene
 
+import html.DynamicStyleDeclaration
+import html.createSvgCircle
+import icesword.editor.Editor
+import icesword.editor.Elastic
 import icesword.editor.StartPoint
 import icesword.frp.Cell
 import icesword.frp.Stream
+import icesword.frp.Till
+import icesword.frp.map
 import icesword.frp.mergeWith
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
+import icesword.ui.EntityMoveDragController
+import kotlinx.css.Cursor
 import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.HTMLElement
+import org.w3c.dom.svg.SVGElement
+import org.w3c.dom.svg.SVGSVGElement
 import kotlin.math.PI
 import kotlin.math.sqrt
 
@@ -91,3 +102,50 @@ private fun drawEquilateralTriangle(
     ctx.stroke()
 }
 
+
+fun createStartPointOverlayElement(
+    editor: Editor,
+    svg: SVGSVGElement,
+    viewport: HTMLElement,
+    viewTransform: Cell<IntVec2>,
+    startPoint: StartPoint,
+    tillDetach: Till,
+): SVGElement {
+    val moveController = EntityMoveDragController.create(
+        editor = editor,
+        entity = startPoint,
+    )
+
+    val circleCursor = moveController.map {
+        it?.let { Cursor.move }
+    }
+
+    val rootTranslate = Cell.map2(
+        viewTransform,
+        startPoint.position,
+    ) { vt, ep -> vt + ep }
+
+    val circle = createSvgCircle(
+        svg = svg,
+        radius = 32.0f,
+        translate = rootTranslate,
+        stroke = startPoint.isSelected.map { if (it) "red" else "gray" },
+        style = DynamicStyleDeclaration(
+            cursor = circleCursor,
+        ),
+        tillDetach = tillDetach,
+    ).apply {
+
+        setAttributeNS(null, "fill-opacity", "0")
+        setAttributeNS(null, "stroke-width", "8px")
+    }
+
+    EntityMoveDragController.linkDragHandler(
+        element = circle,
+        outer = viewport,
+        controller = moveController,
+        till = tillDetach,
+    )
+
+    return circle
+}

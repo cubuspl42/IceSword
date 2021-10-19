@@ -48,7 +48,7 @@ class World(
 
     private val baseTiles = DynamicMap.of(wwdTiles)
 
-     val startPointEntity = StartPoint(
+    val startPointEntity = StartPoint(
         initialTileOffset = tileAtPoint(startPoint),
     )
 

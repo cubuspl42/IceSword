@@ -140,16 +140,34 @@ fun worldView(
                         planeUiLayer,
                     ),
                     buildOverlayElements = { svg ->
-                        world.elastics.map {
-                            createElasticOverlayElement(
-                                editor = editor,
-                                svg = svg,
-                                elastic = it,
-                                viewport = this,
-                                viewTransform = viewTransform,
-                                tillDetach = tillDetach,
-                            )
-                        }
+                        DynamicSet.union(
+                            DynamicSet.of(
+                                setOf(
+                                    DynamicSet.of(
+                                        setOf(
+                                            createStartPointOverlayElement(
+                                                editor = editor,
+                                                svg = svg,
+                                                startPoint = world.startPointEntity,
+                                                viewport = this,
+                                                viewTransform = viewTransform,
+                                                tillDetach = tillDetach,
+                                            ),
+                                        ),
+                                    ),
+                                    world.elastics.map {
+                                        createElasticOverlayElement(
+                                            editor = editor,
+                                            svg = svg,
+                                            elastic = it,
+                                            viewport = this,
+                                            viewTransform = viewTransform,
+                                            tillDetach = tillDetach,
+                                        )
+                                    },
+                                ),
+                            ),
+                        )
                     },
                 )
             },

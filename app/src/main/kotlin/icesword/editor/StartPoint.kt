@@ -1,8 +1,5 @@
 package icesword.editor
 
-import icesword.TILE_SIZE
-import icesword.frp.Cell
-import icesword.frp.map
 import icesword.geometry.IntVec2
 
 private const val hitBoxRadius = 32
@@ -17,4 +14,7 @@ class StartPoint(
 
     override fun isSelectableAt(worldPoint: IntVec2): Boolean =
         (position.sample() - worldPoint).length < hitBoxRadius
+
+    override fun toString(): String =
+        "StartPoint()"
 }

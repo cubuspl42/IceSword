@@ -88,6 +88,7 @@ fun createSvgCircle(
     svg: SVGSVGElement,
     radius: Float,
     translate: Cell<IntVec2>,
+    stroke: Cell<String>? = null,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
 ): SVGElement {
@@ -103,6 +104,13 @@ fun createSvgCircle(
     )
 
     style?.linkTo(circle.style, tillDetach)
+
+    linkAttribute(
+        element = circle,
+        attributeName = "stroke",
+        attribute = stroke,
+        till = tillDetach,
+    )
 
     return circle
 }
@@ -267,4 +275,19 @@ fun linkSvgChildren(
         children = children,
         till = till,
     )
+}
+
+fun linkAttribute(
+    element: Element,
+    attributeName: String,
+    attribute: Cell<String?>?,
+    till: Till,
+): Unit {
+    attribute?.reactTill(till) {
+        if (it != null) {
+            element.setAttributeNS(null, attributeName, it)
+        } else {
+            element.removeAttributeNS(null, attributeName)
+        }
+    }
 }
