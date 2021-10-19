@@ -1,26 +1,40 @@
+@file:UseSerializers(IntVec2Serializer::class)
+
 package icesword.editor
 
 import icesword.TILE_SIZE
+import icesword.editor.KnotPrototype.*
 import icesword.frp.DynamicSet
 import icesword.frp.MutableDynamicSet
 import icesword.frp.adjust
 import icesword.frp.associateWith
 import icesword.frp.memorized
+import icesword.frp.sample
 import icesword.frp.unionMap
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.tileTopLeftCorner
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
-abstract class KnotPrototype {
+@Serializable
+sealed class KnotPrototype {
+    @Serializable
+    sealed class RockPrototype : KnotPrototype()
+
+    @Serializable
+    @SerialName("UndergroundRock")
+    object UndergroundRockPrototype : RockPrototype()
+
+    @Serializable
+    @SerialName("OvergroundRock")
+    object OvergroundRockPrototype : RockPrototype()
+
     override fun toString(): String =
         this::class.simpleName ?: "?"
 }
 
-abstract class RockPrototype : KnotPrototype()
-
-object UndergroundRockPrototype : RockPrototype()
-
-object OvergroundRockPrototype : RockPrototype()
 
 interface KnotFormula {
     // Vectors represent knot-coordinates relative to the meta tile to be generated. Coordinate (0, 0) is
@@ -86,7 +100,7 @@ fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
 
 class KnotMesh(
     initialTileOffset: IntVec2,
-    knotPrototype: KnotPrototype,
+    private val knotPrototype: KnotPrototype,
     initialSize: Int = 2,
 ) :
     Entity(),
@@ -134,11 +148,24 @@ class KnotMesh(
     override fun toString(): String =
         "KnotMesh(tileOffset=${tileOffset.sample()})"
 
+    fun toData(): KnotMeshData = KnotMeshData(
+        knotPrototype = knotPrototype,
+        tileOffset = tileOffset.sample(),
+        localKnotOffsets = localKnots.sample(),
+    )
+
     init {
         localTileCoords.changes.subscribe { } // FIXME
         localKnots.changes.subscribe { } // FIXME
     }
 }
+
+@Serializable
+data class KnotMeshData(
+    val knotPrototype: KnotPrototype,
+    val tileOffset: IntVec2,
+    val localKnotOffsets: Set<IntVec2>,
+)
 
 fun buildTile__(
     tileCoord: IntVec2,

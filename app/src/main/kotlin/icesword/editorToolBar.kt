@@ -49,10 +49,19 @@ fun editorToolBar(
         tillDetach = tillDetach,
     )
 
+    val saveButton = createButton(
+        text = "Save",
+        onPressed = {
+            editor.saveProject()
+        },
+        tillDetach = tillDetach,
+    )
+
     val otherButtonsRow = createHtmlElement("div").apply {
         className = "otherButtonsRow"
 
         appendChild(exportButton)
+        appendChild(saveButton)
     }
 
     val root = createHtmlElement("div").apply {

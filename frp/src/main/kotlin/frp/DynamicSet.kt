@@ -109,7 +109,7 @@ fun <A, R> DynamicSet<A>.mapTillRemoved(
 fun <A> DynamicSet<A>.changes(): Stream<Unit> =
     this.content.values().units()
 
-fun <A> DynamicSet<A>.sample(): Set<A> = content.sample()
+fun <A> DynamicSet<A>.sample(): Set<A> = volatileContentView.toSet()
 
 
 fun <K, B> DynamicSet<K>.fuseMap(transform: (K) -> Cell<B>): DynamicSet<B> =

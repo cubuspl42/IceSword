@@ -1,6 +1,13 @@
 package icesword.editor
 
-import icesword.frp.*
+import icesword.editor.KnotPrototype.OvergroundRockPrototype
+import icesword.editor.KnotPrototype.UndergroundRockPrototype
+import icesword.frp.Cell
+import icesword.frp.DynamicMap
+import icesword.frp.DynamicSet
+import icesword.frp.MutableDynamicSet
+import icesword.frp.map
+import icesword.frp.project
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 

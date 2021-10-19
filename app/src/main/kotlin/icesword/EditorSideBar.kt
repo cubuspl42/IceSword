@@ -3,6 +3,8 @@ package icesword
 import html.createButton
 import html.createHtmlElement
 import icesword.editor.*
+import icesword.editor.KnotPrototype.OvergroundRockPrototype
+import icesword.editor.KnotPrototype.UndergroundRockPrototype
 import icesword.frp.Till
 import org.w3c.dom.HTMLElement
 

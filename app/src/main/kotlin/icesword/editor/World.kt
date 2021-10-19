@@ -5,6 +5,7 @@ import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.wwd.Wwd
 import kotlinx.browser.window
+import kotlinx.serialization.Serializable
 import org.khronos.webgl.Int32Array
 import org.khronos.webgl.get
 import org.khronos.webgl.set
@@ -120,7 +121,7 @@ class World(
         )
 
         val startPoint = startPointEntity.position.sample()
-        
+
         val newWorld = wwdWorld.copy(
             startX = startPoint.x,
             startY = startPoint.y,
@@ -133,6 +134,15 @@ class World(
         return newWorld
     }
 
+    fun toData(): WorldData {
+        val knotMeshes = knotMeshLayer.knotMeshes.volatileContentView
+            .map { it.toData() }.toSet()
+
+        return WorldData(
+            knotMeshes = knotMeshes,
+        )
+    }
+
     init {
         tiles.changes.subscribe { change ->
 //            println("World.tiles change: $change")
@@ -140,3 +150,7 @@ class World(
     }
 }
 
+@Serializable
+data class WorldData(
+    val knotMeshes: Set<KnotMeshData>,
+)

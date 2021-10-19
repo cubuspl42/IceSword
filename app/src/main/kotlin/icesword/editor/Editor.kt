@@ -11,10 +11,13 @@ import icesword.wwd.DumpWwd.dumpWwd
 import icesword.wwd.OutputDataStream.OutputStream
 import icesword.wwd.Wwd
 import kotlinx.browser.document
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.url.URL
 import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
+import kotlinx.serialization.encodeToString
 
 enum class Tool {
     SELECT,
@@ -127,11 +130,30 @@ class Editor(
 
         console.log("worldFile", worldFile)
 
-        val element = document.createElement("a") as HTMLAnchorElement
-        element.href = URL.createObjectURL(worldFile)
-        element.download = fileName
+        downloadFile(file = worldFile)
+    }
 
-        element.click()
+
+    private fun toProjectData(): ProjectData =
+        ProjectData(
+            world = world.toData(),
+        )
+
+    fun saveProject() {
+        val projectData = toProjectData()
+        val projectDataString = Json.encodeToString(projectData)
+
+        console.log("Project data...", projectDataString);
+
+        val projectFile = File(
+            fileBits = arrayOf(projectDataString),
+            fileName = "test.iceSword.json",
+            options = FilePropertyBag(
+                type = "application/x-wwd",
+            ),
+        )
+
+        downloadFile(file = projectFile)
     }
 }
 
@@ -145,3 +167,24 @@ private fun <T> Iterable<T>.indexOfOrNull(element: T?): Int? {
 
 fun <T> List<T>.rotate(n: Int) =
     slice(n until size) + slice(0 until n)
+
+@Serializable
+data class ProjectData(
+    val world: WorldData,
+)
+
+private fun downloadFile(file: File) {
+    val element = createAnchorElement(
+        href = URL.createObjectURL(file),
+        download = file.name,
+    )
+
+    element.click()
+}
+
+private fun createAnchorElement(href: String, download: String): HTMLAnchorElement {
+    val element = document.createElement("a") as HTMLAnchorElement
+    element.href = href
+    element.download = download
+    return element
+}

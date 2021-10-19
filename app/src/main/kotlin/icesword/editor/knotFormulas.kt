@@ -1,4 +1,5 @@
 import icesword.editor.*
+import icesword.editor.KnotPrototype.UndergroundRockPrototype
 import icesword.geometry.IntVec2
 
 object RockKnotFormulas {
