@@ -1,10 +1,12 @@
 package icesword.editor
 
+import icesword.TILE_SIZE
 import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
+import icesword.tileTopLeftCorner
 
 sealed class ElasticPrototype {
 //    abstract val metaTiles: Map<IntVec2, MetaTile>
@@ -120,6 +122,9 @@ class Elastic(
 
     val size = _bounds.map { it.size }
 
+    // TODO: Nuke?
+    override val tileOffset: Cell<IntVec2> = bounds.map { it.topLeft }
+
     val metaTileCluster = MetaTileCluster(
         tileOffset = tileOffset,
         localMetaTiles = DynamicMap.diff(
@@ -139,11 +144,13 @@ class Elastic(
         return metaTileCluster.getMetaTileAt(globalTileCoord).sample() != null
     }
 
-    override val tileOffset: Cell<IntVec2>
-        get() = _bounds.map { it.position }
 
-    override fun setTileOffset(newOffset: IntVec2) {
-        _bounds.update { b: IntRect -> b.copy(position = newOffset) }
+    override val position: Cell<IntVec2> by lazy {
+        bounds.map { it.topLeft * TILE_SIZE }
+    }
+
+    override fun setPosition(newPosition: IntVec2) {
+        _bounds.update { b: IntRect -> b.copy(position = newPosition.divRound(TILE_SIZE)) }
     }
 
     override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"

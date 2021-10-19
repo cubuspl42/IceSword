@@ -200,8 +200,8 @@ fun setupMoveToolController(
 
         if (selectedEntity != null) {
             when (event.key) {
-                "ArrowRight" -> selectedEntity.setTileOffset(
-                    selectedEntity.tileOffset.sample() + IntVec2(1, 0)
+                "ArrowRight" -> selectedEntity.setPosition(
+                    selectedEntity.position.sample() + IntVec2(TILE_SIZE, 0)
                 )
             }
         }

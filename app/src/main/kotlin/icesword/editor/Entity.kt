@@ -1,5 +1,6 @@
 package icesword.editor
 
+import icesword.TILE_SIZE
 import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.tileTopLeftCorner
@@ -7,7 +8,9 @@ import icesword.tileTopLeftCorner
 interface EntityTileOffset {
     val tileOffset: Cell<IntVec2>
 
-    fun setTileOffset(newOffset: IntVec2)
+    val position: Cell<IntVec2>
+
+    fun setPosition(newPosition: IntVec2)
 }
 
 class SimpleEntityTileOffset(
@@ -18,14 +21,16 @@ class SimpleEntityTileOffset(
     override val tileOffset: Cell<IntVec2>
         get() = _tileOffset
 
-    override fun setTileOffset(newOffset: IntVec2) {
-        _tileOffset.set(newOffset)
+    override val position: Cell<IntVec2> by lazy {
+        tileOffset.map { tileTopLeftCorner(it) }
+    }
+
+    override fun setPosition(newPosition: IntVec2) {
+        _tileOffset.set(newPosition.divRound(TILE_SIZE))
     }
 }
 
 abstract class Entity : EntityTileOffset {
-    val position by lazy { tileOffset.map { tileTopLeftCorner(it) } }
-
     private val _isSelected = MutCell(false)
 
     val isSelected: Cell<Boolean>
@@ -46,20 +51,20 @@ abstract class Entity : EntityTileOffset {
 //    val tileOffset: Cell<IntVec2> = _tileOffset
 
     fun move(
-        tileOffsetDelta: Cell<IntVec2>,
+        positionDelta: Cell<IntVec2>,
         tillStop: Till,
     ) {
         println("Starting to move entity...")
 
 
-        val initialTileOffset = tileOffset.sample()
-        val targetTileOffset = tileOffsetDelta.map { d -> initialTileOffset + d }
+        val initialPosition = position.sample()
+        val targetPosition = positionDelta.map { d -> initialPosition + d }
 
-        targetTileOffset.reactTill(tillStop) {
-            println("Setting tile offset: $it")
+        targetPosition.reactTill(tillStop) {
+//            println("Setting position: $it")
 
-            if (tileOffset.sample() != it) {
-                setTileOffset(it)
+            if (position.sample() != it) {
+                setPosition(it)
             }
         }
     }

@@ -2,7 +2,6 @@ package icesword.ui
 
 import html.onMouseDrag
 import icesword.MouseDrag
-import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.Entity
 import icesword.editor.Tool
@@ -50,12 +49,12 @@ class EntityMoveDragController(
         editor.selectedEntity.sample()?.let { selectedEntity ->
             val worldPosition = world.transformToWorld(mouseDrag.position)
             val initialWorldPosition = worldPosition.sample()
-            val tileOffsetDelta = worldPosition.map {
-                (it - initialWorldPosition).divRound(TILE_SIZE)
+            val positionDelta = worldPosition.map {
+                (it - initialWorldPosition)
             }
 
             selectedEntity.move(
-                tileOffsetDelta = tileOffsetDelta,
+                positionDelta = positionDelta,
                 tillStop = mouseDrag.tillEnd,
             )
         }

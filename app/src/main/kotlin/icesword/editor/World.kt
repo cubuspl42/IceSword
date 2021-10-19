@@ -49,7 +49,7 @@ class World(
     private val baseTiles = DynamicMap.of(wwdTiles)
 
     val startPointEntity = StartPoint(
-        initialTileOffset = tileAtPoint(startPoint),
+        initialPosition = startPoint,
     )
 
     private val metaEntities: DynamicSet<Entity> = DynamicSet.of(
