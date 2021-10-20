@@ -23,7 +23,7 @@ import org.khronos.webgl.Int32Array
 import org.khronos.webgl.set
 
 class World(
-    private val wwdWorld: Wwd.World?,
+    private val wwdWorld: Wwd.World,
     val initialStartPoint: IntVec2,
     initialKnotMeshes: Set<KnotMesh>,
     initialElastics: Set<Elastic>,
@@ -92,7 +92,10 @@ class World(
             )
         }
 
-        fun load(worldData: WorldData): World {
+        fun load(
+            wwdWorldTemplate: Wwd.World,
+            worldData: WorldData,
+        ): World {
             val initialKnotMeshes = worldData.knotMeshes.map {
                 KnotMesh.load(it)
             }.toSet()
@@ -102,7 +105,7 @@ class World(
             }.toSet()
 
             return World(
-                wwdWorld = null,
+                wwdWorld = wwdWorldTemplate,
                 initialStartPoint = worldData.startPoint,
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
@@ -175,10 +178,6 @@ class World(
     }
 
     fun dump(): Wwd.World {
-        // FIXME
-        val wwdWorld =
-            this.wwdWorld ?: throw UnsupportedOperationException("Cannot export WWD when world was loaded from project")
-
         val actionPlane = wwdWorld.planes[wwdPlaneIndex]
 
         val newTiles = Int32Array(Array(actionPlane.tiles.length) { -1 })

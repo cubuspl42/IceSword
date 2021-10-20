@@ -34,7 +34,9 @@ class Editor(
             tileset: Tileset,
             wwdWorld: Wwd.World,
         ): Editor {
-            val world = World.importWwd(wwdWorld)
+            val world = World.importWwd(
+                wwdWorld = wwdWorld,
+            )
 
             return Editor(
                 world = world,
@@ -44,10 +46,12 @@ class Editor(
 
         fun loadProject(
             tileset: Tileset,
+            wwdWorldTemplate: Wwd.World,
             projectData: ProjectData,
         ): Editor {
             val world = World.load(
                 worldData = projectData.world,
+                wwdWorldTemplate = wwdWorldTemplate,
             )
 
             return Editor(

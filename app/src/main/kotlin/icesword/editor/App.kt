@@ -27,6 +27,7 @@ data class LoadingWorldProcess(
 )
 
 class App(
+    private val wwdWorldTemplate: Wwd.World,
     private val tileset: Tileset,
     initialEditor: Editor,
     till: Till,
@@ -35,14 +36,15 @@ class App(
         suspend fun load(): App {
             val tileset = loadTileset()
 
-            val initialWwdWorld = fetchWorld()
+            val wwdWorldTemplate: Wwd.World = fetchWorld()
 
             val editor = Editor.importWwd(
                 tileset = tileset,
-                wwdWorld = initialWwdWorld,
+                wwdWorld = wwdWorldTemplate,
             )
 
             return App(
+                wwdWorldTemplate = wwdWorldTemplate,
                 tileset = tileset,
                 initialEditor = editor,
                 till = Till.never,
@@ -102,6 +104,7 @@ class App(
         val projectData = Json.decodeFromString<ProjectData>(projectDataString)
 
         val editor = Editor.loadProject(
+            wwdWorldTemplate = wwdWorldTemplate,
             tileset = tileset,
             projectData = projectData,
         )
