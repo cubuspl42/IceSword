@@ -194,7 +194,7 @@ fun <K, V, K2, V2> DynamicMap<K, V>.project(
         tag = tag,
     ).validated(tag = tag)
 
-private const val enableMapValidation = true
+private const val enableMapValidation = false
 
 fun <K, V> DynamicMap<K, V>.validated(tag: String): DynamicMap<K, V> =
     if (enableMapValidation) ValidatedDynamicMap(this, sourceTag = tag)

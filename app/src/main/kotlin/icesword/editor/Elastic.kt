@@ -15,8 +15,6 @@ import kotlinx.serialization.UseSerializers
 
 @Serializable
 sealed class ElasticPrototype {
-//    abstract val metaTiles: Map<IntVec2, MetaTile>
-
     abstract val defaultSize: IntSize
 
     abstract fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile>
@@ -25,11 +23,16 @@ sealed class ElasticPrototype {
 @Serializable
 @SerialName("Log")
 object LogPrototype : ElasticPrototype() {
+    private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
+        IntVec2(-1, i) to MetaTile.LogLeft,
+        IntVec2(0, i) to MetaTile.Log,
+        IntVec2(1, i) to MetaTile.LogRight,
+    )
+
     override val defaultSize: IntSize = IntSize(1, 4)
 
     override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> =
         (0 until size.height).flatMap(::logLevel).toMap()
-
 }
 
 @Serializable
@@ -64,12 +67,24 @@ object TreeCrownPrototype : ElasticPrototype() {
     }
 }
 
-private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
-    IntVec2(-1, i) to MetaTile.LogLeft,
-    IntVec2(0, i) to MetaTile.Log,
-    IntVec2(1, i) to MetaTile.LogRight,
-)
 
+@Serializable
+@SerialName("Ladder")
+object LadderPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(1, 4)
+
+    override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
+        val n = size.height
+        return (0 until n).associate {
+            val metaTile = when (it) {
+                0 -> MetaTile.LadderTop
+                n - 1 -> MetaTile.LadderBottom
+                else -> MetaTile.Ladder
+            }
+            IntVec2(0, it) to metaTile
+        }
+    }
+}
 
 class Elastic(
     private val prototype: ElasticPrototype,

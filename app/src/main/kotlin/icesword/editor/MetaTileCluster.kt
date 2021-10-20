@@ -138,6 +138,10 @@ class MetaTileLayer(
 
             containsAll(MetaTile.Log, MetaTile.GrassUpper) -> 666
 
+            // Tile 660 is like 644, but with the "Climb" attribute
+            containsAll(MetaTile.LadderTop, MetaTile.LeavesUpper) -> 660
+            containsAll(MetaTile.Ladder, MetaTile.LeavesLower) -> 667
+
             else -> null
         }
     }

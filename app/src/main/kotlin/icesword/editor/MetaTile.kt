@@ -9,6 +9,7 @@ open class MetaTile(
     object LogLeft : MetaTile(null)
     object LogRight : MetaTile(null)
 
+    // What's the difference between 644 and 646?...
     object LeavesUpper : MetaTile(644)
     object LeavesLower : MetaTile(651)
     object LeavesUpperLeft : MetaTile(645)
@@ -17,4 +18,8 @@ open class MetaTile(
     object LeavesLowerRight : MetaTile(656)
 
     object GrassUpper : MetaTile(604)
+
+    object LadderTop : MetaTile(668)
+    object Ladder : MetaTile(669)
+    object LadderBottom : MetaTile(670)
 }

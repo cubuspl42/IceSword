@@ -210,20 +210,7 @@ fun <A, B> DynamicSet<A>.adjust(
 fun <A> DynamicSet<A>.memorized(): DynamicSet<A> =
     MemorizedDynamicSet(this)
 
-//fun <A, B> DynamicSet<A>.mapNotNull(transform: (A) -> B?): DynamicSet<B> {
-//
-//}
-//
-//fun <A> DynamicSet<A?>.filterNotNull(): DynamicSet<A> {
-//
-//}
-//
-//
-//fun <A, B> DynamicSet<A>.fuseMapNotNull(transform: (A) -> Cell<B>): Any {
-//
-//}
-
-const val enableSetValidation: Boolean = true
+const val enableSetValidation: Boolean = false
 
 fun <A> DynamicSet<A>.validated(sourceTag: String): DynamicSet<A> =
     if (enableSetValidation) ValidatedDynamicSet(this, sourceTag = sourceTag)
@@ -240,9 +227,6 @@ abstract class SimpleDynamicSet<A>(
 ) : DynamicSet<A>, SimpleObservable<SetChange<A>>(
     tag = tag,
 ) {
-//    override val content: Cell<Set<K, V>>
-//        get() = TODO("Not yet implemented")
-
     override val content: Cell<Set<A>>
         get() = RawCell(
             { volatileContentView.toSet() },
@@ -255,16 +239,6 @@ abstract class SimpleDynamicSet<A>(
 
     override fun toString(): String = "SimpleDynamicSet(name = $name)"
 }
-
-//class ContentDynamicSet<A>(
-//    override val content: Cell<Set<A>>,
-//) : DynamicSet<A> {
-//    override val changes: Stream<SetChange<A>>
-//        get() = TODO("Not yet implemented")
-//
-//    override val volatileContentView: Set<A>
-//        get() = content.sample()
-//}
 
 data class StaticDynamicSet<A>(
     private val staticContent: Set<A>,

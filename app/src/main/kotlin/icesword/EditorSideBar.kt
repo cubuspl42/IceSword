@@ -8,6 +8,7 @@ import icesword.editor.KnotBrush
 import icesword.editor.KnotPrototype
 import icesword.editor.KnotPrototype.OvergroundRockPrototype
 import icesword.editor.KnotPrototype.UndergroundRockPrototype
+import icesword.editor.LadderPrototype
 import icesword.editor.LogPrototype
 import icesword.editor.TreeCrownPrototype
 import icesword.frp.Till
@@ -47,6 +48,11 @@ fun editorSideBar(
                     createInsertElasticButton(
                         editor = editor,
                         prototype = TreeCrownPrototype,
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertElasticButton(
+                        editor = editor,
+                        prototype = LadderPrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertKnotMeshButton(
