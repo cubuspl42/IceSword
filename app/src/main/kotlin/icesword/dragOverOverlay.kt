@@ -20,7 +20,7 @@ import org.w3c.files.File
 fun createDragoverOverlay(
     child: HTMLElement,
     enableDrop: Cell<Boolean>,
-    onFileDragged: (file: File) -> Unit,
+    onFileDropped: (file: File) -> Unit,
     tillDetach: Till,
 ): HTMLElement {
     val dragOverPreview = createDragoverPreview()
@@ -79,7 +79,7 @@ fun createDragoverOverlay(
 
         if (enableDrop.sample()) {
             event.dataTransfer?.items?.get(0)?.getAsFile()?.let { file ->
-                onFileDragged(file)
+                onFileDropped(file)
             }
         }
     }

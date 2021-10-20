@@ -13,25 +13,11 @@ import icesword.tileAtPoint
 
 class KnotMeshLayer(
     startPoint: IntVec2,
+    initialKnotMeshes: Set<KnotMesh>,
 ) {
 
-    private val _knotMeshes = MutableDynamicSet(
-        setOf(
-            KnotMesh(
-                initialTileOffset = tileAtPoint(startPoint) + IntVec2(-2, 4),
-                knotPrototype = UndergroundRockPrototype,
-                initialSize = 16,
-            ),
-            KnotMesh(
-                initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, -4),
-                knotPrototype = OvergroundRockPrototype,
-            ),
-            KnotMesh(
-                initialTileOffset = tileAtPoint(startPoint) + IntVec2(12, -4),
-                knotPrototype = OvergroundRockPrototype,
-                initialSize = 1,
-            ),
-        ),
+    private val _knotMeshes: MutableDynamicSet<KnotMesh> = MutableDynamicSet(
+        initialKnotMeshes,
     )
 
 

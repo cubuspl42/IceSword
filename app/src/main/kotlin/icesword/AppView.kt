@@ -4,7 +4,6 @@ import html.createHtmlElement
 import html.linkChild
 import icesword.editor.App
 import icesword.frp.Till
-import icesword.frp.map
 import icesword.frp.mapNotNull
 import icesword.frp.mapTillNext
 import org.w3c.dom.HTMLElement
@@ -39,8 +38,8 @@ fun createAppView(
             tillDetach = tillDetach,
         ),
         enableDrop = app.canLoadWorld,
-        onFileDragged = { file ->
-            app.loadWorld(file)
+        onFileDropped = { file ->
+            app.loadWorld(file = file)
         },
         tillDetach = tillDetach,
     )

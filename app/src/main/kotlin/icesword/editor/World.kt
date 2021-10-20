@@ -1,43 +1,70 @@
+@file:UseSerializers(IntVec2Serializer::class)
+
 package icesword.editor
 
-import icesword.frp.*
+import icesword.editor.KnotPrototype.OvergroundRockPrototype
+import icesword.editor.KnotPrototype.UndergroundRockPrototype
+import icesword.frp.Cell
+import icesword.frp.DynamicSet
+import icesword.frp.MutCell
+import icesword.frp.Till
+import icesword.frp.map
+import icesword.frp.switchMap
+import icesword.frp.syncTill
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.wwd.Wwd
 import kotlinx.browser.window
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import org.khronos.webgl.Int32Array
-import org.khronos.webgl.get
 import org.khronos.webgl.set
 
 class World(
-    private val wwdWorld: Wwd.World,
-    val startPoint: IntVec2,
-    val wwdTiles: Map<IntVec2, Int>,
+    private val wwdWorld: Wwd.World?,
+    val initialStartPoint: IntVec2,
+    initialKnotMeshes: Set<KnotMesh>,
 ) {
     companion object {
         private const val wwdPlaneIndex = 1
 
-        fun load(wwdWorld: Wwd.World): World {
-            val actionPlane = wwdWorld.planes[wwdPlaneIndex]
-
+        fun importWwd(wwdWorld: Wwd.World): World {
             val startPoint = IntVec2(wwdWorld.startX, wwdWorld.startY)
 
-            val tiles = (0 until actionPlane.tilesHigh)
-                .flatMap { i ->
-                    (0 until actionPlane.tilesWide).map { j ->
-                        val k = i * actionPlane.tilesWide + j
-                        val t = actionPlane.tiles[k]
-                        IntVec2(j, i) to t
-                    }
-                }
-                .filter { (_, tileId) -> tileId > 0 }
-                .toMap()
+            val initialKnotMeshes = setOf(
+                KnotMesh.createSquare(
+                    initialTileOffset = tileAtPoint(startPoint) + IntVec2(-2, 4),
+                    knotPrototype = UndergroundRockPrototype,
+                    initialSideLength = 16,
+                ),
+                KnotMesh.createSquare(
+                    initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, -4),
+                    knotPrototype = OvergroundRockPrototype,
+                    initialSideLength = 4,
+                ),
+                KnotMesh.createSquare(
+                    initialTileOffset = tileAtPoint(startPoint) + IntVec2(12, -4),
+                    knotPrototype = OvergroundRockPrototype,
+                    initialSideLength = 1,
+                ),
+            )
 
             return World(
                 wwdWorld = wwdWorld,
-                startPoint = startPoint,
-                wwdTiles = tiles,
+                initialStartPoint = startPoint,
+                initialKnotMeshes = initialKnotMeshes,
+            )
+        }
+
+        fun load(worldData: WorldData): World {
+            val initialKnotMeshes = worldData.knotMeshes.map {
+                KnotMesh.load(it)
+            }.toSet()
+
+            return World(
+                wwdWorld = null,
+                initialStartPoint = worldData.startPoint,
+                initialKnotMeshes = initialKnotMeshes,
             )
         }
     }
@@ -47,10 +74,8 @@ class World(
         w.world = this
     }
 
-    private val baseTiles = DynamicMap.of(wwdTiles)
-
     val startPointEntity = StartPoint(
-        initialPosition = startPoint,
+        initialPosition = initialStartPoint,
     )
 
     private val metaEntities: DynamicSet<Entity> = DynamicSet.of(
@@ -60,7 +85,8 @@ class World(
     )
 
     val knotMeshLayer = KnotMeshLayer(
-        startPoint = startPoint,
+        startPoint = initialStartPoint,
+        initialKnotMeshes = initialKnotMeshes,
     )
 
     val metaTileLayer = MetaTileLayer(
@@ -85,7 +111,7 @@ class World(
 
     val tiles = metaTileLayer.tiles
 
-    private val _cameraFocusPoint = MutCell(startPoint)
+    private val _cameraFocusPoint = MutCell(initialStartPoint)
 
     val cameraFocusPoint: Cell<IntVec2>
         get() = _cameraFocusPoint
@@ -107,6 +133,10 @@ class World(
     }
 
     fun dump(): Wwd.World {
+        // FIXME
+        val wwdWorld =
+            this.wwdWorld ?: throw UnsupportedOperationException("Cannot export WWD when world was loaded from project")
+
         val actionPlane = wwdWorld.planes[wwdPlaneIndex]
 
         val newTiles = Int32Array(Array(actionPlane.tiles.length) { -1 })
@@ -135,10 +165,13 @@ class World(
     }
 
     fun toData(): WorldData {
+        val startPoint: IntVec2 = startPointEntity.position.sample()
+
         val knotMeshes = knotMeshLayer.knotMeshes.volatileContentView
             .map { it.toData() }.toSet()
 
         return WorldData(
+            startPoint = startPoint,
             knotMeshes = knotMeshes,
         )
     }
@@ -152,5 +185,6 @@ class World(
 
 @Serializable
 data class WorldData(
+    val startPoint: IntVec2,
     val knotMeshes: Set<KnotMeshData>,
 )

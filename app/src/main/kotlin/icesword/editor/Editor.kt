@@ -30,11 +30,25 @@ class Editor(
     val tileset: Tileset,
 ) {
     companion object {
-        fun load(
+        fun importWwd(
             tileset: Tileset,
             wwdWorld: Wwd.World,
         ): Editor {
-            val world = World.load(wwdWorld)
+            val world = World.importWwd(wwdWorld)
+
+            return Editor(
+                world = world,
+                tileset = tileset,
+            )
+        }
+
+        fun loadProject(
+            tileset: Tileset,
+            projectData: ProjectData,
+        ): Editor {
+            val world = World.load(
+                worldData = projectData.world,
+            )
 
             return Editor(
                 world = world,
@@ -99,10 +113,10 @@ class Editor(
         val focusPoint = world.cameraFocusPoint.sample()
         val insertionPoint = focusPoint + IntVec2(512, 512)
 
-        val knotMesh = KnotMesh(
+        val knotMesh = KnotMesh.createSquare(
             initialTileOffset = tileAtPoint(insertionPoint),
             knotPrototype = knotPrototype,
-            initialSize = 2,
+            initialSideLength = 2,
         )
 
         world.knotMeshLayer.insertKnotMesh(knotMesh)
@@ -142,8 +156,6 @@ class Editor(
     fun saveProject() {
         val projectData = toProjectData()
         val projectDataString = Json.encodeToString(projectData)
-
-        console.log("Project data...", projectDataString);
 
         val projectFile = File(
             fileBits = arrayOf(projectDataString),

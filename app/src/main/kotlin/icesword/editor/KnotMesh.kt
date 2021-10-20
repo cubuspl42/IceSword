@@ -99,22 +99,46 @@ fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
 }
 
 class KnotMesh(
-    initialTileOffset: IntVec2,
     private val knotPrototype: KnotPrototype,
-    initialSize: Int = 2,
+    initialTileOffset: IntVec2,
+    initialLocalKnots: Set<IntVec2>,
 ) :
     Entity(),
     EntityTileOffset by SimpleEntityTileOffset(
         initialTileOffset = initialTileOffset,
     ) {
 
+    companion object {
+        fun createSquare(
+            knotPrototype: KnotPrototype,
+            initialTileOffset: IntVec2,
+            initialSideLength: Int,
+        ): KnotMesh {
+            val initialLocalKnots: Set<IntVec2> =
+                (0 until initialSideLength).flatMap { i ->
+                    (0 until initialSideLength).map { j ->
+                        IntVec2(j, i)
+                    }
+                }.toSet()
+
+            return KnotMesh(
+                initialTileOffset = initialTileOffset,
+                knotPrototype = knotPrototype,
+                initialLocalKnots = initialLocalKnots,
+            )
+        }
+
+        fun load(data: KnotMeshData): KnotMesh =
+            KnotMesh(
+                initialTileOffset = data.tileOffset,
+                knotPrototype = data.knotPrototype,
+                initialLocalKnots = data.localKnotOffsets,
+            )
+    }
+
 
     private val _localKnots = MutableDynamicSet.of(
-        (0 until initialSize).flatMap { i ->
-            (0 until initialSize).map { j ->
-                IntVec2(j, i)
-            }
-        }.toSet()
+        initialLocalKnots
     )
 
     val localKnots: DynamicSet<IntVec2>

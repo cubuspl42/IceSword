@@ -13,6 +13,8 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import loadTileset
 import org.khronos.webgl.ArrayBuffer
 import org.w3c.files.Blob
@@ -35,7 +37,7 @@ class App(
 
             val initialWwdWorld = fetchWorld()
 
-            val editor = Editor.load(
+            val editor = Editor.importWwd(
                 tileset = tileset,
                 wwdWorld = initialWwdWorld,
             )
@@ -60,26 +62,56 @@ class App(
     val canLoadWorld: Cell<Boolean> = _loadWorldLock.isLocked.map { !it }
 
     fun loadWorld(file: File) {
+        suspend fun loadEditor(load: suspend () -> Editor) {
+            delay(100)
+
+            val editor = load()
+
+            _editor.set(editor)
+        }
+
         launch {
             _loadWorldLock.synchronized(
                 process = LoadingWorldProcess(worldFilename = file.name),
             ) {
-                delay(100)
-
-                val worldBuffer = file.arrayBuffer().await()
-
-                val world = Wwd.readWorld(worldBuffer)
-
-                val editor = Editor.load(
-                    tileset = tileset,
-                    wwdWorld = world,
-                )
-
-                _editor.set(editor)
+                if (file.name.endsWith(".json")) {
+                    loadEditor { loadProject(file = file) }
+                } else {
+                    loadEditor { importWorld(file = file) }
+                }
             }
         }
+    }
+
+    private suspend fun importWorld(file: File): Editor {
+        val worldBuffer = file.arrayBuffer().await()
+
+        val world = Wwd.readWorld(worldBuffer)
+
+        val editor = Editor.importWwd(
+            tileset = tileset,
+            wwdWorld = world,
+        )
+
+        return editor
+    }
+
+    private suspend fun loadProject(file: File): Editor {
+        val projectDataString = file.text().await()
+
+        val projectData = Json.decodeFromString<ProjectData>(projectDataString)
+
+        val editor = Editor.loadProject(
+            tileset = tileset,
+            projectData = projectData,
+        )
+
+        return editor
     }
 }
 
 private fun Blob.arrayBuffer(): Promise<ArrayBuffer> =
     this.asDynamic().arrayBuffer() as Promise<ArrayBuffer>
+
+private fun Blob.text(): Promise<String> =
+    this.asDynamic().text() as Promise<String>
