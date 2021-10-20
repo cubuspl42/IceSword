@@ -14,6 +14,7 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.ui.EntityMoveDragController
 import kotlinx.css.Cursor
+import kotlinx.css.PointerEvents
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
@@ -103,11 +104,16 @@ fun createElasticOverlayElement(
         elastic.position,
     ) { vt, ep -> vt + ep }
 
+    val pointerEvents = elastic.isSelected.map {
+        if (it) null else PointerEvents.none
+    }
+
     val box = createSvgRect(
         svg = svg,
         size = boxSize,
         translate = Cell.constant(IntVec2.ZERO),
         style = DynamicStyleDeclaration(
+            pointerEvents = pointerEvents,
             cursor = boxCursor,
         ),
         tillDetach = tillDetach,
@@ -129,6 +135,10 @@ fun createElasticOverlayElement(
         till = tillDetach,
     )
 
+    val handleStroke = elastic.isSelected.map {
+        if (it) "red" else "none"
+    }
+
     fun createHandle(
         cursor: Cursor,
         resize: (tileCoord: Cell<IntVec2>, till: Till) -> Unit,
@@ -139,13 +149,15 @@ fun createElasticOverlayElement(
             svg = svg,
             translate = boxSize.map { IntVec2(it.width * sx, it.height * sy) },
             radius = 8.0f,
+            stroke = handleStroke,
             style = DynamicStyleDeclaration(
+                pointerEvents = pointerEvents,
                 cursor = Cell.constant(cursor),
             ),
             tillDetach = tillDetach,
         ).apply {
             setAttributeNS(null, "fill", "grey")
-            setAttributeNS(null, "stroke", "red")
+            setAttributeNS(null, "fill-opacity", "0.5")
             setAttributeNS(null, "stroke-width", "3")
 
             style.apply {
