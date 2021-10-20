@@ -44,39 +44,10 @@ class MetaTileCluster(
 
 class MetaTileLayer(
     knotMeshLayer: KnotMeshLayer,
+    initialElastics: Set<Elastic>,
 ) {
     private val _elastics = MutableDynamicSet.of(
-        setOf(
-            Elastic(
-                prototype = LogPrototype,
-                initialBounds = IntRect(
-                    position = IntVec2(83, 82),
-                    size = IntSize(1, 16),
-                ),
-            ),
-            Elastic(
-                prototype = TreeCrownPrototype,
-
-                initialBounds = IntRect(
-                    position = IntVec2(81, 92),
-                    size = IntSize(5, 2),
-                ),
-            ),
-            Elastic(
-                prototype = TreeCrownPrototype,
-                initialBounds = IntRect(
-                    position = IntVec2(79, 87),
-                    size = IntSize(5, 2),
-                ),
-            ),
-            Elastic(
-                prototype = TreeCrownPrototype,
-                initialBounds = IntRect(
-                    position = IntVec2(83, 84),
-                    size = IntSize(5, 2),
-                ),
-            ),
-        )
+        initialElastics,
     )
 
     val elastics: DynamicSet<Elastic>

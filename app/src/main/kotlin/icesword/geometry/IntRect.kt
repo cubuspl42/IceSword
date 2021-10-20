@@ -1,8 +1,14 @@
+@file:UseSerializers(IntVec2Serializer::class)
+
 package icesword.geometry
 
+import icesword.editor.IntVec2Serializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 import kotlin.math.max
 import kotlin.math.min
 
+@Serializable
 data class IntRect(
     val position: IntVec2,
     val size: IntSize,
@@ -16,25 +22,29 @@ data class IntRect(
         }
     }
 
-    val xMin: Int = position.x
+    val xMin: Int
+        get() = position.x
 
-    val yMin: Int = position.y
+    val yMin: Int
+        get() = position.y
 
-    val width: Int = size.width
+    val width: Int
+        get() = size.width
 
-    val height: Int = size.height
+    val height: Int
+        get() = size.height
 
-    val xMax: Int =
-        this.xMin + this.width
+    val xMax: Int
+        get() = this.xMin + this.width
 
-    val yMax: Int =
-        this.yMin + this.height
+    val yMax: Int
+        get() = this.yMin + this.height
 
-    val xyMin: IntVec2 =
-        IntVec2(this.xMin, this.yMin)
+    val xyMin: IntVec2
+        get() = IntVec2(this.xMin, this.yMin)
 
-    val xyMax: IntVec2 =
-        IntVec2(this.xMax, this.yMax)
+    val xyMax: IntVec2
+        get() = IntVec2(this.xMax, this.yMax)
 
     val topLeft: IntVec2
         get() = xyMin
@@ -54,7 +64,6 @@ data class IntRect(
 
     fun translate(t: IntVec2): IntRect =
         IntRect(position + t, size)
-
 
     fun copyWithTopLeft(p: IntVec2) = IntRect.fromDiagonal(bottomRight, p)
 

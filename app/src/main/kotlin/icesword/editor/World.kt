@@ -11,6 +11,8 @@ import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.switchMap
 import icesword.frp.syncTill
+import icesword.geometry.IntRect
+import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.wwd.Wwd
@@ -24,6 +26,7 @@ class World(
     private val wwdWorld: Wwd.World?,
     val initialStartPoint: IntVec2,
     initialKnotMeshes: Set<KnotMesh>,
+    initialElastics: Set<Elastic>,
 ) {
     companion object {
         private const val wwdPlaneIndex = 1
@@ -49,10 +52,43 @@ class World(
                 ),
             )
 
+            val initialElastics = setOf(
+                Elastic(
+                    prototype = LogPrototype,
+                    initialBounds = IntRect(
+                        position = IntVec2(83, 82),
+                        size = IntSize(1, 16),
+                    ),
+                ),
+                Elastic(
+                    prototype = TreeCrownPrototype,
+
+                    initialBounds = IntRect(
+                        position = IntVec2(81, 92),
+                        size = IntSize(5, 2),
+                    ),
+                ),
+                Elastic(
+                    prototype = TreeCrownPrototype,
+                    initialBounds = IntRect(
+                        position = IntVec2(79, 87),
+                        size = IntSize(5, 2),
+                    ),
+                ),
+                Elastic(
+                    prototype = TreeCrownPrototype,
+                    initialBounds = IntRect(
+                        position = IntVec2(83, 84),
+                        size = IntSize(5, 2),
+                    ),
+                ),
+            )
+
             return World(
                 wwdWorld = wwdWorld,
                 initialStartPoint = startPoint,
                 initialKnotMeshes = initialKnotMeshes,
+                initialElastics = initialElastics,
             )
         }
 
@@ -61,10 +97,15 @@ class World(
                 KnotMesh.load(it)
             }.toSet()
 
+            val initialElastics = worldData.elastics.map {
+                Elastic.load(it)
+            }.toSet()
+
             return World(
                 wwdWorld = null,
                 initialStartPoint = worldData.startPoint,
                 initialKnotMeshes = initialKnotMeshes,
+                initialElastics = initialElastics,
             )
         }
     }
@@ -91,6 +132,7 @@ class World(
 
     val metaTileLayer = MetaTileLayer(
         knotMeshLayer = knotMeshLayer,
+        initialElastics = initialElastics,
     )
 
     val elastics = metaTileLayer.elastics
@@ -170,9 +212,13 @@ class World(
         val knotMeshes = knotMeshLayer.knotMeshes.volatileContentView
             .map { it.toData() }.toSet()
 
+        val elastics = metaTileLayer.elastics.volatileContentView
+            .map { it.toData() }.toSet()
+
         return WorldData(
             startPoint = startPoint,
             knotMeshes = knotMeshes,
+            elastics = elastics,
         )
     }
 
@@ -187,4 +233,5 @@ class World(
 data class WorldData(
     val startPoint: IntVec2,
     val knotMeshes: Set<KnotMeshData>,
+    val elastics: Set<ElasticData>,
 )

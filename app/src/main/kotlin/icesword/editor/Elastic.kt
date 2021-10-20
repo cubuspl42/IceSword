@@ -1,3 +1,5 @@
+@file:UseSerializers(IntVec2Serializer::class)
+
 package icesword.editor
 
 import icesword.TILE_SIZE
@@ -7,7 +9,11 @@ import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.tileTopLeftCorner
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
+@Serializable
 sealed class ElasticPrototype {
 //    abstract val metaTiles: Map<IntVec2, MetaTile>
 
@@ -16,6 +22,8 @@ sealed class ElasticPrototype {
     abstract fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile>
 }
 
+@Serializable
+@SerialName("Log")
 object LogPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(1, 4)
 
@@ -24,6 +32,8 @@ object LogPrototype : ElasticPrototype() {
 
 }
 
+@Serializable
+@SerialName("TreeCrown")
 object TreeCrownPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(5, 2)
 
@@ -62,11 +72,19 @@ private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
 
 
 class Elastic(
-    prototype: ElasticPrototype,
+    private val prototype: ElasticPrototype,
     initialBounds: IntRect,
 ) :
     Entity(),
     EntityTileOffset {
+
+    companion object {
+        fun load(data: ElasticData): Elastic =
+            Elastic(
+                prototype = data.prototype,
+                initialBounds = data.bounds,
+            )
+    }
 
     private val _bounds = MutCell(initialBounds)
 
@@ -164,5 +182,16 @@ class Elastic(
             )
         }
     }
+
+    fun toData(): ElasticData =
+        ElasticData(
+            prototype = prototype,
+            bounds = bounds.sample(),
+        )
 }
 
+@Serializable
+data class ElasticData(
+    val prototype: ElasticPrototype,
+    val bounds: IntRect,
+)

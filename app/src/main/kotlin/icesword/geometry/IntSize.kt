@@ -1,5 +1,8 @@
 package icesword.geometry
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class IntSize(
     val width: Int,
     val height: Int,
