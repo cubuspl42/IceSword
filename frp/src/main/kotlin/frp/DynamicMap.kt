@@ -197,7 +197,7 @@ fun <K, V, K2, V2> DynamicMap<K, V>.project(
 private const val enableMapValidation = true
 
 fun <K, V> DynamicMap<K, V>.validated(tag: String): DynamicMap<K, V> =
-    if (enableMapValidation) ValidatedDynamicMap(this, tag = tag)
+    if (enableMapValidation) ValidatedDynamicMap(this, sourceTag = tag)
     else this
 
 fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(
@@ -362,7 +362,7 @@ class MutableDynamicMap<K, V : Any>(
             MutableDynamicMap(content)
     }
 
-    private var mutableContent: MutableMap<K, V> = initialContent.toMutableMap()
+    private val mutableContent: MutableMap<K, V> = initialContent.toMutableMap()
 
     override val volatileContentView: Map<K, V>
         get() = mutableContent

@@ -69,7 +69,9 @@ class Layer(
 
     val onDirty: Stream<Unit> =
         transform.values().units()
-            .mergeWith(DynamicSet.merge(nodes.map { it.onDirty }))
+            .mergeWith(DynamicSet.merge(nodes.map(
+                tag = "Layer/onDirty/nodes.map"
+            ) { it.onDirty }))
 
     fun buildOverlayRoot(svg: SVGSVGElement, tillDetach: Till): SVGElement = createSvgGroup(
         svg = svg,

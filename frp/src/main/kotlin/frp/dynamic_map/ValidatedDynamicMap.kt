@@ -4,8 +4,8 @@ import icesword.frp.*
 
 class ValidatedDynamicMap<K, V>(
     private val source: DynamicMap<K, V>,
-    tag: String,
-) : SimpleDynamicMap<K, V>(tag = "${tag}-validated") {
+    private val sourceTag: String,
+) : SimpleDynamicMap<K, V>(tag = "${sourceTag}-validated") {
     private var mutableContent: MutableMap<K, V>? = null
 
     override val volatileContentView: Map<K, V>
@@ -28,7 +28,7 @@ class ValidatedDynamicMap<K, V>(
     override fun onStart() {
         subscription = source.changes.subscribe { change ->
             validateChange(
-                tag = tag,
+                sourceTag = sourceTag,
                 change = change,
             )
 
@@ -38,7 +38,7 @@ class ValidatedDynamicMap<K, V>(
                 }
 
                 if (mutableContent!!.containsKey(it.key)) {
-                    throw IllegalStateException("Dynamic map #${tag} already contains key ${it.key} (attempted to add)")
+                    throw IllegalStateException("Dynamic map #${sourceTag} already contains key ${it.key} (attempted to add)")
                 }
             }
 
@@ -47,11 +47,11 @@ class ValidatedDynamicMap<K, V>(
                 val updatedValue = it.value
 
                 if (exposedValue != updatedValue) {
-                    throw IllegalStateException("Dynamic map #${tag}, for key ${it.key}, exposes value: $exposedValue, while emits update: $updatedValue")
+                    throw IllegalStateException("Dynamic map #${sourceTag}, for key ${it.key}, exposes value: $exposedValue, while emits update: $updatedValue")
                 }
 
                 if (!mutableContent!!.containsKey(it.key)) {
-                    throw IllegalStateException("Dynamic map #${tag} dependent does not contain key ${it.key} (attempted to update)")
+                    throw IllegalStateException("Dynamic map #${sourceTag} dependent does not contain key ${it.key} (attempted to update)")
                 }
             }
 
@@ -61,7 +61,7 @@ class ValidatedDynamicMap<K, V>(
                 }
 
                 if (!mutableContent!!.containsKey(it)) {
-                    throw IllegalStateException("Dynamic map #${tag} does not contain key ${it} (attempted to remove)")
+                    throw IllegalStateException("Dynamic map #${sourceTag} does not contain key ${it} (attempted to remove)")
                 }
             }
 
@@ -82,21 +82,21 @@ class ValidatedDynamicMap<K, V>(
 }
 
 fun <K, V> validateChange(
-    tag: String,
+    sourceTag: String,
     change: MapChange<K, V>,
 ) {
     val addedUpdatedIntersection = change.added.keys.intersect(change.updated.keys)
     if (addedUpdatedIntersection.isNotEmpty()) {
-        throw IllegalStateException("Dynamic map #${tag} adds and updates same keys: $addedUpdatedIntersection")
+        throw IllegalStateException("Dynamic map #${sourceTag} adds and updates same keys: $addedUpdatedIntersection")
     }
 
     val updatedRemovedIntersection = change.updated.keys.intersect(change.removedEntries.keys)
     if (updatedRemovedIntersection.isNotEmpty()) {
-        throw IllegalStateException("Dynamic map #${tag} updates and removes same keys: $updatedRemovedIntersection")
+        throw IllegalStateException("Dynamic map #${sourceTag} updates and removes same keys: $updatedRemovedIntersection")
     }
 
     val addedRemovedIntersection = change.added.keys.intersect(change.removedEntries.keys)
     if (addedRemovedIntersection.isNotEmpty()) {
-        throw IllegalStateException("Dynamic map #${tag} adds and removes same keys: $addedRemovedIntersection")
+        throw IllegalStateException("Dynamic map #${sourceTag} adds and removes same keys: $addedRemovedIntersection")
     }
 }

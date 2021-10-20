@@ -58,11 +58,15 @@ class MetaTileLayer(
     }
 
 
-    private val metaTileClusters = elastics.map { it.metaTileCluster }
+    private val metaTileClusters = elastics.map(
+        tag = "MetaTileLayer/elastics.map"
+    ) { it.metaTileCluster }
         .unionWith(DynamicSet.of(setOf(knotMeshLayer.metaTileCluster)))
 
     private val globalTileCoords: DynamicSet<IntVec2> =
-        metaTileClusters.unionMapDynamic { it.globalTileCoords }
+        metaTileClusters.unionMapDynamic(
+            tag = "metaTileClusters.unionMapDynamic",
+        ) { it.globalTileCoords }
             .also {
                 it.changes.subscribe { change ->
 //                    println("MetaTileLayer.globalTileCoords change: $change")

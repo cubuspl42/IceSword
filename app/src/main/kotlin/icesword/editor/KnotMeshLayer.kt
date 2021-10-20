@@ -1,7 +1,5 @@
 package icesword.editor
 
-import icesword.editor.KnotPrototype.OvergroundRockPrototype
-import icesword.editor.KnotPrototype.UndergroundRockPrototype
 import icesword.frp.Cell
 import icesword.frp.DynamicMap
 import icesword.frp.DynamicSet
@@ -9,17 +7,14 @@ import icesword.frp.MutableDynamicSet
 import icesword.frp.map
 import icesword.frp.project
 import icesword.geometry.IntVec2
-import icesword.tileAtPoint
 
 class KnotMeshLayer(
     startPoint: IntVec2,
     initialKnotMeshes: Set<KnotMesh>,
 ) {
-
-    private val _knotMeshes: MutableDynamicSet<KnotMesh> = MutableDynamicSet(
+    private val _knotMeshes: MutableDynamicSet<KnotMesh> = MutableDynamicSet.of(
         initialKnotMeshes,
     )
-
 
     fun insertKnotMesh(knotMesh: KnotMesh) {
         _knotMeshes.add(knotMesh)
@@ -30,7 +25,9 @@ class KnotMeshLayer(
 
     private val globalKnots: DynamicMap<IntVec2, KnotPrototype> = DynamicMap.unionMerge(
         through = IntVec2.mapFactory(),
-        maps = _knotMeshes.map { it.globalKnots },
+        maps = _knotMeshes.map(
+            tag = "KnotMeshLayer/globalKnots/_knotMeshes.map",
+        ) { it.globalKnots },
         merge = { knots: Set<KnotPrototype> -> knots.first() },
         tag = "KnotMeshLayer.globalKnots",
     )

@@ -2,10 +2,10 @@ package icesword.frp.dynamic_set
 
 import icesword.frp.*
 
-class ValidatedDynamicSet<A>(
+open class ValidatedDynamicSet<A>(
     private val source: DynamicSet<A>,
-    tag: String,
-) : SimpleDynamicSet<A>(tag = "${tag}-validated") {
+    private val sourceTag: String,
+) : SimpleDynamicSet<A>(tag = "$sourceTag-validated") {
     private var mutableContent: MutableSet<A>? = null
 
     override val volatileContentView: Set<A>
@@ -29,27 +29,27 @@ class ValidatedDynamicSet<A>(
         subscription = source.changes.subscribe { change ->
             val addedUpdatedIntersection = change.added.intersect(change.removed)
             if (addedUpdatedIntersection.isNotEmpty()) {
-                throw IllegalStateException("Dynamic set #${tag} adds and removes same keys: $addedUpdatedIntersection")
+                throw IllegalStateException("Dynamic set #${sourceTag} adds and removes same keys: $addedUpdatedIntersection")
             }
 
             change.added.forEach {
                 if (!source.containsNow(it)) {
-                    throw IllegalStateException("Dynamic set #${tag} does not expose added value: $it")
+                    throw IllegalStateException("Dynamic set #${sourceTag} does not expose added value: $it")
                 }
 
                 if (mutableContent!!.contains(it)) {
-                    throw IllegalStateException("Dynamic set #${tag} already contains $it (attempted to add)")
+                    throw IllegalStateException("Dynamic set #${sourceTag} already contains $it (attempted to add)")
                 }
             }
 
             change.removed.forEach {
                 if (source.containsNow(it)) {
-                    throw IllegalStateException("Dynamic set #${tag} still exposes removed element: $it")
+                    throw IllegalStateException("Dynamic set #${sourceTag} still exposes removed element: $it")
 
                 }
 
                 if (!mutableContent!!.contains(it)) {
-                    throw IllegalStateException("Dynamic set #${tag} removed a value that it shouldn't have contained: $it")
+                    throw IllegalStateException("Dynamic set #${sourceTag} removed a value that it shouldn't have contained: $it")
                 }
             }
 
@@ -71,5 +71,21 @@ class ValidatedDynamicSet<A>(
 
         subscription!!.unsubscribe()
         subscription = null
+    }
+}
+
+class MutableValidatedDynamicSet<A>(
+    private val source: MutableDynamicSet<A>,
+    sourceTag: String,
+) : ValidatedDynamicSet<A>(
+    source = source,
+    sourceTag = sourceTag,
+), MutableDynamicSet<A> {
+    override fun add(element: A) {
+        source.add(element)
+    }
+
+    override fun remove(element: A) {
+        source.remove(element)
     }
 }

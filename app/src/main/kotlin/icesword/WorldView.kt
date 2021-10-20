@@ -88,7 +88,9 @@ fun worldView(
                 )
             ),
             buildOverlayElements = { svg ->
-                world.knotMeshLayer.knotMeshes.map { knotMesh ->
+                world.knotMeshLayer.knotMeshes.map(
+                    tag = "WorldView/buildOverlayElements/knotMeshes.map",
+                ) { knotMesh ->
                     createKnotMeshOverlayElement(
                         svg = svg,
                         editor = editor,
@@ -115,13 +117,17 @@ fun worldView(
                                 ),
                             )
                         ),
-                        world.knotMeshLayer.knotMeshes.map { knotMesh ->
+                        world.knotMeshLayer.knotMeshes.map(
+                            tag = "WorldView/planeUiLayer/knotMeshes.map",
+                        ) { knotMesh ->
                             KnotMeshUi(
                                 viewTransform = viewTransform,
                                 knotMesh,
                             )
                         },
-                        world.elastics.map {
+                        world.elastics.map(
+                            tag = "WorldView/planeUiLayer/elastics.map",
+                        ) {
                             ElasticUi(
                                 viewTransform = viewTransform,
                                 it,
@@ -155,7 +161,9 @@ fun worldView(
                                             ),
                                         ),
                                     ),
-                                    world.elastics.map {
+                                    world.elastics.map(
+                                        tag = "WorldView/buildOverlayElements/elastics.map",
+                                    ) {
                                         createElasticOverlayElement(
                                             editor = editor,
                                             svg = svg,
@@ -215,17 +223,19 @@ fun setupKnotBrushToolController(
 ) {
     val world = editor.world
 
-    root.onMouseDrag(button = 0, till = tillDetach).reactTill(tillDetach) { mouseDrag ->
-        val viewportPosition = mouseDrag.position.map(root::calculateRelativePosition)
+    root.onMouseDrag(button = 0, till = tillDetach)
+        .reactTill(tillDetach) { mouseDrag ->
+            val viewportPosition =
+                mouseDrag.position.map(root::calculateRelativePosition)
 
-        (editor.selectedEntity.sample() as? KnotMesh)?.let { selectedKnotMesh ->
-            world.transformToWorld(viewportPosition)
-                .reactTill(mouseDrag.tillEnd) { worldPosition ->
-                    val knotCoord = closestKnot(worldPosition)
-                    selectedKnotMesh.putKnot(knotCoord)
-                }
+            val knotCoord: Cell<IntVec2> =
+                world.transformToWorld(viewportPosition)
+
+            editor.paintKnots(
+                knotCoord = knotCoord,
+                till = mouseDrag.tillEnd,
+            )
         }
-    }
 }
 
 

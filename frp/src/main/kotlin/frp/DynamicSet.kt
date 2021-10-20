@@ -47,7 +47,7 @@ interface DynamicSet<out A> {
         // Probably, like `fuse`, it's semantically meaningless, because `DynamicView` isn't comparable
         fun <A> blend(dynamicViews: DynamicSet<DynamicView<A>>): DynamicView<Set<A>> =
             DynamicView(
-                updates = merge(dynamicViews.map { it.updates }),
+                updates = merge(dynamicViews.map(tag = "blend") { it.updates }),
                 view = DynamicSetBlendView(dynamicViews),
             )
     }
@@ -67,11 +67,17 @@ interface DynamicSet<out A> {
 //fun <K, V> DynamicMap<K, V>.get(key: K): Cell<V?> =
 //    content.map { it[key] }
 
-fun <A, B> DynamicSet<A>.unionMap(transform: (A) -> Set<B>): DynamicSet<B> =
-    this.unionMapDynamic { DynamicSet.of(transform(it)) }
+fun <A, B> DynamicSet<A>.unionMap(
+    tag: String,
+    transform: (A) -> Set<B>,
+): DynamicSet<B> =
+    this.unionMapDynamic(tag = "unionMap") { DynamicSet.of(transform(it)) }
 
-fun <A, B> DynamicSet<A>.unionMapDynamic(transform: (A) -> DynamicSet<B>): DynamicSet<B> =
-    DynamicSet.union(map(transform))
+fun <A, B> DynamicSet<A>.unionMapDynamic(
+    tag: String,
+    transform: (A) -> DynamicSet<B>,
+): DynamicSet<B> =
+    DynamicSet.union(map(tag = "$tag/map", transform))
 
 fun <A> DynamicSet<A>.unionWith(other: DynamicSet<A>): DynamicSet<A> =
     DynamicSet.union(
@@ -86,9 +92,16 @@ fun <A> DynamicSet<A>.trackContent(till: Till): Cell<Set<A>> = content
 //    content.map { it.map(transform).toSet() },
 //)
 
-fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> =
-    MapDynamicSet(this.validated("map-this"), transform)
-        .validated("map")
+fun <A, R> DynamicSet<A>.map(
+    tag: String,
+    transform: (A) -> R,
+): DynamicSet<R> =
+    MapDynamicSet(
+        // TODO: This validation shouldn't be needed, source should validate itself
+        source = this.validated("$tag-this"),
+        transform = transform,
+        tag = tag,
+    ).validated(tag)
 
 fun <A, R> DynamicSet<A>.mapTillRemoved(
     tillAbort: Till,
@@ -178,7 +191,7 @@ fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) ->
 //    get() = TODO()
 
 fun <A, R> DynamicSet<A>.blendMap(transform: (A) -> DynamicView<R>): DynamicView<Set<R>> =
-    DynamicSet.blend(this.map(transform))
+    DynamicSet.blend(this.map(tag = "blendMap/map", transform))
 
 fun <A, B> DynamicSet<A>.adjust(
     hash: Hash<A>? = null,
@@ -192,7 +205,7 @@ fun <A, B> DynamicSet<A>.adjust(
         combine = combine,
         tag = "adjust",
     )
-        .validated(tag = "adjust")
+        .validated(sourceTag = "adjust")
 
 fun <A> DynamicSet<A>.memorized(): DynamicSet<A> =
     MemorizedDynamicSet(this)
@@ -210,10 +223,15 @@ fun <A> DynamicSet<A>.memorized(): DynamicSet<A> =
 //
 //}
 
-const val enableSetValidation: Boolean = false
+const val enableSetValidation: Boolean = true
 
-fun <A> DynamicSet<A>.validated(tag: String): DynamicSet<A> =
-    if (enableSetValidation) ValidatedDynamicSet(this, tag = tag)
+fun <A> DynamicSet<A>.validated(sourceTag: String): DynamicSet<A> =
+    if (enableSetValidation) ValidatedDynamicSet(this, sourceTag = sourceTag)
+    else this
+
+
+fun <A> MutableDynamicSet<A>.validatedMutable(tag: String): MutableDynamicSet<A> =
+    if (enableSetValidation) MutableValidatedDynamicSet(this, sourceTag = tag)
     else this
 
 
@@ -261,55 +279,46 @@ data class StaticDynamicSet<A>(
         get() = Cell.constant(staticContent)
 }
 
-class MutableDynamicSet<A>(
-    initialContent: Set<A>,
-) : SimpleDynamicSet<A>(tag = "MutableDynamicSet") {
+interface MutableDynamicSet<A> : DynamicSet<A> {
     companion object {
-        fun <A> of(initialContent: Set<A>): MutableDynamicSet<A> =
-            MutableDynamicSet(initialContent)
+        fun <A> of(
+            initialContent: Set<A>,
+            tag: String = "MutableDynamicSet.of",
+        ): MutableDynamicSet<A> =
+            MutableDynamicSetImpl(initialContent)
+                .validatedMutable(tag = tag)
     }
 
-//    private val _content = MutCell(initialContent.toSet())
+    fun add(element: A)
+    fun remove(element: A)
+}
 
-
-    private var mutableContent: Set<A> = initialContent
-
-    override val content: Cell<Set<A>>
-        get() = RawCell(
-            { mutableContent.toSet() },
-            changes.map { mutableContent.toSet() },
-        )
+private class MutableDynamicSetImpl<A>(
+    initialContent: Set<A>,
+    tag: String = "MutableDynamicSet",
+) : SimpleDynamicSet<A>(tag = tag), MutableDynamicSet<A> {
+    private val mutableContent: MutableSet<A> = initialContent.toMutableSet()
 
     override val volatileContentView: Set<A>
         get() = mutableContent
 
-    fun add(element: A) {
-        val oldContent = mutableContent
+    override fun add(element: A) {
+        val wasAdded = mutableContent.add(element)
 
-        mutableContent = oldContent + element
-
-        if (!oldContent.contains(element)) {
+        if (wasAdded) {
             val change = SetChange(
                 added = setOf(element),
                 removed = emptySet(),
             )
 
-            if (change.added.intersect(oldContent).isNotEmpty()) {
-                throw IllegalStateException("MutableDynamicSet: change.added.intersect")
-            }
-
             notifyListeners(change)
         }
-
     }
 
-    fun remove(element: A) {
-        val oldContent = mutableContent
+    override fun remove(element: A) {
+        val wasThere = mutableContent.remove(element)
 
-        if (oldContent.contains(element)) {
-
-            mutableContent = oldContent + element
-
+        if (wasThere) {
             val change = SetChange(
                 added = emptySet(),
                 removed = setOf(element),
@@ -318,7 +327,4 @@ class MutableDynamicSet<A>(
             notifyListeners(change)
         }
     }
-
-//    override val content: Cell<Set<A>>
-//        get() = _content
 }

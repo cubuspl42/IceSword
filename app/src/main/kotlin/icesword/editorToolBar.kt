@@ -6,8 +6,10 @@ import html.createButton
 import html.createHtmlElement
 import icesword.editor.Editor
 import icesword.editor.Tool
+import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.map
+import icesword.ui.createSelectButton
 import org.w3c.dom.HTMLElement
 
 
@@ -86,17 +88,11 @@ private fun toolButton(
     editor: Editor,
     tool: Tool,
     tillDetach: Till,
-): HTMLElement {
-    return createButton(
-        style = editor.selectedTool.map {
-            CSSStyle(
-                fontWeight = if (it == tool) FontWeight.bold else null,
-            )
-        },
-        text = tool.name,
-        onPressed = {
-            editor.selectTool(tool)
-        },
+): HTMLElement =
+    createSelectButton(
+        value = tool,
+        name = tool.name,
+        selected = editor.selectedTool,
+        select = editor::selectTool,
         tillDetach = tillDetach,
     )
-}

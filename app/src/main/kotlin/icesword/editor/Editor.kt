@@ -2,6 +2,8 @@ package icesword.editor
 
 import icesword.frp.Cell
 import icesword.frp.MutCell
+import icesword.frp.Till
+import icesword.frp.reactTill
 import icesword.frp.sample
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -69,6 +71,14 @@ class Editor(
         _selectedTool.set(tool)
     }
 
+    private val _selectedKnotBrush = MutCell(KnotBrush.Additive)
+
+    val selectedKnotBrush: Cell<KnotBrush> = _selectedKnotBrush
+
+    fun selectKnotBrush(knotBrush: KnotBrush) {
+        _selectedKnotBrush.set(knotBrush)
+    }
+
     private val _selectedEntity: MutCell<Entity?> = MutCell(null)
 
     val selectedEntity: Cell<Entity?> = _selectedEntity
@@ -94,6 +104,32 @@ class Editor(
         _selectedEntity.set(entity.also { it.select() })
 
         println("Entity selected: $entity")
+    }
+
+    fun paintKnots(
+        knotCoord: Cell<IntVec2>,
+        till: Till,
+    ) {
+        val selectedKnotMeshOrNull: KnotMesh? =
+            selectedEntity.sample() as? KnotMesh
+
+        val selectedBrush: KnotBrush =
+            selectedKnotBrush.sample()
+
+        selectedKnotMeshOrNull?.let { selectedKnotMesh ->
+            knotCoord.reactTill(till) { worldPosition ->
+                val globalKnotCoord = closestKnot(worldPosition)
+
+                when (selectedBrush) {
+                    KnotBrush.Additive -> selectedKnotMesh.putKnot(
+                        globalKnotCoord = globalKnotCoord,
+                    )
+                    KnotBrush.Eraser -> selectedKnotMesh.removeKnot(
+                        globalKnotCoord = globalKnotCoord,
+                    )
+                }
+            }
+        }
     }
 
     fun insertElastic(prototype: ElasticPrototype) {
@@ -180,9 +216,6 @@ private fun <T> Iterable<T>.indexOfOrNull(element: T?): Int? {
         else -> null
     }
 }
-
-fun <T> List<T>.rotate(n: Int) =
-    slice(n until size) + slice(0 until n)
 
 @Serializable
 data class ProjectData(

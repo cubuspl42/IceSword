@@ -138,7 +138,8 @@ class KnotMesh(
 
 
     private val _localKnots = MutableDynamicSet.of(
-        initialLocalKnots
+        initialContent = initialLocalKnots,
+        tag = "KnotMesh/_localKnots",
     )
 
     val localKnots: DynamicSet<IntVec2>
@@ -161,7 +162,14 @@ class KnotMesh(
         _localKnots.add(localKnotCoord)
     }
 
-    val localTileCoords = localKnots.unionMap(::tilesAroundKnot).memorized()
+    fun removeKnot(globalKnotCoord: IntVec2) {
+        val localKnotCoord = globalKnotCoord - tileOffset.sample()
+        _localKnots.remove(localKnotCoord)
+    }
+
+    val localTileCoords =
+        localKnots.unionMap(tag = "localTileCoords/localKnots.unionMap", ::tilesAroundKnot)
+            .memorized()
 
     override fun isSelectableAt(worldPoint: IntVec2): Boolean {
         return globalKnots.volatileContentView.keys.any {

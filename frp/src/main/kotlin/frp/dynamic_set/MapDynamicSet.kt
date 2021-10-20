@@ -5,7 +5,8 @@ import icesword.frp.*
 class MapDynamicSet<A, B>(
     private val source: DynamicSet<A>,
     private val transform: (A) -> B,
-) : SimpleDynamicSet<B>(tag = "MapDynamicSet") {
+    tag: String,
+) : SimpleDynamicSet<B>(tag = tag) {
     private var mutableContent: MutableSet<B>? = null
 
     override val volatileContentView: Set<B>
