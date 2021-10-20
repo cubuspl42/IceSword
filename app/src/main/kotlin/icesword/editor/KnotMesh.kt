@@ -228,13 +228,14 @@ fun buildTile(
         getKnot(intVec2(0, 0)) == UndergroundRockPrototype &&
                 hasKnot(intVec2(0, -1)) &&
                 !hasKnot(intVec2(-1, 0)) &&
-                !hasKnot(intVec2(-1, -1)) -> MetaTile(621)
-        // &&
-//                !hasKnot(intVec2(0, -2)
-        getKnot(intVec2(0, 0)) == UndergroundRockPrototype &&
-                hasKnot(intVec2(0, -1)) &&
-                !hasKnot(intVec2(-1, 0)) &&
-                !hasKnot(intVec2(-1, -1)) -> MetaTile(622)
+                !hasKnot(intVec2(-1, -1)) -> MetaTile.RockTop
+
+        // FIXME
+//        getKnot(intVec2(0, 0)) == UndergroundRockPrototype &&
+//                hasKnot(intVec2(0, -1)) &&
+//                !hasKnot(intVec2(-1, 0)) &&
+//                !hasKnot(intVec2(-1, -1)) -> MetaTile.RockTop
+
         getKnot(intVec2(0, -1)) == UndergroundRockPrototype &&
                 !hasKnot(intVec2(-1, -1)) &&
                 !hasKnot(intVec2(-1, 0)) &&
@@ -256,13 +257,14 @@ fun buildTile(
         hasKnot(intVec2(0, 0)) &&
                 hasKnot(intVec2(-1, 0)) &&
                 !hasKnot(intVec2(0, -1)) &&
-                !hasKnot(intVec2(-1, -1)) -> MetaTile(624)
+                !hasKnot(intVec2(-1, -1)) -> MetaTile.RockLeftSideOuter
         hasKnot(intVec2(-1, -1)) &&
                 hasKnot(intVec2(-1, 0)) &&
                 hasKnot(intVec2(0, -1)) &&
                 hasKnot(intVec2(0, 0)) &&
                 !hasKnot(intVec2(-1, -2)) &&
-                !hasKnot(intVec2(0, -2)) -> MetaTile(613)
+                // TODO: Upper part should use tile 613?
+                !hasKnot(intVec2(0, -2)) -> MetaTile.RockLeftSideInner
         hasKnot(intVec2(-1, 0)) &&
                 !hasKnot(intVec2(-1, -1)) &&
                 !hasKnot(intVec2(0, -1)) &&
@@ -285,7 +287,8 @@ fun buildTile(
         hasKnot(intVec2(-1, -1)) &&
                 hasKnot(intVec2(0, -1)) &&
                 !hasKnot(intVec2(-1, 0)) &&
-                !hasKnot(intVec2(0, 0)) -> MetaTile(615)
+                // What's the difference between 615 and 631??
+                !hasKnot(intVec2(0, 0)) -> MetaTile.RockRightSide
         hasKnot(intVec2(0, -1)) &&
                 hasKnot(intVec2(-1, 0)) &&
                 hasKnot(intVec2(-1, -1)) &&
@@ -297,16 +300,16 @@ fun buildTile(
         getKnot(intVec2(-1, -1)) is RockPrototype &&
                 getKnot(intVec2(0, -1)) is RockPrototype &&
                 getKnot(intVec2(0, 0)) is RockPrototype &&
-                !hasKnot(intVec2(-1, 0)) -> MetaTile(638)
+                !hasKnot(intVec2(-1, 0)) -> MetaTile.RockLowerLeftCorner
         getKnot(intVec2(-1, -1)) == null &&
                 getKnot(intVec2(-1, 0)) is RockPrototype &&
                 getKnot(intVec2(0, -1)) is RockPrototype &&
-                getKnot(intVec2(0, 0)) is RockPrototype -> MetaTile(642)
+                getKnot(intVec2(0, 0)) is RockPrototype -> MetaTile.RockLowerRightCornerOuter
         getKnot(intVec2(-1, -2)) == null &&
                 getKnot(intVec2(-1, -1)) is RockPrototype &&
                 getKnot(intVec2(-1, 0)) is RockPrototype &&
                 getKnot(intVec2(0, -1)) is RockPrototype &&
-                getKnot(intVec2(0, 0)) is RockPrototype -> MetaTile(643)
+                getKnot(intVec2(0, 0)) is RockPrototype -> MetaTile.RockLowerRightCornerInner
         getKnot(intVec2(-1, -1)) is RockPrototype &&
                 getKnot(intVec2(-1, 0)) is RockPrototype &&
                 getKnot(intVec2(0, -1)) is RockPrototype &&

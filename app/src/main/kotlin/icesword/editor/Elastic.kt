@@ -86,6 +86,22 @@ object LadderPrototype : ElasticPrototype() {
     }
 }
 
+@Serializable
+@SerialName("Spikes")
+object SpikesPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(4, 2)
+
+    override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
+        val n = size.width
+        return (0 until n).flatMap {
+            listOf(
+                IntVec2(it, 0) to MetaTile.SpikeTop,
+                IntVec2(it, 1) to MetaTile.SpikeBottom,
+            )
+        }.toMap()
+    }
+}
+
 class Elastic(
     private val prototype: ElasticPrototype,
     initialBounds: IntRect,

@@ -233,7 +233,6 @@ abstract class SimpleDynamicSet<A>(
             changes.map { volatileContentView.toSet() },
         )
 
-
     override val changes: Stream<SetChange<A>>
         get() = Stream.source(this::subscribe, tag = "SimpleDynamicSet.changes")
 

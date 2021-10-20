@@ -125,22 +125,38 @@ class MetaTileLayer(
             ms.all { metaTiles.contains(it) }
 
         return when {
+            // Tree crown
             containsAll(MetaTile.Log, MetaTile.LeavesUpper) -> 647
             containsAll(MetaTile.Log, MetaTile.LeavesLower) -> 653
             containsAll(MetaTile.LogLeft, MetaTile.LeavesLower) -> 652
             containsAll(MetaTile.LogRight, MetaTile.LeavesLower) -> 654
 
+            // Side tree crown tip
             containsAll(MetaTile.Log, MetaTile.LeavesUpperRight) -> 663
             containsAll(MetaTile.Log, MetaTile.LeavesLowerRight) -> 665
 
+            // Tree branches
             containsAll(MetaTile.Log, MetaTile.LeavesUpperLeft) -> 659
             containsAll(MetaTile.Log, MetaTile.LeavesLowerLeft) -> 661
 
+            // Tree root
             containsAll(MetaTile.Log, MetaTile.GrassUpper) -> 666
 
+            // Ladder connection to tree crown
             // Tile 660 is like 644, but with the "Climb" attribute
             containsAll(MetaTile.LadderTop, MetaTile.LeavesUpper) -> 660
             containsAll(MetaTile.Ladder, MetaTile.LeavesLower) -> 667
+
+            // Spikes
+            containsAll(MetaTile.SpikeTop, MetaTile.RockRightSide) -> 712
+            containsAll(MetaTile.SpikeBottom, MetaTile.RockLowerLeftCorner) -> 713
+
+            containsAll(MetaTile.SpikeBottom, MetaTile.RockTop) -> 704
+
+            containsAll(MetaTile.SpikeTop, MetaTile.RockLeftSideOuter) -> 701
+            containsAll(MetaTile.SpikeTop, MetaTile.RockLeftSideInner) -> 702
+            containsAll(MetaTile.SpikeBottom, MetaTile.RockLowerRightCornerOuter) -> 704
+            containsAll(MetaTile.SpikeBottom, MetaTile.RockLowerRightCornerInner) -> 709 // 696
 
             else -> null
         }
