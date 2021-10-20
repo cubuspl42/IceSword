@@ -19,6 +19,8 @@ class TileLayer(
         val xyMinTileCoord = tileAtPoint(windowRect.xyMin)
         val xyMaxTileCoord = tileAtPoint(windowRect.xyMax)
 
+        ctx.save()
+
         (xyMinTileCoord.y..xyMaxTileCoord.y).forEach { i ->
             (xyMinTileCoord.x..xyMaxTileCoord.x).forEach { j ->
                 val tileCoord = IntVec2(j, i)
@@ -32,6 +34,8 @@ class TileLayer(
 
                     val dv = tilePosition
 
+                    ctx.globalAlpha = 1.0
+
                     ctx.drawImage(
                         image = texture.imageBitmap,
                         sx = texture.sourceRect.xMin.toDouble(),
@@ -44,6 +48,8 @@ class TileLayer(
                         dh = TILE_SIZE.toDouble(),
                     )
 
+                    ctx.globalAlpha = 0.2
+
                     ctx.strokeRect(
                         x = dv.x.toDouble(),
                         y = dv.y.toDouble(),
@@ -53,6 +59,8 @@ class TileLayer(
                 }
             }
         }
+
+        ctx.restore()
     }
 
     override val onDirty: Stream<Unit> = tiles.updates

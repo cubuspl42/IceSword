@@ -28,9 +28,12 @@ class KnotMeshUi(
         val localTiles = knotMesh.localTileCoords.volatileContentView
         val isSelected = knotMesh.isSelected.sample()
 
+        ctx.save()
+
         ctx.fillStyle = "grey"
 //        ctx.strokeStyle = "black"
         ctx.lineWidth = 4.0
+        ctx.globalAlpha = if (isSelected) 0.8 else 0.2
 
         // DRAW LOCAL TILES
 
@@ -91,6 +94,8 @@ class KnotMeshUi(
                 )
             }
         }
+
+        ctx.restore()
     }
 
     override val onDirty: Stream<Unit> =
