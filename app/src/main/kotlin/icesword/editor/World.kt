@@ -189,6 +189,7 @@ class World(
 
         val newActionPlane = actionPlane.copy(
             tiles = newTiles,
+            objects = emptyList(),
         )
 
         val startPoint = startPointEntity.position.sample()
