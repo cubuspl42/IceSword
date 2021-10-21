@@ -16,4 +16,13 @@ data class IntSize(
 
     operator fun times(s: Int): IntSize =
         IntSize(width * s, height * s)
+
+    fun toVec2(): IntVec2 =
+        IntVec2(width, height)
+
+    operator fun div(s: Int): IntSize =
+        IntSize(
+            width = width / s,
+            height = height / s,
+        )
 }

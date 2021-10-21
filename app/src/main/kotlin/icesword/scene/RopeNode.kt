@@ -1,13 +1,11 @@
 package icesword.scene
 
-import html.DynamicStyleDeclaration
-import html.createSvgCircle
-import html.createSvgRect
 import icesword.editor.Editor
 import icesword.editor.Rope
 import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
+import icesword.frp.map
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.IntRect
@@ -22,22 +20,21 @@ class RopeNode(
     private val rope: Rope,
 ) : Node {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-        val position = rope.position.sample()
+        val boundingBox = rope.boundingBox.sample()
 
         ctx.lineWidth = 4.0
         ctx.fillStyle = "brown"
         ctx.strokeStyle = "black"
 
-
         drawTexture(
             ctx,
             texture = texture,
-            dv = position,
+            dv = boundingBox.topLeft,
         )
     }
 
     override val onDirty: Stream<Unit> =
-        rope.position.values().units()
+        rope.boundingBox.values().units()
 }
 
 fun createRopeOverlayElement(
@@ -48,9 +45,11 @@ fun createRopeOverlayElement(
     rope: Rope,
     tillDetach: Till,
 ): SVGElement {
-    val rootTranslate = Cell.map2(
+    val rect = rope.boundingBox
+
+    val translate = Cell.map2(
         viewTransform,
-        rope.position,
+        rect.map { it.position },
     ) { vt, ep -> vt + ep }
 
     val box = createEntityFrameElement(
@@ -58,8 +57,8 @@ fun createRopeOverlayElement(
         svg = svg,
         outer = viewport,
         entity = rope,
-        translate = rootTranslate,
-        size = Cell.constant(rope.texture.sourceRect.size),
+        translate = translate,
+        size = rect.map { it.size },
         tillDetach = tillDetach,
     )
 

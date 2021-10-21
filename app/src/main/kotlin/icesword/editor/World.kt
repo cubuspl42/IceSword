@@ -3,6 +3,7 @@
 package icesword.editor
 
 import TextureBank
+import icesword.RezIndex
 import icesword.editor.KnotPrototype.OvergroundRockPrototype
 import icesword.editor.KnotPrototype.UndergroundRockPrototype
 import icesword.frp.Cell
@@ -35,7 +36,7 @@ class World(
         private const val wwdPlaneIndex = 1
 
         fun importWwd(
-            textureBank: TextureBank,
+            rezIndex: RezIndex,
             wwdWorld: Wwd.World,
         ): World {
             val startPoint = IntVec2(wwdWorld.startX, wwdWorld.startY)
@@ -92,7 +93,7 @@ class World(
 
             val initialRopes = setOf(
                 Rope(
-                    texture = textureBank.rope,
+                    rezIndex = rezIndex,
                     initialPosition = startPoint,
                 )
             )
@@ -107,7 +108,7 @@ class World(
         }
 
         fun load(
-            textureBank: TextureBank,
+            rezIndex: RezIndex,
             wwdWorldTemplate: Wwd.World,
             worldData: WorldData,
         ): World {
@@ -120,7 +121,10 @@ class World(
             }.toSet()
 
             val initialRopes = worldData.ropes.map {
-                Rope.load(texture = textureBank.rope, it)
+                Rope.load(
+                    rezIndex = rezIndex,
+                    data = it,
+                )
             }.toSet()
 
             return World(

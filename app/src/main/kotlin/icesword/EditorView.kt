@@ -1,5 +1,6 @@
 package icesword
 
+import TextureBank
 import html.createHtmlElement
 import icesword.editor.Editor
 import icesword.frp.Till
@@ -7,6 +8,7 @@ import org.w3c.dom.HTMLElement
 
 
 fun editorView(
+    textureBank: TextureBank,
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
@@ -34,7 +36,7 @@ fun editorView(
         appendChild(
             worldView(
                 editor = editor,
-                textureBank = editor.textureBank,
+                textureBank = textureBank,
                 tillDetach = tillDetach,
             ).apply {
                 style.apply {

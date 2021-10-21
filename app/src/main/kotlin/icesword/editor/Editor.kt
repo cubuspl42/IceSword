@@ -1,6 +1,7 @@
 package icesword.editor
 
 import TextureBank
+import icesword.RezIndex
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
@@ -28,38 +29,38 @@ enum class Tool {
 }
 
 class Editor(
-    val textureBank: TextureBank,
+    private val rezIndex: RezIndex,
     val world: World,
 ) {
     companion object {
         fun importWwd(
-            textureBank: TextureBank,
+            rezIndex: RezIndex,
             wwdWorld: Wwd.World,
         ): Editor {
             val world = World.importWwd(
-                textureBank = textureBank,
+                rezIndex = rezIndex,
                 wwdWorld = wwdWorld,
             )
 
             return Editor(
-                textureBank = textureBank,
+                rezIndex = rezIndex,
                 world = world,
             )
         }
 
         fun loadProject(
-            textureBank: TextureBank,
+            rezIndex: RezIndex,
             wwdWorldTemplate: Wwd.World,
             projectData: ProjectData,
         ): Editor {
             val world = World.load(
-                textureBank = textureBank,
+                rezIndex = rezIndex,
                 worldData = projectData.world,
                 wwdWorldTemplate = wwdWorldTemplate,
             )
 
             return Editor(
-                textureBank = textureBank,
+                rezIndex = rezIndex,
                 world = world,
             )
         }
@@ -164,7 +165,7 @@ class Editor(
     fun insertRope() {
         world.ropes.add(
             Rope(
-                texture = textureBank.rope,
+                rezIndex = rezIndex,
                 initialPosition = entityInsertionPoint,
             )
         )

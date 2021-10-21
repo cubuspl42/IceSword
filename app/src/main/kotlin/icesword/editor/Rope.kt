@@ -2,20 +2,23 @@
 
 package icesword.editor
 
+import icesword.ImageSetId
+import icesword.RezIndex
 import icesword.TILE_SIZE
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.map
+import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
-import icesword.scene.Texture
 import icesword.wwd.DataStreamObj
 import icesword.wwd.Wwd
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import org.khronos.webgl.Uint8Array
 
+
 class Rope(
-    val texture: Texture,
+    rezIndex: RezIndex,
     initialPosition: IntVec2,
 ) :
     Entity() {
@@ -23,25 +26,45 @@ class Rope(
     companion object {
         const val radius: Int = 16
 
+         val imageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_ROPE",
+        )
+
         fun load(
-            texture: Texture,
+            rezIndex: RezIndex,
             data: RopeData,
         ): Rope =
             Rope(
-                texture = texture,
+                rezIndex = rezIndex,
                 initialPosition = data.position,
             )
     }
+
+    private val _imageMetadata = rezIndex.getImageMetadata(
+        imageSetId = imageSetId,
+        i = -1,
+    )!!
 
     private val _position = MutCell(initialPosition)
 
     override val position: Cell<IntVec2>
         get() = _position
 
+    val boundingBox: Cell<IntRect> =
+        position.map {
+            val offset = _imageMetadata.offset
+            val size = _imageMetadata.size
+            val topLeft = it + offset - (size / 2).toVec2()
+
+            IntRect(
+                position = topLeft,
+                size = size,
+            )
+        }
+
     override fun isSelectableAt(worldPoint: IntVec2): Boolean {
-        val localPoint = worldPoint - position.sample()
-        val rect = texture.sourceRect
-        return rect.contains(localPoint)
+        val rect = boundingBox.sample()
+        return rect.contains(worldPoint)
     }
 
     // TODO: Deduplicate!
@@ -79,6 +102,7 @@ class Rope(
     override fun toString(): String =
         "Rope()"
 }
+
 
 @Serializable
 data class RopeData(

@@ -2,12 +2,13 @@ package icesword.editor
 
 import TextureBank
 import fetchWorld
+import icesword.JsonRezIndex
+import icesword.CombinedRezIndex
+import icesword.RezIndex
 import icesword.frp.Cell
 import icesword.frp.DynamicLock
 import icesword.frp.MutCell
-import icesword.frp.Till
 import icesword.frp.map
-import icesword.scene.Tileset
 import icesword.wwd.Wwd
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -28,26 +29,33 @@ data class LoadingWorldProcess(
 
 class App(
     private val wwdWorldTemplate: Wwd.World,
-    private val textureBank: TextureBank,
+    val textureBank: TextureBank,
+    private val rezIndex: RezIndex,
     initialEditor: Editor,
-    till: Till,
 ) : CoroutineScope by MainScope() {
     companion object {
         suspend fun load(): App {
+            val jsonRezIndex = JsonRezIndex.load()
+
             val textureBank = TextureBank.load()
+
+            val combinedRezIndex = CombinedRezIndex(
+                delegate = jsonRezIndex,
+                textureBank = textureBank,
+            )
 
             val wwdWorldTemplate: Wwd.World = fetchWorld()
 
             val editor = Editor.importWwd(
-                textureBank = textureBank,
+                rezIndex = combinedRezIndex,
                 wwdWorld = wwdWorldTemplate,
             )
 
             return App(
                 wwdWorldTemplate = wwdWorldTemplate,
                 textureBank = textureBank,
+                rezIndex = combinedRezIndex,
                 initialEditor = editor,
-                till = Till.never,
             )
         }
     }
@@ -91,7 +99,7 @@ class App(
         val world = Wwd.readWorld(worldBuffer)
 
         val editor = Editor.importWwd(
-            textureBank = textureBank,
+            rezIndex = rezIndex,
             wwdWorld = world,
         )
 
@@ -104,8 +112,8 @@ class App(
         val projectData = Json.decodeFromString<ProjectData>(projectDataString)
 
         val editor = Editor.loadProject(
+            rezIndex = rezIndex,
             wwdWorldTemplate = wwdWorldTemplate,
-            textureBank = textureBank,
             projectData = projectData,
         )
 
