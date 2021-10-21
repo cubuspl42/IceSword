@@ -204,7 +204,7 @@ class World(
         targetFocusPoint.syncTill(_cameraFocusPoint, till = tillStop)
     }
 
-    fun dump(): Wwd.World {
+    fun export(): Wwd.World {
         val actionPlane = wwdWorld.planes[wwdPlaneIndex]
 
         val newTiles = Int32Array(Array(actionPlane.tiles.length) { -1 })
@@ -214,9 +214,11 @@ class World(
             newTiles[k] = tileId
         }
 
+        val objects = ropes.volatileContentView.map { it.export() }
+
         val newActionPlane = actionPlane.copy(
             tiles = newTiles,
-            objects = emptyList(),
+            objects = objects,
         )
 
         val startPoint = startPointEntity.position.sample()

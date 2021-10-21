@@ -8,7 +8,6 @@ import icesword.frp.reactTill
 import icesword.frp.sample
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
-import icesword.scene.Tileset
 import icesword.tileAtPoint
 import icesword.wwd.DumpWwd.dumpWwd
 import icesword.wwd.OutputDataStream.OutputStream
@@ -182,7 +181,7 @@ class Editor(
     fun exportWorld() {
         val fileName = "test.wwd"
 
-        val wwd = world.dump()
+        val wwd = world.export()
         val outputStream = OutputStream()
 
         dumpWwd(outputStream = outputStream, wwd = wwd)
