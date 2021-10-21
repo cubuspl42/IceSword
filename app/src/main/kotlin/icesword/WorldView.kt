@@ -1,11 +1,39 @@
 package icesword
 
 
-import html.*
-import icesword.editor.*
-import icesword.frp.*
+import TextureBank
+import html.clientPosition
+import html.createHtmlElement
+import html.onClick
+import html.onKeyDown
+import html.onMouseDrag
+import html.onMouseMove
+import html.onMouseUp
+import icesword.editor.Editor
+import icesword.editor.OffsetTilesView
+import icesword.editor.Tool
+import icesword.frp.Cell
+import icesword.frp.DynamicSet
+import icesword.frp.Till
+import icesword.frp.contentDynamicView
+import icesword.frp.hold
+import icesword.frp.map
+import icesword.frp.reactTill
+import icesword.frp.reactTillNext
+import icesword.frp.tillNext
 import icesword.geometry.IntVec2
-import icesword.scene.*
+import icesword.scene.ElasticUi
+import icesword.scene.KnotMeshUi
+import icesword.scene.Layer
+import icesword.scene.RopeNode
+import icesword.scene.Scene
+import icesword.scene.StartPointUi
+import icesword.scene.TileLayer
+import icesword.scene.createElasticOverlayElement
+import icesword.scene.createKnotMeshOverlayElement
+import icesword.scene.createRopeOverlayElement
+import icesword.scene.createStartPointOverlayElement
+import icesword.scene.scene
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.MouseEvent
@@ -14,7 +42,7 @@ import kotlin.math.roundToInt
 
 fun worldView(
     editor: Editor,
-    tileset: Tileset,
+    textureBank: TextureBank,
     tillDetach: Till,
 ): HTMLElement {
     val world = editor.world
@@ -82,7 +110,7 @@ fun worldView(
                         DynamicSet.of(
                             setOf(
                                 TileLayer(
-                                    tileset = tileset,
+                                    tileset = textureBank.tileset,
                                     tiles = world.tiles.contentDynamicView.map {
                                         OffsetTilesView(IntVec2.ZERO, it)
                                     },
@@ -92,7 +120,10 @@ fun worldView(
                         world.ropes.map(
                             tag = "WorldView/planeUiLayer/ropes.map",
                         ) {
-                            RopeNode(it)
+                            RopeNode(
+                                texture = textureBank.rope,
+                                rope = it,
+                            )
                         },
                     ),
                 ),

@@ -1,5 +1,6 @@
 package icesword.editor
 
+import TextureBank
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
@@ -28,12 +29,12 @@ enum class Tool {
 }
 
 class Editor(
+    val textureBank: TextureBank,
     val world: World,
-    val tileset: Tileset,
 ) {
     companion object {
         fun importWwd(
-            tileset: Tileset,
+            textureBank: TextureBank,
             wwdWorld: Wwd.World,
         ): Editor {
             val world = World.importWwd(
@@ -42,12 +43,12 @@ class Editor(
 
             return Editor(
                 world = world,
-                tileset = tileset,
+                textureBank = textureBank,
             )
         }
 
         fun loadProject(
-            tileset: Tileset,
+            textureBank: TextureBank,
             wwdWorldTemplate: Wwd.World,
             projectData: ProjectData,
         ): Editor {
@@ -58,7 +59,7 @@ class Editor(
 
             return Editor(
                 world = world,
-                tileset = tileset,
+                textureBank = textureBank,
             )
         }
     }

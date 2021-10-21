@@ -17,6 +17,7 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
 class RopeNode(
+    private val texture: Texture,
     private val rope: Rope,
 ) : Node {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
@@ -26,10 +27,11 @@ class RopeNode(
         ctx.fillStyle = "brown"
         ctx.strokeStyle = "black"
 
-        drawCircle(
+
+        drawTexture(
             ctx,
-            center = position,
-            radius = Rope.radius.toDouble(),
+            texture = texture,
+            dv = position,
         )
     }
 

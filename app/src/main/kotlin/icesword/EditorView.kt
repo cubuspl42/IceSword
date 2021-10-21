@@ -34,7 +34,7 @@ fun editorView(
         appendChild(
             worldView(
                 editor = editor,
-                tileset = editor.tileset,
+                textureBank = editor.textureBank,
                 tillDetach = tillDetach,
             ).apply {
                 style.apply {

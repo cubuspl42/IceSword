@@ -1,5 +1,6 @@
 package icesword.editor
 
+import TextureBank
 import fetchWorld
 import icesword.frp.Cell
 import icesword.frp.DynamicLock
@@ -15,7 +16,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
-import loadTileset
 import org.khronos.webgl.ArrayBuffer
 import org.w3c.files.Blob
 import org.w3c.files.File
@@ -28,24 +28,24 @@ data class LoadingWorldProcess(
 
 class App(
     private val wwdWorldTemplate: Wwd.World,
-    private val tileset: Tileset,
+    private val textureBank: TextureBank,
     initialEditor: Editor,
     till: Till,
 ) : CoroutineScope by MainScope() {
     companion object {
         suspend fun load(): App {
-            val tileset = loadTileset()
+            val textureBank = TextureBank.load()
 
             val wwdWorldTemplate: Wwd.World = fetchWorld()
 
             val editor = Editor.importWwd(
-                tileset = tileset,
+                textureBank = textureBank,
                 wwdWorld = wwdWorldTemplate,
             )
 
             return App(
                 wwdWorldTemplate = wwdWorldTemplate,
-                tileset = tileset,
+                textureBank = textureBank,
                 initialEditor = editor,
                 till = Till.never,
             )
@@ -91,7 +91,7 @@ class App(
         val world = Wwd.readWorld(worldBuffer)
 
         val editor = Editor.importWwd(
-            tileset = tileset,
+            textureBank = textureBank,
             wwdWorld = world,
         )
 
@@ -105,7 +105,7 @@ class App(
 
         val editor = Editor.loadProject(
             wwdWorldTemplate = wwdWorldTemplate,
-            tileset = tileset,
+            textureBank = textureBank,
             projectData = projectData,
         )
 

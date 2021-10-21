@@ -7,13 +7,24 @@ import kotlinx.browser.window
 import kotlinx.coroutines.await
 import org.w3c.dom.ImageBitmap
 
-suspend fun loadTileset(): Tileset {
-    suspend fun loadImage(): ImageBitmap {
-        val textureImageResponse = window.fetch(textureImagePath).await()
-        val textureImageBlob = textureImageResponse.blob().await()
-        return window.createImageBitmap(textureImageBlob).await()
-    }
+data class TextureBank(
+    val tileset: Tileset,
+    val rope: Texture,
+) {
+    companion object {
+        suspend fun load(): TextureBank {
+            val tileset = loadTileset()
+            val rope = loadRopeTexture()
 
+            return TextureBank(
+                tileset = tileset,
+                rope = rope,
+            )
+        }
+    }
+}
+
+private suspend fun loadTileset(): Tileset {
     fun parseIndex(
         indexJson: dynamic,
     ): Map<Int, IntRect> {
@@ -44,7 +55,7 @@ suspend fun loadTileset(): Tileset {
         return parseIndex(json)
     }
 
-    val imageBitmap = loadImage()
+    val imageBitmap = loadImage(imagePath = textureImagePath)
 
     val index = loadIndex()
 
@@ -55,4 +66,27 @@ suspend fun loadTileset(): Tileset {
     return Tileset(
         tileTextures = tileTextures,
     )
+}
+
+private suspend fun loadRopeTexture(): Texture {
+    val ropeBitmap = loadImage(imagePath = "images/rope.png")
+
+    val ropeTexture = Texture(
+        imageBitmap = ropeBitmap,
+        sourceRect = IntRect(
+            position = IntVec2.ZERO,
+            size = IntSize(
+                width = ropeBitmap.width,
+                height = ropeBitmap.height,
+            ),
+        )
+    )
+
+    return ropeTexture
+}
+
+private suspend fun loadImage(imagePath: String): ImageBitmap {
+    val textureImageResponse = window.fetch(imagePath).await()
+    val textureImageBlob = textureImageResponse.blob().await()
+    return window.createImageBitmap(textureImageBlob).await()
 }

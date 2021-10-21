@@ -36,17 +36,7 @@ class TileLayer(
 
                     ctx.globalAlpha = 1.0
 
-                    ctx.drawImage(
-                        image = texture.imageBitmap,
-                        sx = texture.sourceRect.xMin.toDouble(),
-                        sy = texture.sourceRect.yMin.toDouble(),
-                        sw = texture.sourceRect.width.toDouble(),
-                        sh = texture.sourceRect.height.toDouble(),
-                        dx = dv.x.toDouble(),
-                        dy = dv.y.toDouble(),
-                        dw = TILE_SIZE.toDouble(),
-                        dh = TILE_SIZE.toDouble(),
-                    )
+                    drawTexture(ctx = ctx, texture = texture, dv = dv)
 
                     ctx.globalAlpha = 0.2
 

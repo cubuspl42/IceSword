@@ -47,3 +47,24 @@ fun drawEquilateralTriangle(
     ctx.fill()
     ctx.stroke()
 }
+
+fun drawTexture(
+    ctx: CanvasRenderingContext2D,
+    texture: Texture,
+    dv: IntVec2
+) {
+    val w = texture.sourceRect.width.toDouble()
+    val h = texture.sourceRect.height.toDouble()
+
+    ctx.drawImage(
+        image = texture.imageBitmap,
+        sx = texture.sourceRect.xMin.toDouble(),
+        sy = texture.sourceRect.yMin.toDouble(),
+        sw = w,
+        sh = h,
+        dx = dv.x.toDouble(),
+        dy = dv.y.toDouble(),
+        dw = w,
+        dh = h,
+    )
+}
