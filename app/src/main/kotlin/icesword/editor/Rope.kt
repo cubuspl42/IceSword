@@ -1,3 +1,5 @@
+@file:UseSerializers(IntVec2Serializer::class)
+
 package icesword.editor
 
 import icesword.TILE_SIZE
@@ -6,6 +8,8 @@ import icesword.frp.MutCell
 import icesword.frp.map
 import icesword.geometry.IntVec2
 import icesword.scene.Texture
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
 class Rope(
     val texture: Texture,
@@ -15,6 +19,15 @@ class Rope(
 
     companion object {
         const val radius: Int = 16
+
+        fun load(
+            texture: Texture,
+            data: RopeData,
+        ): Rope =
+            Rope(
+                texture = texture,
+                initialPosition = data.position,
+            )
     }
 
     private val _position = MutCell(initialPosition)
@@ -36,7 +49,16 @@ class Rope(
         _position.set(newPosition)
     }
 
+    fun toData(): RopeData =
+        RopeData(
+            position = position.sample(),
+        )
+
     override fun toString(): String =
         "Rope()"
 }
 
+@Serializable
+data class RopeData(
+    val position: IntVec2,
+)

@@ -25,11 +25,11 @@ import org.khronos.webgl.Int32Array
 import org.khronos.webgl.set
 
 class World(
-    textureBank: TextureBank,
     private val wwdWorld: Wwd.World,
     initialStartPoint: IntVec2,
     initialKnotMeshes: Set<KnotMesh>,
     initialElastics: Set<Elastic>,
+    initialRopes: Set<Rope>,
 ) {
     companion object {
         private const val wwdPlaneIndex = 1
@@ -90,12 +90,19 @@ class World(
                 ),
             )
 
+            val initialRopes = setOf(
+                Rope(
+                    texture = textureBank.rope,
+                    initialPosition = startPoint,
+                )
+            )
+
             return World(
-                textureBank = textureBank,
                 wwdWorld = wwdWorld,
                 initialStartPoint = startPoint,
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
+                initialRopes = initialRopes,
             )
         }
 
@@ -112,12 +119,16 @@ class World(
                 Elastic.load(it)
             }.toSet()
 
+            val initialRopes = worldData.ropes.map {
+                Rope.load(texture = textureBank.rope, it)
+            }.toSet()
+
             return World(
-                textureBank = textureBank,
                 wwdWorld = wwdWorldTemplate,
                 initialStartPoint = worldData.startPoint,
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
+                initialRopes = initialRopes,
             )
         }
     }
@@ -150,12 +161,7 @@ class World(
     val elastics = metaTileLayer.elastics
 
     private val _ropes = MutableDynamicSet.of(
-        setOf(
-            Rope(
-                texture = textureBank.rope,
-                initialPosition = initialStartPoint,
-            )
-        ),
+        initialRopes,
     )
 
     val ropes: MutableDynamicSet<Rope>
@@ -236,10 +242,14 @@ class World(
         val elastics = metaTileLayer.elastics.volatileContentView
             .map { it.toData() }.toSet()
 
+        val ropes = ropes.volatileContentView
+            .map { it.toData() }.toSet()
+
         return WorldData(
             startPoint = startPoint,
             knotMeshes = knotMeshes,
             elastics = elastics,
+            ropes = ropes,
         )
     }
 
@@ -255,4 +265,5 @@ data class WorldData(
     val startPoint: IntVec2,
     val knotMeshes: Set<KnotMeshData>,
     val elastics: Set<ElasticData>,
+    val ropes: Set<RopeData> = emptySet(),
 )
