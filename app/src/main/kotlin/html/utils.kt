@@ -33,6 +33,13 @@ fun createStyledHtmlElement(
     return element
 }
 
+fun createHeading4(text: String): HTMLElement =
+    createHtmlElement("h4").apply {
+        appendChild(
+            document.createTextNode(text),
+        )
+    }
+
 fun createSvgRoot(
     tillDetach: Till,
 ): SVGSVGElement {

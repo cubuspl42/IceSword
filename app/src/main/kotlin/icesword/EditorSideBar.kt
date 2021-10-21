@@ -1,6 +1,7 @@
 package icesword
 
 import html.createButton
+import html.createHeading4
 import html.createHtmlElement
 import icesword.editor.Editor
 import icesword.editor.ElasticPrototype
@@ -39,7 +40,8 @@ fun editorSideBar(
 
     return root.apply {
         listOf(
-            createButtonsColumn(
+            createSection(
+                title = "Insert...",
                 children = listOf(
                     createInsertElasticButton(
                         editor = editor,
@@ -73,7 +75,8 @@ fun editorSideBar(
                     ),
                 ),
             ),
-            createButtonsColumn(
+            createSection(
+                title = "Knot brush",
                 children = listOf(
                     createKnotBrushButton(
                         editor = editor,
@@ -91,20 +94,41 @@ fun editorSideBar(
     }
 }
 
-private fun createButtonsColumn(
+private fun createSection(
+    title: String,
     children: List<HTMLElement>,
 ): HTMLElement =
     createHtmlElement("div").apply {
-        className = "buttonsColumn"
+        className = "editorSideBarSection"
 
         style.apply {
             display = "flex"
             flexDirection = "column"
 
-            setProperty("gap", "4px")
+            setProperty("gap", "8px")
         }
 
-        children.forEach(this::appendChild)
+        appendChild(
+            createHeading4(text = title).apply {
+                style.apply {
+                    margin = "0"
+                    fontFamily = "sans-serif"
+                }
+            }
+        )
+
+        appendChild(
+            createHtmlElement("div").apply {
+                style.apply {
+                    display = "flex"
+                    flexDirection = "column"
+
+                    setProperty("gap", "4px")
+                }
+
+                children.forEach(this::appendChild)
+            },
+        )
     }
 
 private fun createInsertElasticButton(
