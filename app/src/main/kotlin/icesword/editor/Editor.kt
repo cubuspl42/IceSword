@@ -76,6 +76,7 @@ class Editor(
     val selectedKnotBrush: Cell<KnotBrush> = _selectedKnotBrush
 
     fun selectKnotBrush(knotBrush: KnotBrush) {
+        selectTool(Tool.KNOT_BRUSH)
         _selectedKnotBrush.set(knotBrush)
     }
 
