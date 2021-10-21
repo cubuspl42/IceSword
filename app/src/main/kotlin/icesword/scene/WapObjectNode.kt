@@ -1,7 +1,7 @@
 package icesword.scene
 
 import icesword.editor.Editor
-import icesword.editor.CrumblingPeg
+import icesword.editor.WapObject
 import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
@@ -15,12 +15,12 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
-class CrumblingPegNode(
+class WapObjectNode(
     private val texture: Texture,
-    private val crumblingPeg: CrumblingPeg,
+    private val wapObject: WapObject,
 ) : Node {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-        val boundingBox = crumblingPeg.boundingBox.sample()
+        val boundingBox = wapObject.boundingBox.sample()
 
         ctx.lineWidth = 4.0
         ctx.fillStyle = "brown"
@@ -34,18 +34,18 @@ class CrumblingPegNode(
     }
 
     override val onDirty: Stream<Unit> =
-        crumblingPeg.boundingBox.values().units()
+        wapObject.boundingBox.values().units()
 }
 
-fun createCrumblingPegOverlayElement(
+fun createWapObjectOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,
     viewTransform: Cell<IntVec2>,
-    crumblingPeg: CrumblingPeg,
+    wapObject: WapObject,
     tillDetach: Till,
 ): SVGElement {
-    val rect = crumblingPeg.boundingBox
+    val rect = wapObject.boundingBox
 
     val translate = Cell.map2(
         viewTransform,
@@ -56,7 +56,7 @@ fun createCrumblingPegOverlayElement(
         editor = editor,
         svg = svg,
         outer = viewport,
-        entity = crumblingPeg,
+        entity = wapObject,
         translate = translate,
         size = rect.map { it.size },
         tillDetach = tillDetach,

@@ -12,6 +12,7 @@ import html.onMouseUp
 import icesword.editor.Editor
 import icesword.editor.OffsetTilesView
 import icesword.editor.Tool
+import icesword.editor.WapObjectPrototype
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.Till
@@ -22,18 +23,16 @@ import icesword.frp.reactTill
 import icesword.frp.reactTillNext
 import icesword.frp.tillNext
 import icesword.geometry.IntVec2
-import icesword.scene.CrumblingPegNode
 import icesword.scene.ElasticUi
 import icesword.scene.KnotMeshUi
 import icesword.scene.Layer
-import icesword.scene.RopeNode
+import icesword.scene.WapObjectNode
 import icesword.scene.Scene
 import icesword.scene.StartPointUi
 import icesword.scene.TileLayer
-import icesword.scene.createCrumblingPegOverlayElement
 import icesword.scene.createElasticOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
-import icesword.scene.createRopeOverlayElement
+import icesword.scene.createWapObjectOverlayElement
 import icesword.scene.createStartPointOverlayElement
 import icesword.scene.scene
 import org.w3c.dom.Element
@@ -119,20 +118,16 @@ fun worldView(
                                 ),
                             )
                         ),
-                        world.ropes.map(
+                        world.wapObjects.map(
                             tag = "WorldView/planeUiLayer/ropes.map",
                         ) {
-                            RopeNode(
-                                texture = textureBank.rope,
-                                rope = it,
-                            )
-                        },
-                        world.crumblingPegs.map(
-                            tag = "",
-                        ) {
-                            CrumblingPegNode(
-                                texture = textureBank.crumblingPeg,
-                                crumblingPeg = it,
+                            WapObjectNode(
+                                // TODO: Generalize!
+                                texture = when (it.wapObjectPrototype) {
+                                    WapObjectPrototype.RopePrototype -> textureBank.rope
+                                    WapObjectPrototype.CrumblingPegPrototype -> textureBank.crumblingPeg
+                                },
+                                wapObject = it,
                             )
                         },
                     ),
@@ -224,27 +219,15 @@ fun worldView(
                                             tillDetach = tillDetach,
                                         )
                                     },
-                                    world.ropes.map(
+                                    world.wapObjects.map(
                                         tag = "WorldView/buildOverlayElements/ropes.map",
                                     ) {
-                                        createRopeOverlayElement(
+                                        createWapObjectOverlayElement(
                                             editor = editor,
                                             svg = svg,
                                             viewport = this,
                                             viewTransform = viewTransform,
-                                            rope = it,
-                                            tillDetach = tillDetach,
-                                        )
-                                    },
-                                    world.crumblingPegs.map(
-                                        tag = "WorldView/buildOverlayElements/crumblingPegs.map",
-                                    ) {
-                                        createCrumblingPegOverlayElement(
-                                            editor = editor,
-                                            svg = svg,
-                                            viewport = this,
-                                            viewTransform = viewTransform,
-                                            crumblingPeg = it,
+                                            wapObject = it,
                                             tillDetach = tillDetach,
                                         )
                                     },

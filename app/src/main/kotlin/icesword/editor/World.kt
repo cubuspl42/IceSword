@@ -2,7 +2,6 @@
 
 package icesword.editor
 
-import TextureBank
 import icesword.RezIndex
 import icesword.editor.KnotPrototype.OvergroundRockPrototype
 import icesword.editor.KnotPrototype.UndergroundRockPrototype
@@ -30,8 +29,7 @@ class World(
     initialStartPoint: IntVec2,
     initialKnotMeshes: Set<KnotMesh>,
     initialElastics: Set<Elastic>,
-    initialRopes: Set<Rope>,
-    initialCrumblingPegs: Set<CrumblingPeg>,
+    initialWapObjects: Set<WapObject>,
 ) {
     companion object {
         private const val wwdPlaneIndex = 1
@@ -92,20 +90,12 @@ class World(
                 ),
             )
 
-            val initialRopes = setOf(
-                Rope(
-                    rezIndex = rezIndex,
-                    initialPosition = startPoint,
-                )
-            )
-
             return World(
                 wwdWorld = wwdWorld,
                 initialStartPoint = startPoint,
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
-                initialRopes = initialRopes,
-                initialCrumblingPegs = emptySet()
+                initialWapObjects = emptySet()
             )
         }
 
@@ -122,15 +112,23 @@ class World(
                 Elastic.load(it)
             }.toSet()
 
-            val initialRopes = worldData.ropes.map {
-                Rope.load(
-                    rezIndex = rezIndex,
-                    data = it,
+            val ropes = worldData.ropes.map {
+                WapObjectData(
+                    prototype = WapObjectPrototype.RopePrototype,
+                    position = it.position,
                 )
             }.toSet()
 
-            val initialCrumblingPegs = worldData.crumblingPegs.map {
-                CrumblingPeg.load(
+            val crumblingPegs = worldData.crumblingPegs.map {
+                WapObjectData(
+                    prototype = WapObjectPrototype.RopePrototype,
+                    position = it.position,
+                )
+            }.toSet()
+
+
+            val initialWapObjects = (worldData.wapObjects + ropes + crumblingPegs).map {
+                WapObject.load(
                     rezIndex = rezIndex,
                     data = it,
                 )
@@ -141,8 +139,7 @@ class World(
                 initialStartPoint = worldData.startPoint,
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
-                initialRopes = initialRopes,
-                initialCrumblingPegs = initialCrumblingPegs,
+                initialWapObjects = initialWapObjects,
             )
         }
     }
@@ -174,19 +171,12 @@ class World(
 
     val elastics = metaTileLayer.elastics
 
-    private val _ropes = MutableDynamicSet.of(
-        initialRopes,
+    private val _wapObjects = MutableDynamicSet.of(
+        initialWapObjects,
     )
 
-    val ropes: MutableDynamicSet<Rope>
-        get() = _ropes
-
-    private val _crumblingPegs = MutableDynamicSet.of(
-        initialCrumblingPegs,
-    )
-
-    val crumblingPegs: MutableDynamicSet<CrumblingPeg>
-        get() = _crumblingPegs
+    val wapObjects: MutableDynamicSet<WapObject>
+        get() = _wapObjects
 
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
@@ -194,8 +184,7 @@ class World(
                 metaEntities,
                 elastics,
                 knotMeshLayer.knotMeshes,
-                _ropes,
-                _crumblingPegs,
+                wapObjects,
             ),
         )
     ).also {
@@ -236,8 +225,7 @@ class World(
             newTiles[k] = tileId
         }
 
-        val objects = ropes.volatileContentView.map { it.export() } +
-                crumblingPegs.volatileContentView.map { it.export() }
+        val objects = wapObjects.volatileContentView.map { it.export() }
 
         val newActionPlane = actionPlane.copy(
             tiles = newTiles,
@@ -267,18 +255,14 @@ class World(
         val elastics = metaTileLayer.elastics.volatileContentView
             .map { it.toData() }.toSet()
 
-        val ropes = ropes.volatileContentView
-            .map { it.toData() }.toSet()
-
-        val crumblingPegs = crumblingPegs.volatileContentView
+        val wapObjects = wapObjects.volatileContentView
             .map { it.toData() }.toSet()
 
         return WorldData(
             startPoint = startPoint,
             knotMeshes = knotMeshes,
             elastics = elastics,
-            ropes = ropes,
-            crumblingPegs = crumblingPegs,
+            wapObjects = wapObjects,
         )
     }
 
@@ -294,6 +278,14 @@ data class WorldData(
     val startPoint: IntVec2,
     val knotMeshes: Set<KnotMeshData>,
     val elastics: Set<ElasticData>,
-    val ropes: Set<RopeData> = emptySet(),
-    val crumblingPegs: Set<CrumblingPegData> = emptySet(),
+    val ropes: Set<LegacyWapObjectData> = emptySet(),
+    val crumblingPegs: Set<LegacyWapObjectData> = emptySet(),
+    val wapObjects: Set<WapObjectData> = emptySet(),
+)
+
+
+
+@Serializable
+data class LegacyWapObjectData(
+    val position: IntVec2,
 )

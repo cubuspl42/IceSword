@@ -13,6 +13,9 @@ import icesword.editor.LadderPrototype
 import icesword.editor.LogPrototype
 import icesword.editor.SpikesPrototype
 import icesword.editor.TreeCrownPrototype
+import icesword.editor.WapObjectPrototype
+import icesword.editor.WapObjectPrototype.CrumblingPegPrototype
+import icesword.editor.WapObjectPrototype.RopePrototype
 import icesword.frp.Till
 import icesword.ui.createSelectButton
 import org.w3c.dom.HTMLElement
@@ -76,13 +79,13 @@ fun editorSideBar(
                     createInsertWapObject(
                         editor = editor,
                         text = "Rope",
-                        insert = editor::insertRope,
+                        insert = { editor.insertWapObject(RopePrototype) },
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObject(
                         editor = editor,
                         text = "CrumblingPeg",
-                        insert = editor::insertCrumblingPeg,
+                        insert = { editor.insertWapObject(CrumblingPegPrototype) },
                         tillDetach = tillDetach,
                     ),
                 ),

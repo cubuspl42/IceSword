@@ -1,6 +1,5 @@
 package icesword.editor
 
-import TextureBank
 import icesword.RezIndex
 import icesword.frp.Cell
 import icesword.frp.MutCell
@@ -162,24 +161,15 @@ class Editor(
         selectEntity(knotMesh)
     }
 
-    fun insertRope() {
-        world.ropes.add(
-            Rope(
+    fun insertWapObject(wapObjectPrototype: WapObjectPrototype) {
+        world.wapObjects.add(
+            WapObject(
                 rezIndex = rezIndex,
+                wapObjectPrototype = wapObjectPrototype,
                 initialPosition = entityInsertionPoint,
             )
         )
     }
-
-    fun insertCrumblingPeg() {
-        world.crumblingPegs.add(
-            CrumblingPeg(
-                rezIndex = rezIndex,
-                initialPosition = entityInsertionPoint,
-            )
-        )
-    }
-
 
     private val entityInsertionPoint: IntVec2
         get() {

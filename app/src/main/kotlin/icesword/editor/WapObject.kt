@@ -13,33 +13,74 @@ import icesword.geometry.IntVec2
 import icesword.wwd.DataStreamObj
 import icesword.wwd.Wwd
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import kotlinx.serialization.UseSerializers
 import org.khronos.webgl.Uint8Array
 
+private fun encode(text: String): DataStreamObj.ByteString {
+    val encodedText: ByteArray = text.encodeToByteArray()
+    return DataStreamObj.ByteString(
+        Uint8Array(encodedText.toTypedArray())
+    )
+}
 
-class CrumblingPeg(
+@Serializable
+sealed class WapObjectPrototype {
+    abstract val imageSetId: ImageSetId
+
+    abstract val wwdObjectPrototype: Wwd.Object_
+
+    @Serializable
+    object RopePrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_ROPE",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("AniRope"),
+            imageSet = encode("LEVEL_ROPE"),
+            speedX = 1750,
+        )
+    }
+
+    @Serializable
+    object CrumblingPegPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_CRUMBLINPEG1",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("CrumblingPeg"),
+            imageSet = encode("LEVEL_CRUMBLINPEG1"),
+        )
+    }
+}
+
+class WapObject(
     rezIndex: RezIndex,
+     val wapObjectPrototype: WapObjectPrototype,
     initialPosition: IntVec2,
 ) :
     Entity() {
 
     companion object {
-        val imageSetId = ImageSetId(
-            fullyQualifiedId = "LEVEL3_IMAGES_CRUMBLINPEG1",
-        )
-
         fun load(
             rezIndex: RezIndex,
-            data: CrumblingPegData,
-        ): CrumblingPeg =
-            CrumblingPeg(
+            data: WapObjectData,
+        ): WapObject =
+            WapObject(
                 rezIndex = rezIndex,
+                wapObjectPrototype = data.prototype,
                 initialPosition = data.position,
             )
     }
 
     private val _imageMetadata = rezIndex.getImageMetadata(
-        imageSetId = imageSetId,
+        imageSetId = wapObjectPrototype.imageSetId,
         i = -1,
     )!!
 
@@ -74,34 +115,27 @@ class CrumblingPeg(
     }
 
     fun export(): Wwd.Object_ {
-        fun encode(text: String): DataStreamObj.ByteString {
-            val encodedText: ByteArray = text.encodeToByteArray()
-            return DataStreamObj.ByteString(
-                Uint8Array(encodedText.toTypedArray())
-            )
-        }
-
         val position = position.sample()
 
-        return Wwd.Object_.empty().copy(
-            logic = encode("CrumblingPeg"),
-            imageSet = encode("LEVEL_CRUMBLINPEG1"),
+        return wapObjectPrototype.wwdObjectPrototype.copy(
             x = position.x,
             y = position.y,
         )
     }
 
-    fun toData(): CrumblingPegData =
-        CrumblingPegData(
+    fun toData(): WapObjectData =
+        WapObjectData(
+            prototype = wapObjectPrototype,
             position = position.sample(),
         )
 
     override fun toString(): String =
-        "CrumblingPeg()"
+        "WapObject()"
 }
 
 
 @Serializable
-data class CrumblingPegData(
+data class WapObjectData(
+    val prototype: WapObjectPrototype,
     val position: IntVec2,
 )
