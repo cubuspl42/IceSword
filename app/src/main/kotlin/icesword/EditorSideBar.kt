@@ -73,6 +73,10 @@ fun editorSideBar(
                         knotPrototype = OvergroundRockPrototype,
                         tillDetach = tillDetach,
                     ),
+                    createInsertRopeButton(
+                        editor = editor,
+                        tillDetach = tillDetach,
+                    ),
                 ),
             ),
             createSection(
@@ -160,6 +164,19 @@ private fun createInsertKnotMeshButton(
         text = text,
         onPressed = {
             editor.insertKnotMesh(knotPrototype)
+        },
+        tillDetach = tillDetach,
+    )
+}
+
+private fun createInsertRopeButton(
+    editor: Editor,
+    tillDetach: Till,
+): HTMLElement {
+    return createButton(
+        text = "Rope",
+        onPressed = {
+            editor.insertRope()
         },
         tillDetach = tillDetach,
     )

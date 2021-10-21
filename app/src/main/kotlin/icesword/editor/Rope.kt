@@ -5,10 +5,10 @@ import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.map
 import icesword.geometry.IntVec2
-
-private const val hitBoxRadius = 32
+import icesword.scene.Texture
 
 class Rope(
+    val texture: Texture,
     initialPosition: IntVec2,
 ) :
     Entity() {
@@ -22,8 +22,11 @@ class Rope(
     override val position: Cell<IntVec2>
         get() = _position
 
-    override fun isSelectableAt(worldPoint: IntVec2): Boolean =
-        (position.sample() - worldPoint).length < radius
+    override fun isSelectableAt(worldPoint: IntVec2): Boolean {
+        val localPoint = worldPoint - position.sample()
+        val rect = texture.sourceRect
+        return rect.contains(localPoint)
+    }
 
     // TODO: Deduplicate!
     override val tileOffset: Cell<IntVec2> =

@@ -5,14 +5,27 @@ import html.createSvgCircle
 import html.createSvgGroup
 import html.createSvgRect
 import html.onMouseDrag
-import icesword.*
+import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.Elastic
+import icesword.editor.Entity
 import icesword.editor.MetaTileCluster
-import icesword.frp.*
+import icesword.frp.Cell
+import icesword.frp.Stream
+import icesword.frp.Till
+import icesword.frp.changes
+import icesword.frp.changesUnits
+import icesword.frp.getKeys
+import icesword.frp.map
+import icesword.frp.mergeWith
+import icesword.frp.reactTill
+import icesword.frp.units
+import icesword.frp.values
 import icesword.geometry.IntRect
+import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
-import icesword.ui.EntityMoveDragController
+import icesword.tileRect
+import icesword.tileTopLeftCorner
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
 import org.w3c.dom.CanvasRenderingContext2D
@@ -88,15 +101,6 @@ fun createElasticOverlayElement(
     elastic: Elastic,
     tillDetach: Till,
 ): SVGElement {
-    val boxMoveController = EntityMoveDragController.create(
-        editor = editor,
-        entity = elastic,
-    )
-
-    val boxCursor = boxMoveController.map {
-        it?.let { Cursor.move }
-    }
-
     val boxSize = elastic.size.map { it * TILE_SIZE }
 
     val rootTranslate = Cell.map2(
@@ -108,31 +112,14 @@ fun createElasticOverlayElement(
         if (it) null else PointerEvents.none
     }
 
-    val box = createSvgRect(
+    val box = createEntityFrameElement(
+        editor = editor,
         svg = svg,
-        size = boxSize,
-        translate = Cell.constant(IntVec2.ZERO),
-        style = DynamicStyleDeclaration(
-            pointerEvents = pointerEvents,
-            cursor = boxCursor,
-        ),
-        tillDetach = tillDetach,
-    ).apply {
-        setAttributeNS(null, "fill-opacity", "0")
-
-        style.apply {
-            boxSizing = "border-box"
-            borderStyle = "dashed"
-            borderRadius = "4px"
-            borderColor = "red"
-        }
-    }
-
-    EntityMoveDragController.linkDragHandler(
-        element = box,
         outer = viewport,
-        controller = boxMoveController,
-        till = tillDetach,
+        entity =  elastic,
+        translate = Cell.constant(IntVec2.ZERO),
+        size = boxSize,
+        tillDetach = tillDetach,
     )
 
     val handleStroke = elastic.isSelected.map {
@@ -224,4 +211,45 @@ fun createElasticOverlayElement(
     buildHandles().forEach(group::appendChild)
 
     return group
+}
+
+fun createEntityFrameElement(
+    editor: Editor,
+    svg: SVGSVGElement,
+    outer: HTMLElement,
+    entity: Entity,
+    translate: Cell<IntVec2>,
+    size: Cell<IntSize>,
+    tillDetach: Till,
+): SVGElement {
+    return createDraggableOverlayElement(
+        editor = editor,
+        entity = entity,
+        outer = outer,
+        till = tillDetach,
+    ) { cursor ->
+        val pointerEvents = entity.isSelected.map {
+            if (it) null else PointerEvents.none
+        }
+
+        val stroke = entity.isSelected.map {
+            if (it) "red" else "none"
+        }
+
+        val box = createSvgRect(
+            svg = svg,
+            size = size,
+            translate = translate,
+            stroke = stroke,
+            style = DynamicStyleDeclaration(
+                pointerEvents = pointerEvents,
+                cursor = cursor,
+            ),
+            tillDetach = tillDetach,
+        ).apply {
+            setAttributeNS(null, "fill-opacity", "0")
+        }
+
+        box
+    }
 }

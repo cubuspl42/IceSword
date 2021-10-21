@@ -72,4 +72,7 @@ data class IntRect(
     fun copyWithBottomRight(p: IntVec2) = IntRect.fromDiagonal(topLeft, p)
 
     fun copyWithBottomLeft(p: IntVec2) = IntRect.fromDiagonal(topRight, p)
+
+    fun contains(localPoint: IntVec2): Boolean =
+        localPoint.x in (xMin until xMax) && localPoint.y in (yMin until yMax)
 }

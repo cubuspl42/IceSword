@@ -38,12 +38,13 @@ class Editor(
             wwdWorld: Wwd.World,
         ): Editor {
             val world = World.importWwd(
+                textureBank = textureBank,
                 wwdWorld = wwdWorld,
             )
 
             return Editor(
-                world = world,
                 textureBank = textureBank,
+                world = world,
             )
         }
 
@@ -53,13 +54,14 @@ class Editor(
             projectData: ProjectData,
         ): Editor {
             val world = World.load(
+                textureBank = textureBank,
                 worldData = projectData.world,
                 wwdWorldTemplate = wwdWorldTemplate,
             )
 
             return Editor(
-                world = world,
                 textureBank = textureBank,
+                world = world,
             )
         }
     }
@@ -161,7 +163,12 @@ class Editor(
     }
 
     fun insertRope() {
-
+        world.ropes.add(
+            Rope(
+                texture = textureBank.rope,
+                initialPosition = entityInsertionPoint,
+            )
+        )
     }
 
     private val entityInsertionPoint: IntVec2

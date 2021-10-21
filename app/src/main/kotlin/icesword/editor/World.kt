@@ -2,6 +2,7 @@
 
 package icesword.editor
 
+import TextureBank
 import icesword.editor.KnotPrototype.OvergroundRockPrototype
 import icesword.editor.KnotPrototype.UndergroundRockPrototype
 import icesword.frp.Cell
@@ -24,15 +25,19 @@ import org.khronos.webgl.Int32Array
 import org.khronos.webgl.set
 
 class World(
+    textureBank: TextureBank,
     private val wwdWorld: Wwd.World,
-    val initialStartPoint: IntVec2,
+    initialStartPoint: IntVec2,
     initialKnotMeshes: Set<KnotMesh>,
     initialElastics: Set<Elastic>,
 ) {
     companion object {
         private const val wwdPlaneIndex = 1
 
-        fun importWwd(wwdWorld: Wwd.World): World {
+        fun importWwd(
+            textureBank: TextureBank,
+            wwdWorld: Wwd.World,
+        ): World {
             val startPoint = IntVec2(wwdWorld.startX, wwdWorld.startY)
 
             val initialKnotMeshes = setOf(
@@ -86,6 +91,7 @@ class World(
             )
 
             return World(
+                textureBank = textureBank,
                 wwdWorld = wwdWorld,
                 initialStartPoint = startPoint,
                 initialKnotMeshes = initialKnotMeshes,
@@ -94,6 +100,7 @@ class World(
         }
 
         fun load(
+            textureBank: TextureBank,
             wwdWorldTemplate: Wwd.World,
             worldData: WorldData,
         ): World {
@@ -106,6 +113,7 @@ class World(
             }.toSet()
 
             return World(
+                textureBank = textureBank,
                 wwdWorld = wwdWorldTemplate,
                 initialStartPoint = worldData.startPoint,
                 initialKnotMeshes = initialKnotMeshes,
@@ -143,7 +151,10 @@ class World(
 
     private val _ropes = MutableDynamicSet.of(
         setOf(
-            Rope(initialPosition = initialStartPoint)
+            Rope(
+                texture = textureBank.rope,
+                initialPosition = initialStartPoint,
+            )
         ),
     )
 

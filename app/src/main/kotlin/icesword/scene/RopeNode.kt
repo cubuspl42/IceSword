@@ -2,6 +2,7 @@ package icesword.scene
 
 import html.DynamicStyleDeclaration
 import html.createSvgCircle
+import html.createSvgRect
 import icesword.editor.Editor
 import icesword.editor.Rope
 import icesword.frp.Cell
@@ -47,29 +48,20 @@ fun createRopeOverlayElement(
     rope: Rope,
     tillDetach: Till,
 ): SVGElement {
-    return createDraggableOverlayElement(
+    val rootTranslate = Cell.map2(
+        viewTransform,
+        rope.position,
+    ) { vt, ep -> vt + ep }
+
+    val box = createEntityFrameElement(
         editor = editor,
-        entity = rope,
+        svg = svg,
         outer = viewport,
-        till = tillDetach,
-    ) { cursor ->
-        val rootTranslate = Cell.map2(
-            viewTransform,
-            rope.position,
-        ) { vt, ep -> vt + ep }
+        entity = rope,
+        translate = rootTranslate,
+        size = Cell.constant(rope.texture.sourceRect.size),
+        tillDetach = tillDetach,
+    )
 
-        val circle = createSvgCircle(
-            svg = svg,
-            radius = Rope.radius.toFloat(),
-            translate = rootTranslate,
-            style = DynamicStyleDeclaration(
-                cursor = cursor,
-            ),
-            tillDetach = tillDetach,
-        ).apply {
-            setAttributeNS(null, "fill-opacity", "0.3")
-        }
-
-        circle
-    }
+    return box
 }

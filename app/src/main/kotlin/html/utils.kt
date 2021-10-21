@@ -69,6 +69,7 @@ fun createSvgRect(
     svg: SVGSVGElement,
     size: Cell<IntSize>,
     translate: Cell<IntVec2>,
+    stroke: Cell<String>? = null,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
 ): SVGElement {
@@ -87,6 +88,13 @@ fun createSvgRect(
     )
 
     style?.linkTo(rect.style, tillDetach)
+
+    linkAttribute(
+        element = rect,
+        attributeName = "stroke",
+        attribute = stroke,
+        till = tillDetach,
+    )
 
     return rect
 }
