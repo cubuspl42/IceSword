@@ -8,10 +8,14 @@ import icesword.geometry.IntVec2
 
 private const val hitBoxRadius = 32
 
-class StartPoint(
+class Rope(
     initialPosition: IntVec2,
 ) :
     Entity() {
+
+    companion object {
+        const val radius: Int = 16
+    }
 
     private val _position = MutCell(initialPosition)
 
@@ -19,9 +23,9 @@ class StartPoint(
         get() = _position
 
     override fun isSelectableAt(worldPoint: IntVec2): Boolean =
-        (position.sample() - worldPoint).length < hitBoxRadius
+        (position.sample() - worldPoint).length < radius
 
-    // TODO: Nuke?
+    // TODO: Deduplicate!
     override val tileOffset: Cell<IntVec2> =
         position.map { it.divRound(TILE_SIZE) }
 
@@ -30,5 +34,6 @@ class StartPoint(
     }
 
     override fun toString(): String =
-        "StartPoint()"
+        "Rope()"
 }
+

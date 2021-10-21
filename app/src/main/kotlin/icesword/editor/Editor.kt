@@ -134,13 +134,10 @@ class Editor(
     }
 
     fun insertElastic(prototype: ElasticPrototype) {
-        val focusPoint = world.cameraFocusPoint.sample()
-        val insertionPoint = focusPoint + IntVec2(512, 512)
-
         val elastic = Elastic(
             prototype = prototype,
             initialBounds = IntRect(
-                position = tileAtPoint(insertionPoint),
+                position = tileAtPoint(entityInsertionPoint),
                 size = prototype.defaultSize,
             ),
         )
@@ -151,11 +148,8 @@ class Editor(
     }
 
     fun insertKnotMesh(knotPrototype: KnotPrototype) {
-        val focusPoint = world.cameraFocusPoint.sample()
-        val insertionPoint = focusPoint + IntVec2(512, 512)
-
         val knotMesh = KnotMesh.createSquare(
-            initialTileOffset = tileAtPoint(insertionPoint),
+            initialTileOffset = tileAtPoint(entityInsertionPoint),
             knotPrototype = knotPrototype,
             initialSideLength = 2,
         )
@@ -164,6 +158,18 @@ class Editor(
 
         selectEntity(knotMesh)
     }
+
+    fun insertRope() {
+
+    }
+
+    private val entityInsertionPoint: IntVec2
+        get() {
+            val focusPoint = world.cameraFocusPoint.sample()
+            val insertionPoint = focusPoint + IntVec2(512, 512)
+
+            return insertionPoint
+        }
 
     fun exportWorld() {
         val fileName = "test.wwd"

@@ -7,6 +7,7 @@ import icesword.editor.KnotPrototype.UndergroundRockPrototype
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.MutCell
+import icesword.frp.MutableDynamicSet
 import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.switchMap
@@ -140,6 +141,14 @@ class World(
 
     val elastics = metaTileLayer.elastics
 
+    private val _ropes = MutableDynamicSet.of(
+        setOf(
+            Rope(initialPosition = initialStartPoint)
+        ),
+    )
+
+    val ropes: MutableDynamicSet<Rope>
+        get() = _ropes
 
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
@@ -147,6 +156,7 @@ class World(
                 metaEntities,
                 elastics,
                 knotMeshLayer.knotMeshes,
+                _ropes,
             ),
         )
     ).also {

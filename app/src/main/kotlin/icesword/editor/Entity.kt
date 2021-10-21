@@ -5,6 +5,16 @@ import icesword.frp.*
 import icesword.geometry.IntVec2
 import icesword.tileTopLeftCorner
 
+//sealed interface PositionedEntity {
+//    val pixelOffset: Cell<IntVec2>
+//
+//    interface PixelAlignedEntity : PositionedEntity
+//
+//    interface TileAlignedEntity : PositionedEntity {
+//        val tileOffset: Cell<IntVec2>
+//    }
+//}
+
 interface EntityTileOffset {
     val tileOffset: Cell<IntVec2>
 

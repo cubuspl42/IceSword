@@ -76,16 +76,26 @@ fun worldView(
 
         val planeLayer = Layer(
             transform = viewTransform,
-            nodes = DynamicSet.of(
-                setOf(
-                    TileLayer(
-                        tileset = tileset,
-                        tiles = world.tiles.contentDynamicView.map {
-                            OffsetTilesView(IntVec2.ZERO, it)
+            nodes = DynamicSet.union(
+                DynamicSet.of(
+                    setOf(
+                        DynamicSet.of(
+                            setOf(
+                                TileLayer(
+                                    tileset = tileset,
+                                    tiles = world.tiles.contentDynamicView.map {
+                                        OffsetTilesView(IntVec2.ZERO, it)
+                                    },
+                                ),
+                            )
+                        ),
+                        world.ropes.map(
+                            tag = "WorldView/planeUiLayer/ropes.map",
+                        ) {
+                            RopeNode(it)
                         },
-//                        tiles = world.experimentalTileLayer.tilesView,
                     ),
-                )
+                ),
             ),
             buildOverlayElements = { svg ->
                 world.knotMeshLayer.knotMeshes.map(
@@ -170,6 +180,18 @@ fun worldView(
                                             elastic = it,
                                             viewport = this,
                                             viewTransform = viewTransform,
+                                            tillDetach = tillDetach,
+                                        )
+                                    },
+                                    world.ropes.map(
+                                        tag = "WorldView/buildOverlayElements/ropes.map",
+                                    ) {
+                                        createRopeOverlayElement(
+                                            editor = editor,
+                                            svg = svg,
+                                            viewport = this,
+                                            viewTransform = viewTransform,
+                                            rope = it,
                                             tillDetach = tillDetach,
                                         )
                                     },

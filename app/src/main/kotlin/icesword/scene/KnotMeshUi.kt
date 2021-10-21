@@ -14,7 +14,6 @@ import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
-import kotlin.math.PI
 
 
 class KnotMeshUi(
@@ -103,24 +102,6 @@ class KnotMeshUi(
             .mergeWith(knotMesh.isSelected.values().units())
             .mergeWith(knotMesh.tileOffset.values().units())
             .mergeWith(knotMesh.localKnots.changes().units())
-}
-
-private fun drawCircle(
-    ctx: CanvasRenderingContext2D,
-    center: IntVec2,
-    radius: Double,
-) {
-    ctx.beginPath()
-    ctx.arc(
-        x = center.x.toDouble(),
-        y = center.y.toDouble(),
-        radius = radius,
-        startAngle = 0.0,
-        endAngle = 2 * PI,
-        anticlockwise = false,
-    )
-    ctx.fill()
-    ctx.stroke()
 }
 
 fun createKnotMeshOverlayElement(
