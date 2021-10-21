@@ -171,6 +171,16 @@ class Editor(
         )
     }
 
+    fun insertCrumblingPeg() {
+        world.crumblingPegs.add(
+            CrumblingPeg(
+                rezIndex = rezIndex,
+                initialPosition = entityInsertionPoint,
+            )
+        )
+    }
+
+
     private val entityInsertionPoint: IntVec2
         get() {
             val focusPoint = world.cameraFocusPoint.sample()

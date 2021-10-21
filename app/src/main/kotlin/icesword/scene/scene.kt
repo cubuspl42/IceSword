@@ -11,7 +11,6 @@ import icesword.frp.MutCell
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.map
-import icesword.frp.mergeWith
 import icesword.frp.reactTill
 import icesword.frp.units
 import icesword.frp.values
@@ -68,10 +67,15 @@ class Layer(
     }
 
     val onDirty: Stream<Unit> =
-        transform.values().units()
-            .mergeWith(DynamicSet.merge(nodes.map(
-                tag = "Layer/onDirty/nodes.map"
-            ) { it.onDirty }))
+        Stream.merge(
+            listOf(
+                transform.values().units(),
+                nodes.changes.units(),
+                DynamicSet.merge(nodes.map(
+                    tag = "Layer/onDirty/nodes.map"
+                ) { it.onDirty }),
+            )
+        )
 
     fun buildOverlayRoot(svg: SVGSVGElement, tillDetach: Till): SVGElement = createSvgGroup(
         svg = svg,

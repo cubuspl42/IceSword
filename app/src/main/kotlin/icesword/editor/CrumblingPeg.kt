@@ -17,22 +17,22 @@ import kotlinx.serialization.UseSerializers
 import org.khronos.webgl.Uint8Array
 
 
-class Rope(
+class CrumblingPeg(
     rezIndex: RezIndex,
     initialPosition: IntVec2,
 ) :
     Entity() {
 
     companion object {
-         val imageSetId = ImageSetId(
-            fullyQualifiedId = "LEVEL3_IMAGES_ROPE",
+        val imageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_CRUMBLINPEG1",
         )
 
         fun load(
             rezIndex: RezIndex,
-            data: RopeData,
-        ): Rope =
-            Rope(
+            data: CrumblingPegData,
+        ): CrumblingPeg =
+            CrumblingPeg(
                 rezIndex = rezIndex,
                 initialPosition = data.position,
             )
@@ -84,25 +84,24 @@ class Rope(
         val position = position.sample()
 
         return Wwd.Object_.empty().copy(
-            logic = encode("AniRope"),
-            imageSet = encode("LEVEL_ROPE"),
+            logic = encode("CrumblingPeg"),
+            imageSet = encode("LEVEL_CRUMBLINPEG1"),
             x = position.x,
             y = position.y,
-            speedX = 1750,
         )
     }
 
-    fun toData(): RopeData =
-        RopeData(
+    fun toData(): CrumblingPegData =
+        CrumblingPegData(
             position = position.sample(),
         )
 
     override fun toString(): String =
-        "Rope()"
+        "CrumblingPeg()"
 }
 
 
 @Serializable
-data class RopeData(
+data class CrumblingPegData(
     val position: IntVec2,
 )

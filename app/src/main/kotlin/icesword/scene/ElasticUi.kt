@@ -13,7 +13,6 @@ import icesword.editor.MetaTileCluster
 import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
-import icesword.frp.changes
 import icesword.frp.changesUnits
 import icesword.frp.getKeys
 import icesword.frp.map
@@ -89,7 +88,7 @@ class ElasticUi(
             .mergeWith(elastic.tileOffset.values().units())
             .mergeWith(elastic.size.values().units())
             .mergeWith(elastic.isSelected.values().units())
-            .mergeWith(localTileCoords.changes().units())
+            .mergeWith(localTileCoords.changes.units())
 }
 
 

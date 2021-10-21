@@ -10,15 +10,18 @@ import org.w3c.dom.ImageBitmap
 data class TextureBank(
     val tileset: Tileset,
     val rope: Texture,
+    val crumblingPeg: Texture,
 ) {
     companion object {
         suspend fun load(): TextureBank {
             val tileset = loadTileset()
-            val rope = loadRopeTexture()
+            val rope = loadImageTexture(imagePath = "images/rope.png")
+            val crumblingPeg = loadImageTexture(imagePath = "images/crumblingPeg.png")
 
             return TextureBank(
                 tileset = tileset,
                 rope = rope,
+                crumblingPeg = crumblingPeg,
             )
         }
     }
@@ -70,6 +73,23 @@ private suspend fun loadTileset(): Tileset {
 
 private suspend fun loadRopeTexture(): Texture {
     val ropeBitmap = loadImage(imagePath = "images/rope.png")
+
+    val ropeTexture = Texture(
+        imageBitmap = ropeBitmap,
+        sourceRect = IntRect(
+            position = IntVec2.ZERO,
+            size = IntSize(
+                width = ropeBitmap.width,
+                height = ropeBitmap.height,
+            ),
+        )
+    )
+
+    return ropeTexture
+}
+
+private suspend fun loadImageTexture(imagePath: String): Texture {
+    val ropeBitmap = loadImage(imagePath = imagePath)
 
     val ropeTexture = Texture(
         imageBitmap = ropeBitmap,

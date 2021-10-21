@@ -31,6 +31,7 @@ class World(
     initialKnotMeshes: Set<KnotMesh>,
     initialElastics: Set<Elastic>,
     initialRopes: Set<Rope>,
+    initialCrumblingPegs: Set<CrumblingPeg>,
 ) {
     companion object {
         private const val wwdPlaneIndex = 1
@@ -104,6 +105,7 @@ class World(
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
                 initialRopes = initialRopes,
+                initialCrumblingPegs = emptySet()
             )
         }
 
@@ -127,12 +129,20 @@ class World(
                 )
             }.toSet()
 
+            val initialCrumblingPegs = worldData.crumblingPegs.map {
+                CrumblingPeg.load(
+                    rezIndex = rezIndex,
+                    data = it,
+                )
+            }.toSet()
+
             return World(
                 wwdWorld = wwdWorldTemplate,
                 initialStartPoint = worldData.startPoint,
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
                 initialRopes = initialRopes,
+                initialCrumblingPegs = initialCrumblingPegs,
             )
         }
     }
@@ -171,6 +181,13 @@ class World(
     val ropes: MutableDynamicSet<Rope>
         get() = _ropes
 
+    private val _crumblingPegs = MutableDynamicSet.of(
+        initialCrumblingPegs,
+    )
+
+    val crumblingPegs: MutableDynamicSet<CrumblingPeg>
+        get() = _crumblingPegs
+
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
             setOf(
@@ -178,6 +195,7 @@ class World(
                 elastics,
                 knotMeshLayer.knotMeshes,
                 _ropes,
+                _crumblingPegs,
             ),
         )
     ).also {
@@ -218,7 +236,8 @@ class World(
             newTiles[k] = tileId
         }
 
-        val objects = ropes.volatileContentView.map { it.export() }
+        val objects = ropes.volatileContentView.map { it.export() } +
+                crumblingPegs.volatileContentView.map { it.export() }
 
         val newActionPlane = actionPlane.copy(
             tiles = newTiles,
@@ -251,11 +270,15 @@ class World(
         val ropes = ropes.volatileContentView
             .map { it.toData() }.toSet()
 
+        val crumblingPegs = crumblingPegs.volatileContentView
+            .map { it.toData() }.toSet()
+
         return WorldData(
             startPoint = startPoint,
             knotMeshes = knotMeshes,
             elastics = elastics,
             ropes = ropes,
+            crumblingPegs = crumblingPegs,
         )
     }
 
@@ -272,4 +295,5 @@ data class WorldData(
     val knotMeshes: Set<KnotMeshData>,
     val elastics: Set<ElasticData>,
     val ropes: Set<RopeData> = emptySet(),
+    val crumblingPegs: Set<CrumblingPegData> = emptySet(),
 )

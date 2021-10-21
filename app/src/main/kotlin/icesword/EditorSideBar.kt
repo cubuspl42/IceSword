@@ -73,8 +73,16 @@ fun editorSideBar(
                         knotPrototype = OvergroundRockPrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertRopeButton(
+                    createInsertWapObject(
                         editor = editor,
+                        text = "Rope",
+                        insert = editor::insertRope,
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "CrumblingPeg",
+                        insert = editor::insertCrumblingPeg,
                         tillDetach = tillDetach,
                     ),
                 ),
@@ -169,18 +177,19 @@ private fun createInsertKnotMeshButton(
     )
 }
 
-private fun createInsertRopeButton(
+private fun createInsertWapObject(
     editor: Editor,
+    text: String,
+    insert: () -> Unit,
     tillDetach: Till,
-): HTMLElement {
-    return createButton(
-        text = "Rope",
+): HTMLElement =
+    createButton(
+        text = text,
         onPressed = {
-            editor.insertRope()
+            insert()
         },
         tillDetach = tillDetach,
     )
-}
 
 private fun createKnotBrushButton(
     editor: Editor,

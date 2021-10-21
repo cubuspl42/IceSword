@@ -119,8 +119,8 @@ fun <A, R> DynamicSet<A>.mapTillRemoved(
 //    })
 
 
-fun <A> DynamicSet<A>.changes(): Stream<Unit> =
-    this.content.values().units()
+//fun <A> DynamicSet<A>.changes(): Stream<Unit> =
+//    this.content.values().units()
 
 fun <A> DynamicSet<A>.sample(): Set<A> = volatileContentView.toSet()
 

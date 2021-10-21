@@ -1,6 +1,7 @@
 package icesword
 
 import TextureBank
+import icesword.editor.CrumblingPeg
 import icesword.editor.Rope
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
@@ -35,13 +36,21 @@ class CombinedRezIndex(
             imageSetId = imageSetId,
             i = i,
         )?.let { metadata ->
-            // TODO: Generalize
-            if (imageSetId == Rope.imageSetId) {
-                metadata.copy(
-                    size = textureBank.rope.sourceRect.size
-                )
-            } else {
-                metadata
+            // TODO: Generalize!
+            when (imageSetId) {
+                Rope.imageSetId -> {
+                    metadata.copy(
+                        size = textureBank.rope.sourceRect.size
+                    )
+                }
+                CrumblingPeg.imageSetId -> {
+                    metadata.copy(
+                        size = textureBank.crumblingPeg.sourceRect.size
+                    )
+                }
+                else -> {
+                    metadata
+                }
             }
         }
 }

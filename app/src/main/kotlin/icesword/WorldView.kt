@@ -22,6 +22,7 @@ import icesword.frp.reactTill
 import icesword.frp.reactTillNext
 import icesword.frp.tillNext
 import icesword.geometry.IntVec2
+import icesword.scene.CrumblingPegNode
 import icesword.scene.ElasticUi
 import icesword.scene.KnotMeshUi
 import icesword.scene.Layer
@@ -29,6 +30,7 @@ import icesword.scene.RopeNode
 import icesword.scene.Scene
 import icesword.scene.StartPointUi
 import icesword.scene.TileLayer
+import icesword.scene.createCrumblingPegOverlayElement
 import icesword.scene.createElasticOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
 import icesword.scene.createRopeOverlayElement
@@ -123,6 +125,14 @@ fun worldView(
                             RopeNode(
                                 texture = textureBank.rope,
                                 rope = it,
+                            )
+                        },
+                        world.crumblingPegs.map(
+                            tag = "",
+                        ) {
+                            CrumblingPegNode(
+                                texture = textureBank.crumblingPeg,
+                                crumblingPeg = it,
                             )
                         },
                     ),
@@ -223,6 +233,18 @@ fun worldView(
                                             viewport = this,
                                             viewTransform = viewTransform,
                                             rope = it,
+                                            tillDetach = tillDetach,
+                                        )
+                                    },
+                                    world.crumblingPegs.map(
+                                        tag = "WorldView/buildOverlayElements/crumblingPegs.map",
+                                    ) {
+                                        createCrumblingPegOverlayElement(
+                                            editor = editor,
+                                            svg = svg,
+                                            viewport = this,
+                                            viewTransform = viewTransform,
+                                            crumblingPeg = it,
                                             tillDetach = tillDetach,
                                         )
                                     },

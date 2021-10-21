@@ -101,7 +101,7 @@ class KnotMeshUi(
         viewTransform.values().units()
             .mergeWith(knotMesh.isSelected.values().units())
             .mergeWith(knotMesh.tileOffset.values().units())
-            .mergeWith(knotMesh.localKnots.changes().units())
+            .mergeWith(knotMesh.localKnots.changes.units())
 }
 
 fun createKnotMeshOverlayElement(
