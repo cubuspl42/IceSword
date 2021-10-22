@@ -13,8 +13,10 @@ import icesword.editor.LadderPrototype
 import icesword.editor.LogPrototype
 import icesword.editor.SpikesPrototype
 import icesword.editor.TreeCrownPrototype
-import icesword.editor.WapObjectPrototype
-import icesword.editor.WapObjectPrototype.*
+import icesword.editor.WapObjectPrototype.CoinPrototype
+import icesword.editor.WapObjectPrototype.CrossTreasure
+import icesword.editor.WapObjectPrototype.CrumblingPegPrototype
+import icesword.editor.WapObjectPrototype.RopePrototype
 import icesword.frp.Till
 import icesword.ui.createSelectButton
 import org.w3c.dom.HTMLElement
@@ -91,6 +93,12 @@ fun editorSideBar(
                         editor = editor,
                         text = "Coin",
                         insert = { editor.insertWapObject(CoinPrototype) },
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "Cross",
+                        insert = { editor.insertWapObject(CrossTreasure) },
                         tillDetach = tillDetach,
                     ),
                 ),

@@ -69,8 +69,22 @@ sealed class WapObjectPrototype {
 
         @Transient
         override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
-            logic = encode("TreasurePowerup"),
+            logic = encode("GlitterlessPowerup"),
             imageSet = encode("GAME_TREASURE_COINS"),
+        )
+    }
+
+    @Serializable
+    object CrossTreasure : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "GAME_IMAGES_TREASURE_CROSSES_GREEN",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("TreasurePowerup"),
+            imageSet = encode("GAME_TREASURE_CROSSES_GREEN"),
         )
     }
 }
