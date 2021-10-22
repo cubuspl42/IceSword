@@ -6,13 +6,16 @@ import html.clientPosition
 import html.createHtmlElement
 import html.onClick
 import html.onKeyDown
+import html.onMouseDown
 import html.onMouseDrag
 import html.onMouseMove
 import html.onMouseUp
 import icesword.editor.Editor
+import icesword.editor.InsertionMode
 import icesword.editor.OffsetTilesView
 import icesword.editor.Tool
 import icesword.editor.WapObjectPrototype
+import icesword.editor.World
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.Till
@@ -68,8 +71,8 @@ fun worldView(
         world.dragCamera(offsetDelta = delta, tillStop = mouseDrag.tillEnd)
     }
 
-    editor.selectedTool.reactTillNext(tillDetach) { tool, tillNext ->
-        when (tool) {
+    editor.editorMode.reactTillNext(tillDetach) { mode, tillNext ->
+        when (mode) {
             Tool.SELECT -> setupSelectToolController(
                 editor = editor,
                 root = root,
@@ -82,6 +85,12 @@ fun worldView(
             )
             Tool.KNOT_BRUSH -> setupKnotBrushToolController(
                 editor = editor,
+                root = root,
+                tillDetach = tillNext,
+            )
+            is InsertionMode -> setupInsertionToolController(
+                world = editor.world,
+                insertionMode = mode,
                 root = root,
                 tillDetach = tillNext,
             )
@@ -294,6 +303,25 @@ fun setupKnotBrushToolController(
         }
 }
 
+fun setupInsertionToolController(
+    world: World,
+    insertionMode: InsertionMode,
+    root: HTMLElement,
+    tillDetach: Till,
+) {
+    root.onMouseDown(button = 0)
+        .reactTill(tillDetach) { event ->
+            val viewportPosition =
+                root.calculateRelativePosition(event.clientPosition)
+
+            val worldPosition: IntVec2 =
+                world.transformToWorld(cameraPoint = viewportPosition).sample()
+
+            insertionMode.insert(
+                insertionWorldPoint = worldPosition,
+            )
+        }
+}
 
 private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
     val rect = origin.getBoundingClientRect()

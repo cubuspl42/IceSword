@@ -1,9 +1,13 @@
 package icesword.editor
 
 import icesword.RezIndex
+import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
+import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
+import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
+import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.frp.sample
 import icesword.geometry.IntRect
@@ -21,7 +25,9 @@ import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
 import kotlinx.serialization.encodeToString
 
-enum class Tool {
+interface EditorMode
+
+enum class Tool : EditorMode {
     SELECT,
     MOVE,
     KNOT_BRUSH
@@ -65,12 +71,14 @@ class Editor(
         }
     }
 
-    private val _selectedTool = MutCell(Tool.SELECT)
+    private val _editorMode: MutCell<EditorMode> = MutCell(Tool.SELECT)
 
-    val selectedTool: Cell<Tool> = _selectedTool
+    val editorMode: Cell<EditorMode> = _editorMode
+
+    val selectedTool: Cell<Tool?> = editorMode.map { it as? Tool }
 
     fun selectTool(tool: Tool) {
-        _selectedTool.set(tool)
+        _editorMode.set(tool)
     }
 
     private val _selectedKnotBrush = MutCell(KnotBrush.Additive)
@@ -135,49 +143,29 @@ class Editor(
         }
     }
 
-    fun insertElastic(prototype: ElasticPrototype) {
-        val elastic = Elastic(
-            prototype = prototype,
-            initialBounds = IntRect(
-                position = tileAtPoint(entityInsertionPoint),
-                size = prototype.defaultSize,
-            ),
-        )
+    val insertionMode: Cell<InsertionMode?> = editorMode.map { it as? InsertionMode }
 
-        world.metaTileLayer.insertElastic(elastic)
-
-        selectEntity(elastic)
-    }
-
-    fun insertKnotMesh(knotPrototype: KnotPrototype) {
-        val knotMesh = KnotMesh.createSquare(
-            initialTileOffset = tileAtPoint(entityInsertionPoint),
-            knotPrototype = knotPrototype,
-            initialSideLength = 2,
-        )
-
-        world.knotMeshLayer.insertKnotMesh(knotMesh)
-
-        selectEntity(knotMesh)
-    }
-
-    fun insertWapObject(wapObjectPrototype: WapObjectPrototype) {
-        world.wapObjects.add(
-            WapObject(
-                rezIndex = rezIndex,
-                wapObjectPrototype = wapObjectPrototype,
-                initialPosition = entityInsertionPoint,
+    fun enterInsertionMode(
+        insertionPrototype: InsertionPrototype,
+    ) {
+        val insertionMode = when (insertionPrototype) {
+            is ElasticInsertionPrototype -> ElasticInsertionMode(
+                metaTileLayer = world.metaTileLayer,
+                insertionPrototype = insertionPrototype,
             )
-        )
-    }
-
-    private val entityInsertionPoint: IntVec2
-        get() {
-            val focusPoint = world.cameraFocusPoint.sample()
-            val insertionPoint = focusPoint + IntVec2(512, 512)
-
-            return insertionPoint
+            is KnotMeshInsertionPrototype -> KnotMeshInsertionMode(
+                knotMeshLayer = world.knotMeshLayer,
+                insertionPrototype = insertionPrototype,
+            )
+            is WapObjectInsertionPrototype -> WapObjectInsertionMode(
+                rezIndex = rezIndex,
+                wapObjects = world.wapObjects,
+                insertionPrototype = insertionPrototype,
+            )
         }
+
+        _editorMode.set(insertionMode)
+    }
 
     fun exportWorld() {
         val fileName = "test.wwd"

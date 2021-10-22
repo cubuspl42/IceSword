@@ -8,11 +8,11 @@ import icesword.frp.Till
 import icesword.frp.map
 import org.w3c.dom.HTMLElement
 
-fun <A> createSelectButton(
-    value: A,
+fun <A, B : A> createSelectButton(
+    value: B,
     name: String,
     selected: Cell<A>,
-    select: (value: A) -> Unit,
+    select: (value: B) -> Unit,
     tillDetach: Till,
 ): HTMLElement =
     createButton(

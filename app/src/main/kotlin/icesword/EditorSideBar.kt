@@ -5,6 +5,8 @@ import html.createHeading4
 import html.createHtmlElement
 import icesword.editor.Editor
 import icesword.editor.ElasticPrototype
+import icesword.editor.InsertionPrototype
+import icesword.editor.InsertionPrototype.*
 import icesword.editor.KnotBrush
 import icesword.editor.KnotPrototype
 import icesword.editor.KnotPrototype.OvergroundRockPrototype
@@ -13,6 +15,7 @@ import icesword.editor.LadderPrototype
 import icesword.editor.LogPrototype
 import icesword.editor.SpikesPrototype
 import icesword.editor.TreeCrownPrototype
+import icesword.editor.WapObjectPrototype
 import icesword.editor.WapObjectPrototype.ChaliceTreasurePrototype
 import icesword.editor.WapObjectPrototype.CoinPrototype
 import icesword.editor.WapObjectPrototype.CrossTreasurePrototype
@@ -24,6 +27,7 @@ import icesword.editor.WapObjectPrototype.RopePrototype
 import icesword.editor.WapObjectPrototype.ScepterTreasurePrototype
 import icesword.editor.WapObjectPrototype.SkullTreasurePrototype
 import icesword.frp.Till
+import icesword.frp.map
 import icesword.ui.createSelectButton
 import org.w3c.dom.HTMLElement
 
@@ -86,61 +90,61 @@ fun editorSideBar(
                     createInsertWapObject(
                         editor = editor,
                         text = "Rope",
-                        insert = { editor.insertWapObject(RopePrototype) },
+                        wapObjectPrototype = RopePrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObject(
                         editor = editor,
                         text = "CrumblingPeg",
-                        insert = { editor.insertWapObject(CrumblingPegPrototype) },
+                        wapObjectPrototype = CrumblingPegPrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObject(
                         editor = editor,
                         text = "Coin",
-                        insert = { editor.insertWapObject(CoinPrototype) },
+                        wapObjectPrototype = CoinPrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObject(
                         editor = editor,
                         text = "Cross (treasure)",
-                        insert = { editor.insertWapObject(CrossTreasurePrototype) },
+                        wapObjectPrototype = CrossTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObject(
                         editor = editor,
                         text = "Scepter (treasure)",
-                        insert = { editor.insertWapObject(ScepterTreasurePrototype) },
+                        wapObjectPrototype = ScepterTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObject(
                         editor = editor,
                         text = "Crown (treasure)",
-                        insert = { editor.insertWapObject(CrownTreasurePrototype) },
+                        wapObjectPrototype = CrownTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObject(
                         editor = editor,
                         text = "Chalice (treasure)",
-                        insert = { editor.insertWapObject(ChaliceTreasurePrototype) },
+                        wapObjectPrototype = ChaliceTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObject(
                         editor = editor,
                         text = "Ring (treasure)",
-                        insert = { editor.insertWapObject(RingTreasurePrototype) },
+                        wapObjectPrototype = RingTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObject(
                         editor = editor,
                         text = "Gecko (treasure)",
-                        insert = { editor.insertWapObject(GeckoTreasurePrototype) },
+                        wapObjectPrototype = GeckoTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObject(
                         editor = editor,
                         text = "Skull (treasure)",
-                        insert = { editor.insertWapObject(SkullTreasurePrototype) },
+                        wapObjectPrototype = SkullTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
                 ),
@@ -209,11 +213,12 @@ private fun createInsertElasticButton(
     val className = prototype::class.simpleName ?: "???"
     val text = className.replace("Prototype", "")
 
-    return createButton(
+    return createInsertEntityButton(
+        editor = editor,
         text = text,
-        onPressed = {
-            editor.insertElastic(prototype)
-        },
+        insertionPrototype = ElasticInsertionPrototype(
+            elasticPrototype = prototype,
+        ),
         tillDetach = tillDetach,
     )
 }
@@ -226,11 +231,12 @@ private fun createInsertKnotMeshButton(
     val className = knotPrototype::class.simpleName ?: "???"
     val text = className.replace("Prototype", "")
 
-    return createButton(
+    return createInsertEntityButton(
+        editor = editor,
         text = text,
-        onPressed = {
-            editor.insertKnotMesh(knotPrototype)
-        },
+        insertionPrototype = KnotMeshInsertionPrototype(
+            knotPrototype = knotPrototype,
+        ),
         tillDetach = tillDetach,
     )
 }
@@ -238,14 +244,29 @@ private fun createInsertKnotMeshButton(
 private fun createInsertWapObject(
     editor: Editor,
     text: String,
-    insert: () -> Unit,
+    wapObjectPrototype: WapObjectPrototype,
     tillDetach: Till,
 ): HTMLElement =
-    createButton(
+    createInsertEntityButton(
+        editor = editor,
         text = text,
-        onPressed = {
-            insert()
-        },
+        insertionPrototype = WapObjectInsertionPrototype(
+            wapObjectPrototype = wapObjectPrototype,
+        ),
+        tillDetach = tillDetach,
+    )
+
+private fun createInsertEntityButton(
+    editor: Editor,
+    text: String,
+    insertionPrototype: InsertionPrototype,
+    tillDetach: Till,
+): HTMLElement =
+    createSelectButton<InsertionPrototype?, InsertionPrototype>(
+        value = insertionPrototype,
+        name = text,
+        selected = editor.insertionMode.map { it?.insertionPrototype },
+        select = { it: InsertionPrototype -> editor.enterInsertionMode(it) },
         tillDetach = tillDetach,
     )
 
