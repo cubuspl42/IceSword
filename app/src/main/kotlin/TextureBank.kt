@@ -1,3 +1,4 @@
+import icesword.JsonRezIndex
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
@@ -8,26 +9,34 @@ import kotlinx.coroutines.await
 import org.w3c.dom.ImageBitmap
 
 data class TextureBank(
+    private val imagesTextures: Map<String, Texture>,
     val tileset: Tileset,
-    val rope: Texture,
-    val crumblingPeg: Texture,
-    val coin: Texture,
 ) {
     companion object {
-        suspend fun load(): TextureBank {
+        suspend fun load(
+            rezIndex: JsonRezIndex,
+        ): TextureBank {
+            val imagesTextures = rezIndex.getAllImagesMetadata()
+                // TODO: Support all retails and/or remove this performance trick
+                .filter { metadata ->
+                    setOf("GAME/", "LEVEL3/").any { metadata.pidImagePath.startsWith(it) }
+                }
+                .associate {
+                    val imagePath = "images/CLAW/${it.pidImagePath.replace(".PID", ".png")}"
+                    it.pidImagePath to loadImageTexture(imagePath = imagePath)
+                }
+
             val tileset = loadTileset()
-            val rope = loadImageTexture(imagePath = "images/rope.png")
-            val crumblingPeg = loadImageTexture(imagePath = "images/crumblingPeg.png")
-            val coin = loadImageTexture(imagePath = "images/coin.png")
 
             return TextureBank(
+                imagesTextures = imagesTextures,
                 tileset = tileset,
-                rope = rope,
-                crumblingPeg = crumblingPeg,
-                coin = coin,
             )
         }
     }
+
+    fun getImageTexture(pidImagePath: String): Texture =
+        imagesTextures[pidImagePath]!!
 }
 
 private suspend fun loadTileset(): Tileset {
@@ -72,23 +81,6 @@ private suspend fun loadTileset(): Tileset {
     return Tileset(
         tileTextures = tileTextures,
     )
-}
-
-private suspend fun loadRopeTexture(): Texture {
-    val ropeBitmap = loadImage(imagePath = "images/rope.png")
-
-    val ropeTexture = Texture(
-        imageBitmap = ropeBitmap,
-        sourceRect = IntRect(
-            position = IntVec2.ZERO,
-            size = IntSize(
-                width = ropeBitmap.width,
-                height = ropeBitmap.height,
-            ),
-        )
-    )
-
-    return ropeTexture
 }
 
 private suspend fun loadImageTexture(imagePath: String): Texture {

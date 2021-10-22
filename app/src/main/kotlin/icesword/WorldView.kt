@@ -122,12 +122,9 @@ fun worldView(
                             tag = "WorldView/planeUiLayer/ropes.map",
                         ) {
                             WapObjectNode(
-                                // TODO: Generalize!
-                                texture = when (it.wapObjectPrototype) {
-                                    WapObjectPrototype.RopePrototype -> textureBank.rope
-                                    WapObjectPrototype.CrumblingPegPrototype -> textureBank.crumblingPeg
-                                    WapObjectPrototype.CoinPrototype -> textureBank.coin
-                                },
+                                texture = textureBank.getImageTexture(
+                                    pidImagePath = it.imageMetadata.pidImagePath,
+                                ),
                                 wapObject = it,
                             )
                         },

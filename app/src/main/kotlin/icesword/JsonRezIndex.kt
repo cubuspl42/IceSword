@@ -22,6 +22,15 @@ class JsonRezIndex(
                 data = rezIndexData,
             )
         }
+
+        private fun buildImageMetadata(data: ImageMetadataData): ImageMetadata {
+            val offset = IntVec2(data.offset[0], data.offset[1])
+            return ImageMetadata(
+                pidImagePath = data.path,
+                offset = offset,
+                size = IntSize.ZERO,
+            )
+        }
     }
 
     override fun getImageMetadata(
@@ -30,14 +39,15 @@ class JsonRezIndex(
     ): ImageMetadata? =
         data.imageSets[imageSetId.fullyQualifiedId]?.let { imageSetData ->
             imageSetData.frames[i]?.let { pidFilename ->
-                val metadata = imageSetData.sprites[pidFilename]!!
-                val offset = IntVec2(metadata.offset[0], metadata.offset[1])
+                val imageData = imageSetData.sprites[pidFilename]!!
+                buildImageMetadata(data = imageData)
+            }
+        }
 
-                ImageMetadata(
-                    pidImagePath = metadata.path,
-                    offset = offset,
-                    size = IntSize.ZERO,
-                )
+    fun getAllImagesMetadata(): Sequence<ImageMetadata> =
+        data.imageSets.asSequence().flatMap { (_, imageSetData) ->
+            imageSetData.sprites.asSequence().map { (_, imageData) ->
+                buildImageMetadata(data = imageData)
             }
         }
 }

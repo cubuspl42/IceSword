@@ -35,27 +35,12 @@ class CombinedRezIndex(
             imageSetId = imageSetId,
             i = i,
         )?.let { metadata ->
-            // TODO: Generalize!
-            when (imageSetId) {
-                WapObjectPrototype.RopePrototype.imageSetId -> {
-                    metadata.copy(
-                        size = textureBank.rope.sourceRect.size
-                    )
-                }
-                WapObjectPrototype.CrumblingPegPrototype.imageSetId -> {
-                    metadata.copy(
-                        size = textureBank.crumblingPeg.sourceRect.size
-                    )
-                }
+            val texture = textureBank.getImageTexture(
+                pidImagePath = metadata.pidImagePath,
+            )
 
-                WapObjectPrototype.CoinPrototype.imageSetId -> {
-                    metadata.copy(
-                        size = textureBank.coin.sourceRect.size
-                    )
-                }
-                else -> {
-                    metadata
-                }
-            }
+            metadata.copy(
+                size = texture.sourceRect.size,
+            )
         }
 }

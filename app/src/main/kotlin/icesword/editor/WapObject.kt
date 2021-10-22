@@ -77,7 +77,7 @@ sealed class WapObjectPrototype {
 
 class WapObject(
     rezIndex: RezIndex,
-     val wapObjectPrototype: WapObjectPrototype,
+    val wapObjectPrototype: WapObjectPrototype,
     initialPosition: IntVec2,
 ) :
     Entity() {
@@ -94,7 +94,7 @@ class WapObject(
             )
     }
 
-    private val _imageMetadata = rezIndex.getImageMetadata(
+    val imageMetadata = rezIndex.getImageMetadata(
         imageSetId = wapObjectPrototype.imageSetId,
         i = -1,
     )!!
@@ -106,8 +106,8 @@ class WapObject(
 
     val boundingBox: Cell<IntRect> =
         position.map {
-            val offset = _imageMetadata.offset
-            val size = _imageMetadata.size
+            val offset = imageMetadata.offset
+            val size = imageMetadata.size
             val topLeft = it + offset - (size / 2).toVec2()
 
             IntRect(

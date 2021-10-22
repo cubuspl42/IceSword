@@ -37,7 +37,9 @@ class App(
         suspend fun load(): App {
             val jsonRezIndex = JsonRezIndex.load()
 
-            val textureBank = TextureBank.load()
+            val textureBank = TextureBank.load(
+                rezIndex = jsonRezIndex,
+            )
 
             val combinedRezIndex = CombinedRezIndex(
                 delegate = jsonRezIndex,
