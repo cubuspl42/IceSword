@@ -13,10 +13,16 @@ import icesword.editor.LadderPrototype
 import icesword.editor.LogPrototype
 import icesword.editor.SpikesPrototype
 import icesword.editor.TreeCrownPrototype
+import icesword.editor.WapObjectPrototype.ChaliceTreasurePrototype
 import icesword.editor.WapObjectPrototype.CoinPrototype
-import icesword.editor.WapObjectPrototype.CrossTreasure
+import icesword.editor.WapObjectPrototype.CrossTreasurePrototype
+import icesword.editor.WapObjectPrototype.CrownTreasurePrototype
 import icesword.editor.WapObjectPrototype.CrumblingPegPrototype
+import icesword.editor.WapObjectPrototype.GeckoTreasurePrototype
+import icesword.editor.WapObjectPrototype.RingTreasurePrototype
 import icesword.editor.WapObjectPrototype.RopePrototype
+import icesword.editor.WapObjectPrototype.ScepterTreasurePrototype
+import icesword.editor.WapObjectPrototype.SkullTreasurePrototype
 import icesword.frp.Till
 import icesword.ui.createSelectButton
 import org.w3c.dom.HTMLElement
@@ -97,8 +103,44 @@ fun editorSideBar(
                     ),
                     createInsertWapObject(
                         editor = editor,
-                        text = "Cross",
-                        insert = { editor.insertWapObject(CrossTreasure) },
+                        text = "Cross (treasure)",
+                        insert = { editor.insertWapObject(CrossTreasurePrototype) },
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "Scepter (treasure)",
+                        insert = { editor.insertWapObject(ScepterTreasurePrototype) },
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "Crown (treasure)",
+                        insert = { editor.insertWapObject(CrownTreasurePrototype) },
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "Chalice (treasure)",
+                        insert = { editor.insertWapObject(ChaliceTreasurePrototype) },
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "Ring (treasure)",
+                        insert = { editor.insertWapObject(RingTreasurePrototype) },
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "Gecko (treasure)",
+                        insert = { editor.insertWapObject(GeckoTreasurePrototype) },
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "Skull (treasure)",
+                        insert = { editor.insertWapObject(SkullTreasurePrototype) },
                         tillDetach = tillDetach,
                     ),
                 ),
