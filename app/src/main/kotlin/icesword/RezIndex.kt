@@ -1,7 +1,6 @@
 package icesword
 
 import TextureBank
-import icesword.editor.CrumblingPeg
 import icesword.editor.WapObjectPrototype
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
@@ -46,6 +45,12 @@ class CombinedRezIndex(
                 WapObjectPrototype.CrumblingPegPrototype.imageSetId -> {
                     metadata.copy(
                         size = textureBank.crumblingPeg.sourceRect.size
+                    )
+                }
+
+                WapObjectPrototype.CoinPrototype.imageSetId -> {
+                    metadata.copy(
+                        size = textureBank.coin.sourceRect.size
                     )
                 }
                 else -> {

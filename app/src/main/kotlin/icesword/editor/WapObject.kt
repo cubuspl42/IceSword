@@ -58,6 +58,21 @@ sealed class WapObjectPrototype {
             imageSet = encode("LEVEL_CRUMBLINPEG1"),
         )
     }
+
+
+    @Serializable
+    object CoinPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "GAME_IMAGES_TREASURE_COINS",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("TreasurePowerup"),
+            imageSet = encode("GAME_TREASURE_COINS"),
+        )
+    }
 }
 
 class WapObject(

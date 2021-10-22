@@ -126,6 +126,7 @@ fun worldView(
                                 texture = when (it.wapObjectPrototype) {
                                     WapObjectPrototype.RopePrototype -> textureBank.rope
                                     WapObjectPrototype.CrumblingPegPrototype -> textureBank.crumblingPeg
+                                    WapObjectPrototype.CoinPrototype -> textureBank.coin
                                 },
                                 wapObject = it,
                             )

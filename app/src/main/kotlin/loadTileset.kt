@@ -11,17 +11,20 @@ data class TextureBank(
     val tileset: Tileset,
     val rope: Texture,
     val crumblingPeg: Texture,
+    val coin: Texture,
 ) {
     companion object {
         suspend fun load(): TextureBank {
             val tileset = loadTileset()
             val rope = loadImageTexture(imagePath = "images/rope.png")
             val crumblingPeg = loadImageTexture(imagePath = "images/crumblingPeg.png")
+            val coin = loadImageTexture(imagePath = "images/coin.png")
 
             return TextureBank(
                 tileset = tileset,
                 rope = rope,
                 crumblingPeg = crumblingPeg,
+                coin = coin,
             )
         }
     }
