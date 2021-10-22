@@ -169,9 +169,40 @@ fun Element.onMouseDown(button: Short): Stream<MouseEvent> =
 fun Element.onMouseMove(): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mousemove")
 
+fun Element.onMouseEnter(): Stream<MouseEvent> =
+    this.onEvent<MouseEvent>("mouseenter")
+
+fun Element.onMouseLeave(): Stream<MouseEvent> =
+    this.onEvent<MouseEvent>("mouseleave")
+
 fun Element.onMouseUp(button: Short): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mouseup")
         .filter { e: MouseEvent -> e.button == button }
+
+sealed interface MousePosition {
+    value class Entered(val position: Cell<IntVec2>) : MousePosition
+    object Left : MousePosition
+}
+
+fun Element.trackMousePosition(till: Till): Cell<MousePosition> {
+    val onMove = this.onMouseMove()
+    val onEnter = onMove.mergeWith(this.onMouseEnter())
+    val onLeave = this.onMouseLeave()
+
+    val foo = onEnter.map { enterEvent ->
+        MousePosition.Entered(
+            position = onMove.map { it.clientPosition }
+                .hold(enterEvent.clientPosition, till = onLeave.tillNext(till)),
+        )
+    }.mergeWith(
+        onLeave.map { MousePosition.Left }
+    ).hold(
+        initialValue = MousePosition.Left,
+        till = till,
+    )
+
+    return foo
+}
 
 fun HTMLElement.onClick(): Stream<MouseEvent> =
     this.onEvent("click")

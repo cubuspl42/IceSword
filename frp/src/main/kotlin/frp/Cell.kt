@@ -53,6 +53,12 @@ fun <A : Any, B : Any> Cell<A?>.mapNotNull(f: (A) -> B): Cell<B?> =
 fun <A, B> Cell<A>.switchMap(transform: (A) -> Cell<B>): Cell<B> =
     Cell.switch(map(transform))
 
+fun <A, B> Cell<A?>.switchMapNotNull(transform: (A) -> Cell<B>): Cell<B?> =
+    this.switchMap {
+        if (it != null) transform(it)
+        else Cell.constant(null)
+    }
+
 fun <A, B> Cell<A>.divertMap(transform: (A) -> Stream<B>): Stream<B> =
     Cell.divert(map(transform))
 

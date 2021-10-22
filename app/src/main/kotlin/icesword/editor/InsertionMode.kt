@@ -4,10 +4,18 @@ import icesword.RezIndex
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
+import icesword.frp.Cell
+import icesword.frp.CellSlot
 import icesword.frp.MutableDynamicSet
+import icesword.frp.Stream
+import icesword.frp.Till
+import icesword.frp.map
+import icesword.frp.mapNotNull
+import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
+import kotlinx.css.Cursor
 
 sealed interface InsertionPrototype {
     value class ElasticInsertionPrototype(
@@ -25,14 +33,16 @@ sealed interface InsertionPrototype {
 
 interface InsertionMode : EditorMode {
     val insertionPrototype: InsertionPrototype
+}
 
+interface BasicInsertionMode : InsertionMode {
     fun insert(insertionWorldPoint: IntVec2)
 }
 
 class ElasticInsertionMode(
     private val metaTileLayer: MetaTileLayer,
     override val insertionPrototype: ElasticInsertionPrototype,
-) : InsertionMode {
+) : BasicInsertionMode {
     override fun insert(insertionWorldPoint: IntVec2) {
         val elasticPrototype = insertionPrototype.elasticPrototype
 
@@ -51,7 +61,7 @@ class ElasticInsertionMode(
 class KnotMeshInsertionMode(
     private val knotMeshLayer: KnotMeshLayer,
     override val insertionPrototype: KnotMeshInsertionPrototype,
-) : InsertionMode {
+) : BasicInsertionMode {
     override fun insert(insertionWorldPoint: IntVec2) {
         val knotMesh = KnotMesh.createSquare(
             initialTileOffset = tileAtPoint(insertionWorldPoint),
@@ -63,12 +73,42 @@ class KnotMeshInsertionMode(
     }
 }
 
+data class InsertWapObjectCommand(
+    val insertionWorldPoint: IntVec2,
+)
+
 class WapObjectInsertionMode(
     private val rezIndex: RezIndex,
     private val wapObjects: MutableDynamicSet<WapObject>,
     override val insertionPrototype: WapObjectInsertionPrototype,
 ) : InsertionMode {
-    override fun insert(insertionWorldPoint: IntVec2) {
+    private val _placementWorldPointSlot = CellSlot<IntVec2>()
+
+    val wapObjectPreview: Cell<WapObjectStem?> =
+        _placementWorldPointSlot.linkedCell.mapNotNull { placementPosition ->
+            WapObjectStem(
+                rezIndex = rezIndex,
+                wapObjectPrototype = insertionPrototype.wapObjectPrototype,
+                position = placementPosition,
+            )
+        }
+
+    fun place(
+        placementWorldPoint: Cell<IntVec2>,
+        insert: Stream<InsertWapObjectCommand>,
+        till: Till,
+    ) {
+        _placementWorldPointSlot.link(
+            cell = placementWorldPoint,
+            till = till,
+        )
+
+        insert.reactTill(till = till) {
+            this.insert(insertionWorldPoint = it.insertionWorldPoint)
+        }
+    }
+
+    private fun insert(insertionWorldPoint: IntVec2) {
         wapObjects.add(
             WapObject(
                 rezIndex = rezIndex,

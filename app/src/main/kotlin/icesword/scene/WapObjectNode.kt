@@ -1,7 +1,9 @@
 package icesword.scene
 
+import TextureBank
 import icesword.editor.Editor
 import icesword.editor.WapObject
+import icesword.editor.WapObjectStem
 import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
@@ -15,26 +17,37 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
-class WapObjectNode(
-    private val texture: Texture,
-    private val wapObject: WapObject,
+class WapObjectStemNode(
+    textureBank: TextureBank,
+    private val wapObjectStem: WapObjectStem,
+    private val alpha: Double = 1.0,
 ) : Node {
+    private val texture = textureBank.getImageTexture(
+        pidImagePath = wapObjectStem.imageMetadata.pidImagePath,
+    )
+
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-        val boundingBox = wapObject.boundingBox.sample()
+        ctx.save()
+
+        val boundingBox = wapObjectStem.boundingBox.sample()
 
         ctx.lineWidth = 4.0
         ctx.fillStyle = "brown"
         ctx.strokeStyle = "black"
+
+        ctx.globalAlpha = alpha
 
         drawTexture(
             ctx,
             texture = texture,
             dv = boundingBox.topLeft,
         )
+
+        ctx.restore()
     }
 
     override val onDirty: Stream<Unit> =
-        wapObject.boundingBox.values().units()
+        wapObjectStem.boundingBox.values().units()
 }
 
 fun createWapObjectOverlayElement(
@@ -45,7 +58,7 @@ fun createWapObjectOverlayElement(
     wapObject: WapObject,
     tillDetach: Till,
 ): SVGElement {
-    val rect = wapObject.boundingBox
+    val rect = wapObject.stem.boundingBox
 
     val translate = Cell.map2(
         viewTransform,

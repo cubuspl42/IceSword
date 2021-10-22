@@ -11,6 +11,11 @@ interface DynamicSet<out A> {
         fun <A> of(content: Set<A>): DynamicSet<A> =
             StaticDynamicSet(content)
 
+        fun <A> ofSingle(element: Cell<A?>): DynamicSet<A> =
+            diff(
+                content = element.map { e -> e?.let { setOf(it) } ?: emptySet() },
+            )
+
 //        fun <A> diff(content: Cell<Set<A>>): DynamicSet<A> =
 //            ContentDynamicSet(content)
 

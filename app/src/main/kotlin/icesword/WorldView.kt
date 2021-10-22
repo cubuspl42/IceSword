@@ -2,6 +2,7 @@ package icesword
 
 
 import TextureBank
+import html.MousePosition
 import html.clientPosition
 import html.createHtmlElement
 import html.onClick
@@ -10,11 +11,13 @@ import html.onMouseDown
 import html.onMouseDrag
 import html.onMouseMove
 import html.onMouseUp
+import html.trackMousePosition
+import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
-import icesword.editor.InsertionMode
+import icesword.editor.InsertWapObjectCommand
 import icesword.editor.OffsetTilesView
 import icesword.editor.Tool
-import icesword.editor.WapObjectPrototype
+import icesword.editor.WapObjectInsertionMode
 import icesword.editor.World
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
@@ -22,21 +25,23 @@ import icesword.frp.Till
 import icesword.frp.contentDynamicView
 import icesword.frp.hold
 import icesword.frp.map
+import icesword.frp.mapNotNull
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
+import icesword.frp.switchMapNotNull
 import icesword.frp.tillNext
 import icesword.geometry.IntVec2
 import icesword.scene.ElasticUi
 import icesword.scene.KnotMeshUi
 import icesword.scene.Layer
-import icesword.scene.WapObjectNode
 import icesword.scene.Scene
 import icesword.scene.StartPointUi
 import icesword.scene.TileLayer
+import icesword.scene.WapObjectStemNode
 import icesword.scene.createElasticOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
-import icesword.scene.createWapObjectOverlayElement
 import icesword.scene.createStartPointOverlayElement
+import icesword.scene.createWapObjectOverlayElement
 import icesword.scene.scene
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
@@ -88,7 +93,13 @@ fun worldView(
                 root = root,
                 tillDetach = tillNext,
             )
-            is InsertionMode -> setupInsertionToolController(
+            is BasicInsertionMode -> setupBasicInsertionModeController(
+                world = editor.world,
+                insertionMode = mode,
+                root = root,
+                tillDetach = tillNext,
+            )
+            is WapObjectInsertionMode -> setupWapObjectInsertionModeController(
                 world = editor.world,
                 insertionMode = mode,
                 root = root,
@@ -112,6 +123,17 @@ fun worldView(
     return root.apply {
         val viewTransform = world.cameraFocusPoint.map { -it }
 
+        val wapObjectPreviewNode =
+            editor.wapObjectInsertionMode.switchMapNotNull { insertionMode ->
+                insertionMode.wapObjectPreview.mapNotNull {
+                    WapObjectStemNode(
+                        textureBank = textureBank,
+                        wapObjectStem = it,
+                        alpha = 0.4,
+                    )
+                }
+            }
+
         val planeLayer = Layer(
             transform = viewTransform,
             nodes = DynamicSet.union(
@@ -130,13 +152,14 @@ fun worldView(
                         world.wapObjects.map(
                             tag = "WorldView/planeUiLayer/ropes.map",
                         ) {
-                            WapObjectNode(
-                                texture = textureBank.getImageTexture(
-                                    pidImagePath = it.imageMetadata.pidImagePath,
-                                ),
-                                wapObject = it,
+                            WapObjectStemNode(
+                                textureBank = textureBank,
+                                wapObjectStem = it.stem,
                             )
                         },
+                        DynamicSet.ofSingle(
+                            element = wapObjectPreviewNode,
+                        ),
                     ),
                 ),
             ),
@@ -303,9 +326,9 @@ fun setupKnotBrushToolController(
         }
 }
 
-fun setupInsertionToolController(
+fun setupBasicInsertionModeController(
     world: World,
-    insertionMode: InsertionMode,
+    insertionMode: BasicInsertionMode,
     root: HTMLElement,
     tillDetach: Till,
 ) {
@@ -322,6 +345,43 @@ fun setupInsertionToolController(
             )
         }
 }
+
+fun setupWapObjectInsertionModeController(
+    world: World,
+    insertionMode: WapObjectInsertionMode,
+    root: HTMLElement,
+    tillDetach: Till,
+) {
+    fun calculateWorldPosition(clientPosition: IntVec2): IntVec2 {
+        val viewportPosition =
+            root.calculateRelativePosition(clientPosition)
+
+        val worldPosition: IntVec2 =
+            world.transformToWorld(cameraPoint = viewportPosition).sample()
+
+        return worldPosition
+    }
+
+    root.trackMousePosition(till = tillDetach)
+        .reactTillNext(tillAbort = tillDetach) { mousePosition: MousePosition, tillNext: Till ->
+            if (mousePosition is MousePosition.Entered) {
+                insertionMode.place(
+                    placementWorldPoint = mousePosition.position.map {
+                        calculateWorldPosition(it)
+                    },
+                    insert = root.onMouseDown(button = 0).map { event ->
+                        InsertWapObjectCommand(
+                            insertionWorldPoint = calculateWorldPosition(
+                                clientPosition = event.clientPosition,
+                            ),
+                        )
+                    },
+                    till = tillNext,
+                )
+            }
+        }
+}
+
 
 private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
     val rect = origin.getBoundingClientRect()

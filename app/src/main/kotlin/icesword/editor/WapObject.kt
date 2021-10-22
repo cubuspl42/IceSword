@@ -159,30 +159,20 @@ class WapObject(
             )
     }
 
-    val imageMetadata = rezIndex.getImageMetadata(
-        imageSetId = wapObjectPrototype.imageSetId,
-        i = -1,
-    )!!
-
     private val _position = MutCell(initialPosition)
 
     override val position: Cell<IntVec2>
         get() = _position
 
-    val boundingBox: Cell<IntRect> =
-        position.map {
-            val offset = imageMetadata.offset
-            val size = imageMetadata.size
-            val topLeft = it + offset - (size / 2).toVec2()
 
-            IntRect(
-                position = topLeft,
-                size = size,
-            )
-        }
+    val stem = WapObjectStem(
+        rezIndex = rezIndex,
+        wapObjectPrototype = wapObjectPrototype,
+        position = position,
+    )
 
     override fun isSelectableAt(worldPoint: IntVec2): Boolean {
-        val rect = boundingBox.sample()
+        val rect = stem.boundingBox.sample()
         return rect.contains(worldPoint)
     }
 

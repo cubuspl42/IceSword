@@ -145,6 +145,9 @@ class Editor(
 
     val insertionMode: Cell<InsertionMode?> = editorMode.map { it as? InsertionMode }
 
+    val wapObjectInsertionMode: Cell<WapObjectInsertionMode?> =
+        insertionMode.map { it as? WapObjectInsertionMode }
+
     fun enterInsertionMode(
         insertionPrototype: InsertionPrototype,
     ) {
