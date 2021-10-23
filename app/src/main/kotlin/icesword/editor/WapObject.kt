@@ -171,9 +171,9 @@ class WapObject(
         position = position,
     )
 
-    override fun isSelectableAt(worldPoint: IntVec2): Boolean {
-        val rect = stem.boundingBox.sample()
-        return rect.contains(worldPoint)
+    override fun isSelectableIn(area: IntRect): Boolean {
+        val hitBox = stem.boundingBox.sample()
+        return hitBox.overlaps(area)
     }
 
     // TODO: Deduplicate!

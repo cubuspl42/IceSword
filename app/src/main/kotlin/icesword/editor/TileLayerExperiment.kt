@@ -1,9 +1,9 @@
 package icesword.editor
 
 import icesword.frp.*
+import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
-import org.khronos.webgl.get
 
 interface TilesView {
     fun getTile(globalCoord: IntVec2): Int?
@@ -31,8 +31,8 @@ class TileEntity(
     EntityTileOffset by SimpleEntityTileOffset(
         initialTileOffset = initialTileOffset,
     ) {
-    override fun isSelectableAt(worldPoint: IntVec2): Boolean =
-        tilesView.view.getTile(tileAtPoint(worldPoint)) != null
+    override fun isSelectableIn(area: IntRect): Boolean =
+        false
 
 //    val zOrder: Cell<Int> = Cell.constant(1)
 

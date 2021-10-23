@@ -12,12 +12,12 @@ import icesword.frp.map
 import icesword.frp.mapTillNext
 import icesword.frp.reactTill
 import icesword.frp.sample
+import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.DumpWwd.dumpWwd
 import icesword.wwd.OutputDataStream.OutputStream
 import icesword.wwd.Wwd
 import kotlinx.browser.document
-import kotlinx.css.em
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.w3c.dom.HTMLAnchorElement
@@ -126,6 +126,7 @@ class Editor(
         _selectedKnotBrush.set(knotBrush)
     }
 
+    // TODO: Implement multi-entity selection set
     private val _selectedEntity: MutCell<Entity?> = MutCell(null)
 
     val selectedEntity: Cell<Entity?> = _selectedEntity
@@ -134,7 +135,8 @@ class Editor(
     fun selectEntityAt(worldPosition: IntVec2) {
         val entities = world.entities.sample()
 
-        val selectableEntities = entities.filter { it.isSelectableAt(worldPosition) }
+        // TODO: Implement multi-entity selection set
+        val selectableEntities = entities.filter { it.isSelectableIn(area = IntRect.ZERO) }
 
         val selectedEntity = selectedEntity.sample()
 

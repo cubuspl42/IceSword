@@ -14,12 +14,25 @@ data class IntRect(
     val size: IntSize,
 ) {
     companion object {
+        val ZERO: IntRect = IntRect(
+            position = IntVec2.ZERO,
+            size = IntSize.ZERO,
+        )
+
         fun fromDiagonal(a: IntVec2, b: IntVec2): IntRect {
             val tl = IntVec2(min(a.x, b.x), min(a.y, b.y))
             val br = IntVec2(max(a.x, b.x), max(a.y, b.y))
             val size = IntSize(br.x - tl.x, br.y - tl.y)
             return IntRect(position = tl, size = size)
         }
+
+        fun fromCenter(
+            center: IntVec2,
+            sideLength: Int,
+        ): IntRect = IntRect(
+            position = center - IntVec2(sideLength / 2, sideLength / 2),
+            size = IntSize(width = sideLength, height = sideLength),
+        )
     }
 
     val xMin: Int
@@ -65,6 +78,19 @@ data class IntRect(
     fun translate(t: IntVec2): IntRect =
         IntRect(position + t, size)
 
+    fun points(): Sequence<IntVec2> = sequence {
+        for (y in yMin until yMax) {
+            for (x in xMin until xMax) {
+                yield(IntVec2(x, y))
+            }
+        }
+    }
+
+    operator fun div(s: Int): IntRect = IntRect(
+        position = this.position / s,
+        size = this.size / s,
+    )
+
     fun copyWithTopLeft(p: IntVec2) = IntRect.fromDiagonal(bottomRight, p)
 
     fun copyWithTopRight(p: IntVec2) = IntRect.fromDiagonal(bottomLeft, p)
@@ -75,4 +101,6 @@ data class IntRect(
 
     fun contains(localPoint: IntVec2): Boolean =
         localPoint.x in (xMin until xMax) && localPoint.y in (yMin until yMax)
+
+
 }

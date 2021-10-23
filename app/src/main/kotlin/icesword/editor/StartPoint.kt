@@ -4,6 +4,7 @@ import icesword.TILE_SIZE
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.map
+import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 
 private const val hitBoxRadius = 32
@@ -18,8 +19,14 @@ class StartPoint(
     override val position: Cell<IntVec2>
         get() = _position
 
-    override fun isSelectableAt(worldPoint: IntVec2): Boolean =
-        (position.sample() - worldPoint).length < hitBoxRadius
+    override fun isSelectableIn(area: IntRect): Boolean {
+        val hitBox = IntRect.fromCenter(
+            center = position.sample(),
+            sideLength = hitBoxRadius * 2,
+        )
+
+        return hitBox.overlaps(area)
+    }
 
     // TODO: Nuke?
     override val tileOffset: Cell<IntVec2> =

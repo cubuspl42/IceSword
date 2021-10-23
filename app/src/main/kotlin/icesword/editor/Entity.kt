@@ -2,6 +2,7 @@ package icesword.editor
 
 import icesword.TILE_SIZE
 import icesword.frp.*
+import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileTopLeftCorner
 
@@ -54,7 +55,7 @@ abstract class Entity : EntityTileOffset {
         _isSelected.set(false)
     }
 
-    abstract fun isSelectableAt(worldPoint: IntVec2): Boolean
+    abstract fun isSelectableIn(area: IntRect): Boolean
 
 //    private val _tileOffset = MutCell(initialTileOffset)
 //

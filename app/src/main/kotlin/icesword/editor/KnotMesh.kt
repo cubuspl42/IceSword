@@ -11,9 +11,11 @@ import icesword.frp.associateWith
 import icesword.frp.memorized
 import icesword.frp.sample
 import icesword.frp.unionMap
+import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.tileTopLeftCorner
+import icesword.tilesInArea
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -98,6 +100,9 @@ fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
     }
 }
 
+fun knotsInArea(worldArea: IntRect): List<IntVec2> =
+    tilesInArea(worldArea.translate(IntVec2(-32, -32)))
+
 class KnotMesh(
     private val knotPrototype: KnotPrototype,
     initialTileOffset: IntVec2,
@@ -171,9 +176,11 @@ class KnotMesh(
         localKnots.unionMap(tag = "localTileCoords/localKnots.unionMap", ::tilesAroundKnot)
             .memorized()
 
-    override fun isSelectableAt(worldPoint: IntVec2): Boolean {
-        return globalKnots.volatileContentView.keys.any {
-            (knotCenter(it) - worldPoint).length < TILE_SIZE
+    override fun isSelectableIn(area: IntRect): Boolean {
+        val globalKnotCoords = globalKnots.volatileContentView
+
+        return knotsInArea(area).any { globalKnotCoord ->
+            globalKnotCoords.containsKey(globalKnotCoord)
         }
     }
 

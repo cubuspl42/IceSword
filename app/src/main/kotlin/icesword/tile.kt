@@ -20,3 +20,6 @@ fun tileAtPoint(point: IntVec2): IntVec2 =
         if (it >= 0) it / TILE_SIZE
         else (it + 1) / TILE_SIZE
     }
+
+fun tilesInArea(worldArea: IntRect): List<IntVec2> =
+    (worldArea / TILE_SIZE).points().toList()
