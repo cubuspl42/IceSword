@@ -1,5 +1,6 @@
 package icesword.ui
 
+import html.MouseButton
 import html.onMouseDrag
 import icesword.MouseDrag
 import icesword.editor.Editor
@@ -30,7 +31,7 @@ class EntityMoveDragController(
             till: Till,
         ) {
             element.onMouseDrag(
-                button = 0,
+                button = MouseButton.Primary,
                 outer = outer,
                 filterTarget = true,
                 till = till,

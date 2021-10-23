@@ -1,6 +1,7 @@
 package icesword.scene
 
 import html.DynamicStyleDeclaration
+import html.MouseButton
 import html.createSvgCircle
 import html.createSvgGroup
 import html.createSvgRect
@@ -153,7 +154,7 @@ fun createElasticOverlayElement(
         }
 
         handle.onMouseDrag(
-            button = 0,
+            button = MouseButton.Primary,
             outer = viewport,
             till = tillDetach,
         ).reactTill(tillDetach) { mouseDrag ->

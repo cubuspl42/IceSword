@@ -1,15 +1,15 @@
 package icesword
 
-import html.CSSStyle
-import html.FontWeight
 import html.createButton
 import html.createHtmlElement
 import icesword.editor.Editor
+import icesword.editor.EditorMode
+import icesword.editor.SelectMode
 import icesword.editor.Tool
-import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.map
 import icesword.ui.createSelectButton
+import kotlinx.serialization.EncodeDefault
 import org.w3c.dom.HTMLElement
 
 
@@ -17,19 +17,19 @@ fun editorToolBar(
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
-    val selectButton = toolButton(
+    val selectButton = createModeButton<SelectMode>(
         editor = editor,
-        tool = Tool.SELECT,
+        enterMode = { editor.enterSelectMode() },
         tillDetach = tillDetach,
     )
 
-    val moveButton = toolButton(
+    val moveButton = createToolButton(
         editor = editor,
         tool = Tool.MOVE,
         tillDetach = tillDetach,
     )
 
-    val knotBrushButton = toolButton(
+    val knotBrushButton = createToolButton(
         editor = editor,
         tool = Tool.KNOT_BRUSH,
         tillDetach = tillDetach,
@@ -84,7 +84,22 @@ fun editorToolBar(
     return root
 }
 
-private fun toolButton(
+
+private inline fun <reified Mode : EditorMode> createModeButton(
+    editor: Editor,
+    crossinline enterMode: () -> Unit,
+    tillDetach: Till,
+): HTMLElement =
+    createSelectButton(
+        value = true, // TODO: Improve this
+        name = Mode::class.simpleName ?: "???",
+        selected = editor.editorMode.map { it is Mode },
+        select = { enterMode() },
+        tillDetach = tillDetach,
+    )
+
+
+private fun createToolButton(
     editor: Editor,
     tool: Tool,
     tillDetach: Till,

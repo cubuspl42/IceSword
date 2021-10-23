@@ -68,13 +68,13 @@ fun <A> Cell<A>.reactTill(till: Till, handler: (A) -> Unit) {
 }
 
 fun <A, B> Cell<A>.mapTillNext(
-    tillAbort: Till,
+    tillFreeze: Till,
     transform: (value: A, tillNext: Till) -> B,
 ): Cell<B> =
     CellMapTillNext(
         source = this,
         f = transform,
-        tillAbort = tillAbort,
+        tillAbort = tillFreeze,
     )
 
 fun <A> Cell<A>.reactTillNext(
@@ -82,7 +82,7 @@ fun <A> Cell<A>.reactTillNext(
     handler: (value: A, tillNext: Till) -> Unit,
 ) {
     mapTillNext(
-        tillAbort = tillAbort,
+        tillFreeze = tillAbort,
         transform = handler,
     )
 }

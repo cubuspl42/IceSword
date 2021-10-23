@@ -2,6 +2,7 @@ package icesword
 
 
 import TextureBank
+import html.MouseButton
 import html.MousePosition
 import html.clientPosition
 import html.createHtmlElement
@@ -16,11 +17,13 @@ import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
 import icesword.editor.InsertWapObjectCommand
 import icesword.editor.OffsetTilesView
+import icesword.editor.SelectMode
 import icesword.editor.Tool
 import icesword.editor.WapObjectInsertionMode
 import icesword.editor.World
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
+import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.contentDynamicView
 import icesword.frp.hold
@@ -30,6 +33,7 @@ import icesword.frp.reactTill
 import icesword.frp.reactTillNext
 import icesword.frp.switchMapNotNull
 import icesword.frp.tillNext
+import icesword.frp.units
 import icesword.geometry.IntVec2
 import icesword.scene.ElasticUi
 import icesword.scene.KnotMeshUi
@@ -38,6 +42,7 @@ import icesword.scene.Scene
 import icesword.scene.StartPointUi
 import icesword.scene.TileLayer
 import icesword.scene.WapObjectStemNode
+import icesword.scene.createAreaSelectionOverlayElement
 import icesword.scene.createElasticOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
 import icesword.scene.createStartPointOverlayElement
@@ -69,20 +74,16 @@ fun worldView(
         addEventListener("contextmenu", { it.preventDefault() })
     }
 
-    root.onMouseDrag(button = 2, till = tillDetach).reactTill(tillDetach) { mouseDrag ->
-        val initialXy = mouseDrag.position.sample()
-        val delta = mouseDrag.position.map { initialXy - it }
+    root.onMouseDrag(button = MouseButton.Secondary, till = tillDetach)
+        .reactTill(tillDetach) { mouseDrag ->
+            val initialXy = mouseDrag.position.sample()
+            val delta = mouseDrag.position.map { initialXy - it }
 
-        world.dragCamera(offsetDelta = delta, tillStop = mouseDrag.tillEnd)
-    }
+            world.dragCamera(offsetDelta = delta, tillStop = mouseDrag.tillEnd)
+        }
 
     editor.editorMode.reactTillNext(tillDetach) { mode, tillNext ->
         when (mode) {
-            Tool.SELECT -> setupSelectToolController(
-                editor = editor,
-                root = root,
-                tillDetach = tillNext,
-            )
             Tool.MOVE -> setupMoveToolController(
                 editor = editor,
                 root = root,
@@ -105,12 +106,18 @@ fun worldView(
                 root = root,
                 tillDetach = tillNext,
             )
+            is SelectMode -> setupSelectModeController(
+                editor = editor,
+                selectMode = mode,
+                root = root,
+                tillDetach = tillNext,
+            )
         }
     }
 
     root.onKeyDown().reactTill(tillDetach) {
         when (it.key) {
-            "s" -> editor.selectTool(Tool.SELECT)
+            "s" -> editor.enterSelectMode()
             "v" -> editor.selectTool(Tool.MOVE)
             "1" -> {
                 val tileCoord = IntVec2(79, 92)
@@ -261,6 +268,18 @@ fun worldView(
                                             tillDetach = tillDetach,
                                         )
                                     },
+                                    DynamicSet.ofSingle(
+                                        editor.selectionMode.switchMapNotNull {
+                                            it.areaSelectingMode.mapNotNull { areaSelectingMode ->
+                                                createAreaSelectionOverlayElement(
+                                                    svg = svg,
+                                                    viewTransform = viewTransform,
+                                                    areaSelectingMode = areaSelectingMode,
+                                                    tillDetach = tillDetach,
+                                                )
+                                            }
+                                        }
+                                    ),
                                 ),
                             ),
                         )
@@ -271,20 +290,38 @@ fun worldView(
     }
 }
 
-fun setupSelectToolController(
+fun setupSelectModeController(
     editor: Editor,
+    selectMode: SelectMode,
     root: HTMLElement,
     tillDetach: Till,
 ) {
     val world = editor.world
 
-    root.onClick().reactTill(tillDetach) {
-        val viewportPosition = it.relativePosition(root)
-        val worldPosition = world.transformToWorld(viewportPosition)
-        editor.selectEntityAt(worldPosition.sample())
-    }
-}
+    fun calculateWorldPosition(clientPosition: IntVec2): IntVec2 {
+        val viewportPosition =
+            root.calculateRelativePosition(clientPosition)
 
+        val worldPosition: IntVec2 =
+            world.transformToWorld(cameraPoint = viewportPosition).sample()
+
+        return worldPosition
+    }
+
+    val button = MouseButton.Primary
+
+    root.onMouseDrag(button = button, till = tillDetach)
+        .reactTill(tillDetach) { mouseDrag ->
+            (selectMode.state.sample() as? SelectMode.IdleMode)?.selectArea(
+                anchorWorldCoord = calculateWorldPosition(
+                    clientPosition = mouseDrag.position.sample()
+                ),
+                targetWorldCoord = mouseDrag.position.map(::calculateWorldPosition),
+                confirm = root.onMouseUp(button = button).units(),
+                abort = Stream.never(), // FIXME?
+            )
+        }
+}
 
 fun setupMoveToolController(
     editor: Editor,
@@ -311,7 +348,7 @@ fun setupKnotBrushToolController(
 ) {
     val world = editor.world
 
-    root.onMouseDrag(button = 0, till = tillDetach)
+    root.onMouseDrag(button = MouseButton.Primary, till = tillDetach)
         .reactTill(tillDetach) { mouseDrag ->
             val viewportPosition =
                 mouseDrag.position.map(root::calculateRelativePosition)
@@ -332,7 +369,7 @@ fun setupBasicInsertionModeController(
     root: HTMLElement,
     tillDetach: Till,
 ) {
-    root.onMouseDown(button = 0)
+    root.onMouseDown(button = MouseButton.Primary)
         .reactTill(tillDetach) { event ->
             val viewportPosition =
                 root.calculateRelativePosition(event.clientPosition)
@@ -369,7 +406,7 @@ fun setupWapObjectInsertionModeController(
                     placementWorldPoint = mousePosition.position.map {
                         calculateWorldPosition(it)
                     },
-                    insert = root.onMouseDown(button = 0).map { event ->
+                    insert = root.onMouseDown(button = MouseButton.Primary).map { event ->
                         InsertWapObjectCommand(
                             insertionWorldPoint = calculateWorldPosition(
                                 clientPosition = event.clientPosition,
@@ -403,10 +440,11 @@ class MouseDrag(
         fun start(
             element: Element,
             initialPosition: IntVec2,
-            button: Short,
+            button: MouseButton,
             tillAbort: Till,
         ): MouseDrag {
-            val tillEnd = element.onMouseUp(button = button).tillNext(tillAbort)
+            val tillEnd = element.onMouseUp(button = button)
+                .tillNext(tillAbort)
 
             val position = element.onMouseMove().map { it.clientPosition }
                 .hold(initialPosition, till = tillEnd)

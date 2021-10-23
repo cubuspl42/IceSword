@@ -19,7 +19,8 @@ data class TextureBank(
             val imagesTextures = rezIndex.getAllImagesMetadata()
                 // TODO: Support all retails and/or remove this performance trick
                 .filter { metadata ->
-                    setOf("GAME/", "LEVEL3/").any { metadata.pidImagePath.startsWith(it) }
+                    setOf("GAME/", "LEVEL3/").any { metadata.pidImagePath.startsWith(it) } &&
+                            metadata.pidImagePath.contains("001")
                 }
                 .associate {
                     val imagePath = "images/CLAW/${it.pidImagePath.replace(".PID", ".png")}"

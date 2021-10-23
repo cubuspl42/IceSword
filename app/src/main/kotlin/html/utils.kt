@@ -162,9 +162,9 @@ fun createContainer(
     return root
 }
 
-fun Element.onMouseDown(button: Short): Stream<MouseEvent> =
+fun Element.onMouseDown(button: MouseButton): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mousedown")
-        .filter { e: MouseEvent -> e.button == button }
+        .filter { e: MouseEvent -> e.button == button.ordinal.toShort() }
 
 fun Element.onMouseMove(): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mousemove")
@@ -175,9 +175,9 @@ fun Element.onMouseEnter(): Stream<MouseEvent> =
 fun Element.onMouseLeave(): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mouseleave")
 
-fun Element.onMouseUp(button: Short): Stream<MouseEvent> =
+fun Element.onMouseUp(button: MouseButton): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mouseup")
-        .filter { e: MouseEvent -> e.button == button }
+        .filter { e: MouseEvent -> e.button == button.ordinal.toShort() }
 
 sealed interface MousePosition {
     value class Entered(val position: Cell<IntVec2>) : MousePosition
@@ -189,7 +189,7 @@ fun Element.trackMousePosition(till: Till): Cell<MousePosition> {
     val onEnter = onMove.mergeWith(this.onMouseEnter())
     val onLeave = this.onMouseLeave()
 
-    val foo = onEnter.map { enterEvent ->
+    val mousePosition = onEnter.map { enterEvent ->
         MousePosition.Entered(
             position = onMove.map { it.clientPosition }
                 .hold(enterEvent.clientPosition, till = onLeave.tillNext(till)),
@@ -201,7 +201,7 @@ fun Element.trackMousePosition(till: Till): Cell<MousePosition> {
         till = till,
     )
 
-    return foo
+    return mousePosition
 }
 
 fun HTMLElement.onClick(): Stream<MouseEvent> =
@@ -210,8 +210,14 @@ fun HTMLElement.onClick(): Stream<MouseEvent> =
 fun HTMLElement.onKeyDown(): Stream<KeyboardEvent> =
     this.onEvent("keydown", useCapture = true)
 
+enum class MouseButton {
+    Primary,
+    Middle,
+    Secondary,
+}
+
 fun Element.onMouseDrag(
-    button: Short,
+    button: MouseButton,
     outer: HTMLElement? = null,
     filterTarget: Boolean = false,
     till: Till,

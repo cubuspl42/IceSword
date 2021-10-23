@@ -7,16 +7,17 @@ import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
+import icesword.frp.Tilled
 import icesword.frp.map
+import icesword.frp.mapTillNext
 import icesword.frp.reactTill
 import icesword.frp.sample
-import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
-import icesword.tileAtPoint
 import icesword.wwd.DumpWwd.dumpWwd
 import icesword.wwd.OutputDataStream.OutputStream
 import icesword.wwd.Wwd
 import kotlinx.browser.document
+import kotlinx.css.em
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.w3c.dom.HTMLAnchorElement
@@ -28,7 +29,6 @@ import kotlinx.serialization.encodeToString
 interface EditorMode
 
 enum class Tool : EditorMode {
-    SELECT,
     MOVE,
     KNOT_BRUSH
 }
@@ -36,6 +36,8 @@ enum class Tool : EditorMode {
 class Editor(
     private val rezIndex: RezIndex,
     val world: World,
+    // FIXME: Manage Editor's lifetime
+    tillDispose: Till = Till.never,
 ) {
     companion object {
         fun importWwd(
@@ -71,14 +73,48 @@ class Editor(
         }
     }
 
-    private val _editorMode: MutCell<EditorMode> = MutCell(Tool.SELECT)
+    private fun buildSelectMode() = object : Tilled<SelectMode> {
+        override fun build(till: Till) = SelectMode(
+            world = world,
+            tillExit = till,
+        )
+    }
+
+    private val _editorMode = MutCell<Tilled<EditorMode>>(
+        initialValue = buildSelectMode(),
+    )
+
+    private fun enterModeTilled(mode: Tilled<EditorMode>) {
+        _editorMode.set(mode)
+    }
+
+    fun enterSelectMode() {
+        enterModeTilled(buildSelectMode())
+    }
+
+    private fun enterModeTillExit(build: (tillExit: Till) -> EditorMode) {
+        _editorMode.set(
+            object : Tilled<EditorMode> {
+                override fun build(till: Till) = build(till)
+            }
+        )
+    }
+
+    private fun enterMode(editorMode: EditorMode) {
+        enterModeTillExit { editorMode }
+    }
 
     val editorMode: Cell<EditorMode> = _editorMode
+        .mapTillNext(tillFreeze = tillDispose) { tilled, tillNext ->
+            tilled.build(till = tillNext)
+        }
 
     val selectedTool: Cell<Tool?> = editorMode.map { it as? Tool }
 
+    val selectionMode: Cell<SelectMode?> = editorMode.map { it as? SelectMode }
+
     fun selectTool(tool: Tool) {
-        _editorMode.set(tool)
+        enterMode(tool)
     }
 
     private val _selectedKnotBrush = MutCell(KnotBrush.Additive)
@@ -94,6 +130,7 @@ class Editor(
 
     val selectedEntity: Cell<Entity?> = _selectedEntity
 
+    // FIXME: Port to area selection
     fun selectEntityAt(worldPosition: IntVec2) {
         val entities = world.entities.sample()
 
@@ -167,7 +204,7 @@ class Editor(
             )
         }
 
-        _editorMode.set(insertionMode)
+        enterMode(insertionMode)
     }
 
     fun exportWorld() {
