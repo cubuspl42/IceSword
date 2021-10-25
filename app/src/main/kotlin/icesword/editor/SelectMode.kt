@@ -6,6 +6,7 @@ import icesword.frp.Stream
 import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
+import icesword.frp.filterDynamic
 import icesword.frp.map
 import icesword.frp.mergeWith
 import icesword.frp.reactTill
@@ -15,7 +16,7 @@ import icesword.geometry.IntVec2
 sealed interface SelectModeState
 
 class SelectMode(
-    world: World,
+    private val world: World,
     tillExit: Till,
 ) : EditorMode {
     val state: Cell<SelectModeState> = Stream.follow(
@@ -34,9 +35,11 @@ class SelectMode(
     val areaSelectingMode: Cell<AreaSelectingMode?> =
         state.map { st -> st as? SelectMode.AreaSelectingMode }
 
-    // TODO: Implement
-    private fun getEntitiesInArea(area: Cell<IntRect>): DynamicSet<Entity> =
-        DynamicSet.of(emptySet())
+    private fun getEntitiesInArea(area: Cell<IntRect>): DynamicSet<Entity> {
+        return world.entities.filterDynamic { entity: Entity ->
+            area.map { entity.isSelectableIn(it) }
+        }
+    }
 
     // TODO: Implement
     private fun selectEntities(entities: Set<Entity>) {
@@ -107,3 +110,5 @@ class SelectMode(
         override fun toString(): String = "AreaSelectingMode()"
     }
 }
+
+

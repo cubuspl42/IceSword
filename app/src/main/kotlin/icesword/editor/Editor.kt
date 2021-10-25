@@ -4,14 +4,17 @@ import icesword.RezIndex
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
+import icesword.editor.SelectMode.AreaSelectingMode
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.map
+import icesword.frp.mapNotNull
 import icesword.frp.mapTillNext
 import icesword.frp.reactTill
 import icesword.frp.sample
+import icesword.frp.switchMapNotNull
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.DumpWwd.dumpWwd
@@ -112,6 +115,9 @@ class Editor(
     val selectedTool: Cell<Tool?> = editorMode.map { it as? Tool }
 
     val selectionMode: Cell<SelectMode?> = editorMode.map { it as? SelectMode }
+
+    val areaSelectingMode: Cell<AreaSelectingMode?> =
+        selectionMode.switchMapNotNull { it.areaSelectingMode }
 
     fun selectTool(tool: Tool) {
         enterMode(tool)

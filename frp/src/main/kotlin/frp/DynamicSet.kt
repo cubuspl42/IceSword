@@ -213,7 +213,22 @@ fun <A, B> DynamicSet<A>.adjust(
         .validated(sourceTag = "adjust")
 
 fun <A> DynamicSet<A>.memorized(): DynamicSet<A> =
-    MemorizedDynamicSet(this)
+    MemorizedDynamicSet(this).validated("memorized")
+
+fun <A> DynamicSet<A>.contains(element: A): Cell<Boolean> =
+    this.content.map { it.contains(element) }
+
+fun <A> DynamicSet<A>.filter(tag: String = "filter", test: (A) -> Boolean): DynamicSet<A> =
+    FilterDynamicSet(
+        source = this,
+        test = test,
+        tag = tag
+    ).validated(sourceTag = tag)
+
+fun <A> DynamicSet<A>.filterDynamic(test: (A) -> Cell<Boolean>): DynamicSet<A> =
+    this.fuseMap { test(it).map { t -> Pair(it, t) } }
+        .filter { it.second }
+        .map(tag = "") { it.first }
 
 const val enableSetValidation: Boolean = false
 

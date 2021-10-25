@@ -12,13 +12,18 @@ import icesword.editor.Elastic
 import icesword.editor.Entity
 import icesword.editor.MetaTileCluster
 import icesword.frp.Cell
+import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.changesUnits
+import icesword.frp.contains
 import icesword.frp.getKeys
 import icesword.frp.map
+import icesword.frp.mapNotNull
 import icesword.frp.mergeWith
 import icesword.frp.reactTill
+import icesword.frp.switchMap
+import icesword.frp.switchMapNotNull
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.IntRect
@@ -116,7 +121,7 @@ fun createElasticOverlayElement(
         editor = editor,
         svg = svg,
         outer = viewport,
-        entity =  elastic,
+        entity = elastic,
         translate = Cell.constant(IntVec2.ZERO),
         size = boxSize,
         tillDetach = tillDetach,
@@ -228,12 +233,23 @@ fun createEntityFrameElement(
         outer = outer,
         till = tillDetach,
     ) { cursor ->
+        val isAreaSelectionCovered = editor.areaSelectingMode.switchMap {
+            it?.coveredEntities?.contains(entity) ?: Cell.constant(false)
+        }
+
         val pointerEvents = entity.isSelected.map {
             if (it) null else PointerEvents.none
         }
 
-        val stroke = entity.isSelected.map {
-            if (it) "red" else "none"
+        val stroke = Cell.map2(
+            entity.isSelected,
+            isAreaSelectionCovered,
+        ) { isSelected, isCovered ->
+            when {
+                isCovered -> "orange"
+                isSelected -> "red"
+                else -> "none"
+            }
         }
 
         val box = createSvgRect(
