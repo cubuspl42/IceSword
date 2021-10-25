@@ -7,9 +7,6 @@ import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
-import icesword.tileAtPoint
-import icesword.tileRect
-import icesword.tilesInArea
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -189,10 +186,8 @@ class Elastic(
 //            }
     )
 
-    override fun isSelectableIn(area: IntRect): Boolean {
-        val tilesCoords = tilesInArea(area)
-        return  tilesCoords.any { metaTileCluster.getMetaTileAt(it).sample() != null }
-    }
+    override fun isSelectableIn(area: IntRect): Boolean =
+        (bounds.sample() * TILE_SIZE).overlaps(area)
 
     override val position: Cell<IntVec2> by lazy {
         bounds.map { it.topLeft * TILE_SIZE }

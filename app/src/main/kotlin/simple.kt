@@ -9,6 +9,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.await
 import kotlinx.coroutines.launch
+import org.w3c.dom.Document
 import org.w3c.dom.HTMLElement
 
 const val textureImagePath = "images/spritesheets/LEVEL3_ACTION/texture.png"
@@ -48,6 +49,15 @@ suspend fun fetchWorld(): Wwd.World {
 
 @OptIn(DelicateCoroutinesApi::class)
 fun main() {
+    // A dirty hack to make `nodeTest` work (why does it invoke main?)
+    fun getDocument(): Document? = try {
+        document
+    } catch (e: Throwable) {
+        null
+    }
+
+    val document = getDocument() ?: return
+
     document.body?.style?.apply {
         width = "100vw"
         height = "100vh"

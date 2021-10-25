@@ -248,9 +248,7 @@ fun createEntityFrameElement(
         outer = outer,
         till = tillDetach,
     ) { cursor ->
-        val isAreaSelectionCovered = editor.areaSelectingMode.switchMap {
-            it?.coveredEntities?.contains(entity) ?: Cell.constant(false)
-        }
+        val isAreaSelectionCovered = editor.isAreaSelectionCovered(entity)
 
         val isSelected = editor.isEntitySelected(entity)
 

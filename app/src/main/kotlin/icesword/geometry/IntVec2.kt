@@ -1,8 +1,11 @@
 package icesword.geometry;
 
 import frpjs.Hash
+import icesword.TILE_SIZE
 import icesword.collections.HybridMapFactory
 import icesword.collections.MapFactory
+import icesword.utils.divCeil
+import icesword.utils.divFloor
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
@@ -34,6 +37,16 @@ data class IntVec2(
     fun divRound(s: Int): IntVec2 = IntVec2(
         (x.toDouble() / s).roundToInt(),
         (y.toDouble() / s).roundToInt(),
+    )
+
+    fun divFloor(s: Int): IntVec2 = IntVec2(
+        x.divFloor(s),
+        y.divFloor(s),
+    )
+
+    fun divCeil(s: Int): IntVec2 = IntVec2(
+        x.divCeil(s),
+        y.divCeil(s),
     )
 
     operator fun unaryMinus(): IntVec2 = IntVec2(-x, -y)

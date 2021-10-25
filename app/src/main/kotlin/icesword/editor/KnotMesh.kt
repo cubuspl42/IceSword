@@ -2,7 +2,6 @@
 
 package icesword.editor
 
-import icesword.TILE_SIZE
 import icesword.editor.KnotPrototype.*
 import icesword.frp.DynamicSet
 import icesword.frp.MutableDynamicSet
@@ -15,7 +14,7 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.tileTopLeftCorner
-import icesword.tilesInArea
+import icesword.tilesOverlappingArea
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -101,7 +100,7 @@ fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
 }
 
 fun knotsInArea(worldArea: IntRect): List<IntVec2> =
-    tilesInArea(worldArea.translate(IntVec2(-32, -32)))
+    tilesOverlappingArea(worldArea.translate(IntVec2(-32, -32)))
 
 class KnotMesh(
     private val knotPrototype: KnotPrototype,

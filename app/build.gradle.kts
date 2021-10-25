@@ -12,11 +12,17 @@ dependencies {
 
     implementation(npm("pako", "2.0.3"))
     implementation(npm("@types/pako", "1.0.2", generateExternals = true))
+
+    testImplementation(kotlin("test"))
 }
 
 kotlin {
     js(LEGACY) {
         binaries.executable()
+
+        nodejs {
+        }
+
         browser {
             commonWebpackConfig {
                 cssSupport.enabled = true

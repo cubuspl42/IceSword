@@ -19,9 +19,9 @@ data class IntRect(
             size = IntSize.ZERO,
         )
 
-        fun fromDiagonal(a: IntVec2, b: IntVec2): IntRect {
-            val tl = IntVec2(min(a.x, b.x), min(a.y, b.y))
-            val br = IntVec2(max(a.x, b.x), max(a.y, b.y))
+        fun fromDiagonal(pa: IntVec2, pb: IntVec2): IntRect {
+            val tl = IntVec2(min(pa.x, pb.x), min(pa.y, pb.y))
+            val br = IntVec2(max(pa.x, pb.x), max(pa.y, pb.y))
             val size = IntSize(br.x - tl.x, br.y - tl.y)
             return IntRect(position = tl, size = size)
         }
@@ -89,6 +89,11 @@ data class IntRect(
     operator fun div(s: Int): IntRect = IntRect(
         position = this.position / s,
         size = this.size / s,
+    )
+
+    operator fun times(s: Int): IntRect = IntRect(
+        position = this.position * s,
+        size = this.size * s,
     )
 
     fun copyWithTopLeft(p: IntVec2) = IntRect.fromDiagonal(bottomRight, p)

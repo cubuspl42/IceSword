@@ -21,6 +21,7 @@ class KnotMeshUi private constructor(
     private val viewTransform: Cell<IntVec2>,
     private val knotMesh: KnotMesh,
     private val isSelected: Cell<Boolean>,
+    private val isCovered: Cell<Boolean>,
 ) : Node {
     constructor(
         editor: Editor,
@@ -30,7 +31,8 @@ class KnotMeshUi private constructor(
         editor = editor,
         viewTransform = viewTransform,
         knotMesh = knotMesh,
-        isSelected = editor.isEntitySelected(knotMesh)
+        isSelected = editor.isEntitySelected(knotMesh),
+        isCovered = editor.isAreaSelectionCovered(knotMesh),
     )
 
 
@@ -41,6 +43,7 @@ class KnotMeshUi private constructor(
         val localTiles = knotMesh.localTileCoords.volatileContentView
 
         val isSelected = isSelected.sample()
+        val isCovered = isCovered.sample()
 
         ctx.save()
 
@@ -59,11 +62,17 @@ class KnotMeshUi private constructor(
             // Here, window rect = viewport rect...
             if (windowRect.overlaps(viewRect)) {
 
-                if (isSelected) {
-                    ctx.strokeStyle = "red"
-                } else {
-                    val a = 128
-                    ctx.strokeStyle = "rgba($a, $a, $a, 0.4)"
+                when {
+                    isCovered -> {
+                        ctx.strokeStyle = "orange"
+                    }
+                    isSelected -> {
+                        ctx.strokeStyle = "red"
+                    }
+                    else -> {
+                        val a = 128
+                        ctx.strokeStyle = "rgba($a, $a, $a, 0.4)"
+                    }
                 }
 
                 ctx.strokeRect(
@@ -115,6 +124,7 @@ class KnotMeshUi private constructor(
     override val onDirty: Stream<Unit> =
         viewTransform.values().units()
             .mergeWith(isSelected.values().units())
+            .mergeWith(isCovered.values().units())
             .mergeWith(knotMesh.tileOffset.values().units())
             .mergeWith(knotMesh.localKnots.changes.units())
 }

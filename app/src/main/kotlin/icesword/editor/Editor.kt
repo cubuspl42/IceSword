@@ -9,11 +9,13 @@ import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
 import icesword.frp.Tilled
+import icesword.frp.contains
 import icesword.frp.map
 import icesword.frp.mapNotNull
 import icesword.frp.mapTillNext
 import icesword.frp.reactTill
 import icesword.frp.sample
+import icesword.frp.switchMap
 import icesword.frp.switchMapNotNull
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -118,6 +120,11 @@ class Editor(
 
     val areaSelectingMode: Cell<AreaSelectingMode?> =
         selectionMode.switchMapNotNull { it.areaSelectingMode }
+
+    fun isAreaSelectionCovered(entity: Entity): Cell<Boolean> =
+        areaSelectingMode.switchMap {
+            it?.coveredEntities?.contains(entity) ?: Cell.constant(false)
+        }
 
     fun selectTool(tool: Tool) {
         enterMode(tool)
