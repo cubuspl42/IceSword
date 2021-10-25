@@ -3,7 +3,6 @@ package icesword
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
-import icesword.utils.divFloor
 
 const val TILE_SIZE = 64
 
@@ -23,6 +22,6 @@ fun tilesOverlappingArea(worldArea: IntRect): List<IntVec2> {
     val tileCoordA = worldArea.topLeft.divFloor(TILE_SIZE)
     val tileCoordB = worldArea.bottomRight.divCeil(TILE_SIZE)
 
-    return IntRect.fromDiagonal(pa = tileCoordA, pb = tileCoordB)
+    return IntRect.fromDiagonal(pointA = tileCoordA, pointC = tileCoordB)
         .points().toList()
 }

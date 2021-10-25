@@ -19,9 +19,9 @@ data class IntRect(
             size = IntSize.ZERO,
         )
 
-        fun fromDiagonal(pa: IntVec2, pb: IntVec2): IntRect {
-            val tl = IntVec2(min(pa.x, pb.x), min(pa.y, pb.y))
-            val br = IntVec2(max(pa.x, pb.x), max(pa.y, pb.y))
+        fun fromDiagonal(pointA: IntVec2, pointC: IntVec2): IntRect {
+            val tl = IntVec2(min(pointA.x, pointC.x), min(pointA.y, pointC.y))
+            val br = IntVec2(max(pointA.x, pointC.x), max(pointA.y, pointC.y))
             val size = IntSize(br.x - tl.x, br.y - tl.y)
             return IntRect(position = tl, size = size)
         }
@@ -34,6 +34,9 @@ data class IntRect(
             size = IntSize(width = sideLength, height = sideLength),
         )
     }
+
+    val center: IntVec2
+        get() = position + (size.toVec2() / 2)
 
     val xMin: Int
         get() = position.x
