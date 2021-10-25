@@ -24,7 +24,7 @@ class WapObjectStemNode(
 ) : Node {
     private val texture = textureBank.getImageTexture(
         pidImagePath = wapObjectStem.imageMetadata.pidImagePath,
-    )
+    )!!
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
         ctx.save()

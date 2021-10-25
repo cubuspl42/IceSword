@@ -2,6 +2,7 @@ package icesword
 
 import TextureBank
 import icesword.editor.WapObjectPrototype
+import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 
@@ -35,12 +36,14 @@ class CombinedRezIndex(
             imageSetId = imageSetId,
             i = i,
         )?.let { metadata ->
-            val texture = textureBank.getImageTexture(
+            val textureOrNull = textureBank.getImageTexture(
                 pidImagePath = metadata.pidImagePath,
             )
 
+            val size = textureOrNull?.sourceRect?.size ?: IntSize.ZERO
+
             metadata.copy(
-                size = texture.sourceRect.size,
+                size = size,
             )
         }
 }

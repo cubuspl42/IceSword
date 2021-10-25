@@ -20,7 +20,7 @@ data class TextureBank(
                 // TODO: Support all retails and/or remove this performance trick
                 .filter { metadata ->
                     setOf("GAME/", "LEVEL3/").any { metadata.pidImagePath.startsWith(it) } &&
-                            metadata.pidImagePath.contains("001")
+                            setOf("001", "/TREASURE/").any { metadata.pidImagePath.contains(it) }
                 }
                 .associate {
                     val imagePath = "images/CLAW/${it.pidImagePath.replace(".PID", ".png")}"
@@ -36,8 +36,8 @@ data class TextureBank(
         }
     }
 
-    fun getImageTexture(pidImagePath: String): Texture =
-        imagesTextures[pidImagePath]!!
+    fun getImageTexture(pidImagePath: String): Texture? =
+        imagesTextures[pidImagePath]
 }
 
 private suspend fun loadTileset(): Tileset {
