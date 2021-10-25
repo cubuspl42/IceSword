@@ -2,6 +2,7 @@ package icesword.editor
 
 import icesword.RezIndex
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
+import icesword.editor.InsertionPrototype.ElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.SelectMode.AreaSelectingMode
@@ -11,10 +12,8 @@ import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.contains
 import icesword.frp.map
-import icesword.frp.mapNotNull
 import icesword.frp.mapTillNext
 import icesword.frp.reactTill
-import icesword.frp.sample
 import icesword.frp.switchMap
 import icesword.frp.switchMapNotNull
 import icesword.geometry.IntRect
@@ -213,8 +212,8 @@ class Editor(
 
     val insertionMode: Cell<InsertionMode?> = editorMode.map { it as? InsertionMode }
 
-    val wapObjectInsertionMode: Cell<WapObjectInsertionMode?> =
-        insertionMode.map { it as? WapObjectInsertionMode }
+    val wapObjectAlikeInsertionMode: Cell<WapObjectAlikeInsertionMode?> =
+        insertionMode.map { it as? WapObjectAlikeInsertionMode }
 
     fun enterInsertionMode(
         insertionPrototype: InsertionPrototype,
@@ -232,6 +231,10 @@ class Editor(
                 rezIndex = rezIndex,
                 wapObjects = world.wapObjects,
                 insertionPrototype = insertionPrototype,
+            )
+            is ElevatorInsertionPrototype -> ElevatorInsertionMode(
+                world = world,
+                rezIndex = rezIndex,
             )
         }
 

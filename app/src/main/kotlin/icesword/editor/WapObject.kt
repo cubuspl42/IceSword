@@ -197,11 +197,15 @@ sealed class WapObjectPrototype {
     }
 }
 
+interface WapObjectExportable {
+    fun exportWapObject(): Wwd.Object_
+}
+
 class WapObject(
     rezIndex: RezIndex,
     val wapObjectPrototype: WapObjectPrototype,
     initialPosition: IntVec2,
-) : Entity() {
+) : Entity(), WapObjectExportable {
 
     override val entityPosition = EntityPixelPosition(
         initialPosition = initialPosition,
@@ -230,7 +234,7 @@ class WapObject(
         return hitBox.overlaps(area)
     }
 
-    fun export(): Wwd.Object_ {
+    override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
 
         return wapObjectPrototype.wwdObjectPrototype.copy(

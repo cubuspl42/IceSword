@@ -6,7 +6,6 @@ import html.MouseButton
 import html.MousePosition
 import html.clientPosition
 import html.createHtmlElement
-import html.onClick
 import html.onKeyDown
 import html.onMouseDown
 import html.onMouseDrag
@@ -19,7 +18,7 @@ import icesword.editor.InsertWapObjectCommand
 import icesword.editor.OffsetTilesView
 import icesword.editor.SelectMode
 import icesword.editor.Tool
-import icesword.editor.WapObjectInsertionMode
+import icesword.editor.WapObjectAlikeInsertionMode
 import icesword.editor.World
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
@@ -44,6 +43,7 @@ import icesword.scene.TileLayer
 import icesword.scene.WapObjectStemNode
 import icesword.scene.createAreaSelectionOverlayElement
 import icesword.scene.createElasticOverlayElement
+import icesword.scene.createElevatorOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
 import icesword.scene.createStartPointOverlayElement
 import icesword.scene.createWapObjectOverlayElement
@@ -100,7 +100,7 @@ fun worldView(
                 root = root,
                 tillDetach = tillNext,
             )
-            is WapObjectInsertionMode -> setupWapObjectInsertionModeController(
+            is WapObjectAlikeInsertionMode -> setupWapObjectAlikeInsertionModeController(
                 world = editor.world,
                 insertionMode = mode,
                 root = root,
@@ -131,7 +131,7 @@ fun worldView(
         val viewTransform = world.cameraFocusPoint.map { -it }
 
         val wapObjectPreviewNode =
-            editor.wapObjectInsertionMode.switchMapNotNull { insertionMode ->
+            editor.wapObjectAlikeInsertionMode.switchMapNotNull { insertionMode ->
                 insertionMode.wapObjectPreview.mapNotNull {
                     WapObjectStemNode(
                         textureBank = textureBank,
@@ -162,6 +162,12 @@ fun worldView(
                             WapObjectStemNode(
                                 textureBank = textureBank,
                                 wapObjectStem = it.stem,
+                            )
+                        },
+                        world.elevators.map(tag = "") {
+                            WapObjectStemNode(
+                                textureBank = textureBank,
+                                wapObjectStem = it.wapObjectStem,
                             )
                         },
                         DynamicSet.ofSingle(
@@ -267,6 +273,18 @@ fun worldView(
                                             viewport = this,
                                             viewTransform = viewTransform,
                                             wapObject = it,
+                                            tillDetach = tillDetach,
+                                        )
+                                    },
+                                    world.elevators.map(
+                                        tag = "WorldView/buildOverlayElements/ropes.map",
+                                    ) {
+                                        createElevatorOverlayElement(
+                                            editor = editor,
+                                            svg = svg,
+                                            viewport = this,
+                                            viewTransform = viewTransform,
+                                            elevator = it,
                                             tillDetach = tillDetach,
                                         )
                                     },
@@ -385,9 +403,9 @@ fun setupBasicInsertionModeController(
         }
 }
 
-fun setupWapObjectInsertionModeController(
+fun setupWapObjectAlikeInsertionModeController(
     world: World,
-    insertionMode: WapObjectInsertionMode,
+    insertionMode: WapObjectAlikeInsertionMode,
     root: HTMLElement,
     tillDetach: Till,
 ) {

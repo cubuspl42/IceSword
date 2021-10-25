@@ -102,10 +102,9 @@ fun editorSideBar(
                         wapObjectPrototype = CrumblingPegPrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObjectButton(
+                    createInsertElevatorButton(
                         editor = editor,
                         text = "Elevator",
-                        wapObjectPrototype = ElevatorPrototype,
                         tillDetach = tillDetach,
                     ),
 
@@ -282,6 +281,18 @@ private fun createInsertWapObjectButton(
         insertionPrototype = WapObjectInsertionPrototype(
             wapObjectPrototype = wapObjectPrototype,
         ),
+        tillDetach = tillDetach,
+    )
+
+private fun createInsertElevatorButton(
+    editor: Editor,
+    text: String,
+    tillDetach: Till,
+): HTMLElement =
+    createInsertEntityButton(
+        editor = editor,
+        text = text,
+        insertionPrototype = ElevatorInsertionPrototype,
         tillDetach = tillDetach,
     )
 

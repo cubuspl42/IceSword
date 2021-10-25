@@ -30,6 +30,7 @@ class World(
     initialKnotMeshes: Set<KnotMesh>,
     initialElastics: Set<Elastic>,
     initialWapObjects: Set<WapObject>,
+    initialElevators: Set<Elevator>,
 ) {
     companion object {
         private const val wwdPlaneIndex = 1
@@ -95,6 +96,7 @@ class World(
                 initialStartPoint = startPoint,
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
+                initialElevators = emptySet(),
                 initialWapObjects = emptySet()
             )
         }
@@ -126,6 +128,12 @@ class World(
                 )
             }.toSet()
 
+            val initialElevators = worldData.elevators.map {
+                Elevator(
+                    rezIndex = rezIndex,
+                    initialPosition = it.position,
+                )
+            }.toSet()
 
             val initialWapObjects = (worldData.wapObjects + ropes + crumblingPegs).map {
                 WapObject.load(
@@ -139,6 +147,7 @@ class World(
                 initialStartPoint = worldData.startPoint,
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
+                initialElevators = initialElevators,
                 initialWapObjects = initialWapObjects,
             )
         }
@@ -178,12 +187,24 @@ class World(
     val wapObjects: MutableDynamicSet<WapObject>
         get() = _wapObjects
 
+    private val _elevators = MutableDynamicSet.of(
+        initialElevators,
+    )
+
+    val elevators: DynamicSet<Elevator>
+        get() = _elevators
+
+    fun insertElevator(elevator: Elevator) {
+        _elevators.add(elevator)
+    }
+
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
             setOf(
                 metaEntities,
                 elastics,
                 knotMeshLayer.knotMeshes,
+                elevators,
                 wapObjects,
             ),
         )
@@ -225,7 +246,10 @@ class World(
             newTiles[k] = tileId
         }
 
-        val objects = wapObjects.volatileContentView.map { it.export() }
+        val wapObjectExportables: Set<WapObjectExportable> =
+            (wapObjects.volatileContentView + elevators.volatileContentView)
+
+        val objects = wapObjectExportables.map { it.exportWapObject() }
 
         val newActionPlane = actionPlane.copy(
             tiles = newTiles,
@@ -255,6 +279,9 @@ class World(
         val elastics = metaTileLayer.elastics.volatileContentView
             .map { it.toData() }.toSet()
 
+        val elevators = elevators.volatileContentView
+            .map { it.toData() }.toSet()
+
         val wapObjects = wapObjects.volatileContentView
             .map { it.toData() }.toSet()
 
@@ -262,6 +289,7 @@ class World(
             startPoint = startPoint,
             knotMeshes = knotMeshes,
             elastics = elastics,
+            elevators = elevators,
             wapObjects = wapObjects,
         )
     }
@@ -280,9 +308,9 @@ data class WorldData(
     val elastics: Set<ElasticData>,
     val ropes: Set<LegacyWapObjectData> = emptySet(),
     val crumblingPegs: Set<LegacyWapObjectData> = emptySet(),
+    val elevators: Set<ElevatorData> = emptySet(),
     val wapObjects: Set<WapObjectData> = emptySet(),
 )
-
 
 
 @Serializable

@@ -2,8 +2,10 @@ package icesword.editor
 
 import icesword.RezIndex
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
+import icesword.editor.InsertionPrototype.ElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
+import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.frp.Cell
 import icesword.frp.CellSlot
 import icesword.frp.MutableDynamicSet
@@ -29,13 +31,15 @@ sealed interface InsertionPrototype {
     value class WapObjectInsertionPrototype(
         val wapObjectPrototype: WapObjectPrototype,
     ) : InsertionPrototype
+
+    object ElevatorInsertionPrototype : InsertionPrototype
 }
 
-interface InsertionMode : EditorMode {
+sealed interface InsertionMode : EditorMode {
     val insertionPrototype: InsertionPrototype
 }
 
-interface BasicInsertionMode : InsertionMode {
+sealed interface BasicInsertionMode : InsertionMode {
     fun insert(insertionWorldPoint: IntVec2)
 }
 
@@ -77,10 +81,9 @@ data class InsertWapObjectCommand(
     val insertionWorldPoint: IntVec2,
 )
 
-class WapObjectInsertionMode(
+abstract class WapObjectAlikeInsertionMode(
     private val rezIndex: RezIndex,
-    private val wapObjects: MutableDynamicSet<WapObject>,
-    override val insertionPrototype: WapObjectInsertionPrototype,
+    private val wapObjectPrototype: WapObjectPrototype,
 ) : InsertionMode {
     private val _placementWorldPointSlot = CellSlot<IntVec2>()
 
@@ -88,7 +91,7 @@ class WapObjectInsertionMode(
         _placementWorldPointSlot.linkedCell.mapNotNull { placementPosition ->
             WapObjectStem(
                 rezIndex = rezIndex,
-                wapObjectPrototype = insertionPrototype.wapObjectPrototype,
+                wapObjectPrototype = wapObjectPrototype,
                 position = placementPosition,
             )
         }
@@ -108,11 +111,41 @@ class WapObjectInsertionMode(
         }
     }
 
-    private fun insert(insertionWorldPoint: IntVec2) {
+    protected abstract fun insert(insertionWorldPoint: IntVec2)
+}
+
+open class WapObjectInsertionMode(
+    private val rezIndex: RezIndex,
+    private val wapObjects: MutableDynamicSet<WapObject>,
+    override val insertionPrototype: WapObjectInsertionPrototype,
+) : WapObjectAlikeInsertionMode(
+    rezIndex = rezIndex,
+    wapObjectPrototype = insertionPrototype.wapObjectPrototype,
+) {
+    override fun insert(insertionWorldPoint: IntVec2) {
         wapObjects.add(
             WapObject(
                 rezIndex = rezIndex,
                 wapObjectPrototype = insertionPrototype.wapObjectPrototype,
+                initialPosition = insertionWorldPoint,
+            )
+        )
+    }
+}
+
+class ElevatorInsertionMode(
+    private val world: World,
+    private val rezIndex: RezIndex,
+) : WapObjectAlikeInsertionMode(
+    rezIndex = rezIndex,
+    wapObjectPrototype = ElevatorPrototype,
+) {
+    override val insertionPrototype = ElevatorInsertionPrototype
+
+    override fun insert(insertionWorldPoint: IntVec2) {
+        world.insertElevator(
+            elevator = Elevator(
+                rezIndex = rezIndex,
                 initialPosition = insertionWorldPoint,
             )
         )
