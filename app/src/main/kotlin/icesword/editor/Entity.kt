@@ -16,20 +16,31 @@ import icesword.tileTopLeftCorner
 //    }
 //}
 
-interface EntityTileOffset {
-    val tileOffset: Cell<IntVec2>
-
+interface EntityPosition {
     val position: Cell<IntVec2>
 
     fun setPosition(newPosition: IntVec2)
 }
 
-class SimpleEntityTileOffset(
+class EntityPixelPosition(
+    initialPosition: IntVec2,
+) : EntityPosition {
+    private val _position = MutCell(initialPosition)
+
+    override val position: Cell<IntVec2>
+        get() = _position
+
+    override fun setPosition(newPosition: IntVec2) {
+        _position.set(newPosition)
+    }
+}
+
+class EntityTilePosition(
     initialTileOffset: IntVec2,
-) : EntityTileOffset {
+) : EntityPosition {
     private val _tileOffset = MutCell(initialTileOffset)
 
-    override val tileOffset: Cell<IntVec2>
+    val tileOffset: Cell<IntVec2>
         get() = _tileOffset
 
     override val position: Cell<IntVec2> by lazy {
@@ -41,7 +52,15 @@ class SimpleEntityTileOffset(
     }
 }
 
-abstract class Entity : EntityTileOffset {
+abstract class Entity {
+    abstract val entityPosition: EntityPosition
+
+    val position by lazy { entityPosition.position }
+
+    fun setPosition(newPosition: IntVec2) {
+        entityPosition.setPosition(newPosition)
+    }
+
     abstract fun isSelectableIn(area: IntRect): Boolean
 
     fun move(

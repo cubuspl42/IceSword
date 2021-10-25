@@ -12,25 +12,19 @@ import icesword.editor.Elastic
 import icesword.editor.Entity
 import icesword.editor.MetaTileCluster
 import icesword.frp.Cell
-import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.changesUnits
-import icesword.frp.contains
 import icesword.frp.getKeys
 import icesword.frp.map
-import icesword.frp.mapNotNull
 import icesword.frp.mergeWith
 import icesword.frp.reactTill
-import icesword.frp.switchMap
-import icesword.frp.switchMapNotNull
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileRect
-import icesword.tileTopLeftCorner
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
 import org.w3c.dom.CanvasRenderingContext2D
@@ -64,48 +58,40 @@ class ElasticUi private constructor(
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
 
         val viewTransform = this.viewTransform.sample()
-        val tileOffset = elastic.tileOffset.sample()
-        val size = elastic.size.sample()
+        val bounds = elastic.bounds.sample()
         val isSelected = isSelected.sample()
-
-        val localTileCoords = localTileCoords.volatileContentView
 
         ctx.strokeStyle = if (isSelected) "red" else "rgba(103, 103, 131, 0.3)"
 
-        localTileCoords.forEach { localTileCoord ->
-            val globalTileCoord = tileOffset + localTileCoord
-            val rect = tileRect(globalTileCoord).translate(viewTransform)
+        bounds.points().forEach {  globalTileCoord ->
+            val viewTileRect = tileRect(globalTileCoord).translate(viewTransform)
 
             ctx.lineWidth = 1.0
 
             ctx.strokeRect(
-                x = rect.xMin.toDouble(),
-                y = rect.yMin.toDouble(),
-                w = rect.width.toDouble(),
-                h = rect.height.toDouble(),
+                x = viewTileRect.xMin.toDouble(),
+                y = viewTileRect.yMin.toDouble(),
+                w = viewTileRect.width.toDouble(),
+                h = viewTileRect.height.toDouble(),
             )
         }
 
-        val sizeRect = IntRect(
-            tileTopLeftCorner(tileOffset),
-            size * TILE_SIZE,
-        ).translate(viewTransform)
+        val viewBounds = bounds.translate(viewTransform)
 
         ctx.lineWidth = 4.0
 
         ctx.strokeRect(
-            x = sizeRect.xMin.toDouble(),
-            y = sizeRect.yMin.toDouble(),
-            w = sizeRect.width.toDouble(),
-            h = sizeRect.height.toDouble(),
+            x = viewBounds.xMin.toDouble(),
+            y = viewBounds.yMin.toDouble(),
+            w = viewBounds.width.toDouble(),
+            h = viewBounds.height.toDouble(),
         )
     }
 
     override val onDirty: Stream<Unit> =
         viewTransform.values().units()
             .mergeWith(metaTileCluster.localMetaTiles.changesUnits())
-            .mergeWith(elastic.tileOffset.values().units())
-            .mergeWith(elastic.size.values().units())
+            .mergeWith(elastic.bounds.values().units())
             .mergeWith(isSelected.values().units())
             .mergeWith(localTileCoords.changes.units())
 }

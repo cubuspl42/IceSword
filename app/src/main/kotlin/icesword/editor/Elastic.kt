@@ -105,7 +105,7 @@ class Elastic(
     initialBounds: IntRect,
 ) :
     Entity(),
-    EntityTileOffset {
+    EntityPosition {
 
     companion object {
         fun load(data: ElasticData): Elastic =
@@ -115,10 +115,24 @@ class Elastic(
             )
     }
 
+    inner class BoundsEntityPosition : EntityPosition {
+        override val position: Cell<IntVec2> by lazy {
+            bounds.map { it.topLeft * TILE_SIZE }
+        }
+
+        override fun setPosition(newPosition: IntVec2) {
+            _bounds.update { b: IntRect ->
+                b.copy(position = newPosition.divRound(TILE_SIZE))
+            }
+        }
+    }
+
     private val _bounds = MutCell(initialBounds)
 
     val bounds: Cell<IntRect>
         get() = _bounds
+
+    override val entityPosition = BoundsEntityPosition()
 
     fun resizeTopLeft(deltaTileCoord: Cell<IntVec2>, till: Till) = resize(
         deltaTileCoord = deltaTileCoord,
@@ -169,11 +183,10 @@ class Elastic(
 
     val size = _bounds.map { it.size }
 
-    // TODO: Nuke?
-    override val tileOffset: Cell<IntVec2> = bounds.map { it.topLeft }
+    private val boundsTopLeft = bounds.map { it.topLeft }
 
     val metaTileCluster = MetaTileCluster(
-        tileOffset = tileOffset,
+        tileOffset = boundsTopLeft,
         localMetaTiles = DynamicMap.diff(
             size.map { prototype.buildMetaTiles(it) },
             tag = "metaTileCluster.localMetaTilesDynamic",
@@ -189,15 +202,7 @@ class Elastic(
     override fun isSelectableIn(area: IntRect): Boolean =
         (bounds.sample() * TILE_SIZE).overlaps(area)
 
-    override val position: Cell<IntVec2> by lazy {
-        bounds.map { it.topLeft * TILE_SIZE }
-    }
-
-    override fun setPosition(newPosition: IntVec2) {
-        _bounds.update { b: IntRect -> b.copy(position = newPosition.divRound(TILE_SIZE)) }
-    }
-
-    override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
+    override fun toString(): String = "MetaTileCluster(boundsTopLeft=${boundsTopLeft.sample()})"
 
     fun expandRight() {
         _bounds.update { b: IntRect ->

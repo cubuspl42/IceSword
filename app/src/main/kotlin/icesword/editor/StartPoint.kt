@@ -11,13 +11,11 @@ private const val hitBoxRadius = 32
 
 class StartPoint(
     initialPosition: IntVec2,
-) :
-    Entity() {
+) : Entity() {
 
-    private val _position = MutCell(initialPosition)
-
-    override val position: Cell<IntVec2>
-        get() = _position
+    override val entityPosition = EntityPixelPosition(
+        initialPosition = initialPosition,
+    )
 
     override fun isSelectableIn(area: IntRect): Boolean {
         val hitBox = IntRect.fromCenter(
@@ -26,14 +24,6 @@ class StartPoint(
         )
 
         return hitBox.overlaps(area)
-    }
-
-    // TODO: Nuke?
-    override val tileOffset: Cell<IntVec2> =
-        position.map { it.divRound(TILE_SIZE) }
-
-    override fun setPosition(newPosition: IntVec2) {
-        _position.set(newPosition)
     }
 
     override fun toString(): String =

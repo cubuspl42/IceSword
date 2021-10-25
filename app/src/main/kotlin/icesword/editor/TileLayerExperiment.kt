@@ -27,10 +27,14 @@ data class CombinedTilesView(
 class TileEntity(
     initialTileOffset: IntVec2,
 ) :
-    Entity(),
-    EntityTileOffset by SimpleEntityTileOffset(
+    Entity() {
+
+    override val entityPosition = EntityTilePosition(
         initialTileOffset = initialTileOffset,
-    ) {
+    )
+
+    private val tileOffset = entityPosition.tileOffset
+
     override fun isSelectableIn(area: IntRect): Boolean =
         false
 

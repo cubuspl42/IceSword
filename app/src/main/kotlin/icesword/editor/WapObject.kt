@@ -201,8 +201,11 @@ class WapObject(
     rezIndex: RezIndex,
     val wapObjectPrototype: WapObjectPrototype,
     initialPosition: IntVec2,
-) :
-    Entity() {
+) : Entity() {
+
+    override val entityPosition = EntityPixelPosition(
+        initialPosition = initialPosition,
+    )
 
     companion object {
         fun load(
@@ -216,12 +219,6 @@ class WapObject(
             )
     }
 
-    private val _position = MutCell(initialPosition)
-
-    override val position: Cell<IntVec2>
-        get() = _position
-
-
     val stem = WapObjectStem(
         rezIndex = rezIndex,
         wapObjectPrototype = wapObjectPrototype,
@@ -231,14 +228,6 @@ class WapObject(
     override fun isSelectableIn(area: IntRect): Boolean {
         val hitBox = stem.boundingBox.sample()
         return hitBox.overlaps(area)
-    }
-
-    // TODO: Deduplicate!
-    override val tileOffset: Cell<IntVec2> =
-        position.map { it.divRound(TILE_SIZE) }
-
-    override fun setPosition(newPosition: IntVec2) {
-        _position.set(newPosition)
     }
 
     fun export(): Wwd.Object_ {
@@ -259,7 +248,6 @@ class WapObject(
     override fun toString(): String =
         "WapObject()"
 }
-
 
 @Serializable
 data class WapObjectData(

@@ -3,6 +3,7 @@
 package icesword.editor
 
 import icesword.editor.KnotPrototype.*
+import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.MutableDynamicSet
 import icesword.frp.adjust
@@ -107,10 +108,14 @@ class KnotMesh(
     initialTileOffset: IntVec2,
     initialLocalKnots: Set<IntVec2>,
 ) :
-    Entity(),
-    EntityTileOffset by SimpleEntityTileOffset(
+    Entity() {
+
+    override val entityPosition = EntityTilePosition(
         initialTileOffset = initialTileOffset,
-    ) {
+    )
+
+    val tileOffset: Cell<IntVec2> =
+        entityPosition.tileOffset
 
     companion object {
         fun createSquare(
