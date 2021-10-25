@@ -180,6 +180,21 @@ sealed class WapObjectPrototype {
             imageSet = encode("LEVEL_RAT"),
         )
     }
+
+
+    @Serializable
+    object ElevatorPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_ELEVATOR1",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("Elevator"),
+            imageSet = encode("LEVEL_ELEVATOR1"),
+        )
+    }
 }
 
 class WapObject(

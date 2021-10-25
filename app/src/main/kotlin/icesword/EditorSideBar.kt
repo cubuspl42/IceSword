@@ -1,6 +1,5 @@
 package icesword
 
-import html.createButton
 import html.createHeading4
 import html.createHtmlElement
 import icesword.editor.Editor
@@ -22,6 +21,7 @@ import icesword.editor.WapObjectPrototype.CrossTreasurePrototype
 import icesword.editor.WapObjectPrototype.CrownTreasurePrototype
 import icesword.editor.WapObjectPrototype.CrumblingPegPrototype
 import icesword.editor.WapObjectPrototype.CutThroatPrototype
+import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.editor.WapObjectPrototype.GeckoTreasurePrototype
 import icesword.editor.WapObjectPrototype.RatPrototype
 import icesword.editor.WapObjectPrototype.RingTreasurePrototype
@@ -90,85 +90,93 @@ fun editorSideBar(
                         knotPrototype = OvergroundRockPrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Rope",
                         wapObjectPrototype = RopePrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "CrumblingPeg",
                         wapObjectPrototype = CrumblingPegPrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
+                        editor = editor,
+                        text = "Elevator",
+                        wapObjectPrototype = ElevatorPrototype,
+                        tillDetach = tillDetach,
+                    ),
+
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Coin",
                         wapObjectPrototype = CoinPrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Cross (treasure)",
                         wapObjectPrototype = CrossTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Scepter (treasure)",
                         wapObjectPrototype = ScepterTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Crown (treasure)",
                         wapObjectPrototype = CrownTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Chalice (treasure)",
                         wapObjectPrototype = ChaliceTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Ring (treasure)",
                         wapObjectPrototype = RingTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Gecko (treasure)",
                         wapObjectPrototype = GeckoTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Skull (treasure)",
                         wapObjectPrototype = SkullTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Robber Thief",
                         wapObjectPrototype = RobberThiefPrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Cut Throat",
                         wapObjectPrototype = CutThroatPrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObject(
+                    createInsertWapObjectButton(
                         editor = editor,
                         text = "Rat",
                         wapObjectPrototype = RatPrototype,
                         tillDetach = tillDetach,
                     ),
-                ), 
+                ),
             ),
             createSection(
                 title = "Knot brush",
@@ -262,7 +270,7 @@ private fun createInsertKnotMeshButton(
     )
 }
 
-private fun createInsertWapObject(
+private fun createInsertWapObjectButton(
     editor: Editor,
     text: String,
     wapObjectPrototype: WapObjectPrototype,
