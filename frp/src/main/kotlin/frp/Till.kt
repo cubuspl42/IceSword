@@ -28,9 +28,6 @@ class TillMarker : Till, SimpleObservable<Unit>("TillMarker") {
 
     override fun wasReached(): Boolean = false
 
-    override fun subscribe(handler: (Unit) -> Unit): Subscription =
-        Subscription.noop()
-
     fun markReached() {
         if (wasReached()) throw IllegalStateException()
 

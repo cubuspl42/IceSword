@@ -39,10 +39,23 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
 
-class ElasticUi(
+class ElasticUi private constructor(
+    private val editor: Editor,
     private val viewTransform: Cell<IntVec2>,
     private val elastic: Elastic,
+    private val isSelected: Cell<Boolean>,
 ) : Node {
+    constructor(
+        editor: Editor,
+        viewTransform: Cell<IntVec2>,
+        elastic: Elastic
+    ) : this(
+        editor = editor,
+        viewTransform = viewTransform,
+        elastic = elastic,
+        isSelected = editor.isEntitySelected(elastic)
+    )
+
     private val metaTileCluster: MetaTileCluster
         get() = elastic.metaTileCluster
 
@@ -53,7 +66,7 @@ class ElasticUi(
         val viewTransform = this.viewTransform.sample()
         val tileOffset = elastic.tileOffset.sample()
         val size = elastic.size.sample()
-        val isSelected = elastic.isSelected.sample()
+        val isSelected = isSelected.sample()
 
         val localTileCoords = localTileCoords.volatileContentView
 
@@ -93,7 +106,7 @@ class ElasticUi(
             .mergeWith(metaTileCluster.localMetaTiles.changesUnits())
             .mergeWith(elastic.tileOffset.values().units())
             .mergeWith(elastic.size.values().units())
-            .mergeWith(elastic.isSelected.values().units())
+            .mergeWith(isSelected.values().units())
             .mergeWith(localTileCoords.changes.units())
 }
 
@@ -113,7 +126,9 @@ fun createElasticOverlayElement(
         elastic.position,
     ) { vt, ep -> vt + ep }
 
-    val pointerEvents = elastic.isSelected.map {
+    val isSelected = editor.isEntitySelected(elastic)
+
+    val pointerEvents = isSelected.map {
         if (it) null else PointerEvents.none
     }
 
@@ -127,7 +142,7 @@ fun createElasticOverlayElement(
         tillDetach = tillDetach,
     )
 
-    val handleStroke = elastic.isSelected.map {
+    val handleStroke = isSelected.map {
         if (it) "red" else "none"
     }
 
@@ -237,17 +252,19 @@ fun createEntityFrameElement(
             it?.coveredEntities?.contains(entity) ?: Cell.constant(false)
         }
 
-        val pointerEvents = entity.isSelected.map {
+        val isSelected = editor.isEntitySelected(entity)
+
+        val pointerEvents = isSelected.map {
             if (it) null else PointerEvents.none
         }
 
         val stroke = Cell.map2(
-            entity.isSelected,
+            isSelected,
             isAreaSelectionCovered,
-        ) { isSelected, isCovered ->
+        ) { isSel, isCovered ->
             when {
                 isCovered -> "orange"
-                isSelected -> "red"
+                isSel -> "red"
                 else -> "none"
             }
         }

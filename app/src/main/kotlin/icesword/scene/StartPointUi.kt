@@ -79,11 +79,13 @@ fun createStartPointOverlayElement(
         startPoint.position,
     ) { vt, ep -> vt + ep }
 
+    val isSelected = editor.isEntitySelected(startPoint)
+
     val circle = createSvgCircle(
         svg = svg,
         radius = 32.0f,
         translate = rootTranslate,
-        stroke = startPoint.isSelected.map { if (it) "red" else "gray" },
+        stroke = isSelected.map { if (it) "red" else "gray" },
         style = DynamicStyleDeclaration(
             cursor = circleCursor,
         ),

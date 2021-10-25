@@ -78,7 +78,7 @@ class Editor(
 
     private fun buildSelectMode() = object : Tilled<SelectMode> {
         override fun build(till: Till) = SelectMode(
-            world = world,
+            editor = this@Editor,
             tillExit = till,
         )
     }
@@ -132,35 +132,37 @@ class Editor(
         _selectedKnotBrush.set(knotBrush)
     }
 
-    // TODO: Implement multi-entity selection set
-    private val _selectedEntity: MutCell<Entity?> = MutCell(null)
+    private val _selectedEntities: MutCell<Set<Entity>> = MutCell(emptySet())
 
-    val selectedEntity: Cell<Entity?> = _selectedEntity
+    private val selectedEntities: Cell<Set<Entity>> = _selectedEntities
 
-    // FIXME: Port to area selection
-    fun selectEntityAt(worldPosition: IntVec2) {
-        val entities = world.entities.sample()
+    val selectedEntity: Cell<Entity?> =
+        selectedEntities.map { it.singleOrNull() }
 
-        // TODO: Implement multi-entity selection set
-        val selectableEntities = entities.filter { it.isSelectableIn(area = IntRect.ZERO) }
-
-        val selectedEntity = selectedEntity.sample()
-
-        val entityToSelect =
-            selectableEntities.indexOfOrNull(selectedEntity)?.let { index ->
-                val n = selectableEntities.size
-                selectableEntities[(index + 1) % n]
-            } ?: selectableEntities.firstOrNull()
-
-        entityToSelect?.let { entity -> selectEntity(entity) }
+    fun selectEntities(entities: Set<Entity>) {
+        _selectedEntities.set(entities)
     }
 
-    private fun selectEntity(entity: Entity) {
-        _selectedEntity.sample()?.unselect()
-        _selectedEntity.set(entity.also { it.select() })
+    fun isEntitySelected(entity: Entity): Cell<Boolean> =
+        selectedEntities.map { it.contains(entity) }
 
-        println("Entity selected: $entity")
-    }
+    // FIXME: Restore the select-entity-below functionality
+//    fun selectEntityAt(worldPosition: IntVec2) {
+//        val entities = world.entities.sample()
+//
+//        // TODO: Implement multi-entity selection set
+//        val selectableEntities = entities.filter { it.isSelectableIn(area = IntRect.ZERO) }
+//
+//        val selectedEntity = selectedEntity.sample()
+//
+//        val entityToSelect =
+//            selectableEntities.indexOfOrNull(selectedEntity)?.let { index ->
+//                val n = selectableEntities.size
+//                selectableEntities[(index + 1) % n]
+//            } ?: selectableEntities.firstOrNull()
+//
+//        entityToSelect?.let { entity -> selectEntity(entity) }
+//    }
 
     fun paintKnots(
         knotCoord: Cell<IntVec2>,

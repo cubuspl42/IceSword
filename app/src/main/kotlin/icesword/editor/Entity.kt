@@ -42,24 +42,7 @@ class SimpleEntityTileOffset(
 }
 
 abstract class Entity : EntityTileOffset {
-    private val _isSelected = MutCell(false)
-
-    val isSelected: Cell<Boolean>
-        get() = _isSelected
-
-    fun select() {
-        _isSelected.set(true)
-    }
-
-    fun unselect() {
-        _isSelected.set(false)
-    }
-
     abstract fun isSelectableIn(area: IntRect): Boolean
-
-//    private val _tileOffset = MutCell(initialTileOffset)
-//
-//    val tileOffset: Cell<IntVec2> = _tileOffset
 
     fun move(
         positionDelta: Cell<IntVec2>,
@@ -67,13 +50,10 @@ abstract class Entity : EntityTileOffset {
     ) {
         println("Starting to move entity...")
 
-
         val initialPosition = position.sample()
         val targetPosition = positionDelta.map { d -> initialPosition + d }
 
         targetPosition.reactTill(tillStop) {
-//            println("Setting position: $it")
-
             if (position.sample() != it) {
                 setPosition(it)
             }

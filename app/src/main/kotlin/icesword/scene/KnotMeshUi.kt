@@ -16,16 +16,31 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
 
-class KnotMeshUi(
+class KnotMeshUi private constructor(
+    private val editor: Editor,
     private val viewTransform: Cell<IntVec2>,
     private val knotMesh: KnotMesh,
+    private val isSelected: Cell<Boolean>,
 ) : Node {
+    constructor(
+        editor: Editor,
+        viewTransform: Cell<IntVec2>,
+        knotMesh: KnotMesh
+    ) : this(
+        editor = editor,
+        viewTransform = viewTransform,
+        knotMesh = knotMesh,
+        isSelected = editor.isEntitySelected(knotMesh)
+    )
+
+
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
         val viewTransform = this.viewTransform.sample()
         val tileOffset = knotMesh.tileOffset.sample()
         val localKnots = knotMesh.localKnots.volatileContentView
         val localTiles = knotMesh.localTileCoords.volatileContentView
-        val isSelected = knotMesh.isSelected.sample()
+
+        val isSelected = isSelected.sample()
 
         ctx.save()
 
@@ -99,7 +114,7 @@ class KnotMeshUi(
 
     override val onDirty: Stream<Unit> =
         viewTransform.values().units()
-            .mergeWith(knotMesh.isSelected.values().units())
+            .mergeWith(isSelected.values().units())
             .mergeWith(knotMesh.tileOffset.values().units())
             .mergeWith(knotMesh.localKnots.changes.units())
 }

@@ -204,6 +204,7 @@ fun worldView(
                             tag = "WorldView/planeUiLayer/knotMeshes.map",
                         ) { knotMesh ->
                             KnotMeshUi(
+                                editor = editor,
                                 viewTransform = viewTransform,
                                 knotMesh,
                             )
@@ -212,6 +213,7 @@ fun worldView(
                             tag = "WorldView/planeUiLayer/elastics.map",
                         ) {
                             ElasticUi(
+                                editor = editor,
                                 viewTransform = viewTransform,
                                 it,
                             )

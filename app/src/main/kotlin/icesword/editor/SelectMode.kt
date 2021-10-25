@@ -16,9 +16,12 @@ import icesword.geometry.IntVec2
 sealed interface SelectModeState
 
 class SelectMode(
-    private val world: World,
+    private val editor: Editor,
     tillExit: Till,
 ) : EditorMode {
+    private val world: World
+        get() = editor.world
+
     val state: Cell<SelectModeState> = Stream.follow(
         initialValue = object : Tilled<IdleMode> {
             override fun build(till: Till) = IdleMode()
@@ -41,8 +44,8 @@ class SelectMode(
         }
     }
 
-    // TODO: Implement
     private fun selectEntities(entities: Set<Entity>) {
+        editor.selectEntities(entities)
     }
 
     override fun toString(): String = "SelectMode()"
