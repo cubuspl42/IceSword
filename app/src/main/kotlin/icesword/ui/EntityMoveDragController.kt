@@ -16,10 +16,10 @@ class EntityMoveDragController(
     companion object {
         fun create(editor: Editor, entity: Entity): Cell<EntityMoveDragController?> =
             Cell.map2(
-                editor.selectedEntity,
+                editor.isEntitySelected(entity),
                 editor.selectedTool,
-            ) { selectedEntity, selectedTool ->
-                if (selectedEntity == entity && selectedTool == Tool.MOVE) {
+            ) { isSelected, selectedTool ->
+                if (isSelected && selectedTool == Tool.MOVE) {
                     EntityMoveDragController(editor)
                 } else null
             }
@@ -47,17 +47,15 @@ class EntityMoveDragController(
 
         val world = editor.world
 
-        editor.selectedEntity.sample()?.let { selectedEntity ->
-            val worldPosition = world.transformToWorld(mouseDrag.position)
-            val initialWorldPosition = worldPosition.sample()
-            val positionDelta = worldPosition.map {
-                (it - initialWorldPosition)
-            }
-
-            selectedEntity.move(
-                positionDelta = positionDelta,
-                tillStop = mouseDrag.tillEnd,
-            )
+        val worldPosition = world.transformToWorld(mouseDrag.position)
+        val initialWorldPosition = worldPosition.sample()
+        val positionDelta = worldPosition.map {
+            (it - initialWorldPosition)
         }
+
+        editor.moveSelectedEntities(
+            positionDelta = positionDelta,
+            tillStop = mouseDrag.tillEnd,
+        )
     }
 }

@@ -164,6 +164,20 @@ class Editor(
 //        entityToSelect?.let { entity -> selectEntity(entity) }
 //    }
 
+    fun moveSelectedEntities(
+        positionDelta: Cell<IntVec2>,
+        tillStop: Till,
+    ) {
+        val selectedEntities = this.selectedEntities.sample()
+
+        selectedEntities.forEach {
+            it.move(
+                positionDelta = positionDelta,
+                tillStop = tillStop
+            )
+        }
+    }
+
     fun paintKnots(
         knotCoord: Cell<IntVec2>,
         till: Till,
