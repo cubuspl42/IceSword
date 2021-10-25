@@ -138,6 +138,48 @@ sealed class WapObjectPrototype {
         @Transient
         override val treasureImageId: String = "JEWELEDSKULL"
     }
+
+    @Serializable
+    object RobberThiefPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_ROBBERTHIEF",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("RobberThief"),
+            imageSet = encode("LEVEL_ROBBERTHIEF"),
+        )
+    }
+
+    @Serializable
+    object CutThroatPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_CUTTHROAT",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("RobberThief"),
+            imageSet = encode("LEVEL_CUTTHROAT"),
+        )
+    }
+
+    @Serializable
+    object RatPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_RAT",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("Rat"),
+            imageSet = encode("LEVEL_RAT"),
+        )
+    }
 }
 
 class WapObject(

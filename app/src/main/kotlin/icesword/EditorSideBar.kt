@@ -21,8 +21,11 @@ import icesword.editor.WapObjectPrototype.CoinPrototype
 import icesword.editor.WapObjectPrototype.CrossTreasurePrototype
 import icesword.editor.WapObjectPrototype.CrownTreasurePrototype
 import icesword.editor.WapObjectPrototype.CrumblingPegPrototype
+import icesword.editor.WapObjectPrototype.CutThroatPrototype
 import icesword.editor.WapObjectPrototype.GeckoTreasurePrototype
+import icesword.editor.WapObjectPrototype.RatPrototype
 import icesword.editor.WapObjectPrototype.RingTreasurePrototype
+import icesword.editor.WapObjectPrototype.RobberThiefPrototype
 import icesword.editor.WapObjectPrototype.RopePrototype
 import icesword.editor.WapObjectPrototype.ScepterTreasurePrototype
 import icesword.editor.WapObjectPrototype.SkullTreasurePrototype
@@ -147,7 +150,25 @@ fun editorSideBar(
                         wapObjectPrototype = SkullTreasurePrototype,
                         tillDetach = tillDetach,
                     ),
-                ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "Robber Thief",
+                        wapObjectPrototype = RobberThiefPrototype,
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "Cut Throat",
+                        wapObjectPrototype = CutThroatPrototype,
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertWapObject(
+                        editor = editor,
+                        text = "Rat",
+                        wapObjectPrototype = RatPrototype,
+                        tillDetach = tillDetach,
+                    ),
+                ), 
             ),
             createSection(
                 title = "Knot brush",
