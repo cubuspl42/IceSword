@@ -129,9 +129,9 @@ class World(
             }.toSet()
 
             val initialElevators = worldData.elevators.map {
-                Elevator(
+                Elevator.load(
                     rezIndex = rezIndex,
-                    initialPosition = it.position,
+                    data = it,
                 )
             }.toSet()
 

@@ -15,10 +15,15 @@ import icesword.wwd.Wwd
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
+@Serializable
 data class VerticalRange(
     val minX: Int,
     val maxX: Int,
 ) {
+    companion object {
+        val ZERO = VerticalRange(minX = 0, maxX = 0)
+    }
+
     val width: Int
         get() = maxX - minX
 
@@ -26,13 +31,22 @@ data class VerticalRange(
         VerticalRange(minX + tx, maxX + tx)
 }
 
-
 class Elevator(
     rezIndex: RezIndex,
     initialPosition: IntVec2,
+    initialRelativeMovementRange: VerticalRange,
 ) : Entity(), WapObjectExportable {
+
     companion object {
-        private const val rangeRadius = 48
+        fun load(
+            rezIndex: RezIndex,
+            data: ElevatorData,
+        ): Elevator =
+            Elevator(
+                rezIndex = rezIndex,
+                initialPosition = data.position,
+                initialRelativeMovementRange = data.relativeMovementRange,
+            )
     }
 
     override val entityPosition: EntityPosition =
@@ -47,10 +61,7 @@ class Elevator(
     )
 
     private val relativeMovementRange = MutCell(
-        VerticalRange(
-            minX = -rangeRadius,
-            maxX = rangeRadius
-        )
+        initialValue = initialRelativeMovementRange,
     )
 
     fun resizeMovementRangeMin(
@@ -113,18 +124,23 @@ class Elevator(
     override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
 
+        val movementRange = globalMovementRange.sample()
         return ElevatorPrototype.wwdObjectPrototype.copy(
             x = position.x,
             y = position.y,
+            xMin = movementRange.minX,
+            xMax = movementRange.maxX,
         )
     }
 
     fun toData(): ElevatorData = ElevatorData(
         position = entityPosition.position.sample(),
+        relativeMovementRange = relativeMovementRange.sample(),
     )
 }
 
 @Serializable
 data class ElevatorData(
     val position: IntVec2,
+    val relativeMovementRange: VerticalRange = VerticalRange.ZERO,
 )

@@ -143,10 +143,16 @@ class ElevatorInsertionMode(
     override val insertionPrototype = ElevatorInsertionPrototype
 
     override fun insert(insertionWorldPoint: IntVec2) {
+        val rangeRadius = 48
+
         world.insertElevator(
             elevator = Elevator(
                 rezIndex = rezIndex,
                 initialPosition = insertionWorldPoint,
+                initialRelativeMovementRange = VerticalRange(
+                    minX = -rangeRadius,
+                    maxX = +rangeRadius,
+                )
             )
         )
     }
