@@ -294,7 +294,10 @@ interface MutableDynamicSet<A> : DynamicSet<A> {
     }
 
     fun add(element: A)
+
     fun remove(element: A)
+
+    fun removeAll(elements: Set<A>)
 }
 
 private class MutableDynamicSetImpl<A>(
@@ -330,5 +333,20 @@ private class MutableDynamicSetImpl<A>(
 
             notifyListeners(change)
         }
+    }
+
+    override fun removeAll(elements: Set<A>) {
+        val allWereThere = elements.all { mutableContent.contains(it) }
+
+        if (!allWereThere) {
+            throw IllegalArgumentException("Some elements to remove aren't present in the set")
+        }
+
+        val change = SetChange(
+            added = emptySet(),
+            removed = elements,
+        )
+
+        notifyListeners(change)
     }
 }

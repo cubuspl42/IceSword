@@ -302,6 +302,10 @@ class World(
         )
     }
 
+    fun removeEntities(entities: Set<Entity>) {
+        _entities.removeAll(entities)
+    }
+
     init {
         tiles.changes.subscribe { change ->
 //            println("World.tiles change: $change")

@@ -88,4 +88,8 @@ class MutableValidatedDynamicSet<A>(
     override fun remove(element: A) {
         source.remove(element)
     }
+
+    override fun removeAll(elements: Set<A>) {
+        source.removeAll(elements)
+    }
 }

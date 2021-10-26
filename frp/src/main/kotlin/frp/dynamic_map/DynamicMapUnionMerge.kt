@@ -51,15 +51,11 @@ class DynamicMapUnionMerge<K, V, R>(
                 subscription.unsubscribe()
             }
 
-            if (outerChange.added.size != 1) {
+            if (outerChange.added.size > 1) {
                 throw UnsupportedOperationException("unionMarge outer change added.size != 1 (change: $outerChange)")
             }
 
-            val addedMap = outerChange.added.single()
-
-            if (outerChange.removed.isNotEmpty()) {
-                throw UnsupportedOperationException()
-            }
+            val addedMap = outerChange.added.singleOrNull() ?: DynamicMap.empty()
 
             val addedAffectedEntries = addedMap.volatileContentView.entries
 
@@ -69,17 +65,39 @@ class DynamicMapUnionMerge<K, V, R>(
             val addedUpdatedEntries = addedAffectedEntries.asSequence()
                 .filter { (k, v) -> volatileContentView.containsKey(k) }.toSet()
 
+            val removedAffectedEntries = outerChange.removed.asSequence().flatMap {
+                it.volatileContentView.entries
+            }.toSet()
+
+            val removedUpdated = removedAffectedEntries.asSequence()
+                .mapNotNull { (k, v) ->
+                    val values = allMaps.asSequence().mapNotNull { it.getNow(k) }.toSet()
+                    if (values.isNotEmpty()) k to merge(values)
+                    else null
+                }
+                .toMap()
+
             val added = addedAddedEntries.associate { (k, v) -> k to merge(setOf(v)) }
 
             val updated = addedUpdatedEntries.associate { (k, _) ->
                 k to merge(allMaps.mapNotNull { it.getNow(k) }.toSet())
-            }
+            } + removedUpdated
+
+            val removedEntries = removedAffectedEntries.asSequence()
+                .mapNotNull { (k, v) ->
+                    val values = allMaps.asSequence().mapNotNull { it.getNow(k) }.toSet()
+                    val oldValue = volatileContentView[k]!!
+                    if (values.isEmpty()) k to oldValue
+                    else null
+                }
+                .toMap()
 
             val outChange = MapChange(
                 added = added,
                 updated = updated,
-                removedEntries = emptyMap(),
+                removedEntries = removedEntries,
             )
+
             processChange(outChange)
         }
 

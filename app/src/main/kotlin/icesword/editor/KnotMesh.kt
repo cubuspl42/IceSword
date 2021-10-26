@@ -164,6 +164,9 @@ class KnotMesh(
 
     val globalKnots = globalKnotCoords.associateWith("globalKnots") {
         knotPrototype
+    }.also {
+        // FIXME
+        it.changes.subscribe { }
     }
 
     fun putKnot(globalKnotCoord: IntVec2) {

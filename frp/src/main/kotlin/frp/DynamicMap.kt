@@ -41,7 +41,7 @@ interface DynamicMap<K, V> {
                 .validated(tag = tag)
 
         fun <K, V> fromEntries(
-            entries: DynamicSet<Pair<K, V>>
+            entries: DynamicSet<Pair<K, V>>,
         ): DynamicMap<K, V> =
             FromEntriesDynamicMap(entries, tag = "fromEntries")
 
@@ -56,7 +56,7 @@ interface DynamicMap<K, V> {
 //            )
 
         // FIXME: V/R / merge mess...
-        fun <K, V, R> unionMerge(
+        fun <K, V, R : Any> unionMerge(
             through: MapFactory<K, V>,
             maps: DynamicSet<DynamicMap<K, V>>,
             merge: (Set<V>) -> R,
@@ -87,6 +87,8 @@ interface DynamicMap<K, V> {
                 tag = tag,
             )
                 .validated(tag = tag)
+
+        fun <K, V> empty(): DynamicMap<K, V> = of(emptyMap())
 
 //        private fun <K, V, R> unionMergeDiff(
 //            maps: DynamicSet<DynamicMap<K, V>>,

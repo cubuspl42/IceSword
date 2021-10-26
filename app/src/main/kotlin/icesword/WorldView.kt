@@ -17,6 +17,7 @@ import icesword.frp.contentDynamicView
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNotNull
+import icesword.frp.mapTillRemoved
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
 import icesword.frp.switchMapNotNull
@@ -119,6 +120,8 @@ fun worldView(
                 val tileId = editor.world.tiles.volatileContentView[tileCoord]
                 println("Tile ID @ $tileCoord = $tileId")
             }
+            "Backspace" -> editor.deleteSelectedEntities()
+            "Delete" -> editor.deleteSelectedEntities()
         }
     }
 
@@ -167,18 +170,16 @@ fun worldView(
                                 ),
                             )
                         ),
-                        world.wapObjects.map(
-                            tag = "WorldView/planeUiLayer/ropes.map",
-                        ) {
+                        world.wapObjects.mapTillRemoved(tillAbort = tillDetach) { wapObject, _ ->
                             WapObjectStemNode(
                                 textureBank = textureBank,
-                                wapObjectStem = it.stem,
+                                wapObjectStem = wapObject.stem,
                             )
                         },
-                        world.elevators.map(tag = "") {
+                        world.elevators.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
                             WapObjectStemNode(
                                 textureBank = textureBank,
-                                wapObjectStem = it.wapObjectStem,
+                                wapObjectStem = elevator.wapObjectStem,
                             )
                         },
                         DynamicSet.ofSingle(
@@ -188,16 +189,14 @@ fun worldView(
                 ),
             ),
             buildOverlayElements = { svg ->
-                world.knotMeshes.map(
-                    tag = "WorldView/buildOverlayElements/knotMeshes.map",
-                ) { knotMesh ->
+                world.knotMeshes.mapTillRemoved(tillAbort = tillDetach) { knotMesh, tillRemoved ->
                     createKnotMeshOverlayElement(
                         svg = svg,
                         editor = editor,
                         knotMesh = knotMesh,
                         viewport = this,
                         viewTransform = viewTransform,
-                        tillDetach = tillDetach,
+                        tillDetach = tillRemoved,
                     )
                 }
             },
@@ -216,22 +215,18 @@ fun worldView(
                                 ),
                             )
                         ),
-                        world.knotMeshes.map(
-                            tag = "WorldView/planeUiLayer/knotMeshes.map",
-                        ) { knotMesh ->
+                        world.knotMeshes.mapTillRemoved(tillAbort = tillDetach) { knotMesh, _ ->
                             KnotMeshUi(
                                 editor = editor,
                                 viewTransform = viewTransform,
-                                knotMesh,
+                                knotMesh = knotMesh,
                             )
                         },
-                        world.elastics.map(
-                            tag = "WorldView/planeUiLayer/elastics.map",
-                        ) {
+                        world.elastics.mapTillRemoved(tillAbort = tillDetach) { elastic, _ ->
                             ElasticUi(
                                 editor = editor,
                                 viewTransform = viewTransform,
-                                it,
+                                elastic = elastic,
                             )
                         },
                     ),
@@ -263,40 +258,34 @@ fun worldView(
                                             ),
                                         ),
                                     ),
-                                    world.elastics.map(
-                                        tag = "WorldView/buildOverlayElements/elastics.map",
-                                    ) {
+                                    world.elastics.mapTillRemoved(tillAbort = tillDetach) { elastic, tillRemoved ->
                                         createElasticOverlayElement(
                                             editor = editor,
                                             svg = svg,
-                                            elastic = it,
+                                            elastic = elastic,
                                             viewport = this,
                                             viewTransform = viewTransform,
-                                            tillDetach = tillDetach,
+                                            tillDetach = tillRemoved,
                                         )
                                     },
-                                    world.wapObjects.map(
-                                        tag = "WorldView/buildOverlayElements/ropes.map",
-                                    ) {
+                                    world.wapObjects.mapTillRemoved(tillAbort = tillDetach) { wapObject, tillRemoved ->
                                         createWapObjectOverlayElement(
                                             editor = editor,
                                             svg = svg,
                                             viewport = this,
                                             viewTransform = viewTransform,
-                                            wapObject = it,
-                                            tillDetach = tillDetach,
+                                            wapObject = wapObject,
+                                            tillDetach = tillRemoved,
                                         )
                                     },
-                                    world.elevators.map(
-                                        tag = "WorldView/buildOverlayElements/ropes.map",
-                                    ) {
+                                    world.elevators.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
                                         createElevatorOverlayElement(
                                             editor = editor,
                                             svg = svg,
                                             viewport = this,
                                             viewTransform = viewTransform,
-                                            elevator = it,
-                                            tillDetach = tillDetach,
+                                            elevator = elevator,
+                                            tillDetach = tillRemoved,
                                         )
                                     },
                                     DynamicSet.ofSingle(

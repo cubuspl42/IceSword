@@ -12,8 +12,8 @@ class DynamicSetUnionTest {
     fun testRemovedLast() {
         // Given
 
-        val set1 = MutableDynamicSet(setOf(1, 2, 3, 5))
-        val set2 = MutableDynamicSet(setOf(2, 3, 4))
+        val set1 = MutableDynamicSet.of(setOf(1, 2, 3, 5))
+        val set2 = MutableDynamicSet.of(setOf(2, 3, 4))
 
         val sets = DynamicSet.of(setOf(set1, set2))
 

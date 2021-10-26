@@ -171,7 +171,7 @@ class Editor(
     fun deleteSelectedEntities() {
         val selectedEntities = this.selectedEntities.sample()
 
-        TODO()
+        world.removeEntities(selectedEntities)
     }
 
     fun paintKnots(
