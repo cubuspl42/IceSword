@@ -138,6 +138,8 @@ class Editor(
         _selectedKnotBrush.set(knotBrush)
     }
 
+    // TODO: Restore the select-entity-below functionality
+
     private val _selectedEntities: MutCell<Set<Entity>> = MutCell(emptySet())
 
     private val selectedEntities: Cell<Set<Entity>> = _selectedEntities
@@ -152,24 +154,6 @@ class Editor(
     fun isEntitySelected(entity: Entity): Cell<Boolean> =
         selectedEntities.map { it.contains(entity) }
 
-    // FIXME: Restore the select-entity-below functionality
-//    fun selectEntityAt(worldPosition: IntVec2) {
-//        val entities = world.entities.sample()
-//
-//        // TODO: Implement multi-entity selection set
-//        val selectableEntities = entities.filter { it.isSelectableIn(area = IntRect.ZERO) }
-//
-//        val selectedEntity = selectedEntity.sample()
-//
-//        val entityToSelect =
-//            selectableEntities.indexOfOrNull(selectedEntity)?.let { index ->
-//                val n = selectableEntities.size
-//                selectableEntities[(index + 1) % n]
-//            } ?: selectableEntities.firstOrNull()
-//
-//        entityToSelect?.let { entity -> selectEntity(entity) }
-//    }
-
     fun moveSelectedEntities(
         positionDelta: Cell<IntVec2>,
         tillStop: Till,
@@ -182,6 +166,12 @@ class Editor(
                 tillStop = tillStop
             )
         }
+    }
+
+    fun deleteSelectedEntities() {
+        val selectedEntities = this.selectedEntities.sample()
+
+        TODO()
     }
 
     fun paintKnots(
@@ -220,16 +210,16 @@ class Editor(
     ) {
         val insertionMode = when (insertionPrototype) {
             is ElasticInsertionPrototype -> ElasticInsertionMode(
-                metaTileLayer = world.metaTileLayer,
+                world = world,
                 insertionPrototype = insertionPrototype,
             )
             is KnotMeshInsertionPrototype -> KnotMeshInsertionMode(
-                knotMeshLayer = world.knotMeshLayer,
+                world = world,
                 insertionPrototype = insertionPrototype,
             )
             is WapObjectInsertionPrototype -> WapObjectInsertionMode(
                 rezIndex = rezIndex,
-                wapObjects = world.wapObjects,
+                world = world,
                 insertionPrototype = insertionPrototype,
             )
             is ElevatorInsertionPrototype -> ElevatorInsertionMode(

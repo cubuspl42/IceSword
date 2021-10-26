@@ -100,7 +100,7 @@ fun <A> DynamicSet<A>.trackContent(till: Till): Cell<Set<A>> = content
 //)
 
 fun <A, R> DynamicSet<A>.map(
-    tag: String,
+    tag: String = "map",
     transform: (A) -> R,
 ): DynamicSet<R> =
     MapDynamicSet(
@@ -109,6 +109,12 @@ fun <A, R> DynamicSet<A>.map(
         transform = transform,
         tag = tag,
     ).validated(tag)
+
+fun <A, R : Any> DynamicSet<A>.mapNotNull(
+    tag: String = "mapNotNull",
+    transform: (A) -> R?,
+): DynamicSet<R> =
+    this.map { transform(it) }.filter { it != null }.map { it!! }
 
 fun <A, R> DynamicSet<A>.mapTillRemoved(
     tillAbort: Till,
@@ -231,6 +237,9 @@ fun <A> DynamicSet<A>.filterDynamic(test: (A) -> Cell<Boolean>): DynamicSet<A> =
     this.fuseMap { test(it).map { t -> Pair(it, t) } }
         .filter { it.second }
         .map(tag = "") { it.first }
+
+inline fun <A, reified B : A> DynamicSet<A>.filterType(): DynamicSet<B> =
+    this.mapNotNull { it as? B }
 
 const val enableSetValidation: Boolean = false
 

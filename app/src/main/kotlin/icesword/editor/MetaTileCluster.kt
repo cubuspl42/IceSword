@@ -9,16 +9,6 @@ class MetaTileCluster(
     private val tileOffset: Cell<IntVec2>,
     val localMetaTiles: DynamicMap<IntVec2, MetaTile>,
 ) {
-//    private val globalTileCoordsDiff: DynamicSet<IntVec2> =
-//        DynamicSet.diff(tileOffset.map { tileOffset ->
-//            localMetaTiles.keys.map { tileOffset + it }.toSet()
-//        })
-
-//    private val globalTileCoordsFuseMap: DynamicSet<IntVec2> =
-//        localMetaTilesDynamic.getKeys().fuseMap { localTileCoord ->
-//            tileOffset.map { it + localTileCoord }
-//        }
-
     val globalTileCoords: DynamicSet<IntVec2> =
         localMetaTiles.getKeys().adjust(
             hash = IntVec2.HASH,
@@ -27,37 +17,19 @@ class MetaTileCluster(
             tileOffset + localKnotCoord
         }.also {
             it.changes.subscribe { change ->
-//                println("MetaTileLayer.globalTileCoords change: $change")
             }
         }
 
     fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
         tileOffset.switchMap { localMetaTiles.get(globalTileCoord - it) }
-//            .also {
-//                it.subscribe { metaTile ->
-//                    println("getMetaTileAt($globalTileCoord) -> $metaTile")
-//                }
-//            }
 
     override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
 }
 
 class MetaTileLayer(
     knotMeshLayer: KnotMeshLayer,
-    initialElastics: Set<Elastic>,
+    elastics: DynamicSet<Elastic>,
 ) {
-    private val _elastics = MutableDynamicSet.of(
-        initialElastics,
-    )
-
-    val elastics: DynamicSet<Elastic>
-        get() = _elastics
-
-    fun insertElastic(elastic: Elastic) {
-        _elastics.add(elastic)
-    }
-
-
     private val metaTileClusters = elastics.map(
         tag = "MetaTileLayer/elastics.map"
     ) { it.metaTileCluster }
@@ -69,15 +41,8 @@ class MetaTileLayer(
         ) { it.globalTileCoords }
             .also {
                 it.changes.subscribe { change ->
-//                    println("MetaTileLayer.globalTileCoords change: $change")
                 }
             }
-
-//            .also { dynSet ->
-//                dynSet.content.reactTill(Till.never) {
-//                    println("globalTileCoord (PlaneTiles) content: $it")
-//                }
-//            }
 
     val tiles: DynamicMap<IntVec2, Int> =
         globalTileCoords.associateWithDynamic(
@@ -94,24 +59,7 @@ class MetaTileLayer(
             .associateWith(tag = "buildTileAt($globalTileCoord) / .associateWith") {
                 it.getMetaTileAt(globalTileCoord)
             }
-//            .also { dynMap ->
-//                dynMap.changes.subscribe { change ->
-//                    println("[$globalTileCoord] associateWith change: $change")
-//                }
-//            }
             .fuseValues(tag = "buildTileAt($globalTileCoord) / .fuseValues")
-//            .also { dynMap ->
-//                dynMap.changes.subscribe { change ->
-//                    println("[$globalTileCoord] fuseValues change: $change")
-//                }
-//            }
-//            .filterValuesNotNull(tag = "buildTileAt($globalTileCoord) / .filterValuesNotNull")
-//            .also { dynMap ->
-//                dynMap.changes.subscribe { change ->
-//                    println("[$globalTileCoord] filterValuesNotNull change: $change")
-//                }
-//            }
-
             .valuesSet
 
         return metaTiles.content.map { metaTilesContent ->

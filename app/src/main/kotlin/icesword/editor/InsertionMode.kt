@@ -44,7 +44,7 @@ sealed interface BasicInsertionMode : InsertionMode {
 }
 
 class ElasticInsertionMode(
-    private val metaTileLayer: MetaTileLayer,
+    private val world: World,
     override val insertionPrototype: ElasticInsertionPrototype,
 ) : BasicInsertionMode {
     override fun insert(insertionWorldPoint: IntVec2) {
@@ -58,12 +58,12 @@ class ElasticInsertionMode(
             ),
         )
 
-        metaTileLayer.insertElastic(elastic)
+        world.insertElastic(elastic)
     }
 }
 
 class KnotMeshInsertionMode(
-    private val knotMeshLayer: KnotMeshLayer,
+    private val world: World ,
     override val insertionPrototype: KnotMeshInsertionPrototype,
 ) : BasicInsertionMode {
     override fun insert(insertionWorldPoint: IntVec2) {
@@ -73,7 +73,7 @@ class KnotMeshInsertionMode(
             initialSideLength = 2,
         )
 
-        knotMeshLayer.insertKnotMesh(knotMesh)
+        world.insertKnotMesh(knotMesh)
     }
 }
 
@@ -116,14 +116,14 @@ abstract class WapObjectAlikeInsertionMode(
 
 open class WapObjectInsertionMode(
     private val rezIndex: RezIndex,
-    private val wapObjects: MutableDynamicSet<WapObject>,
+    private val world: World,
     override val insertionPrototype: WapObjectInsertionPrototype,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
     wapObjectPrototype = insertionPrototype.wapObjectPrototype,
 ) {
     override fun insert(insertionWorldPoint: IntVec2) {
-        wapObjects.add(
+        world.insertWapObject(
             WapObject(
                 rezIndex = rezIndex,
                 wapObjectPrototype = insertionPrototype.wapObjectPrototype,

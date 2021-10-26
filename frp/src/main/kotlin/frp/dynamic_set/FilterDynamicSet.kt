@@ -28,7 +28,9 @@ class FilterDynamicSet<A>(
                 removed = removed,
             )
 
-            notifyListeners(outChange)
+            if (!outChange.isEmpty()) {
+                notifyListeners(outChange)
+            }
         }
     }
 

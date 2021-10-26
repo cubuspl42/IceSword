@@ -188,7 +188,7 @@ fun worldView(
                 ),
             ),
             buildOverlayElements = { svg ->
-                world.knotMeshLayer.knotMeshes.map(
+                world.knotMeshes.map(
                     tag = "WorldView/buildOverlayElements/knotMeshes.map",
                 ) { knotMesh ->
                     createKnotMeshOverlayElement(
@@ -216,7 +216,7 @@ fun worldView(
                                 ),
                             )
                         ),
-                        world.knotMeshLayer.knotMeshes.map(
+                        world.knotMeshes.map(
                             tag = "WorldView/planeUiLayer/knotMeshes.map",
                         ) { knotMesh ->
                             KnotMeshUi(

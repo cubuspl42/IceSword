@@ -51,8 +51,8 @@ class DynamicMapUnionMerge<K, V, R>(
                 subscription.unsubscribe()
             }
 
-            if (outerChange.added.size > 1) {
-                throw UnsupportedOperationException()
+            if (outerChange.added.size != 1) {
+                throw UnsupportedOperationException("unionMarge outer change added.size != 1 (change: $outerChange)")
             }
 
             val addedMap = outerChange.added.single()

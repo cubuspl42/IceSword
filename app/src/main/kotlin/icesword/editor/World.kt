@@ -10,6 +10,7 @@ import icesword.frp.DynamicSet
 import icesword.frp.MutCell
 import icesword.frp.MutableDynamicSet
 import icesword.frp.Till
+import icesword.frp.filterType
 import icesword.frp.map
 import icesword.frp.switchMap
 import icesword.frp.syncTill
@@ -158,6 +159,13 @@ class World(
         w.world = this
     }
 
+    private val _entities = MutableDynamicSet.of(
+        initialContent = initialKnotMeshes +
+                initialElastics +
+                initialWapObjects +
+                initialElevators
+    )
+
     val startPointEntity = StartPoint(
         initialPosition = initialStartPoint,
     )
@@ -168,50 +176,50 @@ class World(
         ),
     )
 
-    val knotMeshLayer = KnotMeshLayer(
-        startPoint = initialStartPoint,
-        initialKnotMeshes = initialKnotMeshes,
-    )
-
-    val metaTileLayer = MetaTileLayer(
-        knotMeshLayer = knotMeshLayer,
-        initialElastics = initialElastics,
-    )
-
-    val elastics = metaTileLayer.elastics
-
-    private val _wapObjects = MutableDynamicSet.of(
-        initialWapObjects,
-    )
-
-    val wapObjects: MutableDynamicSet<WapObject>
-        get() = _wapObjects
-
-    private val _elevators = MutableDynamicSet.of(
-        initialElevators,
-    )
-
-    val elevators: DynamicSet<Elevator>
-        get() = _elevators
-
-    fun insertElevator(elevator: Elevator) {
-        _elevators.add(elevator)
-    }
-
     val entities: DynamicSet<Entity> = DynamicSet.union(
         DynamicSet.of(
             setOf(
+                _entities,
                 metaEntities,
-                elastics,
-                knotMeshLayer.knotMeshes,
-                elevators,
-                wapObjects,
             ),
         )
     ).also {
         // FIXME
         it.changes.subscribe { }
     }
+
+    val knotMeshes: DynamicSet<KnotMesh> = entities.filterType()
+
+    val elastics: DynamicSet<Elastic> = entities.filterType()
+
+    val wapObjects: DynamicSet<WapObject> = entities.filterType()
+
+    val elevators: DynamicSet<Elevator> = entities.filterType()
+
+    fun insertKnotMesh(knotMesh: KnotMesh) {
+        _entities.add(knotMesh)
+    }
+
+    fun insertElastic(elastic: Elastic) {
+        _entities.add(elastic)
+    }
+
+    fun insertWapObject(wapObject: WapObject) {
+        _entities.add(wapObject)
+    }
+
+    fun insertElevator(elevator: Elevator) {
+        _entities.add(elevator)
+    }
+
+    val knotMeshLayer = KnotMeshLayer(
+        knotMeshes = knotMeshes,
+    )
+
+    val metaTileLayer = MetaTileLayer(
+        knotMeshLayer = knotMeshLayer,
+        elastics = elastics,
+    )
 
     val tiles = metaTileLayer.tiles
 
@@ -273,10 +281,10 @@ class World(
     fun toData(): WorldData {
         val startPoint: IntVec2 = startPointEntity.position.sample()
 
-        val knotMeshes = knotMeshLayer.knotMeshes.volatileContentView
+        val knotMeshes = knotMeshes.volatileContentView
             .map { it.toData() }.toSet()
 
-        val elastics = metaTileLayer.elastics.volatileContentView
+        val elastics = elastics.volatileContentView
             .map { it.toData() }.toSet()
 
         val elevators = elevators.volatileContentView
