@@ -69,6 +69,8 @@ fun createSvgRect(
     svg: SVGSVGElement,
     size: Cell<IntSize>,
     translate: Cell<IntVec2>,
+    fill: Cell<String>? = null,
+    fillOpacity: Cell<Double>? = null,
     stroke: Cell<String>? = null,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
@@ -88,6 +90,20 @@ fun createSvgRect(
     )
 
     style?.linkTo(rect.style, tillDetach)
+
+    linkAttribute(
+        element = rect,
+        attributeName = "fill",
+        attribute = fill,
+        till = tillDetach,
+    )
+
+    linkAttribute(
+        element = rect,
+        attributeName = "fill-opacity",
+        attribute = fillOpacity?.map { it.toString() },
+        till = tillDetach,
+    )
 
     linkAttribute(
         element = rect,

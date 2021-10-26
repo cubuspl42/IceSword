@@ -42,7 +42,7 @@ class ElasticUi private constructor(
     constructor(
         editor: Editor,
         viewTransform: Cell<IntVec2>,
-        elastic: Elastic
+        elastic: Elastic,
     ) : this(
         editor = editor,
         viewTransform = viewTransform,
@@ -63,7 +63,7 @@ class ElasticUi private constructor(
 
         ctx.strokeStyle = if (isSelected) "red" else "rgba(103, 103, 131, 0.3)"
 
-        bounds.points().forEach {  globalTileCoord ->
+        bounds.points().forEach { globalTileCoord ->
             val viewTileRect = tileRect(globalTileCoord).translate(viewTransform)
 
             ctx.lineWidth = 1.0
@@ -166,6 +166,7 @@ fun createElasticOverlayElement(
         ).reactTill(tillDetach) { mouseDrag ->
             val initialPosition = mouseDrag.position.sample()
 
+            // TODO: Support dragging handle and camera at the same time
             val deltaTileCoord = mouseDrag.position.map {
                 val deltaPosition = it - initialPosition
                 deltaPosition.divRound(TILE_SIZE)

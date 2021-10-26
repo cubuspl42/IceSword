@@ -5,7 +5,10 @@ package icesword.editor
 import icesword.RezIndex
 import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.frp.Cell
+import icesword.frp.MutCell
+import icesword.frp.Till
 import icesword.frp.map
+import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
@@ -18,6 +21,9 @@ data class VerticalRange(
 ) {
     val width: Int
         get() = maxX - minX
+
+    fun translate(tx: Int): VerticalRange =
+        VerticalRange(minX + tx, maxX + tx)
 }
 
 
@@ -40,16 +46,63 @@ class Elevator(
         position = entityPosition.position,
     )
 
-    val relativeMovementRange = VerticalRange(
-        minX = -rangeRadius,
-        maxX = rangeRadius
+    private val relativeMovementRange = MutCell(
+        VerticalRange(
+            minX = -rangeRadius,
+            maxX = rangeRadius
+        )
     )
 
-    val globalMovementRange = entityPosition.position.map {
-        VerticalRange(
-            minX = it.x - rangeRadius,
-            maxX = it.x + rangeRadius
+    fun resizeMovementRangeMin(
+        minDelta: Cell<Int>,
+        till: Till,
+    ) {
+        resizeMovementRange(
+            extremumDelta = minDelta,
+            extremum = { it.minX },
+            copy = { it, minX -> it.copy(minX = minX) },
+            till = till,
         )
+    }
+
+    fun resizeMovementRangeMax(
+        minDelta: Cell<Int>,
+        till: Till,
+    ) {
+        resizeMovementRange(
+            extremumDelta = minDelta,
+            extremum = { it.maxX },
+            copy = { it, maxX -> it.copy(maxX = maxX) },
+            till = till,
+        )
+    }
+
+    private fun resizeMovementRange(
+        extremumDelta: Cell<Int>,
+        extremum: (VerticalRange) -> Int,
+        copy: (it: VerticalRange, extremum: Int) -> VerticalRange,
+        till: Till,
+    ) {
+        val initialRange = relativeMovementRange.sample()
+
+        val initialExtremum = extremum(initialRange)
+        val newExtremum = extremumDelta.map { initialExtremum + it }
+
+        newExtremum.reactTill(till) {
+            val currentRange = relativeMovementRange.sample()
+            val newRange = copy(initialRange, it)
+
+            if (newRange != currentRange) {
+                relativeMovementRange.set(newRange)
+            }
+        }
+    }
+
+    val globalMovementRange = Cell.map2(
+        entityPosition.position,
+        relativeMovementRange,
+    ) { ep, mr ->
+        mr.translate(ep.x)
     }
 
     override fun isSelectableIn(area: IntRect): Boolean {
