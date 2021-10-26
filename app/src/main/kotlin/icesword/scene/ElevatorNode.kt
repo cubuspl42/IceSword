@@ -8,6 +8,7 @@ import icesword.html.onMouseDrag
 import icesword.editor.Editor
 import icesword.editor.Elevator
 import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.reactTill
@@ -15,6 +16,7 @@ import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.geometry.Transform
+import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
 import org.w3c.dom.Element
@@ -69,14 +71,13 @@ fun createElevatorOverlayElement(
         svg = svg,
         translate = movementRangeRect.map { it.topLeft },
         size = movementRangeRect.map { it.size },
+        fill = constant(Color.gray),
+        fillOpacity = constant(0.3),
         style = DynamicStyleDeclaration(
-            pointerEvents = Cell.constant(PointerEvents.none),
+            pointerEvents = constant(PointerEvents.none),
         ),
         tillDetach = tillDetach,
-    ).apply {
-        setAttributeNS(null, "fill", "green")
-        setAttributeNS(null, "fill-opacity", "0.4")
-    }
+    )
 
     fun createHandle(
         cornerA: (IntRect) -> IntVec2,
@@ -95,10 +96,10 @@ fun createElevatorOverlayElement(
             svg = svg,
             translate = handleRect.map { it.topLeft },
             size = handleRect.map { it.size },
-            fill = Cell.constant("gray"),
-            fillOpacity = Cell.constant(0.8),
+            fill = constant(Color.gray),
+            fillOpacity = constant(0.8),
             style = DynamicStyleDeclaration(
-                cursor = Cell.constant(Cursor.ewResize),
+                cursor = constant(Cursor.ewResize),
             ),
             tillDetach = tillDetach,
         )
@@ -132,7 +133,7 @@ fun createElevatorOverlayElement(
 
     val group = createSvgGroup(
         svg = svg,
-        translate = Cell.constant(IntVec2.ZERO),
+        translate = constant(IntVec2.ZERO),
         tillDetach = tillDetach,
     ).apply {
         appendChild(entityFrame)

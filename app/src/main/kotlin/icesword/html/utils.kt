@@ -5,6 +5,7 @@ import icesword.frp.*
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
+import kotlinx.css.Color
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
@@ -70,7 +71,7 @@ fun createSvgRect(
     svg: SVGSVGElement,
     size: Cell<IntSize>,
     translate: Cell<IntVec2>,
-    fill: Cell<String>? = null,
+    fill: Cell<Color>? = null,
     fillOpacity: Cell<Double>? = null,
     stroke: Cell<String>? = null,
     style: DynamicStyleDeclaration? = null,
@@ -95,7 +96,7 @@ fun createSvgRect(
     linkAttribute(
         element = rect,
         attributeName = "fill",
-        attribute = fill,
+        attribute = fill?.map { it.value },
         till = tillDetach,
     )
 
