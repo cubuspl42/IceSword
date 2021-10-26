@@ -1,8 +1,8 @@
 package icesword.ui
 
-import html.CSSStyle
-import html.FontWeight
-import html.createButton
+import icesword.html.CSSStyle
+import icesword.html.FontWeight
+import icesword.html.createButton
 import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.map

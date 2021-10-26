@@ -1,10 +1,10 @@
 package icesword.scene
 
-import html.DynamicStyleDeclaration
-import html.MouseButton
-import html.createSvgGroup
-import html.createSvgRect
-import html.onMouseDrag
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.MouseButton
+import icesword.html.createSvgGroup
+import icesword.html.createSvgRect
+import icesword.html.onMouseDrag
 import icesword.editor.Editor
 import icesword.editor.Elevator
 import icesword.frp.Cell
@@ -17,7 +17,6 @@ import icesword.geometry.IntVec2
 import icesword.geometry.Transform
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
-import kotlinx.css.style
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
@@ -95,12 +94,12 @@ fun createElevatorOverlayElement(
         val handle = createSvgRect(
             svg = svg,
             translate = handleRect.map { it.topLeft },
+            size = handleRect.map { it.size },
             fill = Cell.constant("gray"),
             fillOpacity = Cell.constant(0.8),
             style = DynamicStyleDeclaration(
                 cursor = Cell.constant(Cursor.ewResize),
             ),
-            size = handleRect.map { it.size },
             tillDetach = tillDetach,
         )
 

@@ -1,7 +1,7 @@
 package icesword
 
 import TextureBank
-import html.createHtmlElement
+import icesword.html.createHtmlElement
 import icesword.editor.Editor
 import icesword.frp.Till
 import org.w3c.dom.HTMLElement

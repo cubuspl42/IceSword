@@ -154,7 +154,7 @@ Temporary Items
 *.csr
 *.css
 *.htm
-#*.html
+#*.icesword.html
 #*.js
 *.jsp
 *.php

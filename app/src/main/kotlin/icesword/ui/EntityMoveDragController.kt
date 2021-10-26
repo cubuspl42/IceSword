@@ -1,7 +1,7 @@
 package icesword.ui
 
-import html.MouseButton
-import html.onMouseDrag
+import icesword.html.MouseButton
+import icesword.html.onMouseDrag
 import icesword.MouseDrag
 import icesword.editor.Editor
 import icesword.editor.Entity

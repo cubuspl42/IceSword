@@ -1,9 +1,9 @@
 package icesword
 
-import html.DynamicStyleDeclaration
-import html.createHtmlElement
-import html.createStyledHtmlElement
-import html.linkChild
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.createHtmlElement
+import icesword.html.createStyledHtmlElement
+import icesword.html.linkChild
 import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.map

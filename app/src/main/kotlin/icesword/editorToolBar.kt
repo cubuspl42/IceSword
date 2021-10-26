@@ -1,7 +1,7 @@
 package icesword
 
-import html.createButton
-import html.createHtmlElement
+import icesword.html.createButton
+import icesword.html.createHtmlElement
 import icesword.editor.Editor
 import icesword.editor.EditorMode
 import icesword.editor.SelectMode
@@ -9,7 +9,6 @@ import icesword.editor.Tool
 import icesword.frp.Till
 import icesword.frp.map
 import icesword.ui.createSelectButton
-import kotlinx.serialization.EncodeDefault
 import org.w3c.dom.HTMLElement
 
 

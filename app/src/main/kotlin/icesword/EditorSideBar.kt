@@ -1,7 +1,7 @@
 package icesword
 
-import html.createHeading4
-import html.createHtmlElement
+import icesword.html.createHeading4
+import icesword.html.createHtmlElement
 import icesword.editor.Editor
 import icesword.editor.ElasticPrototype
 import icesword.editor.InsertionPrototype
@@ -21,7 +21,6 @@ import icesword.editor.WapObjectPrototype.CrossTreasurePrototype
 import icesword.editor.WapObjectPrototype.CrownTreasurePrototype
 import icesword.editor.WapObjectPrototype.CrumblingPegPrototype
 import icesword.editor.WapObjectPrototype.CutThroatPrototype
-import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.editor.WapObjectPrototype.GeckoTreasurePrototype
 import icesword.editor.WapObjectPrototype.RatPrototype
 import icesword.editor.WapObjectPrototype.RingTreasurePrototype

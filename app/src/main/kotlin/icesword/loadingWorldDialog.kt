@@ -1,6 +1,6 @@
 package icesword
 
-import html.createHtmlElement
+import icesword.html.createHtmlElement
 import icesword.editor.LoadingWorldProcess
 import kotlinx.browser.document
 import org.w3c.dom.HTMLElement

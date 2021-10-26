@@ -2,21 +2,10 @@ package icesword
 
 
 import TextureBank
-import html.MouseButton
-import html.MousePosition
-import html.clientPosition
-import html.createHtmlElement
-import html.onKeyDown
-import html.onMouseDown
-import html.onMouseDrag
-import html.onMouseMove
-import html.onMouseUp
-import html.trackMousePosition
 import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
 import icesword.editor.InsertWapObjectCommand
 import icesword.editor.OffsetTilesView
-import icesword.editor.SelectMode
 import icesword.editor.Tool
 import icesword.editor.WapObjectAlikeInsertionMode
 import icesword.editor.World
@@ -34,6 +23,17 @@ import icesword.frp.switchMapNotNull
 import icesword.frp.tillNext
 import icesword.frp.units
 import icesword.geometry.IntVec2
+import icesword.html.MouseButton
+import icesword.html.MousePosition
+import icesword.html.calculateRelativePosition
+import icesword.html.clientPosition
+import icesword.html.createHtmlElement
+import icesword.html.onKeyDown
+import icesword.html.onMouseDown
+import icesword.html.onMouseDrag
+import icesword.html.onMouseMove
+import icesword.html.onMouseUp
+import icesword.html.trackMousePosition
 import icesword.scene.ElasticUi
 import icesword.scene.KnotMeshUi
 import icesword.scene.Layer
@@ -42,6 +42,7 @@ import icesword.scene.StartPointUi
 import icesword.scene.TileLayer
 import icesword.scene.WapObjectStemNode
 import icesword.scene.createAreaSelectionOverlayElement
+import icesword.scene.createBackFoilOverlayElement
 import icesword.scene.createElasticOverlayElement
 import icesword.scene.createElevatorOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
@@ -103,12 +104,6 @@ fun worldView(
             is WapObjectAlikeInsertionMode -> setupWapObjectAlikeInsertionModeController(
                 world = editor.world,
                 insertionMode = mode,
-                root = root,
-                tillDetach = tillNext,
-            )
-            is SelectMode -> setupSelectModeController(
-                editor = editor,
-                selectMode = mode,
                 root = root,
                 tillDetach = tillNext,
             )
@@ -192,7 +187,6 @@ fun worldView(
             },
         )
 
-        // TODO: React
         val planeUiLayer = Layer(
             transform = Cell.constant(IntVec2.ZERO),
             nodes = DynamicSet.union(
@@ -240,6 +234,15 @@ fun worldView(
                         DynamicSet.union(
                             DynamicSet.of(
                                 setOf(
+                                    DynamicSet.of(
+                                        setOf(
+                                            createBackFoilOverlayElement(
+                                                editor = editor,
+                                                viewport = this,
+                                                tillDetach = tillDetach,
+                                            ),
+                                        )
+                                    ),
                                     DynamicSet.of(
                                         setOf(
                                             createStartPointOverlayElement(
@@ -308,39 +311,6 @@ fun worldView(
             },
         )
     }
-}
-
-fun setupSelectModeController(
-    editor: Editor,
-    selectMode: SelectMode,
-    root: HTMLElement,
-    tillDetach: Till,
-) {
-    val world = editor.world
-
-    fun calculateWorldPosition(clientPosition: IntVec2): IntVec2 {
-        val viewportPosition =
-            root.calculateRelativePosition(clientPosition)
-
-        val worldPosition: IntVec2 =
-            world.transformToWorld(cameraPoint = viewportPosition).sample()
-
-        return worldPosition
-    }
-
-    val button = MouseButton.Primary
-
-    root.onMouseDrag(button = button, till = tillDetach)
-        .reactTill(tillDetach) { mouseDrag ->
-            (selectMode.state.sample() as? SelectMode.IdleMode)?.selectArea(
-                anchorWorldCoord = calculateWorldPosition(
-                    clientPosition = mouseDrag.position.sample()
-                ),
-                targetWorldCoord = mouseDrag.position.map(::calculateWorldPosition),
-                confirm = root.onMouseUp(button = button).units(),
-                abort = Stream.never(), // FIXME?
-            )
-        }
 }
 
 fun setupMoveToolController(
@@ -446,14 +416,10 @@ private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
     return this.clientPosition - originPosition
 }
 
-private fun HTMLElement.calculateRelativePosition(clientPosition: IntVec2): IntVec2 {
-    val rect = getBoundingClientRect()
-    val originPosition = IntVec2(rect.x.roundToInt(), rect.y.roundToInt())
-    return clientPosition - originPosition
-}
 
 class MouseDrag(
     val position: Cell<IntVec2>,
+    val onEnd: Stream<Unit>,
     val tillEnd: Till,
 ) {
     companion object {
@@ -463,14 +429,16 @@ class MouseDrag(
             button: MouseButton,
             tillAbort: Till,
         ): MouseDrag {
-            val tillEnd = element.onMouseUp(button = button)
-                .tillNext(tillAbort)
+            val onEnd = element.onMouseUp(button = button).units()
+
+            val tillEnd = onEnd.tillNext(tillAbort)
 
             val position = element.onMouseMove().map { it.clientPosition }
                 .hold(initialPosition, till = tillEnd)
 
             return MouseDrag(
                 position = position,
+                onEnd = onEnd,
                 tillEnd = tillEnd,
             )
         }

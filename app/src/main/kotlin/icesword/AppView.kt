@@ -1,7 +1,7 @@
 package icesword
 
-import html.createHtmlElement
-import html.linkChild
+import icesword.html.createHtmlElement
+import icesword.html.linkChild
 import icesword.editor.App
 import icesword.frp.Till
 import icesword.frp.mapNotNull

@@ -1,9 +1,9 @@
 package icesword
 
-import html.createHtmlElement
-import html.linkChild
-import html.linkProperty
-import html.onEvent
+import icesword.html.createHtmlElement
+import icesword.html.linkChild
+import icesword.html.linkProperty
+import icesword.html.onEvent
 import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.hold

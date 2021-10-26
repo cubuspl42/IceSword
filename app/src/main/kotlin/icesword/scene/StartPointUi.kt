@@ -1,7 +1,7 @@
 package icesword.scene
 
-import html.DynamicStyleDeclaration
-import html.createSvgCircle
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.createSvgCircle
 import icesword.editor.Editor
 import icesword.editor.StartPoint
 import icesword.frp.Cell

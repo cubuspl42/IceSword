@@ -1,6 +1,6 @@
 package icesword
 
-import html.createHtmlElement
+import icesword.html.createHtmlElement
 import org.w3c.dom.HTMLElement
 
 fun createStackLayout(children: List<HTMLElement>): HTMLElement =

@@ -1,11 +1,11 @@
 package icesword.scene
 
-import html.DynamicStyleDeclaration
-import html.MouseButton
-import html.createSvgCircle
-import html.createSvgGroup
-import html.createSvgRect
-import html.onMouseDrag
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.MouseButton
+import icesword.html.createSvgCircle
+import icesword.html.createSvgGroup
+import icesword.html.createSvgRect
+import icesword.html.onMouseDrag
 import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.Elastic

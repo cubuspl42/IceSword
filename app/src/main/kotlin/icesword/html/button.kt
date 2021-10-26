@@ -1,4 +1,4 @@
-package html
+package icesword.html
 
 import icesword.frp.Cell
 import icesword.frp.Till

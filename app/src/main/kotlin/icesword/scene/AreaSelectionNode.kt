@@ -1,6 +1,6 @@
 package icesword.scene
 
-import html.createSvgRect
+import icesword.html.createSvgRect
 import icesword.editor.SelectMode
 import icesword.frp.Cell
 import icesword.frp.Till

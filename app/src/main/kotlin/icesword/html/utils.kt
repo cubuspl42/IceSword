@@ -1,4 +1,4 @@
-package html
+package icesword.html
 
 import icesword.MouseDrag
 import icesword.frp.*
@@ -17,6 +17,7 @@ import org.w3c.dom.svg.SVGGElement
 import org.w3c.dom.svg.SVGGraphicsElement
 import org.w3c.dom.svg.SVGRectElement
 import org.w3c.dom.svg.SVGSVGElement
+import kotlin.math.roundToInt
 
 fun createHtmlElement(tagName: String): HTMLElement =
     document.createElement(tagName) as HTMLElement
@@ -358,4 +359,10 @@ fun linkAttribute(
             element.removeAttributeNS(null, attributeName)
         }
     }
+}
+
+fun Element.calculateRelativePosition(clientPosition: IntVec2): IntVec2 {
+    val rect = getBoundingClientRect()
+    val originPosition = IntVec2(rect.x.roundToInt(), rect.y.roundToInt())
+    return clientPosition - originPosition
 }

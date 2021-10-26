@@ -1,4 +1,4 @@
-package html
+package icesword.html
 
 enum class FontWeight {
     bold;

@@ -1,10 +1,9 @@
 package icesword.scene
 
-import html.createContainer
-import html.createHtmlElement
-import html.createSvgGroup
-import html.createSvgRoot
-import html.linkSvgChildren
+import icesword.html.createHtmlElement
+import icesword.html.createSvgGroup
+import icesword.html.createSvgRoot
+import icesword.html.linkSvgChildren
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.MutCell

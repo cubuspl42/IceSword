@@ -1,6 +1,6 @@
 package icesword.scene
 
-import html.*
+import icesword.html.*
 import icesword.TILE_SIZE
 import icesword.editor.*
 import icesword.frp.*
