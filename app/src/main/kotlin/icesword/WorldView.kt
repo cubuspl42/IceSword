@@ -136,6 +136,22 @@ fun worldView(
                 }
             }
 
+        val backFoilLayer = Layer(
+            transform = Cell.constant(IntVec2.ZERO),
+            nodes = DynamicSet.empty(),
+            buildOverlayElements = {
+                DynamicSet.of(
+                    setOf(
+                        createBackFoilOverlayElement(
+                            editor = editor,
+                            viewport = this,
+                            tillDetach = tillDetach,
+                        ),
+                    )
+                )
+            }
+        )
+
         val planeLayer = Layer(
             transform = viewTransform,
             nodes = DynamicSet.union(
@@ -227,6 +243,7 @@ fun worldView(
             scene(tillDetach) {
                 Scene(
                     layers = listOf(
+                        backFoilLayer,
                         planeLayer,
                         planeUiLayer,
                     ),
@@ -234,15 +251,6 @@ fun worldView(
                         DynamicSet.union(
                             DynamicSet.of(
                                 setOf(
-                                    DynamicSet.of(
-                                        setOf(
-                                            createBackFoilOverlayElement(
-                                                editor = editor,
-                                                viewport = this,
-                                                tillDetach = tillDetach,
-                                            ),
-                                        )
-                                    ),
                                     DynamicSet.of(
                                         setOf(
                                             createStartPointOverlayElement(

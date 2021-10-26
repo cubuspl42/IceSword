@@ -55,6 +55,8 @@ interface DynamicSet<out A> {
                 updates = merge(dynamicViews.map(tag = "blend") { it.updates }),
                 view = DynamicSetBlendView(dynamicViews),
             )
+
+        fun <A> empty(): DynamicSet<A> = of(emptySet())
     }
 
     val content: Cell<Set<A>>

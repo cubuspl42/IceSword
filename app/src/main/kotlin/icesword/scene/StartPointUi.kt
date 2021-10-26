@@ -15,6 +15,7 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.ui.EntityMoveDragController
 import kotlinx.css.Cursor
+import kotlinx.css.PointerEvents
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
@@ -88,6 +89,9 @@ fun createStartPointOverlayElement(
         stroke = isSelected.map { if (it) "red" else "gray" },
         style = DynamicStyleDeclaration(
             cursor = circleCursor,
+            pointerEvents = moveController.map {
+                if (it != null) PointerEvents.auto else PointerEvents.none
+            },
         ),
         tillDetach = tillDetach,
     ).apply {

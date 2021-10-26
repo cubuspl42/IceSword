@@ -10,6 +10,7 @@ import icesword.geometry.IntVec2
 import icesword.tileRect
 import icesword.ui.EntityMoveDragController
 import kotlinx.css.Cursor
+import kotlinx.css.PointerEvents
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
@@ -26,7 +27,7 @@ class KnotMeshUi private constructor(
     constructor(
         editor: Editor,
         viewTransform: Cell<IntVec2>,
-        knotMesh: KnotMesh
+        knotMesh: KnotMesh,
     ) : this(
         editor = editor,
         viewTransform = viewTransform,
@@ -146,14 +147,15 @@ fun createKnotMeshOverlayElement(
             entity = knotMesh,
         )
 
-//        val pixelCoord = localTileCoord.times(TILE_SIZE)
-
         val tileOverlay = createSvgRect(
             svg = svg,
             size = Cell.constant(IntSize(TILE_SIZE, TILE_SIZE)),
             translate = Cell.constant(localTileCoord.times(TILE_SIZE)),
             style = DynamicStyleDeclaration(
                 cursor = moveController.map { it?.let { Cursor.move } },
+                pointerEvents = moveController.map {
+                    if (it != null) PointerEvents.auto else PointerEvents.none
+                },
             ),
             tillDetach = till,
         ).apply {
