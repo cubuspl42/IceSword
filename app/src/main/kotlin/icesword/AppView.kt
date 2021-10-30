@@ -19,6 +19,7 @@ fun createAppView(
             editor?.let {
                 editorView(
                     textureBank = app.textureBank,
+                    dialogOverlay = dialogOverlay,
                     editor = editor,
                     tillDetach = tillNext,
                 )

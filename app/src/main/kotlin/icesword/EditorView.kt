@@ -9,6 +9,7 @@ import org.w3c.dom.HTMLElement
 
 fun editorView(
     textureBank: TextureBank,
+    dialogOverlay: DialogOverlay,
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
@@ -35,6 +36,7 @@ fun editorView(
         )
         appendChild(
             worldView(
+                dialogOverlay = dialogOverlay,
                 editor = editor,
                 textureBank = textureBank,
                 tillDetach = tillDetach,

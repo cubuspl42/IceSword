@@ -5,6 +5,7 @@ import TextureBank
 import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
 import icesword.editor.InsertWapObjectCommand
+import icesword.editor.LoadingWorldProcess
 import icesword.editor.OffsetTilesView
 import icesword.editor.Tool
 import icesword.editor.WapObjectAlikeInsertionMode
@@ -53,6 +54,7 @@ import icesword.scene.createStartPointOverlayElement
 import icesword.scene.createWapObjectOverlayElement
 import icesword.scene.createWapSpriteOverlayElement
 import icesword.scene.scene
+import kotlinx.browser.document
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.MouseEvent
@@ -60,8 +62,9 @@ import kotlin.math.roundToInt
 
 
 fun worldView(
-    editor: Editor,
     textureBank: TextureBank,
+    dialogOverlay: DialogOverlay,
+    editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
     val world = editor.world
@@ -118,6 +121,12 @@ fun worldView(
         when (it.key) {
             "s" -> editor.enterSelectMode()
             "v" -> editor.selectTool(Tool.MOVE)
+            "e" -> {
+                dialogOverlay.showDialog(
+                    dialog = createTestDialog(),
+                    tillClose = Till.never,
+                )
+            }
             "1" -> {
                 val tileCoord = IntVec2(79, 92)
                 val tileId = editor.world.tiles.volatileContentView[tileCoord]
@@ -461,3 +470,19 @@ class MouseDrag(
     }
 }
 
+fun createTestDialog(): HTMLElement =
+    createHtmlElement("div").apply {
+        className = "loadingWorldDialog"
+
+        style.apply {
+            backgroundColor = "#d1d1d1"
+            padding = "16px"
+            fontFamily = "sans-serif"
+        }
+
+        appendChild(
+            document.createTextNode(
+                "Test...",
+            )
+        )
+    }
