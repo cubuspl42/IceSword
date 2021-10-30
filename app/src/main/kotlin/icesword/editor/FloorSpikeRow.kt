@@ -3,21 +3,17 @@
 package icesword.editor
 
 import icesword.RezIndex
-import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.editor.WapObjectPrototype.FloorSpikePrototype
-import icesword.frp.Cell
-import icesword.frp.MutCell
-import icesword.frp.Till
 import icesword.frp.map
-import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
+import kotlinx.css.del
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
 class FloorSpikeRow(
-    rezIndex: RezIndex,
+    private val rezIndex: RezIndex,
     initialPosition: IntVec2,
 ) : Entity(), WapObjectExportable {
 
@@ -32,30 +28,70 @@ class FloorSpikeRow(
             )
     }
 
+    data class FloorSpike(
+        val position: IntVec2,
+        val bounds: IntRect,
+    )
+
+    val spikeImageMetadata = rezIndex.getImageMetadata(
+        imageSetId = FloorSpikePrototype.imageSetId,
+        i = -1,
+    )!!
+
+    private fun buildSpikes(
+        spikeCount: Int,
+        position: IntVec2,
+    ): List<FloorSpike> {
+        val head = FloorSpike(
+            position = position,
+            bounds = calculateWapSpriteBounds(
+                imageMetadata = spikeImageMetadata,
+                position = position,
+            )
+        )
+
+        return if (spikeCount > 1) {
+            val gapWidth = 4
+
+            val delta = IntVec2(
+                x = spikeImageMetadata.size.width + gapWidth,
+                y = 0,
+            )
+
+            listOf(head) + buildSpikes(
+                spikeCount = spikeCount - 1,
+                position = position + delta,
+            )
+        } else {
+            listOf(head)
+        }
+    }
+
     override val entityPosition: EntityPosition =
         EntityPixelPosition(
             initialPosition = initialPosition,
         )
 
-    val wapSprite = WapSprite(
-        rezIndex = rezIndex,
-        imageSetId = FloorSpikePrototype.imageSetId,
-        position = entityPosition.position,
-    )
-
-    override fun isSelectableIn(area: IntRect): Boolean {
-        val hitBox = wapSprite.boundingBox.sample()
-        return hitBox.overlaps(area)
+    val spikes = entityPosition.position.map {
+        buildSpikes(spikeCount = 5, position = it)
     }
 
-    override fun exportWapObject(): Wwd.Object_ {
-        val position = position.sample()
-
-        return FloorSpikePrototype.wwdObjectPrototype.copy(
-            x = position.x,
-            y = position.y,
+    val boundingBox = spikes.map { spikes ->
+        IntRect.enclosing(
+            rects = spikes.map { it.bounds },
         )
     }
+
+    override fun isSelectableIn(area: IntRect): Boolean =
+        boundingBox.sample().overlaps(area)
+
+    override fun exportWapObjects(): List<Wwd.Object_> =
+        spikes.sample().map {
+            FloorSpikePrototype.wwdObjectPrototype.copy(
+                x = it.position.x,
+                y = it.position.y,
+            )
+        }
 
     fun toData(): FloorSpikeRowData = FloorSpikeRowData(
         position = entityPosition.position.sample(),

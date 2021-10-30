@@ -1,3 +1,4 @@
+import icesword.ImageMetadata
 import icesword.JsonRezIndex
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
@@ -38,6 +39,9 @@ data class TextureBank(
 
     fun getImageTexture(pidImagePath: String): Texture? =
         imagesTextures[pidImagePath]
+
+    fun getImageTexture(imageMetadata: ImageMetadata): Texture? =
+        getImageTexture(pidImagePath = imageMetadata.pidImagePath)
 }
 
 private suspend fun loadTileset(): Tileset {

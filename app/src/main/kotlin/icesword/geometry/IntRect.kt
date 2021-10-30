@@ -33,6 +33,22 @@ data class IntRect(
             position = center - IntVec2(sideLength / 2, sideLength / 2),
             size = IntSize(width = sideLength, height = sideLength),
         )
+
+        fun enclosing(
+            rects: List<IntRect>,
+        ): IntRect =
+            rects.reduce { acc, rect ->
+                fromDiagonal(
+                    pointA = IntVec2(
+                        x = min(acc.xMin, rect.xMin),
+                        y = min(acc.yMin, rect.yMin),
+                    ),
+                    pointC = IntVec2(
+                        x = max(acc.xMax, rect.xMax),
+                        y = max(acc.yMax, rect.yMax),
+                    ),
+                )
+            }
     }
 
     val center: IntVec2
@@ -99,16 +115,14 @@ data class IntRect(
         size = this.size * s,
     )
 
-    fun copyWithTopLeft(p: IntVec2) = IntRect.fromDiagonal(bottomRight, p)
+    fun copyWithTopLeft(p: IntVec2) = fromDiagonal(bottomRight, p)
 
-    fun copyWithTopRight(p: IntVec2) = IntRect.fromDiagonal(bottomLeft, p)
+    fun copyWithTopRight(p: IntVec2) = fromDiagonal(bottomLeft, p)
 
-    fun copyWithBottomRight(p: IntVec2) = IntRect.fromDiagonal(topLeft, p)
+    fun copyWithBottomRight(p: IntVec2) = fromDiagonal(topLeft, p)
 
-    fun copyWithBottomLeft(p: IntVec2) = IntRect.fromDiagonal(topRight, p)
+    fun copyWithBottomLeft(p: IntVec2) = fromDiagonal(topRight, p)
 
     fun contains(localPoint: IntVec2): Boolean =
         localPoint.x in (xMin until xMax) && localPoint.y in (yMin until yMax)
-
-
 }

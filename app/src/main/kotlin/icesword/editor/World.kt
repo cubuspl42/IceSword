@@ -259,10 +259,10 @@ class World(
             newTiles[k] = tileId
         }
 
-        val wapObjectExportables: Set<WapObjectExportable> =
-            (wapObjects.volatileContentView + elevators.volatileContentView)
+        val wapObjectExportables: List<WapObjectExportable> =
+            entities.volatileContentView.mapNotNull { it as? WapObjectExportable }
 
-        val objects = wapObjectExportables.map { it.exportWapObject() }
+        val objects = wapObjectExportables.flatMap { it.exportWapObjects() }
 
         val newActionPlane = actionPlane.copy(
             tiles = newTiles,

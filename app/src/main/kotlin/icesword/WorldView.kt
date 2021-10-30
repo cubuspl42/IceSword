@@ -36,6 +36,7 @@ import icesword.html.onMouseMove
 import icesword.html.onMouseUp
 import icesword.html.trackMousePosition
 import icesword.scene.ElasticUi
+import icesword.scene.FloorSpikeRowNode
 import icesword.scene.KnotMeshUi
 import icesword.scene.Layer
 import icesword.scene.Scene
@@ -46,6 +47,7 @@ import icesword.scene.createAreaSelectionOverlayElement
 import icesword.scene.createBackFoilOverlayElement
 import icesword.scene.createElasticOverlayElement
 import icesword.scene.createElevatorOverlayElement
+import icesword.scene.createFloorSpikeRowOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
 import icesword.scene.createStartPointOverlayElement
 import icesword.scene.createWapObjectOverlayElement
@@ -184,9 +186,9 @@ fun worldView(
                             )
                         },
                         world.floorSpikeRows.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, _ ->
-                            WapSpriteNode(
+                            FloorSpikeRowNode(
                                 textureBank = textureBank,
-                                wapSprite = floorSpikeRow.wapSprite,
+                                floorSpikeRow = floorSpikeRow,
                             )
                         },
                         DynamicSet.ofSingle(
@@ -296,13 +298,12 @@ fun worldView(
                                         )
                                     },
                                     world.floorSpikeRows.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, tillRemoved ->
-                                        createWapSpriteOverlayElement(
+                                        createFloorSpikeRowOverlayElement(
                                             editor = editor,
                                             svg = svg,
                                             viewport = this,
                                             viewTransform = viewTransform,
-                                            entity = floorSpikeRow,
-                                            wapSprite = floorSpikeRow.wapSprite,
+                                            floorSpikeRow = floorSpikeRow,
                                             tillDetach = tillRemoved,
                                         )
                                     },

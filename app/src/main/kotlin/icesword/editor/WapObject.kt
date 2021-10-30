@@ -209,7 +209,12 @@ sealed class WapObjectPrototype {
 }
 
 interface WapObjectExportable {
-    fun exportWapObject(): Wwd.Object_
+    fun exportWapObjects(): List<Wwd.Object_> =
+        listOf(exportWapObject())
+
+    fun exportWapObject(): Wwd.Object_ {
+        throw NotImplementedError()
+    }
 }
 
 class WapObject(

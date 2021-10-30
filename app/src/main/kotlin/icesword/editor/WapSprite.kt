@@ -2,6 +2,7 @@
 
 package icesword.editor
 
+import icesword.ImageMetadata
 import icesword.ImageSetId
 import icesword.RezIndex
 import icesword.frp.Cell
@@ -22,15 +23,25 @@ class WapSprite(
 
     val boundingBox: Cell<IntRect> =
         position.map {
-            val offset = imageMetadata.offset
-            val size = imageMetadata.size
-            val topLeft = it + offset - (size / 2).toVec2()
-
-            IntRect(
-                position = topLeft,
-                size = size,
+            calculateWapSpriteBounds(
+                imageMetadata = imageMetadata,
+                position = it
             )
         }
 
     override fun toString(): String = "WapSprite()"
+}
+
+fun calculateWapSpriteBounds(
+    imageMetadata: ImageMetadata,
+    position: IntVec2,
+): IntRect {
+    val offset = imageMetadata.offset
+    val size = imageMetadata.size
+    val topLeft = position + offset - (size / 2).toVec2()
+
+    return IntRect(
+        position = topLeft,
+        size = size,
+    )
 }

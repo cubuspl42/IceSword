@@ -32,16 +32,12 @@ class WapSpriteNode(
 
         val boundingBox = wapSprite.boundingBox.sample()
 
-        ctx.lineWidth = 4.0
-        ctx.fillStyle = "brown"
-        ctx.strokeStyle = "black"
-
         ctx.globalAlpha = alpha
 
-        drawTexture(
+        drawWapSprite(
             ctx,
             texture = texture,
-            dv = boundingBox.topLeft,
+            bounds = boundingBox,
         )
 
         ctx.restore()
@@ -49,6 +45,18 @@ class WapSpriteNode(
 
     override val onDirty: Stream<Unit> =
         wapSprite.boundingBox.values().units()
+}
+
+fun drawWapSprite(
+    ctx: CanvasRenderingContext2D,
+    texture: Texture,
+    bounds: IntRect,
+) {
+    drawTexture(
+        ctx,
+        texture = texture,
+        dv = bounds.topLeft,
+    )
 }
 
 fun createWapObjectOverlayElement(
