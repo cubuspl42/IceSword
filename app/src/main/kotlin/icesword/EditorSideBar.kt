@@ -106,6 +106,12 @@ fun editorSideBar(
                         text = "Elevator",
                         tillDetach = tillDetach,
                     ),
+                    createInsertEntityButton(
+                        editor = editor,
+                        text = "Floor spike row",
+                        insertionPrototype = FloorSpikeInsertionPrototype,
+                        tillDetach = tillDetach,
+                    ),
 
                     createInsertWapObjectButton(
                         editor = editor,

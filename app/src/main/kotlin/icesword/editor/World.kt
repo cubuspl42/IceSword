@@ -32,6 +32,7 @@ class World(
     initialElastics: Set<Elastic>,
     initialWapObjects: Set<WapObject>,
     initialElevators: Set<Elevator>,
+    initialFloorSpikeRows: Set<FloorSpikeRow>,
 ) {
     companion object {
         private const val wwdPlaneIndex = 1
@@ -98,7 +99,8 @@ class World(
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
                 initialElevators = emptySet(),
-                initialWapObjects = emptySet()
+                initialWapObjects = emptySet(),
+                initialFloorSpikeRows = emptySet(),
             )
         }
 
@@ -107,41 +109,36 @@ class World(
             wwdWorldTemplate: Wwd.World,
             worldData: WorldData,
         ): World {
-            val initialKnotMeshes = worldData.knotMeshes.map {
-                KnotMesh.load(it)
-            }.toSet()
+            fun <D, E> loadInitialEntities(
+                entitiesData: Set<D>,
+                load: (D) -> E,
+            ): Set<E> =
+                entitiesData.map { load(it) }.toSet()
 
-            val initialElastics = worldData.elastics.map {
-                Elastic.load(it)
-            }.toSet()
+            val initialKnotMeshes = loadInitialEntities(
+                entitiesData = worldData.knotMeshes,
+                load = { KnotMesh.load(it) },
+            )
 
-            val ropes = worldData.ropes.map {
-                WapObjectData(
-                    prototype = WapObjectPrototype.RopePrototype,
-                    position = it.position,
-                )
-            }.toSet()
+            val initialElastics = loadInitialEntities(
+                entitiesData = worldData.elastics,
+                load = { Elastic.load(it) },
+            )
 
-            val crumblingPegs = worldData.crumblingPegs.map {
-                WapObjectData(
-                    prototype = WapObjectPrototype.RopePrototype,
-                    position = it.position,
-                )
-            }.toSet()
+            val initialElevators = loadInitialEntities(
+                entitiesData = worldData.elevators,
+                load = { Elevator.load(rezIndex = rezIndex, data = it) },
+            )
 
-            val initialElevators = worldData.elevators.map {
-                Elevator.load(
-                    rezIndex = rezIndex,
-                    data = it,
-                )
-            }.toSet()
+            val initialWapObjects = loadInitialEntities(
+                entitiesData = worldData.wapObjects,
+                load = { WapObject.load(rezIndex = rezIndex, data = it) },
+            )
 
-            val initialWapObjects = (worldData.wapObjects + ropes + crumblingPegs).map {
-                WapObject.load(
-                    rezIndex = rezIndex,
-                    data = it,
-                )
-            }.toSet()
+            val initialFloorSpikeRows = loadInitialEntities(
+                entitiesData = worldData.floorSpikeRows,
+                load = { FloorSpikeRow.load(rezIndex = rezIndex, data = it) },
+            )
 
             return World(
                 wwdWorld = wwdWorldTemplate,
@@ -150,6 +147,7 @@ class World(
                 initialElastics = initialElastics,
                 initialElevators = initialElevators,
                 initialWapObjects = initialWapObjects,
+                initialFloorSpikeRows = initialFloorSpikeRows,
             )
         }
     }
@@ -163,7 +161,8 @@ class World(
         initialContent = initialKnotMeshes +
                 initialElastics +
                 initialWapObjects +
-                initialElevators
+                initialElevators +
+                initialFloorSpikeRows
     )
 
     val startPointEntity = StartPoint(
@@ -196,6 +195,8 @@ class World(
 
     val elevators: DynamicSet<Elevator> = entities.filterType()
 
+    val floorSpikeRows: DynamicSet<FloorSpikeRow> = entities.filterType()
+
     fun insertKnotMesh(knotMesh: KnotMesh) {
         _entities.add(knotMesh)
     }
@@ -210,6 +211,10 @@ class World(
 
     fun insertElevator(elevator: Elevator) {
         _entities.add(elevator)
+    }
+
+    fun insertFloorSpikeRow(floorSpikeRow: FloorSpikeRow) {
+        _entities.add(floorSpikeRow)
     }
 
     val knotMeshLayer = KnotMeshLayer(
@@ -281,17 +286,36 @@ class World(
     fun toData(): WorldData {
         val startPoint: IntVec2 = startPointEntity.position.sample()
 
-        val knotMeshes = knotMeshes.volatileContentView
-            .map { it.toData() }.toSet()
+        fun <E, D> exportEntitySet(
+            entities: DynamicSet<E>,
+            toData: (E) -> D,
+        ): Set<D> =
+            entities.volatileContentView.map { toData(it) }.toSet()
 
-        val elastics = elastics.volatileContentView
-            .map { it.toData() }.toSet()
+        val knotMeshes = exportEntitySet(
+            entities = knotMeshes,
+            toData = KnotMesh::toData,
+        )
 
-        val elevators = elevators.volatileContentView
-            .map { it.toData() }.toSet()
+        val elastics = exportEntitySet(
+            entities = elastics,
+            toData = Elastic::toData,
+        )
 
-        val wapObjects = wapObjects.volatileContentView
-            .map { it.toData() }.toSet()
+        val elevators = exportEntitySet(
+            entities = elevators,
+            toData = Elevator::toData,
+        )
+
+        val wapObjects = exportEntitySet(
+            entities = wapObjects,
+            toData = WapObject::toData,
+        )
+
+        val floorSpikeRows = exportEntitySet(
+            entities = floorSpikeRows,
+            toData = FloorSpikeRow::toData,
+        )
 
         return WorldData(
             startPoint = startPoint,
@@ -299,6 +323,7 @@ class World(
             elastics = elastics,
             elevators = elevators,
             wapObjects = wapObjects,
+            floorSpikeRows = floorSpikeRows,
         )
     }
 
@@ -318,12 +343,14 @@ data class WorldData(
     val startPoint: IntVec2,
     val knotMeshes: Set<KnotMeshData>,
     val elastics: Set<ElasticData>,
+    // TODO: Nuke
     val ropes: Set<LegacyWapObjectData> = emptySet(),
+    // TODO: Nuke
     val crumblingPegs: Set<LegacyWapObjectData> = emptySet(),
     val elevators: Set<ElevatorData> = emptySet(),
     val wapObjects: Set<WapObjectData> = emptySet(),
+    val floorSpikeRows: Set<FloorSpikeRowData> = emptySet(),
 )
-
 
 @Serializable
 data class LegacyWapObjectData(

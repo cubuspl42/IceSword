@@ -3,21 +3,20 @@ package icesword.editor
 import icesword.RezIndex
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.ElevatorInsertionPrototype
+import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.WapObjectPrototype.ElevatorPrototype
+import icesword.editor.WapObjectPrototype.FloorSpikePrototype
 import icesword.frp.Cell
 import icesword.frp.CellSlot
-import icesword.frp.MutableDynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
-import icesword.frp.map
 import icesword.frp.mapNotNull
 import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
-import kotlinx.css.Cursor
 
 sealed interface InsertionPrototype {
     value class ElasticInsertionPrototype(
@@ -33,6 +32,8 @@ sealed interface InsertionPrototype {
     ) : InsertionPrototype
 
     object ElevatorInsertionPrototype : InsertionPrototype
+
+    object FloorSpikeInsertionPrototype : InsertionPrototype
 }
 
 sealed interface InsertionMode : EditorMode {
@@ -63,7 +64,7 @@ class ElasticInsertionMode(
 }
 
 class KnotMeshInsertionMode(
-    private val world: World ,
+    private val world: World,
     override val insertionPrototype: KnotMeshInsertionPrototype,
 ) : BasicInsertionMode {
     override fun insert(insertionWorldPoint: IntVec2) {
@@ -87,11 +88,11 @@ abstract class WapObjectAlikeInsertionMode(
 ) : InsertionMode {
     private val _placementWorldPointSlot = CellSlot<IntVec2>()
 
-    val wapObjectPreview: Cell<WapObjectStem?> =
+    val wapObjectPreview: Cell<WapSprite?> =
         _placementWorldPointSlot.linkedCell.mapNotNull { placementPosition ->
-            WapObjectStem(
+            WapSprite(
                 rezIndex = rezIndex,
-                wapObjectPrototype = wapObjectPrototype,
+                imageSetId = wapObjectPrototype.imageSetId,
                 position = placementPosition,
             )
         }
@@ -153,6 +154,26 @@ class ElevatorInsertionMode(
                     minX = -rangeRadius,
                     maxX = +rangeRadius,
                 )
+            )
+        )
+    }
+}
+
+
+class FloorSpikeInsertionMode(
+    private val world: World,
+    private val rezIndex: RezIndex,
+) : WapObjectAlikeInsertionMode(
+    rezIndex = rezIndex,
+    wapObjectPrototype = FloorSpikePrototype,
+) {
+    override val insertionPrototype = FloorSpikeInsertionPrototype
+
+    override fun insert(insertionWorldPoint: IntVec2) {
+        world.insertFloorSpikeRow(
+            floorSpikeRow = FloorSpikeRow(
+                rezIndex = rezIndex,
+                initialPosition = insertionWorldPoint,
             )
         )
     }

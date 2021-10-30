@@ -52,7 +52,7 @@ class EntityTilePosition(
     }
 }
 
-abstract class Entity {
+sealed class Entity {
     abstract val entityPosition: EntityPosition
 
     val position by lazy { entityPosition.position }

@@ -36,7 +36,7 @@ fun createElevatorOverlayElement(
         transform = viewTransform.map { Transform(it) },
     )
 
-    val boundingBox = elevator.wapObjectStem.boundingBox
+    val boundingBox = elevator.wapSprite.boundingBox
 
     val entityFrameTranslate =
         dynamicViewTransform.transform(
@@ -55,7 +55,7 @@ fun createElevatorOverlayElement(
 
     val movementRangeRect = dynamicViewTransform.transform(
         rect = Cell.map2(
-            elevator.wapObjectStem.boundingBox.map { it.center },
+            elevator.wapSprite.boundingBox.map { it.center },
             elevator.globalMovementRange,
         ) { bc, mr ->
             val sideLength = 64

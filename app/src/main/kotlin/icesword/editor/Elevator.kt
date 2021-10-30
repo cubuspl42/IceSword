@@ -54,9 +54,9 @@ class Elevator(
             initialPosition = initialPosition,
         )
 
-    val wapObjectStem = WapObjectStem(
+    val wapSprite = WapSprite(
         rezIndex = rezIndex,
-        wapObjectPrototype = ElevatorPrototype,
+        imageSetId = ElevatorPrototype.imageSetId,
         position = entityPosition.position,
     )
 
@@ -117,7 +117,7 @@ class Elevator(
     }
 
     override fun isSelectableIn(area: IntRect): Boolean {
-        val hitBox = wapObjectStem.boundingBox.sample()
+        val hitBox = wapSprite.boundingBox.sample()
         return hitBox.overlaps(area)
     }
 

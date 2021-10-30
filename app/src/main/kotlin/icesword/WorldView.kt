@@ -41,7 +41,7 @@ import icesword.scene.Layer
 import icesword.scene.Scene
 import icesword.scene.StartPointUi
 import icesword.scene.TileLayer
-import icesword.scene.WapObjectStemNode
+import icesword.scene.WapSpriteNode
 import icesword.scene.createAreaSelectionOverlayElement
 import icesword.scene.createBackFoilOverlayElement
 import icesword.scene.createElasticOverlayElement
@@ -49,6 +49,7 @@ import icesword.scene.createElevatorOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
 import icesword.scene.createStartPointOverlayElement
 import icesword.scene.createWapObjectOverlayElement
+import icesword.scene.createWapSpriteOverlayElement
 import icesword.scene.scene
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
@@ -131,9 +132,9 @@ fun worldView(
         val wapObjectPreviewNode =
             editor.wapObjectAlikeInsertionMode.switchMapNotNull { insertionMode ->
                 insertionMode.wapObjectPreview.mapNotNull {
-                    WapObjectStemNode(
+                    WapSpriteNode(
                         textureBank = textureBank,
-                        wapObjectStem = it,
+                        wapSprite = it,
                         alpha = 0.4,
                     )
                 }
@@ -171,15 +172,21 @@ fun worldView(
                             )
                         ),
                         world.wapObjects.mapTillRemoved(tillAbort = tillDetach) { wapObject, _ ->
-                            WapObjectStemNode(
+                            WapSpriteNode(
                                 textureBank = textureBank,
-                                wapObjectStem = wapObject.stem,
+                                wapSprite = wapObject.sprite,
                             )
                         },
                         world.elevators.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
-                            WapObjectStemNode(
+                            WapSpriteNode(
                                 textureBank = textureBank,
-                                wapObjectStem = elevator.wapObjectStem,
+                                wapSprite = elevator.wapSprite,
+                            )
+                        },
+                        world.floorSpikeRows.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, _ ->
+                            WapSpriteNode(
+                                textureBank = textureBank,
+                                wapSprite = floorSpikeRow.wapSprite,
                             )
                         },
                         DynamicSet.ofSingle(
@@ -285,6 +292,17 @@ fun worldView(
                                             viewport = this,
                                             viewTransform = viewTransform,
                                             elevator = elevator,
+                                            tillDetach = tillRemoved,
+                                        )
+                                    },
+                                    world.floorSpikeRows.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, tillRemoved ->
+                                        createWapSpriteOverlayElement(
+                                            editor = editor,
+                                            svg = svg,
+                                            viewport = this,
+                                            viewTransform = viewTransform,
+                                            entity = floorSpikeRow,
+                                            wapSprite = floorSpikeRow.wapSprite,
                                             tillDetach = tillRemoved,
                                         )
                                     },

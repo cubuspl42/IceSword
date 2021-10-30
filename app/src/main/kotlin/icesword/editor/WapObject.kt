@@ -4,10 +4,6 @@ package icesword.editor
 
 import icesword.ImageSetId
 import icesword.RezIndex
-import icesword.TILE_SIZE
-import icesword.frp.Cell
-import icesword.frp.MutCell
-import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.DataStreamObj
@@ -195,6 +191,21 @@ sealed class WapObjectPrototype {
             imageSet = encode("LEVEL_ELEVATOR1"),
         )
     }
+
+    // TODO: Support FLOORSPIKES2 (underground spikes)
+    @Serializable
+    object FloorSpikePrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_FLOORSPIKES1",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("FloorSpike"),
+            imageSet = encode("LEVEL_FLOORSPIKES1"),
+        )
+    }
 }
 
 interface WapObjectExportable {
@@ -223,14 +234,14 @@ class WapObject(
             )
     }
 
-    val stem = WapObjectStem(
+    val sprite = WapSprite(
         rezIndex = rezIndex,
-        wapObjectPrototype = wapObjectPrototype,
+        imageSetId = wapObjectPrototype.imageSetId,
         position = position,
     )
 
     override fun isSelectableIn(area: IntRect): Boolean {
-        val hitBox = stem.boundingBox.sample()
+        val hitBox = sprite.boundingBox.sample()
         return hitBox.overlaps(area)
     }
 

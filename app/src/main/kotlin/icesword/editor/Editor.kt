@@ -3,6 +3,7 @@ package icesword.editor
 import icesword.RezIndex
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.ElevatorInsertionPrototype
+import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.SelectMode.AreaSelectingMode
@@ -223,6 +224,10 @@ class Editor(
                 insertionPrototype = insertionPrototype,
             )
             is ElevatorInsertionPrototype -> ElevatorInsertionMode(
+                world = world,
+                rezIndex = rezIndex,
+            )
+            is FloorSpikeInsertionPrototype -> FloorSpikeInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
             )

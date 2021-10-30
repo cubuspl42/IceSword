@@ -2,8 +2,9 @@ package icesword.scene
 
 import TextureBank
 import icesword.editor.Editor
+import icesword.editor.Entity
 import icesword.editor.WapObject
-import icesword.editor.WapObjectStem
+import icesword.editor.WapSprite
 import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
@@ -17,19 +18,19 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
-class WapObjectStemNode(
+class WapSpriteNode(
     textureBank: TextureBank,
-    private val wapObjectStem: WapObjectStem,
+    private val wapSprite: WapSprite,
     private val alpha: Double = 1.0,
 ) : Node {
     private val texture = textureBank.getImageTexture(
-        pidImagePath = wapObjectStem.imageMetadata.pidImagePath,
+        pidImagePath = wapSprite.imageMetadata.pidImagePath,
     )!!
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
         ctx.save()
 
-        val boundingBox = wapObjectStem.boundingBox.sample()
+        val boundingBox = wapSprite.boundingBox.sample()
 
         ctx.lineWidth = 4.0
         ctx.fillStyle = "brown"
@@ -47,7 +48,7 @@ class WapObjectStemNode(
     }
 
     override val onDirty: Stream<Unit> =
-        wapObjectStem.boundingBox.values().units()
+        wapSprite.boundingBox.values().units()
 }
 
 fun createWapObjectOverlayElement(
@@ -57,8 +58,27 @@ fun createWapObjectOverlayElement(
     viewTransform: Cell<IntVec2>,
     wapObject: WapObject,
     tillDetach: Till,
+): SVGElement =
+    createWapSpriteOverlayElement(
+        editor = editor,
+        svg = svg,
+        viewport = viewport,
+        viewTransform = viewTransform,
+        entity = wapObject,
+        wapSprite = wapObject.sprite,
+        tillDetach = tillDetach,
+    )
+
+fun createWapSpriteOverlayElement(
+    editor: Editor,
+    svg: SVGSVGElement,
+    viewport: HTMLElement,
+    viewTransform: Cell<IntVec2>,
+    entity: Entity,
+    wapSprite: WapSprite,
+    tillDetach: Till,
 ): SVGElement {
-    val rect = wapObject.stem.boundingBox
+    val rect = wapSprite.boundingBox
 
     val translate = Cell.map2(
         viewTransform,
@@ -69,7 +89,7 @@ fun createWapObjectOverlayElement(
         editor = editor,
         svg = svg,
         outer = viewport,
-        entity = wapObject,
+        entity = entity,
         translate = translate,
         size = rect.map { it.size },
         tillDetach = tillDetach,

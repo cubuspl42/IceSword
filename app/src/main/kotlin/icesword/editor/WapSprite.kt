@@ -2,6 +2,7 @@
 
 package icesword.editor
 
+import icesword.ImageSetId
 import icesword.RezIndex
 import icesword.frp.Cell
 import icesword.frp.map
@@ -9,13 +10,13 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import kotlinx.serialization.UseSerializers
 
-class WapObjectStem(
+class WapSprite(
     rezIndex: RezIndex,
-    wapObjectPrototype: WapObjectPrototype,
+    imageSetId: ImageSetId,
     position: Cell<IntVec2>,
 ) {
     val imageMetadata = rezIndex.getImageMetadata(
-        imageSetId = wapObjectPrototype.imageSetId,
+        imageSetId = imageSetId,
         i = -1,
     )!!
 
@@ -31,6 +32,5 @@ class WapObjectStem(
             )
         }
 
-    override fun toString(): String =
-        "WapObjectStem()"
+    override fun toString(): String = "WapSprite()"
 }
