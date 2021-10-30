@@ -5,6 +5,7 @@ import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.geometry.IntVec2
+import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
 import kotlinx.css.properties.Transforms
@@ -28,6 +29,7 @@ interface Transform {
 }
 
 data class DynamicStyleDeclaration(
+    val backgroundColor: Cell<Color>? = null,
     val cursor: Cell<Cursor?>? = null,
     val transform: Cell<Transform?>? = null,
     val pointerEvents: Cell<PointerEvents?>? = null,
@@ -36,6 +38,13 @@ data class DynamicStyleDeclaration(
         style: CSSStyleDeclaration,
         tillDetach: Till,
     ) {
+        linkProperty(
+            style = style,
+            propertyName = "background-color",
+            property = backgroundColor?.map { it.value },
+            till = tillDetach
+        )
+
         linkProperty(
             style = style,
             propertyName = "cursor",

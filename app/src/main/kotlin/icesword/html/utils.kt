@@ -180,6 +180,23 @@ fun createContainer(
     return root
 }
 
+fun createWrapper(
+    child: Cell<HTMLElement?>,
+    className: String? = null,
+    tillDetach: Till,
+): HTMLElement =
+    createHtmlElement("div").apply {
+        if (className != null) {
+            this.className = "editorViewWrapper"
+        }
+
+        linkChild(
+            element = this,
+            child = child,
+            till = tillDetach
+        )
+    }
+
 fun Element.onMouseDown(button: MouseButton): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mousedown")
         .filter { e: MouseEvent -> e.button == button.ordinal.toShort() }
