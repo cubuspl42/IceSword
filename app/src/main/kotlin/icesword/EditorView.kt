@@ -13,8 +13,9 @@ fun editorView(
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
-    val toolBar = editorToolBar(
+    val toolBar = createEditorToolBar(
         editor = editor,
+        dialogOverlay = dialogOverlay,
         tillDetach = tillDetach,
     )
 

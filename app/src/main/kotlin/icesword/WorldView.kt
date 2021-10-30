@@ -121,12 +121,6 @@ fun worldView(
         when (it.key) {
             "s" -> editor.enterSelectMode()
             "v" -> editor.selectTool(Tool.MOVE)
-            "e" -> {
-                dialogOverlay.showDialog(
-                    dialog = createTestDialog(),
-                    tillClose = Till.never,
-                )
-            }
             "1" -> {
                 val tileCoord = IntVec2(79, 92)
                 val tileId = editor.world.tiles.volatileContentView[tileCoord]
@@ -470,19 +464,3 @@ class MouseDrag(
     }
 }
 
-fun createTestDialog(): HTMLElement =
-    createHtmlElement("div").apply {
-        className = "loadingWorldDialog"
-
-        style.apply {
-            backgroundColor = "#d1d1d1"
-            padding = "16px"
-            fontFamily = "sans-serif"
-        }
-
-        appendChild(
-            document.createTextNode(
-                "Test...",
-            )
-        )
-    }

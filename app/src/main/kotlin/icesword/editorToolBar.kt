@@ -4,16 +4,22 @@ import icesword.html.createButton
 import icesword.html.createHtmlElement
 import icesword.editor.Editor
 import icesword.editor.EditorMode
+import icesword.editor.FloorSpikeRow
 import icesword.editor.SelectMode
 import icesword.editor.Tool
 import icesword.frp.Till
+import icesword.frp.TillMarker
 import icesword.frp.map
+import icesword.html.CSSStyle
+import icesword.html.FontWeight
 import icesword.ui.createSelectButton
+import kotlinx.browser.document
 import org.w3c.dom.HTMLElement
 
 
-fun editorToolBar(
+fun createEditorToolBar(
     editor: Editor,
+    dialogOverlay: DialogOverlay,
     tillDetach: Till,
 ): HTMLElement {
     val selectButton = createModeButton<SelectMode>(
@@ -40,6 +46,23 @@ fun editorToolBar(
         appendChild(selectButton)
         appendChild(moveButton)
         appendChild(knotBrushButton)
+    }
+
+    val editButton = createButton(
+        text = "Edit",
+        onPressed = {
+            onEditPressed(
+                editor = editor,
+                dialogOverlay = dialogOverlay,
+            )
+        },
+        tillDetach = tillDetach,
+    )
+
+    val editButtonsRow = createHtmlElement("div").apply {
+        className = "editButtonsRow"
+
+        appendChild(editButton)
     }
 
     val exportButton = createButton(
@@ -70,19 +93,19 @@ fun editorToolBar(
 
         style.apply {
             display = "flex"
-            setProperty("gap", "8px")
+            setProperty("gap", "16px")
 
             backgroundColor = "grey"
             padding = "4px"
         }
 
         appendChild(toolButtonsRow)
+        appendChild(editButtonsRow)
         appendChild(otherButtonsRow)
     }
 
     return root
 }
-
 
 private inline fun <reified Mode : EditorMode> createModeButton(
     editor: Editor,
@@ -97,7 +120,6 @@ private inline fun <reified Mode : EditorMode> createModeButton(
         tillDetach = tillDetach,
     )
 
-
 private fun createToolButton(
     editor: Editor,
     tool: Tool,
@@ -110,3 +132,55 @@ private fun createToolButton(
         select = editor::selectTool,
         tillDetach = tillDetach,
     )
+
+private fun onEditPressed(
+    editor: Editor,
+    dialogOverlay: DialogOverlay,
+) {
+    editor.selectedEntity.sample()?.let { selectedEntity ->
+        if (selectedEntity is FloorSpikeRow) {
+            val closeMarker = TillMarker()
+
+            dialogOverlay.showDialog(
+                dialog = createEditFloorSpikeRowDialog(
+                    floorSpikeRow = selectedEntity,
+                    onClosePressed = closeMarker::markReached,
+                    tillDetach = Till.never, // FIXME?
+                ),
+                tillClose = closeMarker,
+            )
+        }
+    }
+}
+
+fun createEditFloorSpikeRowDialog(
+    floorSpikeRow: FloorSpikeRow,
+    onClosePressed: () -> Unit,
+    tillDetach: Till,
+): HTMLElement {
+    val spikes = floorSpikeRow.spikes.sample()
+
+    return createHtmlElement("div").apply {
+        className = "editFloorSpikeRowDialog"
+
+        style.apply {
+            backgroundColor = "#d1d1d1"
+            padding = "16px"
+            fontFamily = "sans-serif"
+        }
+
+        appendChild(
+            createButton(
+                text = "✕",
+                onPressed = onClosePressed,
+                tillDetach = tillDetach,
+            )
+        )
+
+        appendChild(
+            document.createTextNode(
+                "Spike count: ${spikes.size}",
+            )
+        )
+    }
+}
