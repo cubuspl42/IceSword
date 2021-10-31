@@ -72,6 +72,10 @@ fun <A> Stream<A>.reactTill(till: Till, handler: (A) -> Unit) {
     subscribeTill(this, till, handler)
 }
 
+fun <A> Stream<A>.reactIndefinitely(handler: (A) -> Unit) {
+    subscribe(handler)
+}
+
 fun <A> Stream<A>.reactDynamicTill(till: Till, dynamicHandler: Cell<(A) -> Unit>) {
     dynamicHandler.mapTillNext(till) { handler, tillNext ->
         subscribeTill(this, tillNext, handler)

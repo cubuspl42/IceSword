@@ -19,13 +19,10 @@ import icesword.html.createText
 import icesword.ui.createSelectButton
 import kotlinx.css.Align
 import kotlinx.css.BorderStyle
-import kotlinx.css.CSSBuilder
 import kotlinx.css.Color
 import kotlinx.css.px
-import kotlinx.css.style
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
-import org.w3c.dom.Text
 
 
 fun createEditorToolBar(
@@ -182,6 +179,8 @@ fun createEditFloorSpikeRowDialog(
 
     fun createTimeInput(
         labelText: String,
+        initialValueMillis: Int,
+        onValueChanged: (valueMillis: Int) -> Unit,
     ): HTMLElement = createRow(
         staticStyle = {
             borderStyle = BorderStyle.dashed.toString()
@@ -198,28 +197,64 @@ fun createEditFloorSpikeRowDialog(
                 staticStyle = {
                     width = 64.px.toString()
                 },
+                initialValue = initialValueMillis,
+                onValueChanged = onValueChanged,
             ),
             createText("ms"),
         ),
         tillDetach = tillDetach,
     )
 
-    fun createEditSpikeRow(i: Int): Node =
-        createRow(
+    fun createEditSpikeRow(
+        spikeIndex: Int,
+        floorSpike: FloorSpikeRow.FloorSpike,
+    ): Node {
+        fun getConfig() = floorSpikeRow.getSpikeConfig(spikeIndex = spikeIndex)
+
+        val initialConfig = getConfig()
+
+        return createRow(
             style = DynamicStyleDeclaration(
                 alignItems = constant(Align.center),
             ),
             horizontalGap = 8.px,
             children = listOf(
-                createText("Spike $i"),
+                createText("Spike $spikeIndex"),
                 createTimeInput(
                     labelText = "Start delay",
+                    initialValueMillis = initialConfig.startDelayMillis,
+                    onValueChanged = { newValueMillis ->
+                        floorSpikeRow.updateSpikeConfig(
+                            spikeIndex = spikeIndex,
+                            config = getConfig().copy(
+                                startDelayMillis = newValueMillis,
+                            )
+                        )
+                    },
                 ),
                 createTimeInput(
                     labelText = "Time on",
+                    initialValueMillis = initialConfig.timeOnMillis,
+                    onValueChanged = { newValueMillis ->
+                        floorSpikeRow.updateSpikeConfig(
+                            spikeIndex = spikeIndex,
+                            config = getConfig().copy(
+                                timeOnMillis = newValueMillis,
+                            )
+                        )
+                    },
                 ),
                 createTimeInput(
                     labelText = "Time off",
+                    initialValueMillis = initialConfig.timeOffMillis,
+                    onValueChanged = { newValueMillis ->
+                        floorSpikeRow.updateSpikeConfig(
+                            spikeIndex = spikeIndex,
+                            config = getConfig().copy(
+                                timeOffMillis = newValueMillis,
+                            )
+                        )
+                    },
                 ),
                 createButton(
                     text = "Remove",
@@ -229,6 +264,7 @@ fun createEditFloorSpikeRowDialog(
             ),
             tillDetach = tillDetach,
         )
+    }
 
     return createColumn(
         style = DynamicStyleDeclaration(
@@ -243,8 +279,13 @@ fun createEditFloorSpikeRowDialog(
                 "Spike count: ${spikes.size}",
             ),
             createColumn(
-                children = spikes.indices.map {
-                    createEditSpikeRow(it)
+                // TODO: React to a dynamic list of spikes
+                // Implement DynamicList with mapTillNext?
+                children = spikes.mapIndexed { index, floorSpike ->
+                    createEditSpikeRow(
+                        spikeIndex = index,
+                        floorSpike = floorSpike,
+                    )
                 },
                 verticalGap = 8.px,
                 tillDetach = tillDetach,
@@ -254,7 +295,9 @@ fun createEditFloorSpikeRowDialog(
                     alignSelf = constant(Align.flexStart),
                 ),
                 text = "Add",
-                onPressed = {},
+                onPressed = {
+                    floorSpikeRow.addSpike()
+                },
                 tillDetach = tillDetach,
             ),
         ),

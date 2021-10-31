@@ -5,6 +5,7 @@ import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
 import icesword.frp.Till
 import icesword.frp.map
+import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
 import icesword.frp.sample
 import icesword.geometry.IntSize
@@ -239,6 +240,8 @@ fun createRow(
 
 fun createNumberInput(
     staticStyle: (CSSStyleDeclaration.() -> Unit)? = null,
+    initialValue: Int,
+    onValueChanged: (Int) -> Unit,
 ): HTMLInputElement {
     val input = (createStyledHtmlElement(
         tagName = "input",
@@ -247,8 +250,12 @@ fun createNumberInput(
     ) as HTMLInputElement)
         .apply {
             type = "number"
-            value = "0"
+            value = initialValue.toString()
         }
+
+    input.onChange().reactIndefinitely {
+        onValueChanged(input.value.toInt())
+    }
 
     return input
 }

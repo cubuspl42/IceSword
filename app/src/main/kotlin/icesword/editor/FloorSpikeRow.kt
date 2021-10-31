@@ -4,11 +4,13 @@ package icesword.editor
 
 import icesword.RezIndex
 import icesword.editor.WapObjectPrototype.FloorSpikePrototype
+import icesword.frp.Cell
+import icesword.frp.MutCell
 import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
+import icesword.utils.updated
 import icesword.wwd.Wwd
-import kotlinx.css.del
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
@@ -28,7 +30,14 @@ class FloorSpikeRow(
             )
     }
 
+    data class FloorSpikeConfig(
+        val startDelayMillis: Int,
+        val timeOffMillis: Int,
+        val timeOnMillis: Int,
+    )
+
     data class FloorSpike(
+        val config: FloorSpikeConfig,
         val position: IntVec2,
         val bounds: IntRect,
     )
@@ -39,18 +48,19 @@ class FloorSpikeRow(
     )!!
 
     private fun buildSpikes(
-        spikeCount: Int,
+        configs: List<FloorSpikeConfig>,
         position: IntVec2,
-    ): List<FloorSpike> {
-        val head = FloorSpike(
-            position = position,
-            bounds = calculateWapSpriteBounds(
-                imageMetadata = spikeImageMetadata,
+    ): List<FloorSpike> =
+        configs.firstOrNull()?.let { config ->
+            val spike = FloorSpike(
+                config = config,
                 position = position,
+                bounds = calculateWapSpriteBounds(
+                    imageMetadata = spikeImageMetadata,
+                    position = position,
+                )
             )
-        )
 
-        return if (spikeCount > 1) {
             val gapWidth = 4
 
             val delta = IntVec2(
@@ -58,22 +68,68 @@ class FloorSpikeRow(
                 y = 0,
             )
 
-            listOf(head) + buildSpikes(
-                spikeCount = spikeCount - 1,
+            listOf(spike) + buildSpikes(
+                configs = configs.drop(1),
                 position = position + delta,
             )
-        } else {
-            listOf(head)
-        }
-    }
+        } ?: emptyList()
 
     override val entityPosition: EntityPosition =
         EntityPixelPosition(
             initialPosition = initialPosition,
         )
 
-    val spikes = entityPosition.position.map {
-        buildSpikes(spikeCount = 5, position = it)
+    private val _spikeConfigs = MutCell(
+        initialValue = listOf(
+            FloorSpikeConfig(
+                startDelayMillis = 0,
+                timeOffMillis = 1500,
+                timeOnMillis = 1500
+            ),
+            FloorSpikeConfig(
+                startDelayMillis = 750,
+                timeOffMillis = 1500,
+                timeOnMillis = 1500
+            ),
+            FloorSpikeConfig(
+                startDelayMillis = 1500,
+                timeOffMillis = 1500,
+                timeOnMillis = 1500
+            ),
+            FloorSpikeConfig(
+                startDelayMillis = 2250,
+                timeOffMillis = 1500,
+                timeOnMillis = 1500
+            ),
+        )
+    )
+
+    fun getSpikeConfig(
+        spikeIndex: Int,
+    ): FloorSpikeConfig =
+        _spikeConfigs.sample()[spikeIndex]
+
+    fun updateSpikeConfig(
+        spikeIndex: Int,
+        config: FloorSpikeConfig,
+    ) {
+        val oldConfigs = _spikeConfigs.sample()
+        _spikeConfigs.set(oldConfigs.updated(spikeIndex, config))
+    }
+
+    fun addSpike() {
+        val oldConfigs = _spikeConfigs.sample()
+        _spikeConfigs.set(oldConfigs + listOf(oldConfigs.last()))
+    }
+
+    val spikes = Cell.map2(
+        _spikeConfigs,
+        entityPosition.position,
+    ) { spikeConfigs, position ->
+        buildSpikes(
+            configs = spikeConfigs,
+            position = position,
+        )
     }
 
     val boundingBox = spikes.map { spikes ->
