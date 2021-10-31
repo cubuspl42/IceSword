@@ -258,7 +258,11 @@ fun createEditFloorSpikeRowDialog(
                 ),
                 createButton(
                     text = "Remove",
-                    onPressed = {},
+                    onPressed = {
+                        floorSpikeRow.removeSpike(
+                            spikeIndex = spikeIndex,
+                        )
+                    },
                     tillDetach = tillDetach,
                 ),
             ),

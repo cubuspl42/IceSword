@@ -122,6 +122,13 @@ class FloorSpikeRow(
         _spikeConfigs.set(oldConfigs + listOf(oldConfigs.last()))
     }
 
+    fun removeSpike(
+        spikeIndex: Int,
+    ) {
+        val oldConfigs = _spikeConfigs.sample()
+        _spikeConfigs.set(oldConfigs.filterIndexed { index, _ -> index == spikeIndex })
+    }
+
     val spikes = Cell.map2(
         _spikeConfigs,
         entityPosition.position,
