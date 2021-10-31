@@ -143,9 +143,14 @@ class FloorSpikeRow(
 
     override fun exportWapObjects(): List<Wwd.Object_> =
         spikes.sample().map {
+            val config = it.config
+
             FloorSpikePrototype.wwdObjectPrototype.copy(
                 x = it.position.x,
                 y = it.position.y,
+                speed = config.startDelayMillis,
+                speedX = config.timeOnMillis,
+                speedY = config.timeOffMillis,
             )
         }
 
