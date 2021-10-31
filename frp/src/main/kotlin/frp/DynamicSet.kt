@@ -16,26 +16,9 @@ interface DynamicSet<out A> {
                 content = element.map { e -> e?.let { setOf(it) } ?: emptySet() },
             )
 
-//        fun <A> diff(content: Cell<Set<A>>): DynamicSet<A> =
-//            ContentDynamicSet(content)
-
         fun <A> diff(content: Cell<Set<A>>, tag: String = "diff"): DynamicSet<A> =
             DiffDynamicSet(content, tag = tag)
                 .validated("$tag-validated")
-
-//        fun <A> union(sets: DynamicSet<Set<A>>): DynamicSet<A> = diff(
-//            sets.content.map { it.flatten().toSet() }
-//        )
-
-//        fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = diff(
-//            sets.content.switchMap { outerSet ->
-//                Cell.traverse(outerSet) { innerDynSet ->
-//                    innerDynSet.content
-//                }.map { setOfSets ->
-//                    setOfSets.flatten().toSet()
-//                }
-//            }
-//        )
 
         fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> =
             DynamicSetUnion(sets)
@@ -46,8 +29,6 @@ interface DynamicSet<out A> {
         ): Stream<A> = streams.content.divertMap {
             Stream.merge(it)
         }
-
-//        fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> = DynamicSetUnion()
 
         // Probably, like `fuse`, it's semantically meaningless, because `DynamicView` isn't comparable
         fun <A> blend(dynamicViews: DynamicSet<DynamicView<A>>): DynamicView<Set<A>> =
@@ -71,9 +52,6 @@ interface DynamicSet<out A> {
     }
 }
 
-//fun <K, V> DynamicMap<K, V>.get(key: K): Cell<V?> =
-//    content.map { it[key] }
-
 fun <A, B> DynamicSet<A>.unionMap(
     tag: String,
     transform: (A) -> Set<B>,
@@ -94,10 +72,6 @@ fun <A> DynamicSet<A>.unionWith(other: DynamicSet<A>): DynamicSet<A> =
     )
 
 fun <A> DynamicSet<A>.trackContent(till: Till): Cell<Set<A>> = content
-
-//fun <A, R> DynamicSet<A>.map(transform: (A) -> R): DynamicSet<R> = DynamicSet.diff(
-//    content.map { it.map(transform).toSet() },
-//)
 
 fun <A, R> DynamicSet<A>.map(
     tag: String = "map",
@@ -126,82 +100,19 @@ fun <A, R> DynamicSet<A>.mapTillRemoved(
         tillAbort = tillAbort,
     ).validated("mapTillNext")
 
-//fun <A, R> DynamicSet<A>.mapDynamic(transform: (A) -> Cell<R>): DynamicSet<R> =
-//    DynamicSet.diff(tileOffset.map { tileOffset ->
-//        localMetaTiles.keys.map { tileOffset + it }.toSet()
-//    })
-
-
-//fun <A> DynamicSet<A>.changes(): Stream<Unit> =
-//    this.content.values().units()
-
 fun <A> DynamicSet<A>.sample(): Set<A> = volatileContentView.toSet()
 
 
 fun <K, B> DynamicSet<K>.fuseMap(transform: (K) -> Cell<B>): DynamicSet<B> =
     FuseMapDynamicSet(this, transform)
 
-//fun <K, B> DynamicSet<K>.fuseMapDiff(transform: (K) -> Cell<B>): DynamicSet<B> =
-//    DynamicSet.diff(
-//        content.switchMap { content ->
-//            Cell.traverse(content, transform).map { it.toSet() }
-//        }
-//    )
-
-//fun <K, V> DynamicSet<K>.associateWith(valueSelector: (K) -> V): DynamicMap<K, V> =
-//    DynamicMap.diff(content.map { it.associateWith(valueSelector) })
-
 fun <K, V> DynamicSet<K>.associateWith(tag: String, valueSelector: (K) -> V): DynamicMap<K, V> =
     DynamicSetAssociateWith(this, valueSelector, tag = tag)
         .validated(tag = tag)
 
-//fun <K, V> DynamicSet<K>.associateWithDynamic(valueSelector: (K) -> Cell<V>): DynamicMap<K, V> =
-//    DynamicMap.diff(content.switchMap { content ->
-//        Cell.traverse(content) { key ->
-//            valueSelector(key).map { value -> key to value }
-//        }.map { it.toMap() }
-//    })
-
 fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) -> Cell<V>): DynamicMap<K, V> =
     this.associateWith(tag = "$tag/associateWithDynamic/associateWith", valueSelector)
         .fuseValues(tag = "$tag/associateWithDynamic/fuseValues")
-
-//class Ordered<A, K : Comparable<K>>(val value: A, val key: K)
-//
-//class OrderedDynamic<A, K : Comparable<K>>(val value: A, val key: Cell<K>)
-
-
-//fun <A, K> DynamicSet<A>.sortedByDynamic(keySelector: (A) -> Cell<K>): DynamicList<A> =
-//    TODO()
-
-
-//fun <A, K : Comparable<K>> DynamicSet<OrderedDynamic<A, K>>.ordered(): DynamicList<A> =
-//    TODO()
-
-//fun <A, B, K : Comparable<K>> DynamicSet<A>.fuseMapOrdered(f: (A) -> OrderedDynamic<Cell<B>, K>): DynamicList<B> =
-//    this.fuseMap { a ->
-//        val od: OrderedDynamic<Cell<B>, K> = f(a)
-//        val cb: Cell<B> = od.value
-//        cb.map { b ->
-//            OrderedDynamic(value = b, key = od.key)
-//        }
-//    }.ordered()
-
-//fun <A, B, K : Comparable<K>> DynamicSet<A>.blendMapOrdered(
-//    f: (A) -> OrderedDynamic<DynamicView<B>, K>,
-//): DynamicList<B> {
-//    val blendMap = this.blendMap { a ->
-//        val od: OrderedDynamic<DynamicView<B>, K> = f(a)
-//        val cb: DynamicView<B> = od.value
-//        cb.map { b ->
-//            OrderedDynamic(value = b, key = od.key)
-//        }
-//    }
-//    return blendMap.ordered()
-//}
-
-//val <A> DynamicSet<A>.contentView: Cell<Set<A>>
-//    get() = TODO()
 
 fun <A, R> DynamicSet<A>.blendMap(transform: (A) -> DynamicView<R>): DynamicView<Set<R>> =
     DynamicSet.blend(this.map(tag = "blendMap/map", transform))
@@ -247,11 +158,9 @@ fun <A> DynamicSet<A>.validated(sourceTag: String): DynamicSet<A> =
     if (enableSetValidation) ValidatedDynamicSet(this, sourceTag = sourceTag)
     else this
 
-
 fun <A> MutableDynamicSet<A>.validatedMutable(tag: String): MutableDynamicSet<A> =
     if (enableSetValidation) MutableValidatedDynamicSet(this, sourceTag = tag)
     else this
-
 
 abstract class SimpleDynamicSet<A>(
     tag: String,
