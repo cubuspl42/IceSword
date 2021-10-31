@@ -11,6 +11,7 @@ import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mergeWith
 import icesword.frp.tillNext
+import icesword.frp.units
 import icesword.frp.until
 import icesword.geometry.IntVec2
 import org.w3c.dom.Element
@@ -35,6 +36,9 @@ fun Element.onMouseLeave(): Stream<MouseEvent> =
 fun Element.onMouseUp(button: MouseButton): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mouseup")
         .filter { e: MouseEvent -> e.button == button.ordinal.toShort() }
+
+fun Element.onChange(): Stream<Unit> =
+    this.onEvent<Event>("change").units()
 
 sealed interface MousePosition {
     value class Entered(val position: Cell<IntVec2>) : MousePosition

@@ -1,6 +1,10 @@
+import icesword.JsonRezIndex
 import icesword.createAppView
+import icesword.createEditFloorSpikeRowDialog
 import icesword.editor.App
+import icesword.editor.FloorSpikeRow
 import icesword.frp.Till
+import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
 import icesword.wwd.Wwd.readWorld
 import kotlinx.browser.document
@@ -47,8 +51,7 @@ suspend fun fetchWorld(): Wwd.World {
     return world
 }
 
-@OptIn(DelicateCoroutinesApi::class)
-fun main() {
+private fun run() {
     // A dirty hack to make `nodeTest` work (why does it invoke main?)
     fun getDocument(): Document? = try {
         document
@@ -91,4 +94,28 @@ fun main() {
             )
         )
     }
+}
+
+suspend fun test() {
+    val jsonRezIndex = JsonRezIndex.load()
+
+    val floorSpikeRow = FloorSpikeRow(
+        rezIndex = jsonRezIndex,
+        initialPosition = IntVec2.ZERO,
+    )
+
+    document.body?.appendChild(
+        createEditFloorSpikeRowDialog(
+            floorSpikeRow = floorSpikeRow,
+            onClosePressed = {},
+            tillDetach = Till.never,
+        )
+    )
+}
+
+@OptIn(DelicateCoroutinesApi::class)
+fun main() {
+//    GlobalScope.launch { test() }
+
+    run()
 }

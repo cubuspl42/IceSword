@@ -1,11 +1,11 @@
 package icesword.ui
 
-import icesword.html.CSSStyle
-import icesword.html.FontWeight
-import icesword.html.createButton
 import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.map
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.createButton
+import kotlinx.css.FontWeight
 import org.w3c.dom.HTMLElement
 
 fun <A, B : A> createSelectButton(
@@ -16,11 +16,9 @@ fun <A, B : A> createSelectButton(
     tillDetach: Till,
 ): HTMLElement =
     createButton(
-        style = selected.map {
-            CSSStyle(
-                fontWeight = if (it == value) FontWeight.bold else null,
-            )
-        },
+        style = DynamicStyleDeclaration(
+            fontWeight = selected.map { if (it == value) FontWeight.bold else null },
+        ),
         text = name,
         onPressed = {
             select(value)

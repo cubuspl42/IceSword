@@ -1,6 +1,7 @@
 package icesword.html
 
 import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
 import icesword.frp.Till
 import icesword.frp.map
@@ -10,7 +11,14 @@ import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
 import kotlinx.css.Color
+import kotlinx.css.Display
+import kotlinx.css.FlexDirection
+import kotlinx.css.LinearDimension
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.HTMLInputElement
+import org.w3c.dom.Node
+import org.w3c.dom.Text
+import org.w3c.dom.css.CSSStyleDeclaration
 import org.w3c.dom.svg.SVGCircleElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGGElement
@@ -20,12 +28,22 @@ import org.w3c.dom.svg.SVGSVGElement
 fun createHtmlElement(tagName: String): HTMLElement =
     document.createElement(tagName) as HTMLElement
 
+fun createText(
+    text: String,
+): Text =
+    document.createTextNode(text)
+
 fun createStyledHtmlElement(
     tagName: String,
+    staticStyle: (CSSStyleDeclaration.() -> Unit)? = null,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
 ): HTMLElement {
     val element = document.createElement(tagName) as HTMLElement
+
+    if (staticStyle != null) {
+        staticStyle(element.style)
+    }
 
     style?.linkTo(element.style, tillDetach)
 
@@ -177,3 +195,60 @@ fun createWrapper(
             till = tillDetach
         )
     }
+
+fun createColumn(
+    tagName: String = "div",
+    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    verticalGap: LinearDimension? = null,
+    children: List<Node>,
+    tillDetach: Till,
+): HTMLElement {
+    return createStyledHtmlElement(
+        tagName = tagName,
+        style = style.copy(
+            display = constant(Display.flex),
+            flexDirection = constant(FlexDirection.column),
+            gap = verticalGap?.let(::constant),
+        ),
+        tillDetach = tillDetach,
+    ).apply {
+        children.forEach(this::appendChild)
+    }
+}
+
+fun createRow(
+    tagName: String = "div",
+    staticStyle: (CSSStyleDeclaration.() -> Unit)? = null,
+    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    horizontalGap: LinearDimension? = null,
+    children: List<Node>,
+    tillDetach: Till,
+): HTMLElement =
+    createStyledHtmlElement(
+        tagName = tagName,
+        staticStyle = staticStyle,
+        style = style.copy(
+            display = constant(Display.flex),
+            flexDirection = constant(FlexDirection.row),
+            gap = horizontalGap?.let(::constant),
+        ),
+        tillDetach = tillDetach,
+    ).apply {
+        children.forEach(this::appendChild)
+    }
+
+fun createNumberInput(
+    staticStyle: (CSSStyleDeclaration.() -> Unit)? = null,
+): HTMLInputElement {
+    val input = (createStyledHtmlElement(
+        tagName = "input",
+        staticStyle = staticStyle,
+        tillDetach = Till.never,
+    ) as HTMLInputElement)
+        .apply {
+            type = "number"
+            value = "0"
+        }
+
+    return input
+}

@@ -1,20 +1,31 @@
 package icesword
 
-import icesword.html.createButton
-import icesword.html.createHtmlElement
 import icesword.editor.Editor
 import icesword.editor.EditorMode
 import icesword.editor.FloorSpikeRow
 import icesword.editor.SelectMode
 import icesword.editor.Tool
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.TillMarker
 import icesword.frp.map
-import icesword.html.CSSStyle
-import icesword.html.FontWeight
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.createButton
+import icesword.html.createColumn
+import icesword.html.createHtmlElement
+import icesword.html.createNumberInput
+import icesword.html.createRow
+import icesword.html.createText
 import icesword.ui.createSelectButton
-import kotlinx.browser.document
+import kotlinx.css.Align
+import kotlinx.css.BorderStyle
+import kotlinx.css.CSSBuilder
+import kotlinx.css.Color
+import kotlinx.css.px
+import kotlinx.css.style
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.Node
+import org.w3c.dom.Text
 
 
 fun createEditorToolBar(
@@ -160,27 +171,93 @@ fun createEditFloorSpikeRowDialog(
 ): HTMLElement {
     val spikes = floorSpikeRow.spikes.sample()
 
-    return createHtmlElement("div").apply {
-        className = "editFloorSpikeRowDialog"
+    val closeButton = createButton(
+        style = DynamicStyleDeclaration(
+            alignSelf = constant(Align.flexEnd),
+        ),
+        text = "✕",
+        onPressed = onClosePressed,
+        tillDetach = tillDetach,
+    )
 
-        style.apply {
-            backgroundColor = "#d1d1d1"
-            padding = "16px"
-            fontFamily = "sans-serif"
-        }
+    fun createTimeInput(
+        labelText: String,
+    ): HTMLElement = createRow(
+        staticStyle = {
+            borderStyle = BorderStyle.dashed.toString()
+            borderWidth = 1.px.toString()
+            padding = 4.px.toString()
+        },
+        style = DynamicStyleDeclaration(
+            alignItems = constant(Align.center),
+        ),
+        horizontalGap = 4.px,
+        children = listOf(
+            createText("$labelText:"),
+            createNumberInput(
+                staticStyle = {
+                    width = 64.px.toString()
+                },
+            ),
+            createText("ms"),
+        ),
+        tillDetach = tillDetach,
+    )
 
-        appendChild(
-            createButton(
-                text = "✕",
-                onPressed = onClosePressed,
-                tillDetach = tillDetach,
-            )
+    fun createEditSpikeRow(i: Int): Node =
+        createRow(
+            style = DynamicStyleDeclaration(
+                alignItems = constant(Align.center),
+            ),
+            horizontalGap = 8.px,
+            children = listOf(
+                createText("Spike $i"),
+                createTimeInput(
+                    labelText = "Start delay",
+                ),
+                createTimeInput(
+                    labelText = "Time on",
+                ),
+                createTimeInput(
+                    labelText = "Time off",
+                ),
+                createButton(
+                    text = "Remove",
+                    onPressed = {},
+                    tillDetach = tillDetach,
+                ),
+            ),
+            tillDetach = tillDetach,
         )
 
-        appendChild(
-            document.createTextNode(
+    return createColumn(
+        style = DynamicStyleDeclaration(
+            backgroundColor = constant(Color("#d1d1d1")),
+            padding = constant("16px"),
+            fontFamily = constant("sans-serif"),
+        ),
+        verticalGap = 8.px,
+        children = listOf(
+            closeButton,
+            createText(
                 "Spike count: ${spikes.size}",
-            )
-        )
-    }
+            ),
+            createColumn(
+                children = spikes.indices.map {
+                    createEditSpikeRow(it)
+                },
+                verticalGap = 8.px,
+                tillDetach = tillDetach,
+            ),
+            createButton(
+                style = DynamicStyleDeclaration(
+                    alignSelf = constant(Align.flexStart),
+                ),
+                text = "Add",
+                onPressed = {},
+                tillDetach = tillDetach,
+            ),
+        ),
+        tillDetach = tillDetach,
+    )
 }

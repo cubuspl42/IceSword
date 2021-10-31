@@ -5,8 +5,14 @@ import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.geometry.IntVec2
+import kotlinx.css.Align
 import kotlinx.css.Color
 import kotlinx.css.Cursor
+import kotlinx.css.Display
+import kotlinx.css.FlexDirection
+import kotlinx.css.FontStyle
+import kotlinx.css.FontWeight
+import kotlinx.css.LinearDimension
 import kotlinx.css.PointerEvents
 import kotlinx.css.properties.Transforms
 import kotlinx.css.properties.translate
@@ -29,6 +35,14 @@ interface Transform {
 }
 
 data class DynamicStyleDeclaration(
+    val display: Cell<Display>? = null,
+    val padding: Cell<String>? = null,
+    val fontFamily: Cell<String>? = null,
+    val fontWeight: Cell<FontWeight?>? = null,
+    val flexDirection: Cell<FlexDirection>? = null,
+    val gap: Cell<LinearDimension>? = null,
+    val alignItems: Cell<Align>? = null,
+    val alignSelf: Cell<Align>? = null,
     val backgroundColor: Cell<Color>? = null,
     val cursor: Cell<Cursor?>? = null,
     val transform: Cell<Transform?>? = null,
@@ -38,6 +52,62 @@ data class DynamicStyleDeclaration(
         style: CSSStyleDeclaration,
         tillDetach: Till,
     ) {
+        linkProperty(
+            style = style,
+            propertyName = "display",
+            property = display?.map { it.toString() },
+            till = tillDetach
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "padding",
+            property = padding,
+            till = tillDetach
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "font-family",
+            property = fontFamily,
+            till = tillDetach
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "font-weight",
+            property = fontWeight?.map { it?.toString() },
+            till = tillDetach
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "flex-direction",
+            property = flexDirection?.map { it.toString() },
+            till = tillDetach
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "gap",
+            property = gap?.map { it.toString() },
+            till = tillDetach
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "align-items",
+            property = alignItems?.map { it.toString() },
+            till = tillDetach
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "align-self",
+            property = alignSelf?.map { it.toString() },
+            till = tillDetach
+        )
+
         linkProperty(
             style = style,
             propertyName = "background-color",
@@ -62,7 +132,7 @@ data class DynamicStyleDeclaration(
         linkProperty(
             style = style,
             propertyName = "pointer-events",
-            property = pointerEvents?.map { it?.name },
+            property = pointerEvents?.map { it?.toString() },
             till = tillDetach
         )
     }
