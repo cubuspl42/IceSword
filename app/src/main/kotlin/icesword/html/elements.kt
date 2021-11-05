@@ -4,6 +4,7 @@ import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
 import icesword.frp.Till
+import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.map
 import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
@@ -217,6 +218,27 @@ fun createColumn(
     }
 }
 
+fun createColumnDl(
+    tagName: String = "div",
+    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    verticalGap: LinearDimension? = null,
+    children: DynamicList<Node>,
+    tillDetach: Till,
+): HTMLElement =
+    createColumn(
+        tagName = tagName,
+        style = style,
+        verticalGap = verticalGap,
+        children = emptyList(),
+        tillDetach = tillDetach,
+    ).apply {
+        linkNodeChildrenDl(
+            element = this,
+            children = children,
+            till = tillDetach,
+        )
+    }
+
 fun createRow(
     tagName: String = "div",
     staticStyle: (CSSStyleDeclaration.() -> Unit)? = null,
@@ -237,6 +259,14 @@ fun createRow(
     ).apply {
         children.forEach(this::appendChild)
     }
+
+fun createRowDl(
+    tagName: String = "div",
+    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    horizontalGap: LinearDimension? = null,
+    children: DynamicList<Node>,
+    tillDetach: Till,
+): HTMLElement = TODO()
 
 fun createNumberInput(
     staticStyle: (CSSStyleDeclaration.() -> Unit)? = null,

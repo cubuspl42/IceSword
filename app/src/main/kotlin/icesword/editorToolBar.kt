@@ -6,12 +6,15 @@ import icesword.editor.FloorSpikeRow
 import icesword.editor.SelectMode
 import icesword.editor.Tool
 import icesword.frp.Cell.Companion.constant
+import icesword.frp.MutCell
 import icesword.frp.Till
 import icesword.frp.TillMarker
+import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.frp.map
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.createButton
 import icesword.html.createColumn
+import icesword.html.createColumnDl
 import icesword.html.createHtmlElement
 import icesword.html.createNumberInput
 import icesword.html.createRow
@@ -166,8 +169,6 @@ fun createEditFloorSpikeRowDialog(
     onClosePressed: () -> Unit,
     tillDetach: Till,
 ): HTMLElement {
-    val spikes = floorSpikeRow.spikes.sample()
-
     val closeButton = createButton(
         style = DynamicStyleDeclaration(
             alignSelf = constant(Align.flexEnd),
@@ -179,8 +180,7 @@ fun createEditFloorSpikeRowDialog(
 
     fun createTimeInput(
         labelText: String,
-        initialValueMillis: Int,
-        onValueChanged: (valueMillis: Int) -> Unit,
+        propertyMillis: MutCell<Int>,
     ): HTMLElement = createRow(
         staticStyle = {
             borderStyle = BorderStyle.dashed.toString()
@@ -197,8 +197,10 @@ fun createEditFloorSpikeRowDialog(
                 staticStyle = {
                     width = 64.px.toString()
                 },
-                initialValue = initialValueMillis,
-                onValueChanged = onValueChanged,
+                initialValue = propertyMillis.sample(),
+                onValueChanged = {
+                    propertyMillis.set(it)
+                },
             ),
             createText("ms"),
         ),
@@ -206,69 +208,39 @@ fun createEditFloorSpikeRowDialog(
     )
 
     fun createEditSpikeRow(
-        spikeIndex: Int,
-        floorSpike: FloorSpikeRow.FloorSpike,
-    ): Node {
-        fun getConfig() = floorSpikeRow.getSpikeConfig(spikeIndex = spikeIndex)
-
-        val initialConfig = getConfig()
-
-        return createRow(
-            style = DynamicStyleDeclaration(
-                alignItems = constant(Align.center),
+        config: FloorSpikeRow.FloorSpikeConfig,
+        tillDetach: Till,
+    ): Node = createRow(
+        style = DynamicStyleDeclaration(
+            alignItems = constant(Align.center),
+        ),
+        horizontalGap = 8.px,
+        children = listOf(
+            createText("Spike"),
+            createTimeInput(
+                labelText = "Start delay",
+                propertyMillis = config.startDelayMillis,
             ),
-            horizontalGap = 8.px,
-            children = listOf(
-                createText("Spike $spikeIndex"),
-                createTimeInput(
-                    labelText = "Start delay",
-                    initialValueMillis = initialConfig.startDelayMillis,
-                    onValueChanged = { newValueMillis ->
-                        floorSpikeRow.updateSpikeConfig(
-                            spikeIndex = spikeIndex,
-                            config = getConfig().copy(
-                                startDelayMillis = newValueMillis,
-                            )
-                        )
-                    },
-                ),
-                createTimeInput(
-                    labelText = "Time on",
-                    initialValueMillis = initialConfig.timeOnMillis,
-                    onValueChanged = { newValueMillis ->
-                        floorSpikeRow.updateSpikeConfig(
-                            spikeIndex = spikeIndex,
-                            config = getConfig().copy(
-                                timeOnMillis = newValueMillis,
-                            )
-                        )
-                    },
-                ),
-                createTimeInput(
-                    labelText = "Time off",
-                    initialValueMillis = initialConfig.timeOffMillis,
-                    onValueChanged = { newValueMillis ->
-                        floorSpikeRow.updateSpikeConfig(
-                            spikeIndex = spikeIndex,
-                            config = getConfig().copy(
-                                timeOffMillis = newValueMillis,
-                            )
-                        )
-                    },
-                ),
-                createButton(
-                    text = "Remove",
-                    onPressed = {
-                        floorSpikeRow.removeSpike(
-                            spikeIndex = spikeIndex,
-                        )
-                    },
-                    tillDetach = tillDetach,
-                ),
+            createTimeInput(
+                labelText = "Time off",
+                propertyMillis = config.timeOffMillis,
             ),
-            tillDetach = tillDetach,
-        )
-    }
+            createTimeInput(
+                labelText = "Time on",
+                propertyMillis = config.timeOnMillis,
+            ),
+            createButton(
+                text = "Remove",
+                onPressed = {
+                    floorSpikeRow.removeSpike(
+                        floorSpikeConfig = config,
+                    )
+                },
+                tillDetach = tillDetach,
+            ),
+        ),
+        tillDetach = tillDetach,
+    )
 
     return createColumn(
         style = DynamicStyleDeclaration(
@@ -279,18 +251,14 @@ fun createEditFloorSpikeRowDialog(
         verticalGap = 8.px,
         children = listOf(
             closeButton,
-            createText(
-                "Spike count: ${spikes.size}",
-            ),
-            createColumn(
-                // TODO: React to a dynamic list of spikes
-                // Implement DynamicList with mapTillNext?
-                children = spikes.mapIndexed { index, floorSpike ->
-                    createEditSpikeRow(
-                        spikeIndex = index,
-                        floorSpike = floorSpike,
-                    )
-                },
+            createColumnDl(
+                children = floorSpikeRow.spikeConfigs
+                    .mapTillRemoved(tillAbort = tillDetach) { config, tillRemoved ->
+                        createEditSpikeRow(
+                            config = config,
+                            tillDetach = tillRemoved,
+                        )
+                    },
                 verticalGap = 8.px,
                 tillDetach = tillDetach,
             ),

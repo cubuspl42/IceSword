@@ -1,6 +1,7 @@
 package icesword.html
 
 import icesword.frp.*
+import icesword.frp.dynamic_list.DynamicList
 import icesword.geometry.IntVec2
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
@@ -46,6 +47,20 @@ fun linkNodeChildren(
     }
 }
 
+fun linkNodeChildrenDl(
+    element: Element,
+    children: DynamicList<Node>,
+    till: Till,
+) {
+    children.content.values().reactTill(till) { childrenNow ->
+        clearElement(element)
+
+        childrenNow.forEach(element::appendChild)
+    }
+
+    children.volatileContentView.forEach(element::appendChild)
+}
+
 
 fun linkChildren(
     element: HTMLElement,
@@ -53,6 +68,18 @@ fun linkChildren(
     till: Till,
 ) {
     linkNodeChildren(
+        element = element,
+        children = children,
+        till = till,
+    )
+}
+
+fun linkHtmlChildrenDl(
+    element: HTMLElement,
+    children: DynamicList<HTMLElement>,
+    till: Till,
+) {
+    linkNodeChildrenDl(
         element = element,
         children = children,
         till = till,

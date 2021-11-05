@@ -96,23 +96,6 @@ private fun run() {
     }
 }
 
-suspend fun test() {
-    val jsonRezIndex = JsonRezIndex.load()
-
-    val floorSpikeRow = FloorSpikeRow(
-        rezIndex = jsonRezIndex,
-        initialPosition = IntVec2.ZERO,
-    )
-
-    document.body?.appendChild(
-        createEditFloorSpikeRowDialog(
-            floorSpikeRow = floorSpikeRow,
-            onClosePressed = {},
-            tillDetach = Till.never,
-        )
-    )
-}
-
 @OptIn(DelicateCoroutinesApi::class)
 fun main() {
 //    GlobalScope.launch { test() }

@@ -6,10 +6,12 @@ import icesword.RezIndex
 import icesword.editor.WapObjectPrototype.FloorSpikePrototype
 import icesword.frp.Cell
 import icesword.frp.MutCell
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.MutableDynamicList
+import icesword.frp.dynamic_list.lastNow
 import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
-import icesword.utils.updated
 import icesword.wwd.Wwd
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -18,7 +20,6 @@ class FloorSpikeRow(
     private val rezIndex: RezIndex,
     initialPosition: IntVec2,
 ) : Entity(), WapObjectExportable {
-
     companion object {
         fun load(
             rezIndex: RezIndex,
@@ -30,16 +31,26 @@ class FloorSpikeRow(
             )
     }
 
-    data class FloorSpikeConfig(
-        val startDelayMillis: Int,
-        val timeOffMillis: Int,
-        val timeOnMillis: Int,
-    )
+    class FloorSpikeConfig(
+        initialStartDelayMillis: Int,
+        initialTimeOffMillis: Int,
+        initialTimeOnMillis: Int,
+    ) {
+        val startDelayMillis = MutCell(initialStartDelayMillis)
 
-    data class FloorSpike(
+        val timeOffMillis = MutCell(initialTimeOffMillis)
+
+        val timeOnMillis = MutCell(initialTimeOnMillis)
+    }
+
+    data class OutputSpike(
         val config: FloorSpikeConfig,
         val position: IntVec2,
         val bounds: IntRect,
+    )
+
+    data class OutputRow(
+        val spikes: List<OutputSpike>,
     )
 
     val spikeImageMetadata = rezIndex.getImageMetadata(
@@ -50,9 +61,9 @@ class FloorSpikeRow(
     private fun buildSpikes(
         configs: List<FloorSpikeConfig>,
         position: IntVec2,
-    ): List<FloorSpike> =
+    ): List<OutputSpike> =
         configs.firstOrNull()?.let { config ->
-            val spike = FloorSpike(
+            val spike = OutputSpike(
                 config = config,
                 position = position,
                 bounds = calculateWapSpriteBounds(
@@ -74,92 +85,89 @@ class FloorSpikeRow(
             )
         } ?: emptyList()
 
+
     override val entityPosition: EntityPosition =
         EntityPixelPosition(
             initialPosition = initialPosition,
         )
 
-    private val _spikeConfigs = MutCell(
-        initialValue = listOf(
+    private val _spikeConfigs = MutableDynamicList(
+        initialContent = listOf(
             FloorSpikeConfig(
-                startDelayMillis = 0,
-                timeOffMillis = 1500,
-                timeOnMillis = 1500
+                initialStartDelayMillis = 0,
+                initialTimeOffMillis = 1500,
+                initialTimeOnMillis = 1500
             ),
             FloorSpikeConfig(
-                startDelayMillis = 750,
-                timeOffMillis = 1500,
-                timeOnMillis = 1500
+                initialStartDelayMillis = 750,
+                initialTimeOffMillis = 1500,
+                initialTimeOnMillis = 1500
             ),
             FloorSpikeConfig(
-                startDelayMillis = 1500,
-                timeOffMillis = 1500,
-                timeOnMillis = 1500
+                initialStartDelayMillis = 1500,
+                initialTimeOffMillis = 1500,
+                initialTimeOnMillis = 1500
             ),
             FloorSpikeConfig(
-                startDelayMillis = 2250,
-                timeOffMillis = 1500,
-                timeOnMillis = 1500
+                initialStartDelayMillis = 2250,
+                initialTimeOffMillis = 1500,
+                initialTimeOnMillis = 1500
             ),
         )
     )
 
-    fun getSpikeConfig(
-        spikeIndex: Int,
-    ): FloorSpikeConfig =
-        _spikeConfigs.sample()[spikeIndex]
+    val spikeConfigs: DynamicList<FloorSpikeConfig> = _spikeConfigs
 
-    fun updateSpikeConfig(
-        spikeIndex: Int,
-        config: FloorSpikeConfig,
-    ) {
-        val oldConfigs = _spikeConfigs.sample()
-        _spikeConfigs.set(oldConfigs.updated(spikeIndex, config))
+    val outputRow = Cell.map2(
+        entityPosition.position,
+        _spikeConfigs.content,
+    ) { position, configs ->
+        OutputRow(
+            spikes = buildSpikes(
+                configs = configs,
+                position = position,
+            ),
+        )
     }
 
     fun addSpike() {
-        val oldConfigs = _spikeConfigs.sample()
-        _spikeConfigs.set(oldConfigs + listOf(oldConfigs.last()))
+        val lastConfig = _spikeConfigs.lastNow()
+
+        _spikeConfigs.add(FloorSpikeConfig(
+            initialStartDelayMillis = lastConfig.startDelayMillis.sample(),
+            initialTimeOffMillis = lastConfig.timeOffMillis.sample(),
+            initialTimeOnMillis = lastConfig.timeOnMillis.sample(),
+        ))
     }
 
     fun removeSpike(
-        spikeIndex: Int,
+        floorSpikeConfig: FloorSpikeConfig,
     ) {
-        val oldConfigs = _spikeConfigs.sample()
-        _spikeConfigs.set(oldConfigs.filterIndexed { index, _ -> index == spikeIndex })
+        _spikeConfigs.remove(floorSpikeConfig)
     }
 
-    val spikes = Cell.map2(
-        _spikeConfigs,
-        entityPosition.position,
-    ) { spikeConfigs, position ->
-        buildSpikes(
-            configs = spikeConfigs,
-            position = position,
-        )
-    }
-
-    val boundingBox = spikes.map { spikes ->
-        IntRect.enclosing(
-            rects = spikes.map { it.bounds },
-        )
+    val boundingBox = outputRow.map {
+        IntRect.enclosing(rects = it.spikes.map { it.bounds })
     }
 
     override fun isSelectableIn(area: IntRect): Boolean =
         boundingBox.sample().overlaps(area)
 
-    override fun exportWapObjects(): List<Wwd.Object_> =
-        spikes.sample().map {
+    override fun exportWapObjects(): List<Wwd.Object_> {
+        val outputROw = outputRow.sample()
+        return outputROw.spikes.map {
             val config = it.config
+            val position = it.position
 
             FloorSpikePrototype.wwdObjectPrototype.copy(
-                x = it.position.x,
-                y = it.position.y,
-                speed = config.startDelayMillis,
-                speedX = config.timeOnMillis,
-                speedY = config.timeOffMillis,
+                x = position.x,
+                y = position.y,
+                speed = config.startDelayMillis.sample(),
+                speedX = config.timeOnMillis.sample(),
+                speedY = config.timeOffMillis.sample(),
             )
         }
+    }
 
     fun toData(): FloorSpikeRowData = FloorSpikeRowData(
         position = entityPosition.position.sample(),

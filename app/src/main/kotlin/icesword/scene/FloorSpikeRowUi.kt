@@ -29,7 +29,9 @@ class FloorSpikeRowNode(
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
         ctx.save()
 
-        floorSpikeRow.spikes.sample().forEach {
+        val outputRow = floorSpikeRow.outputRow.sample()
+
+        outputRow.spikes.forEach {
             drawWapSprite(
                 ctx,
                 texture = spikeTexture,
@@ -41,7 +43,7 @@ class FloorSpikeRowNode(
     }
 
     override val onDirty: Stream<Unit> =
-        floorSpikeRow.spikes.values().units()
+        floorSpikeRow.outputRow.values().units()
 }
 
 fun createFloorSpikeRowOverlayElement(
