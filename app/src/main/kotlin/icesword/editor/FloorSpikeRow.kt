@@ -19,6 +19,7 @@ import kotlinx.serialization.UseSerializers
 class FloorSpikeRow(
     private val rezIndex: RezIndex,
     initialPosition: IntVec2,
+    initialSpikeConfigs: List<FloorSpikeConfig>,
 ) : Entity(), WapObjectExportable {
     companion object {
         fun load(
@@ -28,6 +29,13 @@ class FloorSpikeRow(
             FloorSpikeRow(
                 rezIndex = rezIndex,
                 initialPosition = data.position,
+                initialSpikeConfigs = data.spikes.map {
+                    FloorSpikeConfig(
+                        initialStartDelayMillis = it.startDelayMillis,
+                        initialTimeOffMillis = it.timeOffMillis,
+                        initialTimeOnMillis = it.timeOnMillis,
+                    )
+                }
             )
     }
 
@@ -92,28 +100,7 @@ class FloorSpikeRow(
         )
 
     private val _spikeConfigs = MutableDynamicList(
-        initialContent = listOf(
-            FloorSpikeConfig(
-                initialStartDelayMillis = 0,
-                initialTimeOffMillis = 1500,
-                initialTimeOnMillis = 1500
-            ),
-            FloorSpikeConfig(
-                initialStartDelayMillis = 750,
-                initialTimeOffMillis = 1500,
-                initialTimeOnMillis = 1500
-            ),
-            FloorSpikeConfig(
-                initialStartDelayMillis = 1500,
-                initialTimeOffMillis = 1500,
-                initialTimeOnMillis = 1500
-            ),
-            FloorSpikeConfig(
-                initialStartDelayMillis = 2250,
-                initialTimeOffMillis = 1500,
-                initialTimeOnMillis = 1500
-            ),
-        )
+        initialContent = initialSpikeConfigs,
     )
 
     val spikeConfigs: DynamicList<FloorSpikeConfig> = _spikeConfigs
@@ -171,10 +158,25 @@ class FloorSpikeRow(
 
     fun toData(): FloorSpikeRowData = FloorSpikeRowData(
         position = entityPosition.position.sample(),
+        spikes = outputRow.sample().spikes.map {
+            FloorSpikeData(
+                startDelayMillis = it.config.startDelayMillis.sample(),
+                timeOffMillis = it.config.timeOffMillis.sample(),
+                timeOnMillis = it.config.timeOnMillis.sample(),
+            )
+        }
     )
 }
 
 @Serializable
+data class FloorSpikeData(
+    val startDelayMillis: Int,
+    val timeOffMillis: Int,
+    val timeOnMillis: Int,
+)
+
+@Serializable
 data class FloorSpikeRowData(
     val position: IntVec2,
+    val spikes: List<FloorSpikeData> = emptyList(),
 )

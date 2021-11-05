@@ -1,6 +1,7 @@
 package icesword.editor
 
 import icesword.RezIndex
+import icesword.editor.FloorSpikeRow.FloorSpikeConfig
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.ElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
@@ -174,6 +175,28 @@ class FloorSpikeInsertionMode(
             floorSpikeRow = FloorSpikeRow(
                 rezIndex = rezIndex,
                 initialPosition = insertionWorldPoint,
+                initialSpikeConfigs = listOf(
+                    FloorSpikeConfig(
+                        initialStartDelayMillis = 0,
+                        initialTimeOffMillis = 1500,
+                        initialTimeOnMillis = 1500,
+                    ),
+                    FloorSpikeConfig(
+                        initialStartDelayMillis = 750,
+                        initialTimeOffMillis = 1500,
+                        initialTimeOnMillis = 1500,
+                    ),
+                    FloorSpikeConfig(
+                        initialStartDelayMillis = 1500,
+                        initialTimeOffMillis = 1500,
+                        initialTimeOnMillis = 1500,
+                    ),
+                    FloorSpikeConfig(
+                        initialStartDelayMillis = 2250,
+                        initialTimeOffMillis = 1500,
+                        initialTimeOnMillis = 1500,
+                    ),
+                )
             )
         )
     }
