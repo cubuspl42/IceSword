@@ -16,25 +16,25 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
 @Serializable
-data class VerticalRange(
+data class HorizontalRange(
     val minX: Int,
     val maxX: Int,
 ) {
     companion object {
-        val ZERO = VerticalRange(minX = 0, maxX = 0)
+        val ZERO = HorizontalRange(minX = 0, maxX = 0)
     }
 
     val width: Int
         get() = maxX - minX
 
-    fun translate(tx: Int): VerticalRange =
-        VerticalRange(minX + tx, maxX + tx)
+    fun translate(tx: Int): HorizontalRange =
+        HorizontalRange(minX + tx, maxX + tx)
 }
 
 class Elevator(
     rezIndex: RezIndex,
     initialPosition: IntVec2,
-    initialRelativeMovementRange: VerticalRange,
+    initialRelativeMovementRange: HorizontalRange,
 ) : Entity(), WapObjectExportable {
 
     companion object {
@@ -90,8 +90,8 @@ class Elevator(
 
     private fun resizeMovementRange(
         extremumDelta: Cell<Int>,
-        extremum: (VerticalRange) -> Int,
-        copy: (it: VerticalRange, extremum: Int) -> VerticalRange,
+        extremum: (HorizontalRange) -> Int,
+        copy: (it: HorizontalRange, extremum: Int) -> HorizontalRange,
         till: Till,
     ) {
         val initialRange = relativeMovementRange.sample()
@@ -142,5 +142,5 @@ class Elevator(
 @Serializable
 data class ElevatorData(
     val position: IntVec2,
-    val relativeMovementRange: VerticalRange = VerticalRange.ZERO,
+    val relativeMovementRange: HorizontalRange = HorizontalRange.ZERO,
 )

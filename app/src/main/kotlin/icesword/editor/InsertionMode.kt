@@ -151,7 +151,7 @@ class ElevatorInsertionMode(
             elevator = Elevator(
                 rezIndex = rezIndex,
                 initialPosition = insertionWorldPoint,
-                initialRelativeMovementRange = VerticalRange(
+                initialRelativeMovementRange = HorizontalRange(
                     minX = -rangeRadius,
                     maxX = +rangeRadius,
                 )
