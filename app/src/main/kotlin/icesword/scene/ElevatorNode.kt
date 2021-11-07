@@ -6,7 +6,7 @@ import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
 import icesword.html.onMouseDrag
 import icesword.editor.Editor
-import icesword.editor.Elevator
+import icesword.editor.HorizontalElevator
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
@@ -29,7 +29,7 @@ fun createElevatorOverlayElement(
     svg: SVGSVGElement,
     viewport: HTMLElement,
     viewTransform: Cell<IntVec2>,
-    elevator: Elevator,
+    elevator: HorizontalElevator,
     tillDetach: Till,
 ): SVGElement {
     val dynamicViewTransform = DynamicTransform(

@@ -148,7 +148,7 @@ class ElevatorInsertionMode(
         val rangeRadius = 48
 
         world.insertElevator(
-            elevator = Elevator(
+            elevator = HorizontalElevator(
                 rezIndex = rezIndex,
                 initialPosition = insertionWorldPoint,
                 initialRelativeMovementRange = HorizontalRange(

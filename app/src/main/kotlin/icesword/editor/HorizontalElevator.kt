@@ -31,7 +31,7 @@ data class HorizontalRange(
         HorizontalRange(minX + tx, maxX + tx)
 }
 
-class Elevator(
+class HorizontalElevator(
     rezIndex: RezIndex,
     initialPosition: IntVec2,
     initialRelativeMovementRange: HorizontalRange,
@@ -40,9 +40,9 @@ class Elevator(
     companion object {
         fun load(
             rezIndex: RezIndex,
-            data: ElevatorData,
-        ): Elevator =
-            Elevator(
+            data: HorizontalElevatorData,
+        ): HorizontalElevator =
+            HorizontalElevator(
                 rezIndex = rezIndex,
                 initialPosition = data.position,
                 initialRelativeMovementRange = data.relativeMovementRange,
@@ -133,14 +133,14 @@ class Elevator(
         )
     }
 
-    fun toData(): ElevatorData = ElevatorData(
+    fun toData(): HorizontalElevatorData = HorizontalElevatorData(
         position = entityPosition.position.sample(),
         relativeMovementRange = relativeMovementRange.sample(),
     )
 }
 
 @Serializable
-data class ElevatorData(
+data class HorizontalElevatorData(
     val position: IntVec2,
     val relativeMovementRange: HorizontalRange = HorizontalRange.ZERO,
 )
