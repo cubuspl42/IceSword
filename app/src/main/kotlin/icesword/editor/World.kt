@@ -32,6 +32,7 @@ class World(
     initialElastics: Set<Elastic>,
     initialWapObjects: Set<WapObject>,
     initialHorizontalElevators: Set<HorizontalElevator>,
+    initialVerticalElevators: Set<VerticalElevator>,
     initialFloorSpikeRows: Set<FloorSpikeRow>,
 ) {
     companion object {
@@ -99,6 +100,7 @@ class World(
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
                 initialHorizontalElevators = emptySet(),
+                initialVerticalElevators = emptySet(),
                 initialWapObjects = emptySet(),
                 initialFloorSpikeRows = emptySet(),
             )
@@ -130,6 +132,11 @@ class World(
                 load = { HorizontalElevator.load(rezIndex = rezIndex, data = it) },
             )
 
+            val initialVerticalElevators = loadInitialEntities(
+                entitiesData = worldData.verticalElevators,
+                load = { VerticalElevator.load(rezIndex = rezIndex, data = it) },
+            )
+
             val initialWapObjects = loadInitialEntities(
                 entitiesData = worldData.wapObjects,
                 load = { WapObject.load(rezIndex = rezIndex, data = it) },
@@ -146,6 +153,7 @@ class World(
                 initialKnotMeshes = initialKnotMeshes,
                 initialElastics = initialElastics,
                 initialHorizontalElevators = initialHorizontalElevators,
+                initialVerticalElevators = initialVerticalElevators,
                 initialWapObjects = initialWapObjects,
                 initialFloorSpikeRows = initialFloorSpikeRows,
             )
@@ -162,6 +170,7 @@ class World(
                 initialElastics +
                 initialWapObjects +
                 initialHorizontalElevators +
+                initialVerticalElevators +
                 initialFloorSpikeRows
     )
 
@@ -330,6 +339,7 @@ class World(
             knotMeshes = knotMeshes,
             elastics = elastics,
             horizontalElevators = horizontalElevators,
+            verticalElevators = verticalElevators,
             wapObjects = wapObjects,
             floorSpikeRows = floorSpikeRows,
         )
@@ -356,6 +366,7 @@ data class WorldData(
     // TODO: Nuke
     val crumblingPegs: Set<LegacyWapObjectData> = emptySet(),
     val horizontalElevators: Set<HorizontalElevatorData> = emptySet(),
+    val verticalElevators: Set<VerticalElevatorData> = emptySet(),
     val wapObjects: Set<WapObjectData> = emptySet(),
     val floorSpikeRows: Set<FloorSpikeRowData> = emptySet(),
 )
