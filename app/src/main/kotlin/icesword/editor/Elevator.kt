@@ -11,6 +11,8 @@ import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
+import icesword.wwd.Geometry
+import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.Wwd
 import kotlinx.serialization.UseSerializers
 
@@ -19,7 +21,7 @@ interface AxisRange<Range> {
 
     val max: Int
 
-    fun translate(t: Int): Range
+    fun translate(t: IntVec2): Range
 
     fun copyWithMin(min: Int): Range
 
@@ -98,7 +100,7 @@ abstract class Elevator<Range : AxisRange<Range>>(
         entityPosition.position,
         relativeMovementRange,
     ) { ep, mr ->
-        mr.translate(ep.x)
+        mr.translate(ep)
     }
 
     final override fun isSelectableIn(area: IntRect): Boolean {
@@ -106,16 +108,15 @@ abstract class Elevator<Range : AxisRange<Range>>(
         return hitBox.overlaps(area)
     }
 
+    abstract fun exportElevatorRangeRect(): Rectangle
+
     final override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
 
-        val movementRange = globalMovementRange.sample()
         return ElevatorPrototype.wwdObjectPrototype.copy(
             x = position.x,
             y = position.y,
-            // TODO: Support exporting horizontal rectangles
-            xMin = movementRange.min,
-            xMax = movementRange.max,
+            rangeRect = exportElevatorRangeRect(),
         )
     }
 }

@@ -96,15 +96,15 @@ object DataStreamObj {
 
             readByte()
 
-           return ByteString(Uint8Array(bytes.toTypedArray()))
+            return ByteString(Uint8Array(bytes.toTypedArray()))
         }
 
         fun readRectangle(): Rectangle {
-         return   Rectangle.fromBounds(
-                this.readInt32(),
-                this.readInt32(),
-                this.readInt32(),
-                this.readInt32(),
+            return Rectangle.fromBounds(
+                left = this.readInt32(),
+                top = this.readInt32(),
+                right = this.readInt32(),
+                bottom = this.readInt32(),
             )
         }
     }

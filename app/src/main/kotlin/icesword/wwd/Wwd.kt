@@ -76,6 +76,8 @@ object Wwd {
         val damage: Int,
         val smarts: Int,
         val health: Int,
+        // xMin / yMin / xMax / yMax
+        val rangeRect: Rectangle,
         val moveRect: Rectangle,
         val hitRect: Rectangle,
         val attackRect: Rectangle,
@@ -90,10 +92,6 @@ object Wwd {
         val userValue6: Int,
         val userValue7: Int,
         val userValue8: Int,
-        val xMin: Int,
-        val yMin: Int,
-        val xMax: Int,
-        val yMax: Int,
         val speedX: Int,
         val speedY: Int,
         val xTweak: Int,
@@ -132,6 +130,7 @@ object Wwd {
                 damage = 0,
                 smarts = 0,
                 health = 0,
+                rangeRect = Rectangle.zero,
                 moveRect = Rectangle.zero,
                 hitRect = Rectangle.zero,
                 attackRect = Rectangle.zero,
@@ -146,10 +145,6 @@ object Wwd {
                 userValue6 = 0,
                 userValue7 = 0,
                 userValue8 = 0,
-                xMin = 0,
-                yMin = 0,
-                xMax = 0,
-                yMax = 0,
                 speedX = 0,
                 speedY = 0,
                 xTweak = 0,
@@ -193,6 +188,7 @@ object Wwd {
         damage = 0,
         smarts = 0,
         health = 0,
+        rangeRect = Rectangle.fromBounds(0, 0, 0, 0),
         moveRect = Rectangle.fromBounds(0, 0, 0, 0),
         hitRect = Rectangle.fromBounds(0, 0, 0, 0),
         attackRect = Rectangle.fromBounds(0, 0, 0, 0),
@@ -207,10 +203,6 @@ object Wwd {
         userValue6 = 0,
         userValue7 = 0,
         userValue8 = 0,
-        xMin = 0,
-        yMin = 0,
-        xMax = 0,
-        yMax = 0,
         speedX = 0,
         speedY = 0,
         xTweak = 0,
@@ -577,10 +569,7 @@ object Wwd {
         val userValue6 = stream.readInt32()
         val userValue7 = stream.readInt32()
         val userValue8 = stream.readInt32()
-        val xMin = stream.readInt32()
-        val yMin = stream.readInt32()
-        val xMax = stream.readInt32()
-        val yMax = stream.readInt32()
+        val rangeRect = stream.readRectangle()
         val speedX = stream.readInt32()
         val speedY = stream.readInt32()
         val xTweak = stream.readInt32()
@@ -625,6 +614,7 @@ object Wwd {
             health = health,
             moveRect = moveRect,
             hitRect = hitRect,
+            rangeRect = rangeRect,
             attackRect = attackRect,
             clipRect = clipRect,
             userRect1 = userRect1,
@@ -637,10 +627,6 @@ object Wwd {
             userValue6 = userValue6,
             userValue7 = userValue7,
             userValue8 = userValue8,
-            xMin = xMin,
-            yMin = yMin,
-            xMax = xMax,
-            yMax = yMax,
             speedX = speedX,
             speedY = speedY,
             xTweak = xTweak,

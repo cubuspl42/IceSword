@@ -4,6 +4,7 @@ package icesword.editor
 
 import icesword.RezIndex
 import icesword.geometry.IntVec2
+import icesword.wwd.Geometry
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
@@ -25,8 +26,8 @@ data class HorizontalRange(
     val width: Int
         get() = maxX - minX
 
-    override fun translate(tx: Int): HorizontalRange =
-        HorizontalRange(minX + tx, maxX + tx)
+    override fun translate(t: IntVec2): HorizontalRange =
+        HorizontalRange(minX + t.x, maxX + t.x)
 
     override fun copyWithMin(min: Int): HorizontalRange =
         this.copy(minX = min)
@@ -61,6 +62,16 @@ class HorizontalElevator(
         position = entityPosition.position.sample(),
         relativeMovementRange = relativeMovementRange.sample(),
     )
+
+    override fun exportElevatorRangeRect(): Geometry.Rectangle {
+        val movementRange = globalMovementRange.sample()
+        return Geometry.Rectangle(
+            left = movementRange.minX,
+            right = movementRange.maxX,
+            top = 0,
+            bottom = 0,
+        )
+    }
 }
 
 @Serializable
