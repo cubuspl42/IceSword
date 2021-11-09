@@ -8,38 +8,38 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
 @Serializable
-data class HorizontalRange(
-    val minX: Int,
-    val maxX: Int,
-) : AxisRange<HorizontalRange> {
+data class VerticalRange(
+    val minY: Int,
+    val maxY: Int,
+) : AxisRange<VerticalRange> {
     companion object {
-        val ZERO = HorizontalRange(minX = 0, maxX = 0)
+        val ZERO = VerticalRange(minY = 0, maxY = 0)
     }
 
     override val min: Int
-        get() = minX
+        get() = minY
 
     override val max: Int
-        get() = maxX
+        get() = maxY
 
     val width: Int
-        get() = maxX - minX
+        get() = maxY - minY
 
-    override fun translate(tx: Int): HorizontalRange =
-        HorizontalRange(minX + tx, maxX + tx)
+    override fun translate(tx: Int): VerticalRange =
+        VerticalRange(minY + tx, maxY + tx)
 
-    override fun copyWithMin(min: Int): HorizontalRange =
-        this.copy(minX = min)
+    override fun copyWithMin(min: Int): VerticalRange =
+        this.copy(minY = min)
 
-    override fun copyWithMax(max: Int): HorizontalRange =
-        this.copy(maxX = max)
+    override fun copyWithMax(max: Int): VerticalRange =
+        this.copy(maxY = max)
 }
 
-class HorizontalElevator(
+class VerticalElevator(
     rezIndex: RezIndex,
     initialPosition: IntVec2,
-    initialRelativeMovementRange: HorizontalRange,
-) : Elevator<HorizontalRange>(
+    initialRelativeMovementRange: VerticalRange,
+) : Elevator<VerticalRange>(
     rezIndex = rezIndex,
     initialPosition = initialPosition,
     initialRelativeMovementRange = initialRelativeMovementRange,
@@ -48,23 +48,23 @@ class HorizontalElevator(
     companion object {
         fun load(
             rezIndex: RezIndex,
-            data: HorizontalElevatorData,
-        ): HorizontalElevator =
-            HorizontalElevator(
+            data: VerticalElevatorData,
+        ): VerticalElevator =
+            VerticalElevator(
                 rezIndex = rezIndex,
                 initialPosition = data.position,
                 initialRelativeMovementRange = data.relativeMovementRange,
             )
     }
 
-    fun toData(): HorizontalElevatorData = HorizontalElevatorData(
+    fun toData(): VerticalElevatorData = VerticalElevatorData(
         position = entityPosition.position.sample(),
         relativeMovementRange = relativeMovementRange.sample(),
     )
 }
 
 @Serializable
-data class HorizontalElevatorData(
+data class VerticalElevatorData(
     val position: IntVec2,
-    val relativeMovementRange: HorizontalRange = HorizontalRange.ZERO,
+    val relativeMovementRange: VerticalRange = VerticalRange.ZERO,
 )

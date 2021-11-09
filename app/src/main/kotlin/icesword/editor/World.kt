@@ -193,7 +193,9 @@ class World(
 
     val wapObjects: DynamicSet<WapObject> = entities.filterType()
 
-    val elevators: DynamicSet<HorizontalElevator> = entities.filterType()
+    val horizontalElevators: DynamicSet<HorizontalElevator> = entities.filterType()
+
+    val verticalElevators: DynamicSet<VerticalElevator> = entities.filterType()
 
     val floorSpikeRows: DynamicSet<FloorSpikeRow> = entities.filterType()
 
@@ -209,7 +211,7 @@ class World(
         _entities.add(wapObject)
     }
 
-    fun insertElevator(elevator: HorizontalElevator) {
+    fun insertElevator(elevator: Elevator<*>) {
         _entities.add(elevator)
     }
 
@@ -303,8 +305,14 @@ class World(
         )
 
         val horizontalElevators = exportEntitySet(
-            entities = elevators,
+            entities = horizontalElevators,
             toData = HorizontalElevator::toData,
+        )
+
+        // TODO: Dump it
+        val verticalElevators = exportEntitySet(
+            entities = verticalElevators,
+            toData = VerticalElevator::toData,
         )
 
         val wapObjects = exportEntitySet(

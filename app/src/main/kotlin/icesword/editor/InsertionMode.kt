@@ -3,9 +3,10 @@ package icesword.editor
 import icesword.RezIndex
 import icesword.editor.FloorSpikeRow.FloorSpikeConfig
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
-import icesword.editor.InsertionPrototype.ElevatorInsertionPrototype
+import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
+import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.editor.WapObjectPrototype.FloorSpikePrototype
@@ -32,7 +33,9 @@ sealed interface InsertionPrototype {
         val wapObjectPrototype: WapObjectPrototype,
     ) : InsertionPrototype
 
-    object ElevatorInsertionPrototype : InsertionPrototype
+    object HorizontalElevatorInsertionPrototype : InsertionPrototype
+
+    object VerticalElevatorInsertionPrototype : InsertionPrototype
 
     object FloorSpikeInsertionPrototype : InsertionPrototype
 }
@@ -135,31 +138,73 @@ open class WapObjectInsertionMode(
     }
 }
 
-class ElevatorInsertionMode(
+abstract class ElevatorInsertionMode(
+    rezIndex: RezIndex,
     private val world: World,
-    private val rezIndex: RezIndex,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
     wapObjectPrototype = ElevatorPrototype,
 ) {
-    override val insertionPrototype = ElevatorInsertionPrototype
-
     override fun insert(insertionWorldPoint: IntVec2) {
         val rangeRadius = 48
 
         world.insertElevator(
-            elevator = HorizontalElevator(
-                rezIndex = rezIndex,
-                initialPosition = insertionWorldPoint,
-                initialRelativeMovementRange = HorizontalRange(
-                    minX = -rangeRadius,
-                    maxX = +rangeRadius,
-                )
+            elevator = createElevator(
+                insertionWorldPoint = insertionWorldPoint,
+                rangeRadius = rangeRadius,
             )
         )
     }
+
+    abstract fun createElevator(
+        insertionWorldPoint: IntVec2,
+        rangeRadius: Int,
+    ): Elevator<*>
 }
 
+class HorizontalElevatorInsertionMode(
+    private val rezIndex: RezIndex,
+    world: World,
+) : ElevatorInsertionMode(
+    rezIndex = rezIndex,
+    world = world,
+) {
+    override val insertionPrototype = HorizontalElevatorInsertionPrototype
+
+    override fun createElevator(
+        insertionWorldPoint: IntVec2,
+        rangeRadius: Int,
+    ): Elevator<*> = HorizontalElevator(
+        rezIndex = rezIndex,
+        initialPosition = insertionWorldPoint,
+        initialRelativeMovementRange = HorizontalRange(
+            minX = -rangeRadius,
+            maxX = +rangeRadius,
+        )
+    )
+}
+
+class VerticalElevatorInsertionMode(
+    private val rezIndex: RezIndex,
+    world: World,
+) : ElevatorInsertionMode(
+    rezIndex = rezIndex,
+    world = world,
+) {
+    override val insertionPrototype = VerticalElevatorInsertionPrototype
+
+    override fun createElevator(
+        insertionWorldPoint: IntVec2,
+        rangeRadius: Int,
+    ): Elevator<*> = VerticalElevator(
+        rezIndex = rezIndex,
+        initialPosition = insertionWorldPoint,
+        initialRelativeMovementRange = VerticalRange(
+            minY = -rangeRadius,
+            maxY = +rangeRadius,
+        )
+    )
+}
 
 class FloorSpikeInsertionMode(
     private val world: World,

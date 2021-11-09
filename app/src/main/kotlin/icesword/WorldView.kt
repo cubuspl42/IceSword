@@ -182,7 +182,13 @@ fun worldView(
                                 wapSprite = wapObject.sprite,
                             )
                         },
-                        world.elevators.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
+                        world.horizontalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
+                            WapSpriteNode(
+                                textureBank = textureBank,
+                                wapSprite = elevator.wapSprite,
+                            )
+                        },
+                        world.verticalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
                             WapSpriteNode(
                                 textureBank = textureBank,
                                 wapSprite = elevator.wapSprite,
@@ -290,7 +296,7 @@ fun worldView(
                                             tillDetach = tillRemoved,
                                         )
                                     },
-                                    world.elevators.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
+                                    world.horizontalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
                                         createElevatorOverlayElement(
                                             editor = editor,
                                             svg = svg,
@@ -300,6 +306,16 @@ fun worldView(
                                             tillDetach = tillRemoved,
                                         )
                                     },
+//                                    world.verticalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
+//                                        createElevatorOverlayElement(
+//                                            editor = editor,
+//                                            svg = svg,
+//                                            viewport = this,
+//                                            viewTransform = viewTransform,
+//                                            elevator = elevator,
+//                                            tillDetach = tillRemoved,
+//                                        )
+//                                    },
                                     world.floorSpikeRows.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, tillRemoved ->
                                         createFloorSpikeRowOverlayElement(
                                             editor = editor,

@@ -1,17 +1,14 @@
 package icesword.scene
 
 import icesword.html.DynamicStyleDeclaration
-import icesword.html.MouseButton
 import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
-import icesword.html.onMouseDrag
 import icesword.editor.Editor
 import icesword.editor.HorizontalElevator
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.map
-import icesword.frp.reactTill
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -19,7 +16,6 @@ import icesword.geometry.Transform
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
@@ -53,21 +49,50 @@ fun createElevatorOverlayElement(
         tillDetach = tillDetach,
     )
 
-    val movementRangeRect = dynamicViewTransform.transform(
-        rect = Cell.map2(
-            elevator.wapSprite.boundingBox.map { it.center },
-            elevator.globalMovementRange,
-        ) { bc, mr ->
-            val sideLength = 64
-
-            IntRect.fromDiagonal(
-                pointA = IntVec2(mr.minX, bc.y - (sideLength / 2)),
-                pointC = IntVec2(mr.maxX, bc.y + (sideLength / 2)),
-            )
-        },
+    val movementRangeOverlay = createMovementRangeOverlay(
+        svg = svg,
+        viewport = viewport,
+        dynamicViewTransform = dynamicViewTransform,
+        elevator = elevator,
+        extractInputCoord = { it.x },
+        tillDetach = tillDetach,
     )
 
-    val movementRangeFrame = createSvgRect(
+    val group = createSvgGroup(
+        svg = svg,
+        translate = constant(IntVec2.ZERO),
+        tillDetach = tillDetach,
+    ).apply {
+        appendChild(entityFrame)
+        appendChild(movementRangeOverlay)
+    }
+
+    return group
+}
+
+fun createMovementRangeOverlay(
+    svg: SVGSVGElement,
+    viewport: HTMLElement,
+    dynamicViewTransform: DynamicTransform,
+    elevator: HorizontalElevator,
+    extractInputCoord: (IntVec2) -> Int,
+    tillDetach: Till,
+): SVGElement {
+    val center = dynamicViewTransform.transform(
+        point = elevator.wapSprite.boundingBox.map { it.center },
+    )
+
+    // Note: this does not support scaling (zoom)
+    val movementRangeRect: Cell<IntRect> = elevator.relativeMovementRange.map { mr ->
+        val sideLength = 64
+
+        IntRect.fromDiagonal(
+            pointA = IntVec2(mr.min, -(sideLength / 2)),
+            pointC = IntVec2(mr.max, +(sideLength / 2)),
+        )
+    }
+
+    val movementRangeFrame: SVGElement = createSvgRect(
         svg = svg,
         translate = movementRangeRect.map { it.topLeft },
         size = movementRangeRect.map { it.size },
@@ -111,7 +136,7 @@ fun createElevatorOverlayElement(
             tillDetach = tillDetach,
         ) { worldDelta, tillStop ->
             resizeExtremum(
-                worldDelta.map { it.x },
+                worldDelta.map(extractInputCoord),
                 tillStop,
             )
         }
@@ -119,13 +144,13 @@ fun createElevatorOverlayElement(
         return handle
     }
 
-    val leftHandle = createHandle(
+    val minHandle = createHandle(
         cornerA = { it.topLeft },
         cornerB = { it.bottomLeft },
         resizeExtremum = elevator::resizeMovementRangeMin,
     )
 
-    val rightHandle = createHandle(
+    val maxHandle = createHandle(
         cornerA = { it.topRight },
         cornerB = { it.bottomRight },
         resizeExtremum = elevator::resizeMovementRangeMax,
@@ -133,48 +158,13 @@ fun createElevatorOverlayElement(
 
     val group = createSvgGroup(
         svg = svg,
-        translate = constant(IntVec2.ZERO),
+        translate = center,
         tillDetach = tillDetach,
     ).apply {
-        appendChild(entityFrame)
         appendChild(movementRangeFrame)
-        appendChild(leftHandle)
-        appendChild(rightHandle)
+        appendChild(minHandle)
+        appendChild(maxHandle)
     }
 
     return group
-}
-
-fun setupDeltaDragController(
-    outer: HTMLElement,
-    viewTransform: DynamicTransform,
-    element: Element,
-    tillDetach: Till,
-    apply: (
-        worldDelta: Cell<IntVec2>,
-        tillStop: Till,
-    ) -> Unit,
-) {
-    val reverseTransform = viewTransform.reversed
-
-    element.onMouseDrag(
-        button = MouseButton.Primary,
-        outer = outer,
-        till = tillDetach,
-    ).reactTill(tillDetach) { mouseDrag ->
-        val worldPointerPosition = reverseTransform.transform(
-            point = mouseDrag.position,
-        )
-
-        val initialWorldPosition = worldPointerPosition.sample()
-
-        val worldDelta = worldPointerPosition.map {
-            it - initialWorldPosition
-        }
-
-        apply(
-            worldDelta,
-            mouseDrag.tillEnd,
-        )
-    }
 }

@@ -2,9 +2,10 @@ package icesword.editor
 
 import icesword.RezIndex
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
-import icesword.editor.InsertionPrototype.ElevatorInsertionPrototype
+import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
+import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.SelectMode.AreaSelectingMode
 import icesword.frp.Cell
@@ -17,7 +18,6 @@ import icesword.frp.mapTillNext
 import icesword.frp.reactTill
 import icesword.frp.switchMap
 import icesword.frp.switchMapNotNull
-import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.DumpWwd.dumpWwd
 import icesword.wwd.OutputDataStream.OutputStream
@@ -223,7 +223,11 @@ class Editor(
                 world = world,
                 insertionPrototype = insertionPrototype,
             )
-            is ElevatorInsertionPrototype -> ElevatorInsertionMode(
+            is HorizontalElevatorInsertionPrototype -> HorizontalElevatorInsertionMode(
+                world = world,
+                rezIndex = rezIndex,
+            )
+            is VerticalElevatorInsertionPrototype -> VerticalElevatorInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
             )
