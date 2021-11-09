@@ -29,7 +29,7 @@ fun createElevatorOverlayElement(
     tillDetach: Till,
 ): SVGElement {
     val dynamicViewTransform = DynamicTransform(
-        transform = viewTransform.map { Transform(it) },
+        transform = viewTransform.map { Transform.translate(it) },
     )
 
     val boundingBox = elevator.wapSprite.boundingBox

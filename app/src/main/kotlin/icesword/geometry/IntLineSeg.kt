@@ -17,6 +17,12 @@ data class IntLineSeg(
             pointB = pointB + t,
         )
 
+    fun transform(t: Transform): IntLineSeg =
+        IntLineSeg(
+            pointA = t.transform(pointA),
+            pointB = t.transform(pointB),
+        )
+
     val length: Double
         get() = (pointB - pointA).length
 }

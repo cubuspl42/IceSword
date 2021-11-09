@@ -2,7 +2,9 @@ package icesword.html
 
 import icesword.frp.*
 import icesword.frp.dynamic_list.DynamicList
+import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
+import org.w3c.dom.DOMMatrixReadOnly
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
@@ -26,6 +28,24 @@ fun linkSvgTranslate(
     }
 }
 
+//fun linkSvgTransform(
+//    svg: SVGSVGElement,
+//    element: SVGGraphicsElement,
+//    transform: DynamicTransform,
+//    tillDetach: Till,
+//) {
+//
+//    val svgTransform = svg.createSVGTransform()
+//    element.transform.baseVal.initialize(svgTransform)
+//
+//    transform.transform.reactTill(tillDetach) { t ->
+//        svgTransform.setMatrix(
+//            DOMMatrixReadOnly(
+//                TODO(),
+//            )
+//        )
+//    }
+//}
 
 fun linkNodeChildren(
     element: Node,

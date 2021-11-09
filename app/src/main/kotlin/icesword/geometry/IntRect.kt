@@ -97,6 +97,11 @@ data class IntRect(
     fun translate(t: IntVec2): IntRect =
         IntRect(position + t, size)
 
+    fun transform(t: Transform): IntRect = fromDiagonal(
+        pointA = t.transform(topLeft),
+        pointC = t.transform(bottomRight),
+    )
+
     fun points(): Sequence<IntVec2> = sequence {
         for (y in yMin until yMax) {
             for (x in xMin until xMax) {

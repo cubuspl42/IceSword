@@ -9,6 +9,7 @@ import icesword.frp.map
 import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
 import icesword.frp.sample
+import icesword.geometry.DynamicTransform
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
@@ -83,6 +84,18 @@ fun createSvgGroup(
 
     return group
 }
+
+//fun createSvgGroupDt(
+//    svg: SVGSVGElement,
+//    transform: DynamicTransform,
+//    tillDetach: Till,
+//): SVGElement {
+//    val group = document.createElementNS("http://www.w3.org/2000/svg", "g") as SVGGElement
+//
+//    TODO()
+//
+//    return group
+//}
 
 fun createSvgRect(
     svg: SVGSVGElement,
