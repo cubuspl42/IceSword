@@ -28,24 +28,24 @@ fun linkSvgTranslate(
     }
 }
 
-//fun linkSvgTransform(
-//    svg: SVGSVGElement,
-//    element: SVGGraphicsElement,
-//    transform: DynamicTransform,
-//    tillDetach: Till,
-//) {
-//
-//    val svgTransform = svg.createSVGTransform()
-//    element.transform.baseVal.initialize(svgTransform)
-//
-//    transform.transform.reactTill(tillDetach) { t ->
-//        svgTransform.setMatrix(
-//            DOMMatrixReadOnly(
-//                TODO(),
-//            )
-//        )
-//    }
-//}
+fun linkSvgTransform(
+    svg: SVGSVGElement,
+    element: SVGGraphicsElement,
+    transform: DynamicTransform,
+    tillDetach: Till,
+) {
+    val svgTransform = svg.createSVGTransform().apply {
+        setMatrix(transform.transform.sample().toSVGMatrix(svg))
+    }
+
+    element.transform.baseVal.initialize(svgTransform)
+
+    transform.transform.values().reactTill(tillDetach) { t ->
+        svgTransform.setMatrix(
+            matrix = t.toSVGMatrix(svg),
+        )
+    }
+}
 
 fun linkNodeChildren(
     element: Node,

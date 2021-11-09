@@ -5,7 +5,6 @@ import TextureBank
 import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
 import icesword.editor.InsertWapObjectCommand
-import icesword.editor.LoadingWorldProcess
 import icesword.editor.OffsetTilesView
 import icesword.editor.Tool
 import icesword.editor.WapObjectAlikeInsertionMode
@@ -47,14 +46,13 @@ import icesword.scene.WapSpriteNode
 import icesword.scene.createAreaSelectionOverlayElement
 import icesword.scene.createBackFoilOverlayElement
 import icesword.scene.createElasticOverlayElement
-import icesword.scene.createElevatorOverlayElement
+import icesword.scene.createHorizontalElevatorOverlayElement
 import icesword.scene.createFloorSpikeRowOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
 import icesword.scene.createStartPointOverlayElement
+import icesword.scene.createVerticalElevatorOverlayElement
 import icesword.scene.createWapObjectOverlayElement
-import icesword.scene.createWapSpriteOverlayElement
 import icesword.scene.scene
-import kotlinx.browser.document
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.MouseEvent
@@ -297,7 +295,7 @@ fun worldView(
                                         )
                                     },
                                     world.horizontalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
-                                        createElevatorOverlayElement(
+                                        createHorizontalElevatorOverlayElement(
                                             editor = editor,
                                             svg = svg,
                                             viewport = this,
@@ -306,16 +304,16 @@ fun worldView(
                                             tillDetach = tillRemoved,
                                         )
                                     },
-//                                    world.verticalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
-//                                        createElevatorOverlayElement(
-//                                            editor = editor,
-//                                            svg = svg,
-//                                            viewport = this,
-//                                            viewTransform = viewTransform,
-//                                            elevator = elevator,
-//                                            tillDetach = tillRemoved,
-//                                        )
-//                                    },
+                                    world.verticalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
+                                        createVerticalElevatorOverlayElement(
+                                            editor = editor,
+                                            svg = svg,
+                                            viewport = this,
+                                            viewTransform = viewTransform,
+                                            elevator = elevator,
+                                            tillDetach = tillRemoved,
+                                        )
+                                    },
                                     world.floorSpikeRows.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, tillRemoved ->
                                         createFloorSpikeRowOverlayElement(
                                             editor = editor,

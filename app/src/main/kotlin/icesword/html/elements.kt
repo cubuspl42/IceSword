@@ -85,17 +85,22 @@ fun createSvgGroup(
     return group
 }
 
-//fun createSvgGroupDt(
-//    svg: SVGSVGElement,
-//    transform: DynamicTransform,
-//    tillDetach: Till,
-//): SVGElement {
-//    val group = document.createElementNS("http://www.w3.org/2000/svg", "g") as SVGGElement
-//
-//    TODO()
-//
-//    return group
-//}
+fun createSvgGroupDt(
+    svg: SVGSVGElement,
+    transform: DynamicTransform,
+    tillDetach: Till,
+): SVGElement {
+    val group = document.createElementNS("http://www.w3.org/2000/svg", "g") as SVGGElement
+
+    linkSvgTransform(
+        svg = svg,
+        element = group,
+        transform = transform,
+        tillDetach = tillDetach,
+    )
+
+    return group
+}
 
 fun createSvgRect(
     svg: SVGSVGElement,

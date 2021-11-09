@@ -2,6 +2,9 @@ package icesword.geometry
 
 import icesword.frp.Cell
 import icesword.frp.map
+import org.w3c.dom.DOMMatrix
+import org.w3c.dom.DOMMatrixReadOnly
+import org.w3c.dom.svg.SVGSVGElement
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
@@ -15,6 +18,15 @@ class Transform(
     val f: Double,
 ) {
     companion object {
+        val identity: Transform = Transform(
+            a = 1.0,
+            c = 0.0,
+            e = 0.0,
+            b = 0.0,
+            d = 1.0,
+            f = 0.0,
+        )
+
         fun translate(t: IntVec2): Transform =
             Transform(
                 a = 1.0,
@@ -80,12 +92,34 @@ class Transform(
 
     fun transform(lineSeg: IntLineSeg): IntLineSeg =
         lineSeg.transform(this)
+
+    // The returned object is actually an instance of SVGMatrix
+    fun toSVGMatrix(svg: SVGSVGElement): DOMMatrixReadOnly {
+        val t = this
+        return svg.createSVGMatrix().apply {
+            a = t.a
+            b = t.b
+            c = t.c
+            d = t.d
+            e = t.e
+            f = t.f
+        }
+    }
+
+    fun toDOMMatrix(): DOMMatrixReadOnly =
+        DOMMatrixReadOnly(arrayOf(a, b, c, d, e, f))
 }
 
 class DynamicTransform(
     // TODO: Support scaling
     val transform: Cell<Transform>,
 ) {
+    companion object {
+        fun translate(t: Cell<IntVec2>): DynamicTransform = DynamicTransform(
+            t.map(Transform.Companion::translate)
+        )
+    }
+
     val reversed: DynamicTransform by lazy {
         DynamicTransform(
             transform = transform.map { it.inversed },
@@ -97,4 +131,14 @@ class DynamicTransform(
 
     fun transform(rect: Cell<IntRect>): Cell<IntRect> =
         Cell.map2(transform, rect) { t, r -> t.transform(r) }
+
+    operator fun times(that: DynamicTransform): DynamicTransform =
+        DynamicTransform(
+            Cell.map2(transform, that.transform) { t1, t2 -> t1 * t2 },
+        )
+
+    operator fun times(t2: Transform): DynamicTransform =
+        DynamicTransform(
+            transform.map { t -> t * t2 },
+        )
 }

@@ -1,10 +1,13 @@
 package icesword.scene
 
+import icesword.editor.AxisRange
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
 import icesword.editor.Editor
+import icesword.editor.Elevator
 import icesword.editor.HorizontalElevator
+import icesword.editor.VerticalElevator
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
@@ -13,19 +16,62 @@ import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.geometry.Transform
+import icesword.html.createSvgGroupDt
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
+import kotlin.math.PI
 
-fun createElevatorOverlayElement(
+fun createHorizontalElevatorOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,
     viewTransform: Cell<IntVec2>,
     elevator: HorizontalElevator,
+    tillDetach: Till,
+): SVGElement = createElevatorOverlayElement(
+    editor = editor,
+    svg = svg,
+    viewport = viewport,
+    viewTransform = viewTransform,
+    elevator = elevator,
+    movementRangeOverlayRotation = Transform.identity,
+    handleCursor = Cursor.ewResize,
+    extractInputCoord = { it.x },
+    tillDetach = tillDetach,
+)
+
+fun createVerticalElevatorOverlayElement(
+    editor: Editor,
+    svg: SVGSVGElement,
+    viewport: HTMLElement,
+    viewTransform: Cell<IntVec2>,
+    elevator: VerticalElevator,
+    tillDetach: Till,
+): SVGElement = createElevatorOverlayElement(
+    editor = editor,
+    svg = svg,
+    viewport = viewport,
+    viewTransform = viewTransform,
+    elevator = elevator,
+    movementRangeOverlayRotation = Transform.rotate(PI / 2),
+    handleCursor = Cursor.nsResize,
+    extractInputCoord = { it.y },
+    tillDetach = tillDetach,
+)
+
+private fun createElevatorOverlayElement(
+    editor: Editor,
+    svg: SVGSVGElement,
+    viewport: HTMLElement,
+    viewTransform: Cell<IntVec2>,
+    elevator: Elevator<*>,
+    extractInputCoord: (IntVec2) -> Int,
+    movementRangeOverlayRotation: Transform,
+    handleCursor: Cursor,
     tillDetach: Till,
 ): SVGElement {
     val dynamicViewTransform = DynamicTransform(
@@ -54,7 +100,9 @@ fun createElevatorOverlayElement(
         viewport = viewport,
         dynamicViewTransform = dynamicViewTransform,
         elevator = elevator,
-        extractInputCoord = { it.x },
+        rotation = movementRangeOverlayRotation,
+        handleCursor = handleCursor,
+        extractInputCoord = extractInputCoord,
         tillDetach = tillDetach,
     )
 
@@ -74,7 +122,9 @@ fun createMovementRangeOverlay(
     svg: SVGSVGElement,
     viewport: HTMLElement,
     dynamicViewTransform: DynamicTransform,
-    elevator: HorizontalElevator,
+    elevator: Elevator<*>,
+    rotation: Transform,
+    handleCursor: Cursor,
     extractInputCoord: (IntVec2) -> Int,
     tillDetach: Till,
 ): SVGElement {
@@ -83,8 +133,9 @@ fun createMovementRangeOverlay(
     )
 
     // Note: this does not support scaling (zoom)
-    val movementRangeRect: Cell<IntRect> = elevator.relativeMovementRange.map { mr ->
+    val movementRangeRect: Cell<IntRect> = elevator.relativeMovementRange.map {
         val sideLength = 64
+        val mr: AxisRange<*> = it
 
         IntRect.fromDiagonal(
             pointA = IntVec2(mr.min, -(sideLength / 2)),
@@ -124,7 +175,7 @@ fun createMovementRangeOverlay(
             fill = constant(Color.gray),
             fillOpacity = constant(0.8),
             style = DynamicStyleDeclaration(
-                cursor = constant(Cursor.ewResize),
+                cursor = constant(handleCursor),
             ),
             tillDetach = tillDetach,
         )
@@ -156,9 +207,9 @@ fun createMovementRangeOverlay(
         resizeExtremum = elevator::resizeMovementRangeMax,
     )
 
-    val group = createSvgGroup(
+    val group = createSvgGroupDt(
         svg = svg,
-        translate = center,
+        transform = DynamicTransform.translate(center) * rotation,
         tillDetach = tillDetach,
     ).apply {
         appendChild(movementRangeFrame)
