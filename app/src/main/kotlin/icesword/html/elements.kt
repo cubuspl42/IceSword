@@ -5,6 +5,7 @@ import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
 import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
@@ -198,6 +199,36 @@ fun createContainer(
 
     return root
 }
+
+
+fun createContainer(
+    children: DynamicOrderedSet<HTMLElement>,
+    tillDetach: Till,
+): HTMLElement {
+    val root = createHtmlElement("div")
+
+    children.changes.reactTill(tillDetach) { change ->
+        change.removed?.let {
+            root.removeChild(it)
+        }
+
+        change.inserted?.let {
+            val node = it.before
+            val child = it.value
+
+            if (node != null) {
+                root.insertBefore(node, child)
+            } else {
+                root.appendChild(child)
+            }
+        }
+    }
+
+    children.volatileContentView.forEach { root.appendChild(it) }
+
+    return root
+}
+
 
 fun createWrapper(
     child: Cell<HTMLElement?>,

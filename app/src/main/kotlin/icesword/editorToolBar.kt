@@ -11,11 +11,13 @@ import icesword.frp.MutCell
 import icesword.frp.Till
 import icesword.frp.TillMarker
 import icesword.frp.dynamic_list.mapTillRemoved
+import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.createButton
 import icesword.html.createColumn
 import icesword.html.createColumnDl
+import icesword.html.createContainer
 import icesword.html.createHtmlElement
 import icesword.html.createNumberInput
 import icesword.html.createRow
@@ -107,7 +109,26 @@ fun createEditorToolBar(
         appendChild(saveButton)
     }
 
-    val root = createHtmlElement("div").apply {
+
+    val fixedButtonsRows = DynamicOrderedSet.of(listOf(
+        toolButtonsRow,
+        editButtonsRow,
+        otherButtonsRow,
+    ))
+
+    val contextualButtonsRow = editor.editorMode.map {
+        createContextualButtonsRow(editorMode = it)
+    }
+
+    val root = createContainer(
+        children = DynamicOrderedSet.concat(
+            fixedButtonsRows,
+            DynamicOrderedSet.ofSingle(
+                contextualButtonsRow,
+            ),
+        ),
+        tillDetach = tillDetach,
+    ).apply {
         className = "editorToolBar"
 
         style.apply {
@@ -117,14 +138,28 @@ fun createEditorToolBar(
             backgroundColor = "grey"
             padding = "4px"
         }
-
-        appendChild(toolButtonsRow)
-        appendChild(editButtonsRow)
-        appendChild(otherButtonsRow)
     }
 
     return root
 }
+
+fun createContextualButtonsRow(editorMode: EditorMode): HTMLElement? =
+    when (editorMode) {
+        is KnotSelectMode -> {
+            val tillDetach = Till.never // FIXME
+            createRow(
+                children = listOf(
+                    createButton(
+                        text = "Test",
+                        onPressed = {},
+                        tillDetach = tillDetach,
+                    )
+                ),
+                tillDetach = tillDetach,
+            )
+        }
+        else -> null
+    }
 
 private inline fun <reified Mode : EditorMode> createModeButton(
     editor: Editor,
