@@ -325,7 +325,7 @@ fun worldView(
                                         )
                                     },
                                     DynamicSet.ofSingle(
-                                        editor.selectionMode.switchMapNotNull {
+                                        editor.entitySelectMode.switchMapNotNull {
                                             it.areaSelectingMode.mapNotNull { areaSelectingMode ->
                                                 createAreaSelectionOverlayElement(
                                                     svg = svg,

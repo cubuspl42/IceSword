@@ -13,12 +13,40 @@ import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 
-sealed interface SelectModeState
+sealed interface Foo<T> {
+    class Bar<T> : Foo<T>
+    class Baz<T> : Foo<T>
+}
 
-class SelectMode(
+fun <T> f(foo: Foo<T>) {
+    when (foo) {
+        is Foo.Bar -> TODO()
+        is Foo.Baz -> TODO()
+    }
+
+}
+
+interface SelectModeFactory<
+        SubAreaSelectingMode,
+        > {
+    fun createSubAreaSelectingMode(
+        selectionArea: Cell<IntRect>,
+        confirm: Stream<Unit>,
+        tillExit: Till,
+    ): SubAreaSelectingMode
+}
+
+class SelectMode<
+        SubAreaSelectingMode,
+        >(
     private val editor: Editor,
+    private val factory: SelectModeFactory<SubAreaSelectingMode>,
     tillExit: Till,
 ) : EditorMode {
+
+
+    open inner class SelectModeState
+
     private val world: World
         get() = editor.world
 
@@ -30,13 +58,14 @@ class SelectMode(
             when (mode) {
                 is IdleMode -> mode.enterAreaSelectingMode
                 is AreaSelectingMode -> mode.enterIdleMode
+                else -> throw UnsupportedOperationException()
             }
         },
         till = tillExit,
     )
 
     val areaSelectingMode: Cell<AreaSelectingMode?> =
-        state.map { st -> st as? SelectMode.AreaSelectingMode }
+        state.map { st -> st as? AreaSelectingMode }
 
     private fun getEntitiesInArea(area: Cell<IntRect>): DynamicSet<Entity> {
         return world.entities.filterDynamic { entity: Entity ->
@@ -50,7 +79,7 @@ class SelectMode(
 
     override fun toString(): String = "SelectMode()"
 
-    inner class IdleMode : SelectModeState {
+    inner class IdleMode : SelectModeState() {
         private val _enterAreaSelectingMode = StreamSink<Tilled<AreaSelectingMode>>()
 
         val enterAreaSelectingMode: Stream<Tilled<AreaSelectingMode>>
@@ -73,6 +102,11 @@ class SelectMode(
             _enterAreaSelectingMode.send(
                 object : Tilled<AreaSelectingMode> {
                     override fun build(till: Till) = AreaSelectingMode(
+                        subMode = factory.createSubAreaSelectingMode(
+                            selectionArea = selectionArea,
+                            confirm = confirm,
+                            tillExit = till,
+                        ),
                         selectionArea = selectionArea,
                         confirm = confirm,
                         abort = abort,
@@ -86,32 +120,28 @@ class SelectMode(
     }
 
     inner class AreaSelectingMode(
+        val subMode: SubAreaSelectingMode,
         val selectionArea: Cell<IntRect>,
         confirm: Stream<Unit>,
         abort: Stream<Unit>,
         tillExit: Till,
-    ) : SelectModeState {
-
+    ) : SelectModeState() {
         val enterIdleMode: Stream<Tilled<IdleMode>> =
             confirm.mergeWith(abort).map {
                 object : Tilled<IdleMode> {
-                    override fun build(till: Till): IdleMode = IdleMode()
+                    override fun build(till: Till): SelectMode<SubAreaSelectingMode>.IdleMode =
+                        IdleMode()
                 }
             }
 
-        val coveredEntities: DynamicSet<Entity> =
-            getEntitiesInArea(
-                area = selectionArea,
-            )
+//        protected abstract fun onConfirm()
+
+        fun onConfirm() {}
 
         init {
-            confirm.reactTill(till = tillExit) {
-                selectEntities(coveredEntities.volatileContentView)
-            }
+            confirm.reactTill(till = tillExit) { onConfirm() }
         }
 
         override fun toString(): String = "AreaSelectingMode()"
     }
 }
-
-

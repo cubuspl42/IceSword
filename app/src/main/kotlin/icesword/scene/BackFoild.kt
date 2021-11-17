@@ -1,6 +1,7 @@
 package icesword.scene
 
 import icesword.editor.Editor
+import icesword.editor.EntitySelectMode
 import icesword.editor.SelectMode
 import icesword.frp.Stream
 import icesword.frp.Till
@@ -34,11 +35,11 @@ fun createBackFoilOverlayElement(
 
     editor.editorMode.reactTillNext(tillDetach) { mode, tillNext ->
         when (mode) {
-            is SelectMode -> setupSelectModeController(
+            is EntitySelectMode -> setupSelectModeController(
                 editor = editor,
                 viewport = viewport,
                 element = foil,
-                selectMode = mode,
+                entitySelectMode = mode.selectMode,
                 tillDetach = tillNext,
             )
         }
@@ -51,7 +52,7 @@ private fun setupSelectModeController(
     editor: Editor,
     viewport: HTMLElement,
     element: Element,
-    selectMode: SelectMode,
+    entitySelectMode: SelectMode<*>,
     tillDetach: Till,
 ) {
     val world = editor.world
@@ -74,7 +75,7 @@ private fun setupSelectModeController(
         till = tillDetach
     )
         .reactTill(tillDetach) { mouseDrag ->
-            (selectMode.state.sample() as? SelectMode.IdleMode)?.selectArea(
+            (entitySelectMode.state.sample() as? SelectMode.IdleMode)?.selectArea(
                 anchorWorldCoord = calculateWorldPosition(
                     clientPosition = mouseDrag.position.sample()
                 ),

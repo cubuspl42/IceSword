@@ -7,7 +7,7 @@ import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
-import icesword.editor.SelectMode.AreaSelectingMode
+import icesword.editor.EntitySelectMode.EntityAreaSelectingMode
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
@@ -78,12 +78,20 @@ class Editor(
         }
     }
 
-    private fun buildSelectMode() = object : Tilled<SelectMode> {
-        override fun build(till: Till) = SelectMode(
+    private fun buildSelectMode() = object : Tilled<EntitySelectMode> {
+        override fun build(till: Till) = EntitySelectMode(
             editor = this@Editor,
             tillExit = till,
         )
     }
+
+    private fun buildKnotSelectMode() = object : Tilled<KnotSelectMode> {
+        override fun build(till: Till) = KnotSelectMode(
+            editor = this@Editor,
+            tillExit = till,
+        )
+    }
+
 
     private val _editorMode = MutCell<Tilled<EditorMode>>(
         initialValue = buildSelectMode(),
@@ -95,6 +103,10 @@ class Editor(
 
     fun enterSelectMode() {
         enterModeTilled(buildSelectMode())
+    }
+
+    fun enterKnotSelectMode() {
+        enterModeTilled(buildKnotSelectMode())
     }
 
     private fun enterModeTillExit(build: (tillExit: Till) -> EditorMode) {
@@ -116,13 +128,14 @@ class Editor(
 
     val selectedTool: Cell<Tool?> = editorMode.map { it as? Tool }
 
-    val selectionMode: Cell<SelectMode?> = editorMode.map { it as? SelectMode }
+    val entitySelectMode: Cell<EntitySelectMode?> =
+        editorMode.map { it as? EntitySelectMode }
 
-    val areaSelectingMode: Cell<AreaSelectingMode?> =
-        selectionMode.switchMapNotNull { it.areaSelectingMode }
+    private val entityAreaSelectingMode: Cell<EntityAreaSelectingMode?> =
+        entitySelectMode.switchMapNotNull { it.entityAreaSelectingMode }
 
     fun isAreaSelectionCovered(entity: Entity): Cell<Boolean> =
-        areaSelectingMode.switchMap {
+        entityAreaSelectingMode.switchMap {
             it?.coveredEntities?.contains(entity) ?: Cell.constant(false)
         }
 

@@ -1,6 +1,7 @@
 package icesword.scene
 
 import icesword.html.createSvgRect
+import icesword.editor.EntitySelectMode
 import icesword.editor.SelectMode
 import icesword.frp.Cell
 import icesword.frp.Till
@@ -12,7 +13,7 @@ import org.w3c.dom.svg.SVGSVGElement
 fun createAreaSelectionOverlayElement(
     svg: SVGSVGElement,
     viewTransform: Cell<IntVec2>,
-    areaSelectingMode: SelectMode.AreaSelectingMode,
+    areaSelectingMode: SelectMode<*>.AreaSelectingMode,
     tillDetach: Till,
 ): SVGElement {
     val rect = areaSelectingMode.selectionArea

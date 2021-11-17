@@ -3,7 +3,8 @@ package icesword
 import icesword.editor.Editor
 import icesword.editor.EditorMode
 import icesword.editor.FloorSpikeRow
-import icesword.editor.SelectMode
+import icesword.editor.KnotSelectMode
+import icesword.editor.EntitySelectMode
 import icesword.editor.Tool
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.MutCell
@@ -33,9 +34,15 @@ fun createEditorToolBar(
     dialogOverlay: DialogOverlay,
     tillDetach: Till,
 ): HTMLElement {
-    val selectButton = createModeButton<SelectMode>(
+    val selectButton = createModeButton<EntitySelectMode>(
         editor = editor,
         enterMode = { editor.enterSelectMode() },
+        tillDetach = tillDetach,
+    )
+
+    val knotSelectButton = createModeButton<KnotSelectMode>(
+        editor = editor,
+        enterMode = { editor.enterKnotSelectMode() },
         tillDetach = tillDetach,
     )
 
@@ -55,6 +62,7 @@ fun createEditorToolBar(
         className = "toolButtonsRow"
 
         appendChild(selectButton)
+        appendChild(knotSelectButton)
         appendChild(moveButton)
         appendChild(knotBrushButton)
     }
