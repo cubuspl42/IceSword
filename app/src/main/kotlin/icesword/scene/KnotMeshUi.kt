@@ -4,13 +4,16 @@ import icesword.html.*
 import icesword.TILE_SIZE
 import icesword.editor.*
 import icesword.frp.*
+import icesword.frp.Cell.Companion.constant
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileRect
 import icesword.ui.EntityMoveDragController
+import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
+import kotlinx.css.rgba
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
@@ -23,6 +26,8 @@ class KnotMeshUi private constructor(
     private val knotMesh: KnotMesh,
     private val isSelected: Cell<Boolean>,
     private val isCovered: Cell<Boolean>,
+    private val knotsInSelectionArea: DynamicSet<IntVec2>,
+    private val selectedKnots: DynamicSet<IntVec2>,
 ) : Node {
     constructor(
         editor: Editor,
@@ -34,14 +39,28 @@ class KnotMeshUi private constructor(
         knotMesh = knotMesh,
         isSelected = editor.isEntitySelected(knotMesh),
         isCovered = editor.isAreaSelectionCovered(knotMesh),
+        knotsInSelectionArea = DynamicSet.diff(
+            editor.knotSelectMode.map { knotSelectMode ->
+                knotSelectMode?.knotsInSelectionArea ?: DynamicSet.empty()
+            }
+        ),
+        selectedKnots = DynamicSet.diff(
+            editor.knotSelectMode.switchMap { knotSelectModeOrNull ->
+                knotSelectModeOrNull?.let {
+                    it.selectedKnots.takeIf { _ -> it.knotMesh == knotMesh }
+                } ?: constant(emptySet<IntVec2>())
+            }
+        )
     )
-
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
         val viewTransform = this.viewTransform.sample()
         val tileOffset = knotMesh.tileOffset.sample()
+        val editorMode = editor.editorMode.sample()
         val localKnots = knotMesh.localKnots.volatileContentView
         val localTiles = knotMesh.localTileCoords.volatileContentView
+        val knotsInSelectionArea = this.knotsInSelectionArea.volatileContentView
+        val selectedKnots = this.selectedKnots.volatileContentView
 
         val isSelected = isSelected.sample()
         val isCovered = isCovered.sample()
@@ -60,21 +79,21 @@ class KnotMeshUi private constructor(
             val rect = tileRect(globalTileCoord)
             val viewRect = rect.translate(viewTransform)
 
+            val selectionColor = Color.red
+
             // Here, window rect = viewport rect...
             if (windowRect.overlaps(viewRect)) {
-
-                when {
-                    isCovered -> {
-                        ctx.strokeStyle = "orange"
-                    }
-                    isSelected -> {
-                        ctx.strokeStyle = "red"
-                    }
+               val strokeColor  = when {
+                    isCovered -> Color.orange
+                    isSelected && editorMode is KnotSelectMode -> selectionColor.withAlpha(0.3)
+                    isSelected -> selectionColor
                     else -> {
                         val a = 128
-                        ctx.strokeStyle = "rgba($a, $a, $a, 0.4)"
+                        rgba(a, a, a, 0.4)
                     }
                 }
+
+                ctx.strokeStyle = strokeColor.value
 
                 ctx.strokeRect(
                     x = viewRect.xMin.toDouble(),
@@ -90,6 +109,8 @@ class KnotMeshUi private constructor(
         localKnots.forEach { localKnotCoord ->
             val globalKnotCoord = tileOffset + localKnotCoord
             val center = knotCenter(globalKnotCoord) + viewTransform
+            val isInSelectionArea = knotsInSelectionArea.contains(globalKnotCoord)
+            val isKnotSelected = selectedKnots.contains(globalKnotCoord)
 
             val knotRect = tileRect(globalKnotCoord)
                 .translate(IntVec2(32, 32))
@@ -109,7 +130,11 @@ class KnotMeshUi private constructor(
                     h = viewRect.height.toDouble(),
                 )
 
-                ctx.strokeStyle = "black"
+                ctx.strokeStyle = when {
+                    isInSelectionArea -> "orange"
+                    isKnotSelected -> "red"
+                    else -> "black"
+                }
 
                 drawCircle(
                     ctx,
@@ -124,10 +149,13 @@ class KnotMeshUi private constructor(
 
     override val onDirty: Stream<Unit> =
         viewTransform.values().units()
+            .mergeWith(editor.editorMode.values().units())
             .mergeWith(isSelected.values().units())
             .mergeWith(isCovered.values().units())
             .mergeWith(knotMesh.tileOffset.values().units())
             .mergeWith(knotMesh.localKnots.changes.units())
+            .mergeWith(knotsInSelectionArea.changes.units())
+            .mergeWith(selectedKnots.changes.units())
 }
 
 fun createKnotMeshOverlayElement(
@@ -149,8 +177,8 @@ fun createKnotMeshOverlayElement(
 
         val tileOverlay = createSvgRect(
             svg = svg,
-            size = Cell.constant(IntSize(TILE_SIZE, TILE_SIZE)),
-            translate = Cell.constant(localTileCoord.times(TILE_SIZE)),
+            size = constant(IntSize(TILE_SIZE, TILE_SIZE)),
+            translate = constant(localTileCoord.times(TILE_SIZE)),
             style = DynamicStyleDeclaration(
                 cursor = moveController.map { it?.let { Cursor.move } },
                 pointerEvents = moveController.map {

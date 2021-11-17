@@ -336,6 +336,18 @@ fun worldView(
                                             }
                                         }
                                     ),
+                                    DynamicSet.ofSingle(
+                                        editor.knotSelectMode.switchMapNotNull {
+                                            it.selectMode.areaSelectingMode.mapNotNull { areaSelectingMode ->
+                                                createAreaSelectionOverlayElement(
+                                                    svg = svg,
+                                                    viewTransform = viewTransform,
+                                                    areaSelectingMode = areaSelectingMode,
+                                                    tillDetach = tillDetach,
+                                                )
+                                            }
+                                        }
+                                    ),
                                 ),
                             ),
                         )

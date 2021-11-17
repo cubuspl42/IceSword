@@ -85,9 +85,10 @@ class Editor(
         )
     }
 
-    private fun buildKnotSelectMode() = object : Tilled<KnotSelectMode> {
+    private fun buildKnotSelectMode(knotMesh: KnotMesh) = object : Tilled<KnotSelectMode> {
         override fun build(till: Till) = KnotSelectMode(
             editor = this@Editor,
+            knotMesh = knotMesh,
             tillExit = till,
         )
     }
@@ -106,7 +107,11 @@ class Editor(
     }
 
     fun enterKnotSelectMode() {
-        enterModeTilled(buildKnotSelectMode())
+        (selectedEntity.sample() as? KnotMesh)?.let { selectedKnotMesh ->
+            enterModeTilled(buildKnotSelectMode(
+                knotMesh = selectedKnotMesh,
+            ))
+        }
     }
 
     private fun enterModeTillExit(build: (tillExit: Till) -> EditorMode) {
@@ -130,6 +135,9 @@ class Editor(
 
     val entitySelectMode: Cell<EntitySelectMode?> =
         editorMode.map { it as? EntitySelectMode }
+
+    val knotSelectMode: Cell<KnotSelectMode?> =
+        editorMode.map { it as? KnotSelectMode }
 
     private val entityAreaSelectingMode: Cell<EntityAreaSelectingMode?> =
         entitySelectMode.switchMapNotNull { it.entityAreaSelectingMode }

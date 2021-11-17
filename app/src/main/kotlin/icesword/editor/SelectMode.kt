@@ -39,7 +39,6 @@ interface SelectModeFactory<
 class SelectMode<
         SubAreaSelectingMode,
         >(
-    private val editor: Editor,
     private val factory: SelectModeFactory<SubAreaSelectingMode>,
     tillExit: Till,
 ) : EditorMode {
@@ -47,8 +46,6 @@ class SelectMode<
 
     open inner class SelectModeState
 
-    private val world: World
-        get() = editor.world
 
     val state: Cell<SelectModeState> = Stream.follow(
         initialValue = object : Tilled<IdleMode> {
@@ -66,16 +63,6 @@ class SelectMode<
 
     val areaSelectingMode: Cell<AreaSelectingMode?> =
         state.map { st -> st as? AreaSelectingMode }
-
-    private fun getEntitiesInArea(area: Cell<IntRect>): DynamicSet<Entity> {
-        return world.entities.filterDynamic { entity: Entity ->
-            area.map { entity.isSelectableIn(it) }
-        }
-    }
-
-    private fun selectEntities(entities: Set<Entity>) {
-        editor.selectEntities(entities)
-    }
 
     override fun toString(): String = "SelectMode()"
 

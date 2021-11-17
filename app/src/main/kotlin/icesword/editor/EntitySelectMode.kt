@@ -22,7 +22,6 @@ class EntitySelectMode(
         get() = editor.world
 
     val selectMode = SelectMode(
-        editor = editor,
         factory = object : SelectModeFactory<EntityAreaSelectingMode> {
             override fun createSubAreaSelectingMode(
                 selectionArea: Cell<IntRect>,

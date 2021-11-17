@@ -20,6 +20,9 @@ interface DynamicSet<out A> {
             DiffDynamicSet(content, tag = tag)
                 .validated("$tag-validated")
 
+        fun <A> diff(content: Cell<DynamicSet<A>>, tag: String = "diff-dynamic"): DynamicSet<A> =
+            DynamicDiffDynamicSet(content, tag)
+
         fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> =
             DynamicSetUnion(sets)
                 .validated("union")

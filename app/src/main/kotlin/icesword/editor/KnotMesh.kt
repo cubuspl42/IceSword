@@ -154,7 +154,7 @@ class KnotMesh(
     val localKnots: DynamicSet<IntVec2>
         get() = _localKnots
 
-    private val globalKnotCoords = localKnots
+    val globalKnotCoords = localKnots
         .adjust(
             hash = IntVec2.HASH,
             adjustment = tileOffset,
