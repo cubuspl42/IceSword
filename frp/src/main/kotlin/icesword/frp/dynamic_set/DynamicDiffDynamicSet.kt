@@ -25,7 +25,7 @@ class DynamicDiffDynamicSet<A>(
         )
 
     override fun onStart() {
-        subscription = inputContent.subscribe { newInner ->
+        subscription = inputContent.values().subscribe { newInner ->
             innerSubscription!!.unsubscribe()
             innerSubscription = subscribeInner(newInner)
 

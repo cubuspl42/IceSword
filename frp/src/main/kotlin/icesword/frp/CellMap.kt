@@ -10,7 +10,7 @@ class CellMap<A, B>(
         f(source.sample())
 
     override fun onStartUncached() {
-        subscription = source.subscribe {
+        subscription = source.values().subscribe {
             cacheAndNotifyListeners(f(it))
         }
     }

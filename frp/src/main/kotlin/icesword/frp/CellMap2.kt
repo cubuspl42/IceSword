@@ -11,11 +11,11 @@ class CellMap2<A, B, C>(
     override fun sampleUncached(): C = f(ca.sample(), cb.sample())
 
     override fun onStartUncached(): Unit {
-        subscriptionA = ca.subscribe { a ->
+        subscriptionA = ca.values().subscribe { a ->
             cacheAndNotifyListeners(f(a, cb.sample()))
         }
 
-        subscriptionB = cb.subscribe { b ->
+        subscriptionB = cb.values().subscribe { b ->
             cacheAndNotifyListeners(f(ca.sample(), b))
         }
     }

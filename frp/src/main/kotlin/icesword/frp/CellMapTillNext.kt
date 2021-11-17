@@ -7,7 +7,10 @@ class CellMapTillNext<A, B>(
 ) : SimpleCell<B>(tag = "CellMapTillNext") {
     private var tillNextSink = StreamSink<Unit>()
 
-    private var value: B
+    private var value: B = f(
+        source.sample(),
+        tillNextSink.tillNext(tillAbort),
+    )
 
     init {
         source.values().reactTill(tillAbort) {
@@ -18,17 +21,15 @@ class CellMapTillNext<A, B>(
                 tillNextSink.tillNext(tillAbort),
             )
 
+            val change = ValueChange(
+                oldValue = value,
+                newValue = newValue,
+            )
+
             value = newValue
 
-            notifyListeners(newValue)
+            notifyListeners(change)
         }
-
-        val initialValue = f(
-            source.sample(),
-            tillNextSink.tillNext(tillAbort),
-        )
-
-        value = initialValue
     }
 
 

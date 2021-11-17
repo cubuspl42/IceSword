@@ -96,7 +96,7 @@ class FuseMapDynamicSet<A, B>(
     private fun subscribeToCell(key: A, cell: Cell<B>) {
         debugLog { "$name: subscribe to cell @ key: $key" }
 
-        val subscription = cell.subscribe { newValue: B ->
+        val subscription = cell.values().subscribe { newValue: B ->
             val linksMap = this.linksMap!!
 
             val oldValue = linksMap.firstNotNullOf { (value, links) ->

@@ -7,7 +7,7 @@ class CellSequenceList<A>(
 
     override fun onStartUncached() {
         subscriptions = sources.map {
-            it.subscribe {
+            it.values().subscribe {
                 cacheAndNotifyListeners(sampleUncached())
             }
         }

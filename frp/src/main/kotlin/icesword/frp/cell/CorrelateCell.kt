@@ -3,6 +3,7 @@ package frp.cell
 import icesword.frp.SimpleCell
 import icesword.frp.Stream
 import icesword.frp.Subscription
+import icesword.frp.ValueChange
 
 class CorrelateCell<A>(
     private val sampleValue: () -> A,
@@ -16,9 +17,17 @@ class CorrelateCell<A>(
 
     override fun onStart() {
         subscription = steps.subscribe {
+            val change = ValueChange(
+                oldValue = _currentValue!!,
+                newValue = it,
+            )
+
             _currentValue = it
-            notifyListeners(it)
+
+            notifyListeners(change)
         }
+
+        _currentValue = sampleValue()
     }
 
     override fun onStop() {

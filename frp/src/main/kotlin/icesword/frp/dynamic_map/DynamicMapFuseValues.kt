@@ -45,7 +45,7 @@ class DynamicMapFuseValues<K, V>(
     private fun subscribeToCell(key: K, cell: Cell<V>) {
         debugLog { "$name: subscribe to cell @ key: $key" }
 
-        val subscription = cell.subscribe { value ->
+        val subscription = cell.values().subscribe { value ->
 //            mutableContent[key] = value
 
             processChange(

@@ -11,7 +11,7 @@ class CellSwitch<A>(
 
     override fun onStartUncached(): Unit {
         fun addInnerListener(inner: Cell<A>): Unit {
-            _subscriptionInner = inner.subscribe(this::cacheAndNotifyListeners)
+            _subscriptionInner = inner.values().subscribe(this::cacheAndNotifyListeners)
         }
 
         fun reAddInnerListener(inner: Cell<A>): Unit {
@@ -21,7 +21,7 @@ class CellSwitch<A>(
             addInnerListener(inner)
         }
 
-        _subscriptionOuter = source.subscribe { inner ->
+        _subscriptionOuter = source.values().subscribe { inner ->
             reAddInnerListener(inner)
 
             cacheAndNotifyListeners(inner.sample())

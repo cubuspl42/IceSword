@@ -21,7 +21,7 @@ class CellDivert<A>(
             addInnerListener(inner)
         }
 
-        _subscriptionOuter = source.subscribe { inner ->
+        _subscriptionOuter = source.values().subscribe { inner ->
             reAddInnerListener(inner)
         }
 

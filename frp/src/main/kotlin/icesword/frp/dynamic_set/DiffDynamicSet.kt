@@ -23,7 +23,7 @@ class DiffDynamicSet<A>(
         )
 
     override fun onStart() {
-        subscription = inputContent.subscribe { newContent ->
+        subscription = inputContent.values().subscribe { newContent ->
 //            println("DiffDynamicSet newContent: $newContent")
 
             val change = SetChange.diff(mutableContent!!, newContent)

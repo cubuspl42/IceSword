@@ -280,14 +280,14 @@ fun <K, V> DynamicMap<K, V>.getNow(key: K): V? = this.volatileContentView[key]
 
 class RawCell<A>(
     private val sampleValue: () -> A,
-    private val changes: Stream<A>,
+    private val _changes: Stream<A>,
 ) : CachingCell<A>(tag = "RawCell") {
     private var subscription: Subscription? = null
 
     override fun sampleUncached(): A = this.sampleValue()
 
     override fun onStartUncached() {
-        subscription = changes.subscribe {
+        subscription = _changes.subscribe {
             cacheAndNotifyListeners(it)
         }
     }
@@ -315,7 +315,7 @@ class DiffDynamicMap<K, V>(
     }
 
     override fun onStart() {
-        subscription = inputContent.subscribe { newContent ->
+        subscription = inputContent.values().subscribe { newContent ->
             val change = MapChange.diff(mutableContent!!, newContent)
             change.applyTo(mutableContent!!)
             notifyListeners(change)

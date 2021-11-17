@@ -5,6 +5,7 @@ import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.TillMarker
 import icesword.frp.Tilled
+import icesword.frp.ValueChange
 import icesword.frp.or
 import icesword.frp.subscribeTill
 
@@ -27,9 +28,14 @@ class FollowCell<A>(
 
             val nextValue = buildValueTillNext(it)
 
+            val change = ValueChange(
+                oldValue = _currentValue,
+                newValue = nextValue,
+            )
+
             _currentValue = nextValue
 
-            notifyListeners(nextValue)
+            notifyListeners(change)
         }
 
         return value

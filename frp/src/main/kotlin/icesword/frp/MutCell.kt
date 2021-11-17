@@ -6,8 +6,14 @@ class MutCell<A>(initialValue: A) : SimpleCell<A>(tag = "MutCell") {
     override fun sample(): A = _currentValue
 
     fun set(newValue: A) {
+        val change = ValueChange(
+            oldValue = _currentValue,
+            newValue = newValue,
+        )
+
         _currentValue = newValue
-        notifyListeners(newValue)
+
+        notifyListeners(change)
     }
 }
 

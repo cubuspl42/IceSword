@@ -1,7 +1,9 @@
 package icesword.frp
 
-interface Cell<out A> : Observable<A>, Behavior<A> {
+interface Cell<out A> : Behavior<A> {
     override fun sample(): A
+
+    val changes: Stream<ValueChange<A>>
 
     companion object {
         fun <A> constant(a: A): Cell<A> =
@@ -32,17 +34,21 @@ interface Cell<out A> : Observable<A>, Behavior<A> {
     }
 }
 
+data class ValueChange<out A> (
+    val oldValue: A,
+    val newValue: A,
+)
+
 class ConstCell<out A>(
     private val constant: A,
 ) : Cell<A> {
     override fun sample(): A = constant
 
-    override fun subscribe(handler: (A) -> Unit): Subscription =
-        Subscription.noop()
+    override val changes: Stream<ValueChange<A>> = Stream.never()
 }
 
 fun <A> Cell<A>.values(): Stream<A> =
-    Stream.source(this::subscribe, tag = "Cell.values")
+    this.changes.map { it.newValue }
 
 fun <A, B> Cell<A>.map(f: (A) -> B): Cell<B> =
     CellMap(this, f)
