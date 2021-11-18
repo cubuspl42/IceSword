@@ -9,7 +9,7 @@ class CorrelateCell<A>(
     private val sampleValue: () -> A,
     private val steps: Stream<A>,
 ) : SimpleCell<A>(tag = "CorrelateCell") {
-    private var _currentValue: A? = null
+    private var _currentValue: A = sampleValue()
 
     private var subscription: Subscription? = null
 
@@ -18,7 +18,7 @@ class CorrelateCell<A>(
     override fun onStart() {
         subscription = steps.subscribe {
             val change = ValueChange(
-                oldValue = _currentValue!!,
+                oldValue = _currentValue,
                 newValue = it,
             )
 
@@ -31,8 +31,6 @@ class CorrelateCell<A>(
     }
 
     override fun onStop() {
-        _currentValue = null
-
         subscription!!.unsubscribe()
         subscription = null
     }

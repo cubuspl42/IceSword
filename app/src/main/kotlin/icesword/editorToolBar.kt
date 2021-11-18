@@ -137,8 +137,10 @@ fun createContextualButtonsRow(editorMode: EditorMode): HTMLElement? =
             createRow(
                 children = listOf(
                     createButton(
-                        text = "Test",
-                        onPressed = {},
+                        text = "Remove knots",
+                        onPressed = {
+                            editorMode.removeSelectedKnots()
+                        },
                         tillDetach = tillDetach,
                     )
                 ),

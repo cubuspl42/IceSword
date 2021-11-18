@@ -57,6 +57,10 @@ class KnotSelectMode(
         _selectedKnots.set(globalKnotCoords)
     }
 
+    fun removeSelectedKnots() {
+        knotMesh.removeKnots(selectedKnots.sample())
+    }
+
     inner class KnotAreaSelectingMode(
         selectionArea: Cell<IntRect>,
         confirm: Stream<Unit>,

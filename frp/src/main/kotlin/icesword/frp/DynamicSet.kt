@@ -254,11 +254,15 @@ private class MutableDynamicSetImpl<A>(
             throw IllegalArgumentException("Some elements to remove aren't present in the set")
         }
 
-        val change = SetChange(
-            added = emptySet(),
-            removed = elements,
-        )
+        val anyWasThere = mutableContent.removeAll(elements)
 
-        notifyListeners(change)
+        if (anyWasThere) {
+            val change = SetChange(
+                added = emptySet(),
+                removed = elements,
+            )
+
+            notifyListeners(change)
+        }
     }
 }

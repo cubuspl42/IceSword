@@ -174,6 +174,11 @@ class KnotMesh(
         _localKnots.add(localKnotCoord)
     }
 
+    fun removeKnots(globalKnotCoords: Set<IntVec2>) {
+        val localKnotCoords = globalKnotCoords.map { it - tileOffset.sample() }.toSet()
+        _localKnots.removeAll(localKnotCoords)
+    }
+
     fun removeKnot(globalKnotCoord: IntVec2) {
         val localKnotCoord = globalKnotCoord - tileOffset.sample()
         _localKnots.remove(localKnotCoord)
