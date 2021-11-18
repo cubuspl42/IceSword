@@ -9,6 +9,8 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.Wwd
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
 class Enemy(
@@ -23,7 +25,20 @@ class Enemy(
     ),
     WapObjectExportable {
 
-    final override val entityPosition: EntityPosition =
+    companion object {
+        fun load(
+            rezIndex: RezIndex,
+            data: EnemyData,
+        ): Enemy =
+            Enemy(
+                rezIndex = rezIndex,
+                wapObjectPrototype = data.objectPrototype,
+                initialPosition = data.position,
+                initialRelativeMovementRange = data.relativeMovementRange,
+            )
+    }
+
+    override val entityPosition: EntityPosition =
         EntityPixelPosition(
             initialPosition = initialPosition,
         )
@@ -37,12 +52,18 @@ class Enemy(
     override val movementOrigin: Cell<IntVec2>
         get() = wapSprite.boundingBox.map { it.center }
 
-    final override fun isSelectableIn(area: IntRect): Boolean {
+    override fun isSelectableIn(area: IntRect): Boolean {
         val hitBox = wapSprite.boundingBox.sample()
         return hitBox.overlaps(area)
     }
 
-    final override fun exportWapObject(): Wwd.Object_ {
+    override fun toEntityData(): EnemyData = EnemyData(
+        objectPrototype = wapObjectPrototype,
+        position = position.sample(),
+        relativeMovementRange = relativeMovementRange.sample(),
+    )
+
+    override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
         val movementRange = relativeMovementRange.sample()
         val globalMovementRange = movementRange.translate(position)
@@ -50,12 +71,18 @@ class Enemy(
         return wapObjectPrototype.wwdObjectPrototype.copy(
             x = position.x,
             y = position.y,
-            rangeRect = Rectangle(
+            rangeRect = Rectangle.zero.copy(
                 left = globalMovementRange.minX,
                 right = globalMovementRange.maxX,
-                top = 0,
-                bottom = 0,
             ),
         )
     }
 }
+
+@Serializable
+@SerialName("Enemy")
+data class EnemyData(
+    val objectPrototype: WapObjectPrototype,
+    val position: IntVec2,
+    val relativeMovementRange: HorizontalRange = HorizontalRange.ZERO,
+) : EntityData()

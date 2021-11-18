@@ -5,6 +5,7 @@ import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileTopLeftCorner
+import kotlinx.serialization.Serializable
 
 //sealed interface PositionedEntity {
 //    val pixelOffset: Cell<IntVec2>
@@ -78,4 +79,9 @@ sealed class Entity {
             }
         }
     }
+
+    open fun toEntityData(): EnemyData? = null
 }
+
+@Serializable
+sealed class EntityData

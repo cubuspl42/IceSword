@@ -34,6 +34,7 @@ class World(
     initialHorizontalElevators: Set<HorizontalElevator>,
     initialVerticalElevators: Set<VerticalElevator>,
     initialFloorSpikeRows: Set<FloorSpikeRow>,
+    initialEntities: Set<Entity>,
 ) {
     companion object {
         private const val wwdPlaneIndex = 1
@@ -103,6 +104,7 @@ class World(
                 initialVerticalElevators = emptySet(),
                 initialWapObjects = emptySet(),
                 initialFloorSpikeRows = emptySet(),
+                initialEntities = emptySet(),
             )
         }
 
@@ -147,6 +149,13 @@ class World(
                 load = { FloorSpikeRow.load(rezIndex = rezIndex, data = it) },
             )
 
+            val initialEntities = worldData.entities.map {
+                when (it) {
+                    is EnemyData -> Enemy.load(rezIndex = rezIndex, data = it)
+                    else -> throw UnsupportedOperationException()
+                }
+            }.toSet()
+
             return World(
                 wwdWorld = wwdWorldTemplate,
                 initialStartPoint = worldData.startPoint,
@@ -156,6 +165,7 @@ class World(
                 initialVerticalElevators = initialVerticalElevators,
                 initialWapObjects = initialWapObjects,
                 initialFloorSpikeRows = initialFloorSpikeRows,
+                initialEntities = initialEntities,
             )
         }
     }
@@ -171,7 +181,8 @@ class World(
                 initialWapObjects +
                 initialHorizontalElevators +
                 initialVerticalElevators +
-                initialFloorSpikeRows
+                initialFloorSpikeRows +
+                initialEntities
     )
 
     val startPointEntity = StartPoint(
@@ -338,6 +349,9 @@ class World(
             toData = FloorSpikeRow::toData,
         )
 
+        val entities = this.entities.volatileContentView
+            .mapNotNull { it.toEntityData() }
+
         return WorldData(
             startPoint = startPoint,
             knotMeshes = knotMeshes,
@@ -346,6 +360,7 @@ class World(
             verticalElevators = verticalElevators,
             wapObjects = wapObjects,
             floorSpikeRows = floorSpikeRows,
+            entities = entities,
         )
     }
 
@@ -374,6 +389,7 @@ data class WorldData(
     val verticalElevators: Set<VerticalElevatorData> = emptySet(),
     val wapObjects: Set<WapObjectData> = emptySet(),
     val floorSpikeRows: Set<FloorSpikeRowData> = emptySet(),
+    val entities: List<EntityData> = emptyList(),
 )
 
 @Serializable
