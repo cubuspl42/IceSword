@@ -169,19 +169,19 @@ fun editorSideBar(
                         tillDetach = tillDetach,
                     ),
 
-                    createInsertWapObjectButton(
+                    createInsertEnemyButton(
                         editor = editor,
                         text = "Robber Thief",
                         wapObjectPrototype = RobberThiefPrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObjectButton(
+                    createInsertEnemyButton(
                         editor = editor,
                         text = "Cut Throat",
                         wapObjectPrototype = CutThroatPrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObjectButton(
+                    createInsertEnemyButton(
                         editor = editor,
                         text = "Rat",
                         wapObjectPrototype = RatPrototype,
@@ -291,6 +291,21 @@ private fun createInsertWapObjectButton(
         editor = editor,
         text = text,
         insertionPrototype = WapObjectInsertionPrototype(
+            wapObjectPrototype = wapObjectPrototype,
+        ),
+        tillDetach = tillDetach,
+    )
+
+private fun createInsertEnemyButton(
+    editor: Editor,
+    text: String,
+    wapObjectPrototype: WapObjectPrototype,
+    tillDetach: Till,
+): HTMLElement =
+    createInsertEntityButton(
+        editor = editor,
+        text = "$text [enemy]",
+        insertionPrototype = EnemyInsertionPrototype(
             wapObjectPrototype = wapObjectPrototype,
         ),
         tillDetach = tillDetach,

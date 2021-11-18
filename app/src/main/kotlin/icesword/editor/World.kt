@@ -228,6 +228,10 @@ class World(
         _entities.add(floorSpikeRow)
     }
 
+    fun insertEntity(entity: Entity) {
+        _entities.add(entity)
+    }
+
     val knotMeshLayer = KnotMeshLayer(
         knotMeshes = knotMeshes,
     )
@@ -348,6 +352,7 @@ class World(
     fun removeEntities(entities: Set<Entity>) {
         _entities.removeAll(entities)
     }
+
 
     init {
         tiles.changes.subscribe { change ->

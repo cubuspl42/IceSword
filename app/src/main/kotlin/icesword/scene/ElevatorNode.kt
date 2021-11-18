@@ -6,6 +6,7 @@ import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
 import icesword.editor.Editor
 import icesword.editor.Elevator
+import icesword.editor.EntityMovementRange
 import icesword.editor.HorizontalElevator
 import icesword.editor.VerticalElevator
 import icesword.frp.Cell
@@ -99,7 +100,7 @@ private fun createElevatorOverlayElement(
         svg = svg,
         viewport = viewport,
         dynamicViewTransform = dynamicViewTransform,
-        elevator = elevator,
+        entityMovementRange = elevator,
         rotation = movementRangeOverlayRotation,
         handleCursor = handleCursor,
         extractInputCoord = extractInputCoord,
@@ -122,18 +123,18 @@ fun createMovementRangeOverlay(
     svg: SVGSVGElement,
     viewport: HTMLElement,
     dynamicViewTransform: DynamicTransform,
-    elevator: Elevator<*>,
+    entityMovementRange: EntityMovementRange<*>,
     rotation: Transform,
     handleCursor: Cursor,
     extractInputCoord: (IntVec2) -> Int,
     tillDetach: Till,
 ): SVGElement {
     val center = dynamicViewTransform.transform(
-        point = elevator.wapSprite.boundingBox.map { it.center },
+        point = entityMovementRange.movementOrigin,
     )
 
     // Note: this does not support scaling (zoom)
-    val movementRangeRect: Cell<IntRect> = elevator.relativeMovementRange.map {
+    val movementRangeRect: Cell<IntRect> = entityMovementRange.relativeMovementRange.map {
         val sideLength = 64
         val mr: AxisRange<*> = it
 
@@ -198,13 +199,13 @@ fun createMovementRangeOverlay(
     val minHandle = createHandle(
         cornerA = { it.topLeft },
         cornerB = { it.bottomLeft },
-        resizeExtremum = elevator::resizeMovementRangeMin,
+        resizeExtremum = entityMovementRange::resizeMovementRangeMin,
     )
 
     val maxHandle = createHandle(
         cornerA = { it.topRight },
         cornerB = { it.bottomRight },
-        resizeExtremum = elevator::resizeMovementRangeMax,
+        resizeExtremum = entityMovementRange::resizeMovementRangeMax,
     )
 
     val group = createSvgGroupDt(

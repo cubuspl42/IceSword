@@ -115,6 +115,10 @@ class DynamicTransform(
     val transform: Cell<Transform>,
 ) {
     companion object {
+        val identity: DynamicTransform = DynamicTransform(
+           transform = Cell.constant(Transform.identity),
+        )
+
         fun translate(t: Cell<IntVec2>): DynamicTransform = DynamicTransform(
             t.map(Transform.Companion::translate)
         )

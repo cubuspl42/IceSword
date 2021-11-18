@@ -13,6 +13,7 @@ import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
+import icesword.scene.HybridNode.OverlayBuildContext
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
@@ -45,6 +46,18 @@ class WapSpriteNode(
 
     override val onDirty: Stream<Unit> =
         wapSprite.boundingBox.values().units()
+}
+
+class WapSpriteHybridNode(
+    private val wapSprite: WapSprite,
+) : HybridNode {
+    override fun buildCanvasNode(textureBank: TextureBank): Node =
+        WapSpriteNode(
+            textureBank = textureBank,
+            wapSprite = wapSprite,
+        )
+
+    override fun buildOverlayElement(context: OverlayBuildContext): SVGElement? = null
 }
 
 fun drawWapSprite(

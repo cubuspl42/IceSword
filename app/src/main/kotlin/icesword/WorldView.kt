@@ -14,6 +14,7 @@ import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.contentDynamicView
+import icesword.frp.filterNotNull
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNotNull
@@ -23,7 +24,9 @@ import icesword.frp.reactTillNext
 import icesword.frp.switchMapNotNull
 import icesword.frp.tillNext
 import icesword.frp.units
+import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
+import icesword.geometry.Transform
 import icesword.html.MouseButton
 import icesword.html.MousePosition
 import icesword.html.calculateRelativePosition
@@ -46,6 +49,8 @@ import icesword.scene.WapSpriteNode
 import icesword.scene.createAreaSelectionOverlayElement
 import icesword.scene.createBackFoilOverlayElement
 import icesword.scene.createElasticOverlayElement
+import icesword.scene.createEntityNode
+import icesword.scene.createEntityOverlayElement
 import icesword.scene.createHorizontalElevatorOverlayElement
 import icesword.scene.createFloorSpikeRowOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
@@ -132,6 +137,10 @@ fun worldView(
     return root.apply {
         val viewTransform = world.cameraFocusPoint.map { -it }
 
+        val dynamicViewTransform = DynamicTransform(
+            transform = viewTransform.map { Transform.translate(it) },
+        )
+
         val wapObjectPreviewNode =
             editor.wapObjectAlikeInsertionMode.switchMapNotNull { insertionMode ->
                 insertionMode.wapObjectPreview.mapNotNull {
@@ -144,7 +153,9 @@ fun worldView(
             }
 
         val backFoilLayer = Layer(
+            textureBank = textureBank,
             transform = Cell.constant(IntVec2.ZERO),
+            viewTransform = DynamicTransform.identity,
             nodes = DynamicSet.empty(),
             buildOverlayElements = {
                 DynamicSet.of(
@@ -156,11 +167,14 @@ fun worldView(
                         ),
                     )
                 )
-            }
+            },
+            tillDetach = tillDetach,
         )
 
         val planeLayer = Layer(
+            textureBank = textureBank,
             transform = viewTransform,
+            viewTransform = dynamicViewTransform,
             nodes = DynamicSet.union(
                 DynamicSet.of(
                     setOf(
@@ -216,10 +230,16 @@ fun worldView(
                     )
                 }
             },
+            hybridNodes = world.entities.map {
+                createEntityNode(editor = editor, entity = it)
+            }.filterNotNull(),
+            tillDetach = tillDetach,
         )
 
         val planeUiLayer = Layer(
+            textureBank = textureBank,
             transform = Cell.constant(IntVec2.ZERO),
+            viewTransform = DynamicTransform.identity,
             nodes = DynamicSet.union(
                 DynamicSet.of(
                     setOf(
@@ -248,10 +268,14 @@ fun worldView(
                     ),
                 ),
             ),
+            tillDetach = tillDetach,
         )
 
         appendChild(
-            scene(tillDetach) {
+            scene(
+                viewport = this,
+                tillDetach = tillDetach,
+            ) {
                 Scene(
                     layers = listOf(
                         backFoilLayer,
@@ -324,6 +348,16 @@ fun worldView(
                                             tillDetach = tillRemoved,
                                         )
                                     },
+                                    world.entities.mapTillRemoved(tillAbort = tillDetach) { entity, tillRemoved ->
+                                        createEntityOverlayElement(
+                                            editor = editor,
+                                            svg = svg,
+                                            viewport = this,
+                                            viewTransform = dynamicViewTransform,
+                                            entity = entity,
+                                            tillDetach = tillRemoved,
+                                        )
+                                    }.filterNotNull(),
                                     DynamicSet.ofSingle(
                                         editor.entitySelectMode.switchMapNotNull {
                                             it.areaSelectingMode.mapNotNull { areaSelectingMode ->

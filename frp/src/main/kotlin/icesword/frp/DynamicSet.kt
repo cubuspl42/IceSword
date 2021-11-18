@@ -27,6 +27,14 @@ interface DynamicSet<out A> {
             DynamicSetUnion(sets)
                 .validated("union")
 
+        fun <A> union2(set1: DynamicSet<A>, set2: DynamicSet<A>): DynamicSet<A> =
+            DynamicSet.union(
+                DynamicSet.of(setOf(
+                    set1,
+                    set2,
+                ))
+            )
+
         fun <A> merge(
             streams: DynamicSet<Stream<A>>,
         ): Stream<A> = streams.content.divertMap {
@@ -87,11 +95,14 @@ fun <A, R> DynamicSet<A>.map(
         tag = tag,
     ).validated(tag)
 
+fun <A : Any> DynamicSet<A?>.filterNotNull(): DynamicSet<A> =
+    this.filter { it != null }.map { it!! }
+
 fun <A, R : Any> DynamicSet<A>.mapNotNull(
     tag: String = "mapNotNull",
     transform: (A) -> R?,
 ): DynamicSet<R> =
-    this.map { transform(it) }.filter { it != null }.map { it!! }
+    this.map { transform(it) }.filterNotNull()
 
 fun <A, R> DynamicSet<A>.mapTillRemoved(
     tillAbort: Till,

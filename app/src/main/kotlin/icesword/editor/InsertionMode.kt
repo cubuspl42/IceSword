@@ -19,6 +19,7 @@ import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
+import kotlinx.css.ins
 
 sealed interface InsertionPrototype {
     value class ElasticInsertionPrototype(
@@ -38,6 +39,10 @@ sealed interface InsertionPrototype {
     object VerticalElevatorInsertionPrototype : InsertionPrototype
 
     object FloorSpikeInsertionPrototype : InsertionPrototype
+
+    value class EnemyInsertionPrototype(
+        val wapObjectPrototype: WapObjectPrototype,
+    ) : InsertionPrototype
 }
 
 sealed interface InsertionMode : EditorMode {
@@ -242,6 +247,26 @@ class FloorSpikeInsertionMode(
                         initialTimeOnMillis = 1500,
                     ),
                 )
+            )
+        )
+    }
+}
+
+class EnemyInsertionMode(
+    private val world: World,
+    private val rezIndex: RezIndex,
+    override val insertionPrototype: InsertionPrototype.EnemyInsertionPrototype,
+) : WapObjectAlikeInsertionMode(
+    rezIndex = rezIndex,
+    wapObjectPrototype = insertionPrototype.wapObjectPrototype,
+) {
+    override fun insert(insertionWorldPoint: IntVec2) {
+        world.insertEntity(
+            Enemy(
+                rezIndex = rezIndex,
+                wapObjectPrototype = insertionPrototype.wapObjectPrototype,
+                initialPosition = insertionWorldPoint,
+                initialRelativeMovementRange = HorizontalRange(-128, 128),
             )
         )
     }

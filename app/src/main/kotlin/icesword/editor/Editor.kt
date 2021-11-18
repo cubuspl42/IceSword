@@ -8,6 +8,7 @@ import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.EntitySelectMode.EntityAreaSelectingMode
+import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
@@ -255,6 +256,11 @@ class Editor(
             is FloorSpikeInsertionPrototype -> FloorSpikeInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
+            )
+            is EnemyInsertionPrototype -> EnemyInsertionMode(
+                world = world,
+                rezIndex = rezIndex,
+                insertionPrototype = insertionPrototype,
             )
         }
 

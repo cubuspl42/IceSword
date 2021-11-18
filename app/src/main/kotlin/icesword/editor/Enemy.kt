@@ -3,26 +3,22 @@
 package icesword.editor
 
 import icesword.RezIndex
-import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.frp.Cell
-import icesword.frp.MutCell
-import icesword.frp.Till
 import icesword.frp.map
-import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
-import icesword.wwd.Geometry
 import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.Wwd
 import kotlinx.serialization.UseSerializers
 
-sealed class Elevator<Range : AxisRange<Range>>(
+class Enemy(
     rezIndex: RezIndex,
+    private val wapObjectPrototype: WapObjectPrototype,
     initialPosition: IntVec2,
-    initialRelativeMovementRange: Range,
+    initialRelativeMovementRange: HorizontalRange,
 ) :
     Entity(),
-    EntityMovementRange<Range> by EntityMovementRangeMixin(
+    EntityMovementRange<HorizontalRange> by EntityMovementRangeMixin(
         initialRelativeMovementRange = initialRelativeMovementRange,
     ),
     WapObjectExportable {
@@ -34,36 +30,32 @@ sealed class Elevator<Range : AxisRange<Range>>(
 
     val wapSprite = WapSprite(
         rezIndex = rezIndex,
-        imageSetId = ElevatorPrototype.imageSetId,
+        imageSetId = wapObjectPrototype.imageSetId,
         position = entityPosition.position,
     )
 
     override val movementOrigin: Cell<IntVec2>
         get() = wapSprite.boundingBox.map { it.center }
 
-    val globalMovementRange by lazy {
-        Cell.map2(
-            entityPosition.position,
-            relativeMovementRange,
-        ) { ep, mr ->
-            mr.translate(ep)
-        }
-    }
-
     final override fun isSelectableIn(area: IntRect): Boolean {
         val hitBox = wapSprite.boundingBox.sample()
         return hitBox.overlaps(area)
     }
 
-    abstract fun exportElevatorRangeRect(): Rectangle
-
     final override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
+        val movementRange = relativeMovementRange.sample()
+        val globalMovementRange = movementRange.translate(position)
 
-        return ElevatorPrototype.wwdObjectPrototype.copy(
+        return wapObjectPrototype.wwdObjectPrototype.copy(
             x = position.x,
             y = position.y,
-            rangeRect = exportElevatorRangeRect(),
+            rangeRect = Rectangle(
+                left = globalMovementRange.minX,
+                right = globalMovementRange.maxX,
+                top = 0,
+                bottom = 0,
+            ),
         )
     }
 }
