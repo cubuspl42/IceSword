@@ -81,18 +81,12 @@ private fun createElevatorOverlayElement(
 
     val boundingBox = elevator.wapSprite.boundingBox
 
-    val entityFrameTranslate =
-        dynamicViewTransform.transform(
-            point = boundingBox.map { it.position },
-        )
-
     val entityFrame = createEntityFrameElement(
         editor = editor,
         svg = svg,
         outer = viewport,
         entity = elevator,
-        translate = entityFrameTranslate,
-        size = boundingBox.map { it.size },
+        boundingBox = dynamicViewTransform.transform(boundingBox),
         tillDetach = tillDetach,
     )
 

@@ -313,7 +313,7 @@ fun worldView(
                                             editor = editor,
                                             svg = svg,
                                             viewport = this,
-                                            viewTransform = viewTransform,
+                                            viewTransform = dynamicViewTransform,
                                             wapObject = wapObject,
                                             tillDetach = tillRemoved,
                                         )

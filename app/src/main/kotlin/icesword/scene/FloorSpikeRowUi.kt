@@ -60,18 +60,12 @@ fun createFloorSpikeRowOverlayElement(
 
     val boundingBox = floorSpikeRow.boundingBox
 
-    val entityFrameTranslate =
-        dynamicViewTransform.transform(
-            point = boundingBox.map { it.position },
-        )
-
     return createEntityFrameElement(
         editor = editor,
         svg = svg,
         outer = viewport,
         entity = floorSpikeRow,
-        translate = entityFrameTranslate,
-        size = boundingBox.map { it.size },
+        boundingBox = dynamicViewTransform.transform(boundingBox),
         tillDetach = tillDetach,
     )
 }

@@ -11,6 +11,7 @@ import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.units
 import icesword.frp.values
+import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.scene.HybridNode.OverlayBuildContext
@@ -76,7 +77,7 @@ fun createWapObjectOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,
-    viewTransform: Cell<IntVec2>,
+    viewTransform: DynamicTransform,
     wapObject: WapObject,
     tillDetach: Till,
 ): SVGElement =
@@ -94,25 +95,17 @@ fun createWapSpriteOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,
-    viewTransform: Cell<IntVec2>,
+    viewTransform: DynamicTransform,
     entity: Entity,
     wapSprite: WapSprite,
     tillDetach: Till,
 ): SVGElement {
-    val rect = wapSprite.boundingBox
-
-    val translate = Cell.map2(
-        viewTransform,
-        rect.map { it.position },
-    ) { vt, ep -> vt + ep }
-
     val box = createEntityFrameElement(
         editor = editor,
         svg = svg,
         outer = viewport,
         entity = entity,
-        translate = translate,
-        size = rect.map { it.size },
+        boundingBox = viewTransform.transform(wapSprite.boundingBox),
         tillDetach = tillDetach,
     )
 

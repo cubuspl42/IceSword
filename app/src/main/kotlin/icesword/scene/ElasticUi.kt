@@ -123,8 +123,7 @@ fun createElasticOverlayElement(
         svg = svg,
         outer = viewport,
         entity = elastic,
-        translate = Cell.constant(IntVec2.ZERO),
-        size = boxSize,
+        boundingBox = boxSize.map { it.toRect() },
         tillDetach = tillDetach,
     )
 
@@ -225,8 +224,7 @@ fun createEntityFrameElement(
     svg: SVGSVGElement,
     outer: HTMLElement,
     entity: Entity,
-    translate: Cell<IntVec2>,
-    size: Cell<IntSize>,
+    boundingBox: Cell<IntRect>,
     tillDetach: Till,
 ): SVGElement {
     return createDraggableOverlayElement(
@@ -256,8 +254,8 @@ fun createEntityFrameElement(
 
         val box = createSvgRect(
             svg = svg,
-            size = size,
-            translate = translate,
+            size = boundingBox.map { it.size },
+            translate = boundingBox.map { it.position },
             stroke = stroke,
             style = DynamicStyleDeclaration(
                 pointerEvents = pointerEvents,
