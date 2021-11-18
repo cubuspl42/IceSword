@@ -38,7 +38,7 @@ class MapTillRemovedDynamicSet<A, B>(
             }.toSet()
 
             val removed = change.removed.asSequence().map { a: A ->
-                val link = linksMap!![a]!!
+                val link = linksMap!!.remove(a)!!
 
                 link.marker.markReached()
 
