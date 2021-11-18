@@ -6,6 +6,7 @@ import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
+import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.WapObjectPrototype.ElevatorPrototype
@@ -37,6 +38,8 @@ sealed interface InsertionPrototype {
     object HorizontalElevatorInsertionPrototype : InsertionPrototype
 
     object VerticalElevatorInsertionPrototype : InsertionPrototype
+
+    object PathElevatorInsertionPrototype : InsertionPrototype
 
     object FloorSpikeInsertionPrototype : InsertionPrototype
 
@@ -187,6 +190,25 @@ class HorizontalElevatorInsertionMode(
             maxX = +rangeRadius,
         )
     )
+}
+
+class PathElevatorInsertionMode(
+    private val world: World,
+    private val rezIndex: RezIndex,
+) : WapObjectAlikeInsertionMode(
+    rezIndex = rezIndex,
+    wapObjectPrototype = ElevatorPrototype,
+) {
+    override val insertionPrototype = PathElevatorInsertionPrototype
+
+    override fun insert(insertionWorldPoint: IntVec2) {
+        world.insertEntity(
+            PathElevator(
+                rezIndex = rezIndex,
+                initialPosition = insertionWorldPoint,
+            )
+        )
+    }
 }
 
 class VerticalElevatorInsertionMode(

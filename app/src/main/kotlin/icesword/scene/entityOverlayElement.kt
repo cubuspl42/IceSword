@@ -8,6 +8,7 @@ import icesword.editor.Entity
 import icesword.editor.FloorSpikeRow
 import icesword.editor.HorizontalElevator
 import icesword.editor.KnotMesh
+import icesword.editor.PathElevator
 import icesword.editor.StartPoint
 import icesword.editor.TileEntity
 import icesword.editor.VerticalElevator
@@ -22,27 +23,6 @@ import icesword.scene.createEntityFrameElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
-
-fun createEntityOverlayElement(
-    editor: Editor,
-    svg: SVGSVGElement,
-    viewport: HTMLElement,
-    viewTransform: DynamicTransform,
-    entity: Entity,
-    tillDetach: Till,
-): SVGElement? {
-    return when (entity) {
-        is Elastic -> null
-        is HorizontalElevator -> null
-        is VerticalElevator -> null
-        is Enemy -> null
-        is FloorSpikeRow -> null
-        is KnotMesh -> null
-        is StartPoint -> null
-        is TileEntity -> null
-        is WapObject -> null
-    }
-}
 
 fun createEntityNode(
     editor: Editor,
@@ -61,5 +41,9 @@ fun createEntityNode(
         is StartPoint -> null
         is TileEntity -> null
         is WapObject -> null
+        is PathElevator -> PathElevatorNode(
+            editor = editor,
+            pathElevator = entity,
+        )
     }
 }

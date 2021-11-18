@@ -9,6 +9,7 @@ import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.EntitySelectMode.EntityAreaSelectingMode
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
+import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
@@ -254,6 +255,10 @@ class Editor(
                 rezIndex = rezIndex,
             )
             is FloorSpikeInsertionPrototype -> FloorSpikeInsertionMode(
+                world = world,
+                rezIndex = rezIndex,
+            )
+            is PathElevatorInsertionPrototype -> PathElevatorInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
             )

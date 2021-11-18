@@ -115,6 +115,12 @@ fun editorSideBar(
                     ),
                     createInsertEntityButton(
                         editor = editor,
+                        text = "Elevator (path)",
+                        insertionPrototype = PathElevatorInsertionPrototype,
+                        tillDetach = tillDetach,
+                    ),
+                    createInsertEntityButton(
+                        editor = editor,
                         text = "Floor spike row",
                         insertionPrototype = FloorSpikeInsertionPrototype,
                         tillDetach = tillDetach,

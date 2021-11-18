@@ -80,7 +80,7 @@ sealed class Entity {
         }
     }
 
-    open fun toEntityData(): EnemyData? = null
+    open fun toEntityData(): EntityData? = null
 }
 
 @Serializable

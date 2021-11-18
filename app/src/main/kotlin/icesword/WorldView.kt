@@ -50,7 +50,6 @@ import icesword.scene.createAreaSelectionOverlayElement
 import icesword.scene.createBackFoilOverlayElement
 import icesword.scene.createElasticOverlayElement
 import icesword.scene.createEntityNode
-import icesword.scene.createEntityOverlayElement
 import icesword.scene.createHorizontalElevatorOverlayElement
 import icesword.scene.createFloorSpikeRowOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
@@ -348,16 +347,6 @@ fun worldView(
                                             tillDetach = tillRemoved,
                                         )
                                     },
-                                    world.entities.mapTillRemoved(tillAbort = tillDetach) { entity, tillRemoved ->
-                                        createEntityOverlayElement(
-                                            editor = editor,
-                                            svg = svg,
-                                            viewport = this,
-                                            viewTransform = dynamicViewTransform,
-                                            entity = entity,
-                                            tillDetach = tillRemoved,
-                                        )
-                                    }.filterNotNull(),
                                     DynamicSet.ofSingle(
                                         editor.entitySelectMode.switchMapNotNull {
                                             it.areaSelectingMode.mapNotNull { areaSelectingMode ->
