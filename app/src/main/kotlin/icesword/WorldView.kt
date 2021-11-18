@@ -323,7 +323,7 @@ fun worldView(
                                             editor = editor,
                                             svg = svg,
                                             viewport = this,
-                                            viewTransform = viewTransform,
+                                            viewTransform = dynamicViewTransform,
                                             elevator = elevator,
                                             tillDetach = tillRemoved,
                                         )
@@ -333,7 +333,7 @@ fun worldView(
                                             editor = editor,
                                             svg = svg,
                                             viewport = this,
-                                            viewTransform = viewTransform,
+                                            viewTransform = dynamicViewTransform,
                                             elevator = elevator,
                                             tillDetach = tillRemoved,
                                         )

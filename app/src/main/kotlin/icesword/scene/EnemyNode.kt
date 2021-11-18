@@ -3,6 +3,9 @@ package icesword.scene
 import TextureBank
 import icesword.editor.Editor
 import icesword.editor.Enemy
+import icesword.frp.DynamicSet
+import icesword.geometry.Transform
+import icesword.html.createSvgGroup
 import org.w3c.dom.svg.SVGElement
 
 class EnemyNode(
@@ -18,16 +21,34 @@ class EnemyNode(
 
     override fun buildOverlayElement(
         context: HybridNode.OverlayBuildContext,
-    ): SVGElement {
+    ): SVGElement = context.run {
         val boundingBox = enemy.wapSprite.boundingBox
 
-        return createEntityFrameElement(
+        val movementRangeOverlay =
+            createHorizontalMovementRangeOverlay(
+                svg = svg,
+                viewport = viewport,
+                viewTransform = viewTransform,
+                entityMovementRange = enemy,
+                tillDetach = tillDetach,
+            )
+
+        val frame = createEntityFrameElement(
             editor = editor,
-            svg = context.svg,
-            outer = context.viewport,
+            svg = svg,
+            outer = viewport,
             entity = enemy,
-            boundingBox = context.viewTransform.transform(boundingBox),
-            tillDetach = context.tillDetach,
+            boundingBox = viewTransform.transform(boundingBox),
+            tillDetach = tillDetach,
+        )
+
+        createSvgGroup(
+            svg = svg,
+            children = DynamicSet.of(setOf(
+                movementRangeOverlay,
+                frame,
+            )),
+            tillDetach = tillDetach,
         )
     }
 }

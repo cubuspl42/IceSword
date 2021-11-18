@@ -30,7 +30,7 @@ fun createHorizontalElevatorOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,
-    viewTransform: Cell<IntVec2>,
+    viewTransform: DynamicTransform,
     elevator: HorizontalElevator,
     tillDetach: Till,
 ): SVGElement = createElevatorOverlayElement(
@@ -39,9 +39,13 @@ fun createHorizontalElevatorOverlayElement(
     viewport = viewport,
     viewTransform = viewTransform,
     elevator = elevator,
-    movementRangeOverlayRotation = Transform.identity,
-    handleCursor = Cursor.ewResize,
-    extractInputCoord = { it.x },
+    movementRangeOverlay = createHorizontalMovementRangeOverlay(
+        svg = svg,
+        viewport = viewport,
+        viewTransform = viewTransform,
+        entityMovementRange = elevator,
+        tillDetach = tillDetach,
+    ),
     tillDetach = tillDetach,
 )
 
@@ -49,7 +53,7 @@ fun createVerticalElevatorOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,
-    viewTransform: Cell<IntVec2>,
+    viewTransform: DynamicTransform,
     elevator: VerticalElevator,
     tillDetach: Till,
 ): SVGElement = createElevatorOverlayElement(
@@ -58,9 +62,13 @@ fun createVerticalElevatorOverlayElement(
     viewport = viewport,
     viewTransform = viewTransform,
     elevator = elevator,
-    movementRangeOverlayRotation = Transform.rotate(PI / 2),
-    handleCursor = Cursor.nsResize,
-    extractInputCoord = { it.y },
+    movementRangeOverlay = createVerticalMovementRangeOverlay(
+        svg = svg,
+        viewport = viewport,
+        dynamicViewTransform = viewTransform,
+        entityMovementRange = elevator,
+        tillDetach = tillDetach,
+    ),
     tillDetach = tillDetach,
 )
 
@@ -68,16 +76,12 @@ private fun createElevatorOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,
-    viewTransform: Cell<IntVec2>,
+    viewTransform: DynamicTransform,
     elevator: Elevator<*>,
-    extractInputCoord: (IntVec2) -> Int,
-    movementRangeOverlayRotation: Transform,
-    handleCursor: Cursor,
+    movementRangeOverlay: SVGElement,
     tillDetach: Till,
 ): SVGElement {
-    val dynamicViewTransform = DynamicTransform(
-        transform = viewTransform.map { Transform.translate(it) },
-    )
+
 
     val boundingBox = elevator.wapSprite.boundingBox
 
@@ -86,20 +90,10 @@ private fun createElevatorOverlayElement(
         svg = svg,
         outer = viewport,
         entity = elevator,
-        boundingBox = dynamicViewTransform.transform(boundingBox),
+        boundingBox = viewTransform.transform(boundingBox),
         tillDetach = tillDetach,
     )
 
-    val movementRangeOverlay = createMovementRangeOverlay(
-        svg = svg,
-        viewport = viewport,
-        dynamicViewTransform = dynamicViewTransform,
-        entityMovementRange = elevator,
-        rotation = movementRangeOverlayRotation,
-        handleCursor = handleCursor,
-        extractInputCoord = extractInputCoord,
-        tillDetach = tillDetach,
-    )
 
     val group = createSvgGroup(
         svg = svg,
@@ -113,7 +107,41 @@ private fun createElevatorOverlayElement(
     return group
 }
 
-fun createMovementRangeOverlay(
+fun createHorizontalMovementRangeOverlay(
+    svg: SVGSVGElement,
+    viewport: HTMLElement,
+    viewTransform: DynamicTransform,
+    entityMovementRange: EntityMovementRange<*>,
+    tillDetach: Till,
+): SVGElement = createMovementRangeOverlay(
+    svg = svg,
+    viewport = viewport,
+    dynamicViewTransform = viewTransform,
+    entityMovementRange = entityMovementRange,
+    rotation = Transform.identity,
+    handleCursor = Cursor.ewResize,
+    extractInputCoord = { it.x },
+    tillDetach = tillDetach,
+)
+
+fun createVerticalMovementRangeOverlay(
+    svg: SVGSVGElement,
+    viewport: HTMLElement,
+    dynamicViewTransform: DynamicTransform,
+    entityMovementRange: EntityMovementRange<*>,
+    tillDetach: Till,
+): SVGElement = createMovementRangeOverlay(
+    svg = svg,
+    viewport = viewport,
+    dynamicViewTransform = dynamicViewTransform,
+    entityMovementRange = entityMovementRange,
+    rotation = Transform.rotate(PI / 2),
+    handleCursor = Cursor.nsResize,
+    extractInputCoord = { it.y },
+    tillDetach = tillDetach,
+)
+
+private fun createMovementRangeOverlay(
     svg: SVGSVGElement,
     viewport: HTMLElement,
     dynamicViewTransform: DynamicTransform,
