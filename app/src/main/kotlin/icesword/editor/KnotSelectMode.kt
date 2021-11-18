@@ -3,7 +3,6 @@ package icesword.editor
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.MutCell
-import icesword.frp.MutableDynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.filterDynamic
@@ -59,6 +58,24 @@ class KnotSelectMode(
 
     fun removeSelectedKnots() {
         knotMesh.removeKnots(selectedKnots.sample())
+    }
+
+    fun extractKnotMesh() {
+        val knotsGlobalCoords = selectedKnots.sample()
+
+        knotsGlobalCoords.firstOrNull()?.let { tileOffset ->
+            val knotsLocalCoords = knotsGlobalCoords.map { it - tileOffset }.toSet()
+
+            world.insertKnotMesh(
+                knotMesh = KnotMesh(
+                    knotPrototype = knotMesh.knotPrototype,
+                    initialTileOffset = tileOffset,
+                    initialLocalKnots = knotsLocalCoords,
+                )
+            )
+
+            knotMesh.removeKnots(globalKnotCoords = knotsGlobalCoords)
+        }
     }
 
     inner class KnotAreaSelectingMode(

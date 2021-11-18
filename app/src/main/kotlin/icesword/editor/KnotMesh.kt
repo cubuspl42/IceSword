@@ -104,7 +104,7 @@ fun knotsInArea(worldArea: IntRect): List<IntVec2> =
     tilesOverlappingArea(worldArea.translate(IntVec2(-32, -32)))
 
 class KnotMesh(
-    private val knotPrototype: KnotPrototype,
+    val knotPrototype: KnotPrototype,
     initialTileOffset: IntVec2,
     initialLocalKnots: Set<IntVec2>,
 ) :

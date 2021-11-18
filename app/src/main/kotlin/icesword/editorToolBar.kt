@@ -142,7 +142,14 @@ fun createContextualButtonsRow(editorMode: EditorMode): HTMLElement? =
                             editorMode.removeSelectedKnots()
                         },
                         tillDetach = tillDetach,
-                    )
+                    ),
+                    createButton(
+                        text = "Extract",
+                        onPressed = {
+                            editorMode.extractKnotMesh()
+                        },
+                        tillDetach = tillDetach,
+                    ),
                 ),
                 tillDetach = tillDetach,
             )
