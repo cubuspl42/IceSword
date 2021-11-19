@@ -20,7 +20,6 @@ import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
-import kotlinx.css.ins
 
 sealed interface InsertionPrototype {
     value class ElasticInsertionPrototype(
@@ -102,7 +101,7 @@ abstract class WapObjectAlikeInsertionMode(
 
     val wapObjectPreview: Cell<WapSprite?> =
         _placementWorldPointSlot.linkedCell.mapNotNull { placementPosition ->
-            WapSprite(
+            WapSprite.fromImageSet(
                 rezIndex = rezIndex,
                 imageSetId = wapObjectPrototype.imageSetId,
                 position = placementPosition,

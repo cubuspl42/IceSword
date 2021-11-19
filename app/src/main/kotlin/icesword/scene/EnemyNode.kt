@@ -4,7 +4,6 @@ import TextureBank
 import icesword.editor.Editor
 import icesword.editor.Enemy
 import icesword.frp.DynamicSet
-import icesword.geometry.Transform
 import icesword.html.createSvgGroup
 import org.w3c.dom.svg.SVGElement
 
@@ -14,7 +13,7 @@ class EnemyNode(
 ) : HybridNode {
     override fun buildCanvasNode(
         textureBank: TextureBank,
-    ): Node = WapSpriteNode(
+    ): CanvasNode = WapSpriteNode(
         textureBank = textureBank,
         wapSprite = enemy.wapSprite,
     )

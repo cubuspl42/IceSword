@@ -25,7 +25,7 @@ import org.w3c.dom.svg.SVGSVGElement
 class StartPointUi(
     private val viewTransform: Cell<IntVec2>,
     private val startPoint: StartPoint,
-) : Node {
+) : CanvasNode {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
         val viewTransform = this.viewTransform.sample()
 

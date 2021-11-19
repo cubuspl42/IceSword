@@ -274,6 +274,21 @@ fun createWrapper(
         )
     }
 
+fun createSvgSwitch(
+    child: Cell<SVGElement?>,
+    tillDetach: Till,
+): SVGElement {
+    val group = document.createElementNS("http://www.w3.org/2000/svg", "g") as SVGGElement
+
+    linkSvgChildren(
+        element = group,
+        children = DynamicSet.ofSingle(child),
+        till = tillDetach,
+    )
+
+    return group
+}
+
 fun createColumn(
     tagName: String = "div",
     style: DynamicStyleDeclaration = DynamicStyleDeclaration(),

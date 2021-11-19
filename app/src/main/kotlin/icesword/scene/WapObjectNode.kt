@@ -5,15 +5,12 @@ import icesword.editor.Editor
 import icesword.editor.Entity
 import icesword.editor.WapObject
 import icesword.editor.WapSprite
-import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
-import icesword.frp.map
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
-import icesword.geometry.IntVec2
 import icesword.scene.HybridNode.OverlayBuildContext
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
@@ -24,7 +21,7 @@ class WapSpriteNode(
     textureBank: TextureBank,
     private val wapSprite: WapSprite,
     private val alpha: Double = 1.0,
-) : Node {
+) : CanvasNode {
     private val texture = textureBank.getImageTexture(
         pidImagePath = wapSprite.imageMetadata.pidImagePath,
     )!!
@@ -52,7 +49,7 @@ class WapSpriteNode(
 class WapSpriteHybridNode(
     private val wapSprite: WapSprite,
 ) : HybridNode {
-    override fun buildCanvasNode(textureBank: TextureBank): Node =
+    override fun buildCanvasNode(textureBank: TextureBank): CanvasNode =
         WapSpriteNode(
             textureBank = textureBank,
             wapSprite = wapSprite,

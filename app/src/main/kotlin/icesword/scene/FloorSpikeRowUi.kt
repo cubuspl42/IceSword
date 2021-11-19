@@ -21,7 +21,7 @@ import org.w3c.dom.svg.SVGSVGElement
 class FloorSpikeRowNode(
     textureBank: TextureBank,
     private val floorSpikeRow: FloorSpikeRow,
-) : Node {
+) : CanvasNode {
     private val spikeTexture = textureBank.getImageTexture(
         imageMetadata = floorSpikeRow.spikeImageMetadata,
     )!!

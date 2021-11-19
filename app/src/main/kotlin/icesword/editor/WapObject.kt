@@ -239,7 +239,7 @@ class WapObject(
             )
     }
 
-    val sprite = WapSprite(
+    val sprite = WapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = wapObjectPrototype.imageSetId,
         position = position,

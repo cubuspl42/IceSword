@@ -12,14 +12,27 @@ import icesword.geometry.IntVec2
 import kotlinx.serialization.UseSerializers
 
 class WapSprite(
-    rezIndex: RezIndex,
-    imageSetId: ImageSetId,
+    val imageMetadata: ImageMetadata,
     position: Cell<IntVec2>,
 ) {
-    val imageMetadata = rezIndex.getImageMetadata(
-        imageSetId = imageSetId,
-        i = -1,
-    )!!
+    companion object {
+        fun fromImageSet(
+            rezIndex: RezIndex,
+            imageSetId: ImageSetId,
+            position: Cell<IntVec2>,
+        ): WapSprite {
+            val imageMetadata = rezIndex.getImageMetadata(
+                imageSetId = imageSetId,
+                i = -1,
+            )!!
+
+            return WapSprite(
+                imageMetadata = imageMetadata,
+                position = position,
+            )
+        }
+    }
+
 
     val boundingBox: Cell<IntRect> =
         position.map {

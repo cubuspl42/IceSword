@@ -28,7 +28,7 @@ class KnotMeshUi private constructor(
     private val isCovered: Cell<Boolean>,
     private val knotsInSelectionArea: DynamicSet<IntVec2>,
     private val selectedKnots: DynamicSet<IntVec2>,
-) : Node {
+) : CanvasNode {
     constructor(
         editor: Editor,
         viewTransform: Cell<IntVec2>,

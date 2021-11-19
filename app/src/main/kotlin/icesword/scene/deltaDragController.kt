@@ -21,7 +21,7 @@ fun setupDeltaDragController(
         tillStop: Till,
     ) -> Unit,
 ) {
-    val reverseTransform = viewTransform.reversed
+    val reverseTransform = viewTransform.inversed
 
     element.onMouseDrag(
         button = MouseButton.Primary,

@@ -41,7 +41,7 @@ class Tileset(
     val tileTextures: Map<Int, Texture>,
 )
 
-interface Node {
+interface CanvasNode {
     fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect)
 
     val onDirty: Stream<Unit>
@@ -57,7 +57,7 @@ interface HybridNode {
 
     fun buildCanvasNode(
         textureBank: TextureBank,
-    ): Node
+    ): CanvasNode
 
     fun buildOverlayElement(
         context: OverlayBuildContext,
@@ -70,7 +70,7 @@ class Layer(
     textureBank: TextureBank,
     private val transform: Cell<IntVec2>,
     private val viewTransform: DynamicTransform,
-    nodes: DynamicSet<Node>,
+    nodes: DynamicSet<CanvasNode>,
     private val buildOverlayElements: BuildOverlayElements? = null,
     private val hybridNodes: DynamicSet<HybridNode> = DynamicSet.empty(),
     tillDetach: Till,

@@ -22,7 +22,6 @@ import icesword.frp.reactTill
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.IntRect
-import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileRect
 import kotlinx.css.Cursor
@@ -38,7 +37,7 @@ class ElasticUi private constructor(
     private val viewTransform: Cell<IntVec2>,
     private val elastic: Elastic,
     private val isSelected: Cell<Boolean>,
-) : Node {
+) : CanvasNode {
     constructor(
         editor: Editor,
         viewTransform: Cell<IntVec2>,

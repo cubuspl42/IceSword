@@ -124,7 +124,7 @@ class DynamicTransform(
         )
     }
 
-    val reversed: DynamicTransform by lazy {
+    val inversed: DynamicTransform by lazy {
         DynamicTransform(
             transform = transform.map { it.inversed },
         )

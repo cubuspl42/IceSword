@@ -7,6 +7,9 @@ import icesword.editor.Editor
 import icesword.editor.Entity
 import icesword.editor.Tool
 import icesword.frp.*
+import icesword.geometry.DynamicTransform
+import icesword.geometry.IntVec2
+import icesword.html.Transform
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 
@@ -57,5 +60,28 @@ class EntityMoveDragController(
             positionDelta = positionDelta,
             tillStop = mouseDrag.tillEnd,
         )
+    }
+}
+
+fun setupMoveController(
+    viewTransform: DynamicTransform,
+    outer: HTMLElement,
+    element: Element,
+    move: (positionDelta: Cell<IntVec2>, till: Till) -> Unit,
+    till: Till,
+) {
+    element.onMouseDrag(
+        button = MouseButton.Primary,
+        outer = outer,
+        filterTarget = true,
+        till = till,
+    ).reactTill(till) { mouseDrag ->
+        val worldPosition = viewTransform.inversed.transform(mouseDrag.position)
+        val initialWorldPosition = worldPosition.sample()
+        val positionDelta = worldPosition.map {
+            (it - initialWorldPosition)
+        }
+
+        move(positionDelta, mouseDrag.tillEnd)
     }
 }

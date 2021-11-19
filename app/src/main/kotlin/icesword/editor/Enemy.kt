@@ -43,7 +43,7 @@ class Enemy(
             initialPosition = initialPosition,
         )
 
-    val wapSprite = WapSprite(
+    val wapSprite = WapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = wapObjectPrototype.imageSetId,
         position = entityPosition.position,

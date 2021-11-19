@@ -5,13 +5,9 @@ package icesword.editor
 import icesword.RezIndex
 import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.frp.Cell
-import icesword.frp.MutCell
-import icesword.frp.Till
 import icesword.frp.map
-import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
-import icesword.wwd.Geometry
 import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.Wwd
 import kotlinx.serialization.UseSerializers
@@ -32,7 +28,7 @@ sealed class Elevator<Range : AxisRange<Range>>(
             initialPosition = initialPosition,
         )
 
-    val wapSprite = WapSprite(
+    val wapSprite = WapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = ElevatorPrototype.imageSetId,
         position = entityPosition.position,

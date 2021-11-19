@@ -12,7 +12,7 @@ import org.w3c.dom.CanvasRenderingContext2D
 class TileLayer(
     val tileset: Tileset,
     val tiles: DynamicView<TilesView>,
-) : Node {
+) : CanvasNode {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
         val tilesView: TilesView = this.tiles.view
 
