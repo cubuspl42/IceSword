@@ -4,12 +4,12 @@ import icesword.frp.*
 import icesword.frp.dynamic_list.DynamicList
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
-import org.w3c.dom.DOMMatrixReadOnly
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGGraphicsElement
+import org.w3c.dom.svg.SVGLength
 import org.w3c.dom.svg.SVGSVGElement
 import kotlin.math.roundToInt
 
@@ -148,6 +148,16 @@ fun linkAttribute(
         } else {
             element.removeAttributeNS(null, attributeName)
         }
+    }
+}
+
+fun linkSvgLength(
+    length: SVGLength,
+    attribute: Cell<Float>,
+    till: Till,
+) {
+    attribute.reactTill(till) {
+        length.value = it
     }
 }
 

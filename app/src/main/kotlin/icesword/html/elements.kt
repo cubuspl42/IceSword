@@ -18,6 +18,7 @@ import kotlinx.css.Color
 import kotlinx.css.Display
 import kotlinx.css.FlexDirection
 import kotlinx.css.LinearDimension
+import kotlinx.css.li
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.Node
@@ -26,6 +27,7 @@ import org.w3c.dom.css.CSSStyleDeclaration
 import org.w3c.dom.svg.SVGCircleElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGGElement
+import org.w3c.dom.svg.SVGLineElement
 import org.w3c.dom.svg.SVGRectElement
 import org.w3c.dom.svg.SVGSVGElement
 
@@ -210,6 +212,51 @@ fun createSvgCircle(
 
     return circle
 }
+
+fun createSvgLine(
+    pointA: Cell<IntVec2>,
+    pointB: Cell<IntVec2>,
+    stroke: Cell<Color>? = null,
+    tillDetach: Till,
+): SVGElement {
+    val line = document.createElementNS("http://www.w3.org/2000/svg", "line") as SVGLineElement
+
+    line.x1.baseVal.value
+
+    linkSvgLength(
+        length = line.x1.baseVal,
+        attribute = pointA.map { it.x.toFloat() },
+        till = tillDetach,
+    )
+
+    linkSvgLength(
+        length = line.y1.baseVal,
+        attribute = pointA.map { it.y.toFloat() },
+        till = tillDetach,
+    )
+
+    linkSvgLength(
+        length = line.x2.baseVal,
+        attribute = pointB.map { it.x.toFloat() },
+        till = tillDetach,
+    )
+
+    linkSvgLength(
+        length = line.y2.baseVal,
+        attribute = pointB.map { it.y.toFloat() },
+        till = tillDetach,
+    )
+
+    linkAttribute(
+        element = line,
+        attributeName = "stroke",
+        attribute = stroke?.map { it.value },
+        till = tillDetach,
+    )
+
+    return line
+}
+
 
 fun createContainer(
     children: DynamicSet<HTMLElement>,

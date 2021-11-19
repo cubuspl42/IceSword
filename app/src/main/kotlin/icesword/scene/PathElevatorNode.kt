@@ -6,12 +6,17 @@ import icesword.editor.EntitySelectMode
 import icesword.editor.PathElevator
 import icesword.editor.PathElevatorStep
 import icesword.frp.Cell.Companion.constant
+import icesword.frp.DynamicSet
+import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.map
 import icesword.html.DynamicStyleDeclaration
+import icesword.html.createSvgGroup
+import icesword.html.createSvgLine
 import icesword.html.createSvgRect
 import icesword.html.createSvgSwitch
 import icesword.ui.setupMoveController
+import kotlinx.css.Color
 import kotlinx.css.Cursor
 import org.w3c.dom.svg.SVGElement
 
@@ -28,7 +33,41 @@ class PathElevatorNode(
             )
         },
     )
-)
+) {
+    override fun buildOverlayElement(
+        context: HybridNode.OverlayBuildContext,
+    ): SVGElement = context.run {
+        val arrows = pathElevator.path.steps.zipWithNext { originStep, targetStep ->
+            createStepArrow(
+                context = context,
+                originStep = originStep,
+                targetStep = targetStep,
+            )
+        }.toSet()
+
+        createSvgGroup(
+            svg = svg,
+            children = DynamicSet.of(
+                setOf(super.buildOverlayElement(context)) + arrows,
+            ),
+            tillDetach = tillDetach,
+        )
+    }
+}
+
+
+private fun createStepArrow(
+    context: HybridNode.OverlayBuildContext,
+    originStep: PathElevatorStep,
+    targetStep: PathElevatorStep,
+): SVGElement = context.run {
+    createSvgLine(
+        pointA = viewTransform.transform(originStep.position),
+        pointB = viewTransform.transform(targetStep.position),
+        stroke = constant(Color.gray),
+        tillDetach = tillDetach,
+    )
+}
 
 class PathElevatorStepNode(
     private val editor: Editor,
@@ -68,6 +107,7 @@ class PathElevatorStepNode(
         )
     }
 }
+
 
 private fun createEditedStepOverlay(
     context: HybridNode.OverlayBuildContext,
