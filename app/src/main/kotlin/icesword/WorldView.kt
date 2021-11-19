@@ -48,6 +48,7 @@ import icesword.scene.TileLayer
 import icesword.scene.WapSpriteNode
 import icesword.scene.createAreaSelectionOverlayElement
 import icesword.scene.createBackFoilOverlayElement
+import icesword.scene.createEditorModeModeNode
 import icesword.scene.createElasticOverlayElement
 import icesword.scene.createEntityNode
 import icesword.scene.createHorizontalElevatorOverlayElement
@@ -229,9 +230,17 @@ fun worldView(
                     )
                 }
             },
-            hybridNodes = world.entities.map {
-                createEntityNode(editor = editor, entity = it)
-            }.filterNotNull(),
+            hybridNodes = DynamicSet.union2(
+                world.entities.mapNotNull {
+                    createEntityNode(editor = editor, entity = it)
+                },
+                DynamicSet.ofSingle(
+                    editor.editorMode.map {
+                        createEditorModeModeNode(editorMode = it)
+                    }
+                )
+            ),
+//            createEditorModeModeNode
             tillDetach = tillDetach,
         )
 

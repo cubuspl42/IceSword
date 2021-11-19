@@ -55,6 +55,12 @@ fun <E, R> DynamicList<E>.map(
     content = this.content.map { it.map(transform) },
 )
 
+fun <E, R : Any> DynamicList<E>.mapNotNull(
+    transform: (element: E) -> R?,
+): DynamicList<R> = ContentDynamicList(
+    content = this.content.map { it.mapNotNull(transform) },
+)
+
 fun <E, R> DynamicList<E>.mergeBy(
     transform: (element: E) -> Stream<R>,
 ): Stream<R> = DynamicList.merge(this.map(transform))

@@ -213,6 +213,37 @@ fun createSvgCircle(
     return circle
 }
 
+fun createSvgCircle(
+    svg: SVGSVGElement,
+    radius: Float,
+    transform: DynamicTransform,
+    stroke: Cell<String>? = null,
+    style: DynamicStyleDeclaration? = null,
+    tillDetach: Till,
+): SVGElement {
+    val circle = document.createElementNS("http://www.w3.org/2000/svg", "circle") as SVGCircleElement
+
+    circle.r.baseVal.value = radius
+
+    linkSvgTransform(
+        svg = svg,
+        element = circle,
+        transform = transform,
+        tillDetach = tillDetach,
+    )
+
+    style?.linkTo(circle.style, tillDetach)
+
+    linkAttribute(
+        element = circle,
+        attributeName = "stroke",
+        attribute = stroke,
+        till = tillDetach,
+    )
+
+    return circle
+}
+
 fun createSvgLine(
     pointA: Cell<IntVec2>,
     pointB: Cell<IntVec2>,

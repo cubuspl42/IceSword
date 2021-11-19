@@ -95,6 +95,15 @@ class Editor(
         )
     }
 
+    private fun buildEditPathElevatorMode(
+        pathElevator: PathElevator,
+    ) = object : Tilled<EditPathElevatorMode> {
+        override fun build(till: Till) = EditPathElevatorMode(
+            editor = this@Editor,
+            pathElevator = pathElevator,
+            tillExit = till,
+        )
+    }
 
     private val _editorMode = MutCell<Tilled<EditorMode>>(
         initialValue = buildSelectMode(),
@@ -112,6 +121,14 @@ class Editor(
         (selectedEntity.sample() as? KnotMesh)?.let { selectedKnotMesh ->
             enterModeTilled(buildKnotSelectMode(
                 knotMesh = selectedKnotMesh,
+            ))
+        }
+    }
+
+    fun enterEditPathElevatorMode() {
+        (selectedEntity.sample() as? PathElevator)?.let { selectedPathElevator ->
+            enterModeTilled(buildEditPathElevatorMode(
+                pathElevator = selectedPathElevator,
             ))
         }
     }

@@ -25,6 +25,8 @@ class MapDynamicSet<A, B>(
 
     override fun onStart() {
         subscription = source.changes.subscribe { change ->
+            // FIXME: This doesn't handle the case when two source elements
+            //        are mapped to the same element
             val mappedChange = change.map(transform)
             mappedChange.applyTo(mutableContent!!)
             notifyListeners(mappedChange)

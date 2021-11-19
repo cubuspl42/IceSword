@@ -58,7 +58,11 @@ fun linkNodeChildren(
         }
 
         change.removed.forEach { child ->
-            element.removeChild(child)
+            try {
+                element.removeChild(child)
+            } catch (e: Throwable) {
+                console.error("Failed to remove DOM node", element, change.removed.toTypedArray())
+            }
         }
     }
 

@@ -46,18 +46,6 @@ class WapSpriteNode(
         wapSprite.boundingBox.values().units()
 }
 
-class WapSpriteHybridNode(
-    private val wapSprite: WapSprite,
-) : HybridNode {
-    override fun buildCanvasNode(textureBank: TextureBank): CanvasNode =
-        WapSpriteNode(
-            textureBank = textureBank,
-            wapSprite = wapSprite,
-        )
-
-    override fun buildOverlayElement(context: OverlayBuildContext): SVGElement? = null
-}
-
 fun drawWapSprite(
     ctx: CanvasRenderingContext2D,
     texture: Texture,

@@ -43,9 +43,7 @@ class SelectMode<
     tillExit: Till,
 ) : EditorMode {
 
-
     open inner class SelectModeState
-
 
     val state: Cell<SelectModeState> = Stream.follow(
         initialValue = object : Tilled<IdleMode> {

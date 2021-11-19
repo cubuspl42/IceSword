@@ -1,5 +1,6 @@
 package icesword
 
+import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.EditorMode
 import icesword.editor.FloorSpikeRow
@@ -35,6 +36,12 @@ fun createEditorToolBar(
         tillDetach = tillDetach,
     )
 
+    val editPathElevatorButton = createModeButton<EditPathElevatorMode>(
+        editor = editor,
+        enterMode = { editor.enterEditPathElevatorMode() },
+        tillDetach = tillDetach,
+    )
+
     val moveButton = createToolButton(
         editor = editor,
         tool = Tool.MOVE,
@@ -52,6 +59,7 @@ fun createEditorToolBar(
 
         appendChild(selectButton)
         appendChild(knotSelectButton)
+        appendChild(editPathElevatorButton)
         appendChild(moveButton)
         appendChild(knotBrushButton)
     }

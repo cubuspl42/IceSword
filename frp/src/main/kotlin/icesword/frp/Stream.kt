@@ -4,6 +4,12 @@ import frp.cell.CorrelateCell
 import icesword.frp.stream.FollowCell
 
 interface Tilled<out A> {
+    companion object {
+        fun <A> pure(value: A): Tilled<A> = object : Tilled<A> {
+            override fun build(till: Till): A = value
+        }
+    }
+
     fun build(till: Till): A
 }
 

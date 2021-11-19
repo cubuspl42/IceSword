@@ -56,6 +56,17 @@ class PathElevatorStep(
         }
     }
 
+    fun moveTo(
+        globalPosition: Cell<IntVec2>,
+        tillStop: Till,
+    ) {
+        globalPosition.reactTill(tillStop) {
+            if (position.sample() != it) {
+                _relativePosition.set(it - path.position.sample())
+            }
+        }
+    }
+
     val previous: PathElevatorStep? by lazy { path.getPrevious(this) }
 
     val next: PathElevatorStep? by lazy { path.getNext(this) }

@@ -10,6 +10,7 @@ import icesword.frp.DynamicSet
 import icesword.frp.MutCell
 import icesword.frp.Stream
 import icesword.frp.Till
+import icesword.frp.filterNotNull
 import icesword.frp.map
 import icesword.frp.mapNotNull
 import icesword.frp.mapTillRemoved
@@ -47,6 +48,13 @@ interface CanvasNode {
     val onDirty: Stream<Unit>
 }
 
+class NoopCanvasNode : CanvasNode {
+    override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
+    }
+
+    override val onDirty: Stream<Unit> = Stream.never()
+}
+
 interface HybridNode {
     data class OverlayBuildContext(
         val svg: SVGSVGElement,
@@ -57,11 +65,15 @@ interface HybridNode {
 
     fun buildCanvasNode(
         textureBank: TextureBank,
-    ): CanvasNode
+    ): CanvasNode = NoopCanvasNode()
 
     fun buildOverlayElement(
         context: OverlayBuildContext,
-    ): SVGElement?
+    ): SVGElement = createSvgGroup(
+        svg = context.svg,
+        children = DynamicSet.empty(),
+        tillDetach = context.tillDetach
+    )
 }
 
 typealias BuildOverlayElements = (SVGSVGElement) -> DynamicSet<SVGElement>
@@ -170,7 +182,7 @@ class Layer(
         // leaving it to its children. Effectively, it means that children are
         // in the screen space.
         fun buildAdjustingOverlay(): SVGElement {
-            val overlayElements2 = hybridNodes.mapNotNull {
+            val overlayElements2 = hybridNodes.map {
                 it.buildOverlayElement(
                     context = HybridNode.OverlayBuildContext(
                         svg = svg,

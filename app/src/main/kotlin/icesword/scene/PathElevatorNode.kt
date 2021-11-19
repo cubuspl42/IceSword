@@ -1,13 +1,12 @@
 package icesword.scene
 
 import TextureBank
+import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
-import icesword.editor.EntitySelectMode
 import icesword.editor.PathElevator
 import icesword.editor.PathElevatorStep
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
-import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.map
 import icesword.html.DynamicStyleDeclaration
@@ -88,18 +87,20 @@ class PathElevatorStepNode(
 
         createSvgSwitch(
             child = editor.editorMode.map { editorMode ->
-                when (editorMode) {
-                    is EntitySelectMode -> createEntityFrameElement(
+                when {
+                    editorMode is EditPathElevatorMode && editorMode.pathElevator == pathElevator ->
+                        createEditedStepOverlay(
+                            context = context,
+                            editMode = editorMode,
+                            step = step,
+                        )
+                    else -> createEntityFrameElement(
                         editor = editor,
                         svg = svg,
                         outer = viewport,
                         entity = pathElevator,
                         boundingBox = viewTransform.transform(boundingBox),
                         tillDetach = tillDetach,
-                    )
-                    else -> createEditedStepOverlay(
-                        context = context,
-                        step = step,
                     )
                 }
             },
@@ -111,6 +112,7 @@ class PathElevatorStepNode(
 
 private fun createEditedStepOverlay(
     context: HybridNode.OverlayBuildContext,
+    editMode: EditPathElevatorMode,
     step: PathElevatorStep,
 ): SVGElement = context.run {
     val viewRect = viewTransform.transform(step.wapSprite.boundingBox)
@@ -132,7 +134,10 @@ private fun createEditedStepOverlay(
             outer = viewport,
             element = this,
             move = { positionDelta, till ->
-                step.move(
+                val idleMode = editMode.state.sample() as? EditPathElevatorMode.IdleMode
+
+                idleMode?.moveStep(
+                    step = step,
                     positionDelta = positionDelta,
                     tillStop = till,
                 )
