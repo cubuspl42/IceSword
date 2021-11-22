@@ -14,6 +14,8 @@ import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlin.math.absoluteValue
 
@@ -70,6 +72,10 @@ class PathElevatorStep(
         }
     }
 
+    fun toData(): PathElevatorStepData = PathElevatorStepData(
+        relativePosition = relativePosition.sample(),
+    )
+
     val previous: PathElevatorStep? by lazy { path.getPrevious(this) }
 
     val next: PathElevatorStep? by lazy { path.getNext(this) }
@@ -103,12 +109,13 @@ class PathElevatorPath(
         fun create(
             imageMetadata: ImageMetadata,
             position: Cell<IntVec2>,
+            initialStepsConfig: List<PathElevatorStepData>,
         ): PathElevatorPath = looped { path ->
-            val steps = (0 until 8).map {
+            val steps = initialStepsConfig.map { config ->
                 PathElevatorStep(
                     lazyPath = path,
                     imageMetadata = imageMetadata,
-                    initialRelativePosition = IntVec2(64 * it, 0),
+                    initialRelativePosition = config.relativePosition,
                 )
             }
 
@@ -147,9 +154,21 @@ class PathElevatorPath(
 class PathElevator(
     rezIndex: RezIndex,
     initialPosition: IntVec2,
+    initialStepsConfig: List<PathElevatorStepData>,
 ) :
     Entity(),
     WapObjectExportable {
+
+    companion object {
+        fun load(
+            rezIndex: RezIndex,
+            data: PathElevatorData,
+        ): PathElevator = PathElevator(
+            rezIndex = rezIndex,
+            initialPosition = data.position,
+            initialStepsConfig = data.steps,
+        )
+    }
 
     private val elevatorImageMetadata = rezIndex.getImageMetadata(
         imageSetId = ElevatorPrototype.imageSetId,
@@ -164,8 +183,13 @@ class PathElevator(
     val path = PathElevatorPath.create(
         imageMetadata = elevatorImageMetadata,
         position = entityPosition.position,
+        initialStepsConfig = initialStepsConfig,
     )
 
+    // TODO: Export
+    // TODO: Add/remove step
+    // TODO: Delays
+    // TODO: Open path
 
     override fun isSelectableIn(area: IntRect): Boolean =
         path.steps.any {
@@ -173,8 +197,26 @@ class PathElevator(
             stepBoundingBox.overlaps(area)
         }
 
-    override fun toEntityData(): EntityData? = null
+    override fun toEntityData(): EntityData {
+        return PathElevatorData(
+            position = position.sample(),
+            steps = path.steps.map { it.toData() },
+        )
+    }
 
     override fun exportWapObject(): Wwd.Object_ =
         ElevatorPrototype.wwdObjectPrototype
 }
+
+@Serializable
+@SerialName("PathElevator")
+data class PathElevatorStepData(
+    val relativePosition: IntVec2,
+)
+
+@Serializable
+@SerialName("PathElevator")
+data class PathElevatorData(
+    val position: IntVec2,
+    val steps: List<PathElevatorStepData>,
+) : EntityData()

@@ -152,7 +152,7 @@ class World(
             val initialEntities = worldData.entities.map {
                 when (it) {
                     is EnemyData -> Enemy.load(rezIndex = rezIndex, data = it)
-                    else -> throw UnsupportedOperationException()
+                    is PathElevatorData -> PathElevator.load(rezIndex = rezIndex, data = it)
                 }
             }.toSet()
 

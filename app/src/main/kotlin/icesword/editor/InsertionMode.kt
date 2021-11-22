@@ -205,6 +205,11 @@ class PathElevatorInsertionMode(
             PathElevator(
                 rezIndex = rezIndex,
                 initialPosition = insertionWorldPoint,
+                initialStepsConfig = (0 until 8).map {
+                    PathElevatorStepData(
+                        relativePosition = IntVec2(64 * it, 0),
+                    )
+                },
             )
         )
     }
