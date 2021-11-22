@@ -180,13 +180,13 @@ class Layer(
         // leaving it to its children. Effectively, it means that children are
         // in the screen space.
         fun buildAdjustingOverlay(): SVGElement {
-            val overlayElements2 = hybridNodes.map {
+            val overlayElements2 = hybridNodes.mapTillRemoved(tillDetach) { it, tillRemoved ->
                 it.buildOverlayElement(
                     context = HybridNode.OverlayBuildContext(
                         svg = svg,
                         viewport = viewport,
                         viewTransform = viewTransform,
-                        tillDetach = tillDetach,
+                        tillDetach = tillRemoved,
                     )
                 )
             }
@@ -195,7 +195,9 @@ class Layer(
                 svg = svg,
                 children = overlayElements2,
                 tillDetach = tillDetach,
-            )
+            ).apply {
+                classList.add("adjustingOverlay")
+            }
         }
 
         return createSvgGroup(

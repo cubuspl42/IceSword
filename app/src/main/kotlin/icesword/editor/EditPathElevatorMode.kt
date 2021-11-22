@@ -104,7 +104,15 @@ class EditPathElevatorMode(
         }
 
         fun removeSelectedStep() {
-            TODO("Not yet implemented")
+            selectedStep.sample()?.let { selectedStep ->
+                pathElevator.path.removeStep(selectedStep)
+            }
+        }
+
+        fun insertStep() {
+            selectedStep.sample()?.let { selectedStep ->
+                pathElevator.path.insertStepAfter(selectedStep)
+            }
         }
     }
 
@@ -119,7 +127,6 @@ class EditPathElevatorMode(
 
         init {
             tillStop.subscribe {
-                println("_enterIdleMode.send(Tilled.pure(IdleMode()))")
                 _enterIdleMode.send(Tilled.pure(IdleMode()))
             }
         }

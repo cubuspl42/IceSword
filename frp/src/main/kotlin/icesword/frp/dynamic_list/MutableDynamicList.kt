@@ -27,4 +27,17 @@ class MutableDynamicList<A>(
     fun remove(element: A) {
         mutableContent.update { content -> content.filter { it != element } }
     }
+
+    fun removeAt(index: Int) {
+        mutableContent.update { content -> content.filterIndexed { i, _ -> i != index } }
+    }
+
+    fun insert(index: Int, element: A) {
+        mutableContent.update {
+            it.flatMapIndexed { i: Int, a: A ->
+                if (i == index) listOf(element, a)
+                else listOf(a)
+            }
+        }
+    }
 }

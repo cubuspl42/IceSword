@@ -61,7 +61,7 @@ fun linkNodeChildren(
             try {
                 element.removeChild(child)
             } catch (e: Throwable) {
-                console.error("Failed to remove DOM node", element, change.removed.toTypedArray())
+                console.error("Failed to remove DOM node", e, element, child)
             }
         }
     }

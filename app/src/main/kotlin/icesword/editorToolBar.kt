@@ -194,6 +194,14 @@ fun createEditPathElevatorModeButtonsRow(
             },
             tillDetach = tillDetach,
         ),
+        createButton(
+            text = "Insert step",
+            onPressed = {
+                val idleMode = editMode.state.sample() as? EditPathElevatorMode.IdleMode
+                idleMode?.insertStep()
+            },
+            tillDetach = tillDetach,
+        ),
     ),
     tillDetach = tillDetach,
 )

@@ -22,13 +22,14 @@ class EditPathElevatorModeNode(
         createSvgSwitch(
             child = editMode.state.map { editModeState ->
                 if (editModeState is EditPathElevatorMode.MoveStepMode)
-                    createSvgCircle(
-                        svg = svg,
-                        radius = 32.0f,
-                        translate = viewTransform.transform(editModeState.targetPosition),
-                        stroke = Cell.constant("blue"),
-                        tillDetach = tillDetach,
-                    )
+                    null
+//                    createSvgCircle(
+//                        svg = svg,
+//                        radius = 32.0f,
+//                        translate = viewTransform.transform(editModeState.targetPosition),
+//                        stroke = Cell.constant("blue"),
+//                        tillDetach = tillDetach,
+//                    )
                 else null
             },
             tillDetach = tillDetach,

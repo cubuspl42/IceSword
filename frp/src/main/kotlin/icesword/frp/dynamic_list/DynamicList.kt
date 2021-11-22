@@ -7,6 +7,9 @@ import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.divertMap
 import icesword.frp.map
+import icesword.frp.mapTillNext
+import icesword.frp.units
+import icesword.frp.values
 
 interface DynamicList<out E> {
     companion object {
@@ -30,6 +33,9 @@ class ContentDynamicList<out E>(
     override val volatileContentView: List<E>
         get() = content.sample()
 }
+
+fun <E> DynamicList<E>.changesUnits(): Stream<Unit> =
+    content.values().units()
 
 val <E> DynamicList<E>.size: Cell<Int>
     get() = content.map { it.size }
@@ -95,9 +101,9 @@ fun <A, R> DynamicList<A>.mapTillRemoved(
     tillAbort: Till,
     transform: (element: A, tillRemoved: Till) -> R,
 ): DynamicList<R> = ContentDynamicList(
-    content = this.content.map { content ->
-        content.map { transform(it, tillAbort) }
-    }
+    content = this.content.mapTillNext(tillAbort) { content, tillNext ->
+        content.map { transform(it, tillNext) }
+    },
 )
 
 fun <E, R> DynamicList<E>.zipWithNext(

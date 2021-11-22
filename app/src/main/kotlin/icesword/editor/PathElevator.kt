@@ -63,7 +63,7 @@ class PathElevatorStep(
 
     private val _relativePosition = MutCell(initialRelativePosition)
 
-    private val relativePosition: Cell<IntVec2> = _relativePosition
+    val relativePosition: Cell<IntVec2> = _relativePosition
 
     val position by lazy {
         Cell.map2(
@@ -177,6 +177,7 @@ class PathElevatorEdge(
 }
 
 class PathElevatorPath(
+    private val imageMetadata: ImageMetadata,
     val position: Cell<IntVec2>,
     initialSteps: List<PathElevatorStep>,
 ) {
@@ -195,6 +196,7 @@ class PathElevatorPath(
             }
 
             PathElevatorPath(
+                imageMetadata = imageMetadata,
                 position = position,
                 initialSteps = steps,
             )
@@ -205,6 +207,29 @@ class PathElevatorPath(
 
     val steps: DynamicList<PathElevatorStep>
         get() = _steps
+
+    fun removeStep(step: PathElevatorStep) {
+        _steps.remove(step)
+    }
+
+    fun insertStepAfter(step: PathElevatorStep) {
+        val stepIndex = steps.volatileContentView.indexOf(step)
+
+        step.next.sample()?.let { nextStep ->
+            val stepPosition = step.relativePosition.sample()
+            val nextStepPosition = nextStep.relativePosition.sample()
+
+            val newStepPosition = stepPosition + (nextStepPosition - stepPosition) / 2
+
+            val newStep = PathElevatorStep(
+                lazyPath = lazyOf(this),
+                imageMetadata = imageMetadata,
+                initialRelativePosition = newStepPosition,
+            )
+
+            _steps.insert(stepIndex + 1, newStep)
+        }
+    }
 
     val edges: DynamicList<PathElevatorEdge> by lazy {
         steps.zipWithNext { startStep, endStep ->
@@ -267,9 +292,9 @@ class PathElevator(
         initialStepsConfig = initialStepsConfig,
     )
 
-    // TODO: Add/remove step
     // TODO: Delays
     // TODO: Open path
+    // TODO: Action limit validation (limit is 8 actions)
 
     override fun isSelectableIn(area: IntRect): Boolean =
         path.steps.volatileContentView.any {
