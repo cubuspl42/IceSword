@@ -192,6 +192,20 @@ sealed class WapObjectPrototype {
         )
     }
 
+    @Serializable
+    object PathElevatorPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_ELEVATOR1",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("PathElevator"),
+            imageSet = encode("LEVEL_ELEVATOR1"),
+        )
+    }
+
     // TODO: Support FLOORSPIKES2 (underground spikes)
     @Serializable
     object FloorSpikePrototype : WapObjectPrototype() {

@@ -13,11 +13,35 @@ import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
+import icesword.wwd.Geometry
 import icesword.wwd.Wwd
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlin.math.absoluteValue
+
+enum class PathElevatorDirection {
+    DownLeft,
+    Down,
+    DownRight,
+    Left,
+    None,
+    Right,
+    UpLeft,
+    Up,
+    UpRight;
+
+    val code: Int
+        get() = ordinal + 1
+}
+
+data class PathElevatorMoveAction(
+    val direction: PathElevatorDirection,
+    // Distance in pixels. For direction Right, it describes the  (distance, 0)
+    // movement delta, for Left: (-distance, 0), for DownRight:
+    // (distance, distance), etc.
+    val distance: Int,
+)
 
 class PathElevatorStep(
     private val lazyPath: Lazy<PathElevatorPath>,
@@ -96,9 +120,50 @@ class PathElevatorEdge(
         endPosition - startPosition
     }
 
-    val isValid = movementDelta.map {
-        it.x.absoluteValue == it.y.absoluteValue || it.x == 0 || it.y == 0
+    val moveAction: Cell<PathElevatorMoveAction?> = movementDelta.map {
+        when {
+            it.x < 0 && it.y == -it.x -> PathElevatorMoveAction(
+                direction = PathElevatorDirection.DownLeft,
+                distance = it.x.absoluteValue,
+            )
+            it.x == 0 && it.y > 0 -> PathElevatorMoveAction(
+                direction = PathElevatorDirection.Down,
+                distance = it.y.absoluteValue,
+            )
+            it.x == it.y && it.y > 0 -> PathElevatorMoveAction(
+                direction = PathElevatorDirection.DownRight,
+                distance = it.x.absoluteValue,
+            )
+            it.x < 0 && it.y == 0 -> PathElevatorMoveAction(
+                direction = PathElevatorDirection.Left,
+                distance = it.x.absoluteValue,
+            )
+            // TODO: Support delay properly
+            it.x == 0 && it.y == 0 -> PathElevatorMoveAction(
+                direction = PathElevatorDirection.None,
+                distance = 0,
+            )
+            it.x > 0 && it.y == 0 -> PathElevatorMoveAction(
+                direction = PathElevatorDirection.Right,
+                distance = it.x.absoluteValue,
+            )
+            it.x < 0 && it.y == it.x -> PathElevatorMoveAction(
+                direction = PathElevatorDirection.UpLeft,
+                distance = it.x.absoluteValue,
+            )
+            it.x == 0 && it.y < 0 -> PathElevatorMoveAction(
+                direction = PathElevatorDirection.Up,
+                distance = it.y.absoluteValue,
+            )
+            it.x > 0 && it.y == -it.x -> PathElevatorMoveAction(
+                direction = PathElevatorDirection.UpRight,
+                distance = it.x.absoluteValue,
+            )
+            else -> null
+        }
     }
+
+    val isValid = moveAction.map { it != null }
 }
 
 class PathElevatorPath(
@@ -186,7 +251,6 @@ class PathElevator(
         initialStepsConfig = initialStepsConfig,
     )
 
-    // TODO: Export
     // TODO: Add/remove step
     // TODO: Delays
     // TODO: Open path
@@ -204,8 +268,42 @@ class PathElevator(
         )
     }
 
-    override fun exportWapObject(): Wwd.Object_ =
-        ElevatorPrototype.wwdObjectPrototype
+    override fun exportWapObject(): Wwd.Object_ {
+        fun encodeActions(
+            moveAction1: PathElevatorMoveAction?,
+            moveAction2: PathElevatorMoveAction?,
+        ): Geometry.Rectangle = Geometry.Rectangle(
+            left = moveAction1?.direction?.code ?: 0,
+            top = moveAction1?.distance ?: 0,
+            right = moveAction2?.direction?.code ?: 0,
+            bottom = moveAction2?.distance ?: 0,
+        )
+
+        val position = path.steps.first().position.sample()
+
+        val moveActions = path.edges.map { it.moveAction.sample() }
+
+        return WapObjectPrototype.PathElevatorPrototype.wwdObjectPrototype.copy(
+            x = position.x,
+            y = position.y,
+            moveRect = encodeActions(
+                moveActions.getOrNull(0),
+                moveActions.getOrNull(1),
+            ),
+            hitRect = encodeActions(
+                moveActions.getOrNull(2),
+                moveActions.getOrNull(3),
+            ),
+            attackRect = encodeActions(
+                moveActions.getOrNull(4),
+                moveActions.getOrNull(5),
+            ),
+            clipRect = encodeActions(
+                moveActions.getOrNull(6),
+                moveActions.getOrNull(7),
+            ),
+        )
+    }
 }
 
 @Serializable
