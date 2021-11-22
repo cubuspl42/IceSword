@@ -177,11 +177,14 @@ private fun createEditedStepOverlay(
 ): SVGElement = context.run {
     val viewRect = viewTransform.transform(step.wapSprite.boundingBox)
 
+    val isStepSelected = editMode.selectedStep.map { it == step }
+
     createSvgRect(
         svg = svg,
         size = viewRect.map { it.size },
         translate = viewRect.map { it.topLeft },
-        stroke = constant("blue"),
+        stroke = isStepSelected.map { if (it) Color.darkBlue else Color.blue },
+        strokeWidth = isStepSelected.map { if (it) 2 else 1 },
         style = DynamicStyleDeclaration(
             cursor = constant(Cursor.move),
         ),

@@ -255,7 +255,7 @@ fun createEntityFrameElement(
             svg = svg,
             size = boundingBox.map { it.size },
             translate = boundingBox.map { it.position },
-            stroke = stroke,
+            strokeString = stroke,
             style = DynamicStyleDeclaration(
                 pointerEvents = pointerEvents,
                 cursor = cursor,

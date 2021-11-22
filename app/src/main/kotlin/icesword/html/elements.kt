@@ -5,7 +5,6 @@ import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
-import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
 import icesword.frp.reactIndefinitely
@@ -139,7 +138,9 @@ fun createSvgRect(
     translate: Cell<IntVec2>,
     fill: Cell<Color>? = null,
     fillOpacity: Cell<Double>? = null,
-    stroke: Cell<String>? = null,
+    strokeString: Cell<String>? = null,
+    stroke: Cell<Color>? = null,
+    strokeWidth: Cell<Int>? = null,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
 ): SVGElement {
@@ -176,7 +177,21 @@ fun createSvgRect(
     linkAttribute(
         element = rect,
         attributeName = "stroke",
-        attribute = stroke,
+        attribute = strokeString,
+        till = tillDetach,
+    )
+
+    linkAttribute(
+        element = rect,
+        attributeName = "stroke",
+        attribute = stroke?.map { it.value },
+        till = tillDetach,
+    )
+
+    linkAttribute(
+        element = rect,
+        attributeName = "stroke-width",
+        attribute = strokeWidth?.map { it.toString() },
         till = tillDetach,
     )
 

@@ -1,6 +1,7 @@
 package icesword.editor
 
 import icesword.frp.Cell
+import icesword.frp.MutCell
 import icesword.frp.Stream
 import icesword.frp.StreamSink
 import icesword.frp.Till
@@ -18,12 +19,11 @@ class EditPathElevatorMode(
     val pathElevator: PathElevator,
     tillExit: Till,
 ) : EditorMode {
-
     sealed interface State {
         val enterNextState: Stream<Tilled<State>>
     }
 
-    class IdleMode : State {
+    inner class IdleMode : State {
         private val _enterMoveStepMode = StreamSink<Tilled<MoveStepMode>>()
 
         override val enterNextState: Stream<Tilled<MoveStepMode>>
@@ -69,6 +69,8 @@ class EditPathElevatorMode(
                 tp1 ?: tp2 ?: tp3 ?: tp
             }
 
+            _selectedStep.set(step)
+
             _enterMoveStepMode.send(
                 object : Tilled<MoveStepMode> {
                     override fun build(till: Till): MoveStepMode {
@@ -85,9 +87,13 @@ class EditPathElevatorMode(
                 }
             )
         }
+
+        fun removeSelectedStep() {
+            TODO("Not yet implemented")
+        }
     }
 
-    class MoveStepMode(
+    inner class MoveStepMode(
         val targetPosition: Cell<IntVec2>,
         tillStop: Till,
     ) : State {
@@ -103,6 +109,10 @@ class EditPathElevatorMode(
             }
         }
     }
+
+    private val _selectedStep = MutCell<PathElevatorStep?>(null)
+
+    val selectedStep: Cell<PathElevatorStep?> = _selectedStep
 
     val state: Cell<State> = Stream.follow<State>(
         initialValue = Tilled.pure(IdleMode()),
