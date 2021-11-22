@@ -10,9 +10,7 @@ import icesword.frp.DynamicSet
 import icesword.frp.MutCell
 import icesword.frp.Stream
 import icesword.frp.Till
-import icesword.frp.filterNotNull
 import icesword.frp.map
-import icesword.frp.mapNotNull
 import icesword.frp.mapTillRemoved
 import icesword.frp.reactTill
 import icesword.frp.units

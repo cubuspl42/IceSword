@@ -10,7 +10,10 @@ import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.map
+import icesword.frp.dynamic_list.toSet
 import icesword.frp.map
+import icesword.frp.unionWith
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntLineSeg
 import icesword.geometry.IntVec2
@@ -29,28 +32,26 @@ class PathElevatorNode(
     private val editor: Editor,
     private val pathElevator: PathElevator,
 ) : GroupNode(
-    children = DynamicList.of(
-        pathElevator.path.steps.map {
-            PathElevatorStepNode(
-                editor = editor,
-                pathElevator = pathElevator,
-                step = it,
-            )
-        },
-    )
+    children = pathElevator.path.steps.map {
+        PathElevatorStepNode(
+            editor = editor,
+            pathElevator = pathElevator,
+            step = it,
+        )
+    },
 ) {
     override fun buildOverlayElement(
         context: HybridNode.OverlayBuildContext,
     ): SVGElement = context.run {
+        val elements = DynamicSet.of(setOf(super.buildOverlayElement(context)))
+
         val arrows = pathElevator.path.edges.map { edge ->
             createStepArrow(context = context, edge = edge)
         }.toSet()
 
         createSvgGroup(
             svg = svg,
-            children = DynamicSet.of(
-                setOf(super.buildOverlayElement(context)) + arrows,
-            ),
+            children = elements.unionWith(arrows),
             tillDetach = tillDetach,
         )
     }

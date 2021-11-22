@@ -15,7 +15,7 @@ import icesword.frp.Cell
 import icesword.frp.CellSlot
 import icesword.frp.Stream
 import icesword.frp.Till
-import icesword.frp.mapNotNull
+import icesword.frp.mapNested
 import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -100,7 +100,7 @@ abstract class WapObjectAlikeInsertionMode(
     private val _placementWorldPointSlot = CellSlot<IntVec2>()
 
     val wapObjectPreview: Cell<WapSprite?> =
-        _placementWorldPointSlot.linkedCell.mapNotNull { placementPosition ->
+        _placementWorldPointSlot.linkedCell.mapNested { placementPosition ->
             WapSprite.fromImageSet(
                 rezIndex = rezIndex,
                 imageSetId = wapObjectPrototype.imageSetId,

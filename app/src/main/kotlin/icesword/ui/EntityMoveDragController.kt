@@ -9,7 +9,6 @@ import icesword.editor.Tool
 import icesword.frp.*
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
-import icesword.html.Transform
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 
@@ -39,7 +38,7 @@ class EntityMoveDragController(
                 filterTarget = true,
                 till = till,
             ).reactDynamicNotNullTill(
-                dynamicHandler = controller.mapNotNull { it::handleDrag },
+                dynamicHandler = controller.mapNested { it::handleDrag },
                 till = till,
             )
         }

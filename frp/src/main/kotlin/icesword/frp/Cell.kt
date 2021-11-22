@@ -34,7 +34,7 @@ interface Cell<out A> : Behavior<A> {
     }
 }
 
-data class ValueChange<out A> (
+data class ValueChange<out A>(
     val oldValue: A,
     val newValue: A,
 )
@@ -53,11 +53,20 @@ fun <A> Cell<A>.values(): Stream<A> =
 fun <A, B> Cell<A>.map(f: (A) -> B): Cell<B> =
     CellMap(this, f)
 
-fun <A : Any, B : Any> Cell<A?>.mapNotNull(f: (A) -> B): Cell<B?> =
+fun <A : Any, B> Cell<A?>.mapNested(f: (A) -> B): Cell<B?> =
     CellMap(this) { if (it != null) f(it) else null }
 
 fun <A, B> Cell<A>.switchMap(transform: (A) -> Cell<B>): Cell<B> =
     Cell.switch(map(transform))
+
+fun <A : Any, B> Cell<A?>.switchMapNested(transform: (A) -> Cell<B>?): Cell<B?> =
+    this.mapNested(transform).switch()
+
+fun <A> Cell<Cell<A>>.switch(): Cell<A> =
+    Cell.switch(this)
+
+fun <A : Any> Cell<Cell<A?>?>.switch(): Cell<A?> =
+    Cell.switch(this.map { it ?: Cell.constant(null) })
 
 fun <A, B> Cell<A?>.switchMapNotNull(transform: (A) -> Cell<B>): Cell<B?> =
     this.switchMap {

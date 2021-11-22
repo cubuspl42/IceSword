@@ -14,9 +14,9 @@ import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.contentDynamicView
-import icesword.frp.filterNotNull
 import icesword.frp.hold
 import icesword.frp.map
+import icesword.frp.mapNested
 import icesword.frp.mapNotNull
 import icesword.frp.mapTillRemoved
 import icesword.frp.reactTill
@@ -143,7 +143,7 @@ fun worldView(
 
         val wapObjectPreviewNode =
             editor.wapObjectAlikeInsertionMode.switchMapNotNull { insertionMode ->
-                insertionMode.wapObjectPreview.mapNotNull {
+                insertionMode.wapObjectPreview.mapNested {
                     WapSpriteNode(
                         textureBank = textureBank,
                         wapSprite = it,
@@ -358,7 +358,7 @@ fun worldView(
                                     },
                                     DynamicSet.ofSingle(
                                         editor.entitySelectMode.switchMapNotNull {
-                                            it.areaSelectingMode.mapNotNull { areaSelectingMode ->
+                                            it.areaSelectingMode.mapNested { areaSelectingMode ->
                                                 createAreaSelectionOverlayElement(
                                                     svg = svg,
                                                     viewTransform = viewTransform,
@@ -370,7 +370,7 @@ fun worldView(
                                     ),
                                     DynamicSet.ofSingle(
                                         editor.knotSelectMode.switchMapNotNull {
-                                            it.selectMode.areaSelectingMode.mapNotNull { areaSelectingMode ->
+                                            it.selectMode.areaSelectingMode.mapNested { areaSelectingMode ->
                                                 createAreaSelectionOverlayElement(
                                                     svg = svg,
                                                     viewTransform = viewTransform,

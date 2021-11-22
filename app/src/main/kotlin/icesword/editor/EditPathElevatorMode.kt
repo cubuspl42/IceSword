@@ -7,6 +7,7 @@ import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.map
+import icesword.frp.switchMap
 import icesword.geometry.IntVec2
 import icesword.geometry.Line
 import kotlinx.css.pre
@@ -37,10 +38,11 @@ class EditPathElevatorMode(
             val initialPosition = step.position.sample()
             val targetPosition = positionDelta.map { initialPosition + it }
 
-            val snappedPosition = targetPosition.map { tp ->
-                val prevStep = step.previous
-                val nextStep = step.next
-
+            fun buildSnappedPosition(
+                tp: IntVec2,
+                prevStep: PathElevatorStep?,
+                nextStep: PathElevatorStep?,
+            ): IntVec2 {
                 val tp1 = when {
                     prevStep != null && nextStep != null -> snapToIntersection(
                         p1 = prevStep.position.sample(),
@@ -66,7 +68,20 @@ class EditPathElevatorMode(
                     else -> null
                 }
 
-                tp1 ?: tp2 ?: tp3 ?: tp
+                return tp1 ?: tp2 ?: tp3 ?: tp
+            }
+
+            val snappedPosition = targetPosition.switchMap { tp ->
+                Cell.map2(
+                    step.previous,
+                    step.next,
+                ) { prevStep, nextStep ->
+                    buildSnappedPosition(
+                        tp = tp,
+                        prevStep = prevStep,
+                        nextStep = nextStep,
+                    )
+                }
             }
 
             _selectedStep.set(step)

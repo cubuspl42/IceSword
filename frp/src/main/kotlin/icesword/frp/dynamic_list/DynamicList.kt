@@ -37,11 +37,37 @@ val <E> DynamicList<E>.size: Cell<Int>
 fun <E> DynamicList<E>.sampleContent(): List<E> =
     volatileContentView.toList()
 
+fun <E : Any> DynamicList<E>.first(): Cell<E> =
+    this.content.map { it.first() }
+
+fun <E : Any> DynamicList<E>.last(): Cell<E> =
+    this.content.map { it.last() }
+
 fun <E : Any> DynamicList<E>.firstOrNull(): Cell<E?> =
     this.content.map { it.firstOrNull() }
 
 fun <E : Any> DynamicList<E>.drop(n: Int): DynamicList<E> =
     ContentDynamicList(content = this.content.map { it.drop(n) })
+
+fun <E> DynamicList<E>.indexOf(element: E): Cell<Int?> =
+    content.map { content ->
+        val i = content.indexOf(element)
+        if (i >= 0) i else null
+    }
+
+fun <E> DynamicList<E>.getOrNull(index: Int): Cell<E?> =
+    content.map { content -> content.getOrNull(index) }
+
+fun <E> DynamicList<E>.withAppended(element: Cell<E>): DynamicList<E> =
+    ContentDynamicList(
+        content = Cell.map2(
+            content,
+            element,
+        ) { content, element ->
+            content + element
+
+        },
+    )
 
 fun <E> DynamicList<E>.lastNow(): E =
     volatileContentView.last()
@@ -73,3 +99,17 @@ fun <A, R> DynamicList<A>.mapTillRemoved(
         content.map { transform(it, tillAbort) }
     }
 )
+
+fun <E, R> DynamicList<E>.zipWithNext(
+    transform: (a: E, b: E) -> R,
+): DynamicList<R> =
+    ContentDynamicList(
+        content = this.content.map { content ->
+            content.zipWithNext(transform)
+        }
+    )
+
+fun <E> DynamicList<E>.toSet(): DynamicSet<E> =
+    DynamicSet.diff(
+        content = this.content.map { it.toSet() },
+    )

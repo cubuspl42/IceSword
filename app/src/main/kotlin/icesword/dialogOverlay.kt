@@ -8,7 +8,7 @@ import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
 import icesword.frp.map
-import icesword.frp.mapNotNull
+import icesword.frp.mapNested
 import icesword.frp.reactTillNext
 import kotlinx.css.PointerEvents
 import org.w3c.dom.HTMLElement
@@ -71,7 +71,7 @@ fun createDialogOverlay(
             appendChild(dialog)
         }
 
-    val overlay = dialogOverlay.shownDialog.mapNotNull(::createOverlay)
+    val overlay = dialogOverlay.shownDialog.mapNested(::createOverlay)
 
     val dialogOverlayWrapper = createStyledHtmlElement(
         tagName = "div",

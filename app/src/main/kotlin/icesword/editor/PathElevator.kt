@@ -9,8 +9,18 @@ import icesword.frp.Cell
 import icesword.frp.Loop.Companion.looped
 import icesword.frp.MutCell
 import icesword.frp.Till
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.MutableDynamicList
+import icesword.frp.dynamic_list.withAppended
+import icesword.frp.dynamic_list.first
+import icesword.frp.dynamic_list.getOrNull
+import icesword.frp.dynamic_list.indexOf
+import icesword.frp.dynamic_list.last
+import icesword.frp.dynamic_list.zipWithNext
 import icesword.frp.map
+import icesword.frp.mapNested
 import icesword.frp.reactTill
+import icesword.frp.switch
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.Geometry
@@ -100,9 +110,9 @@ class PathElevatorStep(
         relativePosition = relativePosition.sample(),
     )
 
-    val previous: PathElevatorStep? by lazy { path.getPrevious(this) }
+    val previous: Cell<PathElevatorStep?> by lazy { path.getPrevious(this) }
 
-    val next: PathElevatorStep? by lazy { path.getNext(this) }
+    val next: Cell<PathElevatorStep?> by lazy { path.getNext(this) }
 }
 
 class PathElevatorEdge(
@@ -113,7 +123,7 @@ class PathElevatorEdge(
 
     val end = endStep.center
 
-    val movementDelta = Cell.map2(
+    private val movementDelta = Cell.map2(
         start,
         end,
     ) { startPosition, endPosition ->
@@ -168,7 +178,7 @@ class PathElevatorEdge(
 
 class PathElevatorPath(
     val position: Cell<IntVec2>,
-    val steps: List<PathElevatorStep>,
+    initialSteps: List<PathElevatorStep>,
 ) {
     companion object {
         fun create(
@@ -186,34 +196,40 @@ class PathElevatorPath(
 
             PathElevatorPath(
                 position = position,
-                steps = steps,
+                initialSteps = steps,
             )
         }
     }
 
-    val edges by lazy {
+    private val _steps = MutableDynamicList(initialContent = initialSteps)
+
+    val steps: DynamicList<PathElevatorStep>
+        get() = _steps
+
+    val edges: DynamicList<PathElevatorEdge> by lazy {
         steps.zipWithNext { startStep, endStep ->
             PathElevatorEdge(
                 startStep = startStep,
                 endStep = endStep,
             )
-        } + PathElevatorEdge(
-            startStep = steps.last(),
-            endStep = steps.first(),
+        }.withAppended(
+            Cell.map2(
+                steps.first(),
+                steps.last(),
+            ) { first, last ->
+                PathElevatorEdge(
+                    startStep = last,
+                    endStep = first,
+                )
+            }
         )
     }
 
-    fun getPrevious(node: PathElevatorStep): PathElevatorStep? {
-        val i = steps.indexOf(node)
-        if (i < 0) throw IllegalArgumentException()
-        return steps.getOrNull(i - 1)
-    }
+    fun getPrevious(node: PathElevatorStep): Cell<PathElevatorStep?> =
+        steps.indexOf(node).mapNested { index -> steps.getOrNull(index - 1) }.switch()
 
-    fun getNext(node: PathElevatorStep): PathElevatorStep? {
-        val i = steps.indexOf(node)
-        if (i < 0) throw IllegalArgumentException()
-        return steps.getOrNull(i + 1)
-    }
+    fun getNext(node: PathElevatorStep): Cell<PathElevatorStep?> =
+        steps.indexOf(node).mapNested { index -> steps.getOrNull(index + 1) }.switch()
 }
 
 class PathElevator(
@@ -256,17 +272,15 @@ class PathElevator(
     // TODO: Open path
 
     override fun isSelectableIn(area: IntRect): Boolean =
-        path.steps.any {
+        path.steps.volatileContentView.any {
             val stepBoundingBox = it.wapSprite.boundingBox.sample()
             stepBoundingBox.overlaps(area)
         }
 
-    override fun toEntityData(): EntityData {
-        return PathElevatorData(
-            position = position.sample(),
-            steps = path.steps.map { it.toData() },
-        )
-    }
+    override fun toEntityData(): EntityData = PathElevatorData(
+        position = position.sample(),
+        steps = path.steps.volatileContentView.map { it.toData() },
+    )
 
     override fun exportWapObject(): Wwd.Object_ {
         fun encodeActions(
@@ -279,9 +293,11 @@ class PathElevator(
             bottom = moveAction2?.distance ?: 0,
         )
 
-        val position = path.steps.first().position.sample()
+        val firstStep = path.steps.first().sample()
 
-        val moveActions = path.edges.map { it.moveAction.sample() }
+        val position = firstStep.position.sample()
+
+        val moveActions = path.edges.volatileContentView.map { it.moveAction.sample() }
 
         return WapObjectPrototype.PathElevatorPrototype.wwdObjectPrototype.copy(
             x = position.x,

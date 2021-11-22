@@ -4,7 +4,7 @@ import icesword.html.createHtmlElement
 import icesword.html.linkChild
 import icesword.editor.App
 import icesword.frp.Till
-import icesword.frp.mapNotNull
+import icesword.frp.mapNested
 import icesword.frp.mapTillNext
 import org.w3c.dom.HTMLElement
 
@@ -32,7 +32,7 @@ fun createAppView(
             linkChild(this, theEditorView, till = tillDetach)
         }
 
-        val loadingWorldDialog = app.loadingWorldProcess.mapNotNull {
+        val loadingWorldDialog = app.loadingWorldProcess.mapNested {
             createLoadingWorldDialog(it)
         }
 
