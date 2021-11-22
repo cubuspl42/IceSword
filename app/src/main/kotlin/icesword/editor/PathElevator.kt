@@ -81,23 +81,14 @@ class PathElevatorPath(
             imageMetadata: ImageMetadata,
             position: Cell<IntVec2>,
         ): PathElevatorPath = looped { path ->
-            val steps = listOf(
+            val steps = (0 until 8).map {
                 PathElevatorStep(
                     lazyPath = path,
                     imageMetadata = imageMetadata,
-                    initialRelativePosition = IntVec2(64 * 1, 0),
-                ),
-                PathElevatorStep(
-                    lazyPath = path,
-                    imageMetadata = imageMetadata,
-                    initialRelativePosition = IntVec2(64 * 2, 0),
-                ),
-                PathElevatorStep(
-                    lazyPath = path,
-                    imageMetadata = imageMetadata,
-                    initialRelativePosition = IntVec2(64 * 3, 0),
-                ),
-            )
+                    initialRelativePosition = IntVec2(64 * it, 0),
+                )
+            }
+
 
             PathElevatorPath(
                 position = position,
