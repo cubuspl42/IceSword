@@ -11,7 +11,7 @@ import icesword.html.createColumn
 import icesword.html.createColumnDl
 import icesword.html.createNumberInput
 import icesword.html.createRow
-import icesword.html.createText
+import icesword.html.createStaticText
 import kotlinx.css.Align
 import kotlinx.css.BorderStyle
 import kotlinx.css.Color
@@ -47,7 +47,7 @@ fun createEditFloorSpikeRowDialog(
         ),
         horizontalGap = 4.px,
         children = listOf(
-            createText("$labelText:"),
+            createStaticText("$labelText:"),
             createNumberInput(
                 staticStyle = {
                     width = 64.px.toString()
@@ -57,7 +57,7 @@ fun createEditFloorSpikeRowDialog(
                     propertyMillis.set(it)
                 },
             ),
-            createText("ms"),
+            createStaticText("ms"),
         ),
         tillDetach = tillDetach,
     )
@@ -71,7 +71,7 @@ fun createEditFloorSpikeRowDialog(
         ),
         horizontalGap = 8.px,
         children = listOf(
-            createText("Spike"),
+            createStaticText("Spike"),
             createTimeInput(
                 labelText = "Start delay",
                 propertyMillis = config.startDelayMillis,

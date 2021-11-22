@@ -182,6 +182,8 @@ class PathElevatorPath(
     initialSteps: List<PathElevatorStep>,
 ) {
     companion object {
+        val stepCountLimit = 8
+
         fun create(
             imageMetadata: ImageMetadata,
             position: Cell<IntVec2>,
@@ -294,7 +296,6 @@ class PathElevator(
 
     // TODO: Delays
     // TODO: Open path
-    // TODO: Action limit validation (limit is 8 actions)
 
     override fun isSelectableIn(area: IntRect): Boolean =
         path.steps.volatileContentView.any {

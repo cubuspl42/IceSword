@@ -10,10 +10,12 @@ import icesword.frp.map
 import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
 import icesword.frp.sample
+import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
+import kotlinx.css.Align
 import kotlinx.css.Color
 import kotlinx.css.Display
 import kotlinx.css.FlexDirection
@@ -34,10 +36,42 @@ import org.w3c.dom.svg.SVGSVGElement
 fun createHtmlElement(tagName: String): HTMLElement =
     document.createElement(tagName) as HTMLElement
 
-fun createText(
+fun createStaticText(
     text: String,
 ): Text =
     document.createTextNode(text)
+
+fun createText(
+    text: Cell<String>,
+    tillDetach: Till,
+): Text {
+    val textNode = document.createTextNode(text.sample())
+
+    text.values().reactTill(tillDetach) {
+        textNode.data = it
+    }
+
+    return textNode
+}
+
+fun createStyledText(
+    text: Cell<String>,
+    style: DynamicStyleDeclaration? = null,
+    tillDetach: Till,
+): HTMLElement {
+    val textNode = createText(
+        text = text,
+        tillDetach = tillDetach,
+    )
+
+    return createStyledHtmlElement(
+        tagName = "div",
+        style = style,
+        tillDetach = tillDetach,
+    ).apply {
+        appendChild(textNode)
+    }
+}
 
 fun createStyledHtmlElement(
     tagName: String,
@@ -479,6 +513,7 @@ fun createRow(
         style = style.copy(
             display = constant(Display.flex),
             flexDirection = constant(FlexDirection.row),
+            alignItems = constant(Align.center),
             gap = horizontalGap?.let(::constant),
         ),
         tillDetach = tillDetach,

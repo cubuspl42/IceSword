@@ -6,17 +6,23 @@ import icesword.editor.EditorMode
 import icesword.editor.FloorSpikeRow
 import icesword.editor.KnotSelectMode
 import icesword.editor.EntitySelectMode
+import icesword.editor.PathElevatorPath
 import icesword.editor.Tool
 import icesword.frp.Till
 import icesword.frp.TillMarker
+import icesword.frp.dynamic_list.size
 import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
 import icesword.frp.mapTillNext
+import icesword.html.DynamicStyleDeclaration
 import icesword.html.createButton
 import icesword.html.createContainer
 import icesword.html.createHtmlElement
 import icesword.html.createRow
+import icesword.html.createStyledText
 import icesword.ui.createSelectButton
+import kotlinx.css.FontWeight
+import kotlinx.css.px
 import org.w3c.dom.HTMLElement
 
 
@@ -184,27 +190,44 @@ fun createKnotSelectModeButtonsRow(
 fun createEditPathElevatorModeButtonsRow(
     editMode: EditPathElevatorMode,
     tillDetach: Till,
-): HTMLElement = createRow(
-    children = listOf(
-        createButton(
-            text = "Remove step",
-            onPressed = {
-                val idleMode = editMode.state.sample() as? EditPathElevatorMode.IdleMode
-                idleMode?.removeSelectedStep()
-            },
-            tillDetach = tillDetach,
+): HTMLElement {
+    val path = editMode.pathElevator.path
+
+    return createRow(
+        children = listOf(
+            createButton(
+                text = "Remove step",
+                onPressed = {
+                    val idleMode = editMode.state.sample() as? EditPathElevatorMode.IdleMode
+                    idleMode?.removeSelectedStep()
+                },
+                tillDetach = tillDetach,
+            ),
+            createButton(
+                text = "Insert step",
+                onPressed = {
+                    val idleMode = editMode.state.sample() as? EditPathElevatorMode.IdleMode
+                    idleMode?.insertStep()
+                },
+                tillDetach = tillDetach,
+            ),
+            createStyledText(
+                text = path.steps.size.map { stepCount ->
+                    "$stepCount/${PathElevatorPath.stepCountLimit} steps"
+                },
+                style = DynamicStyleDeclaration(
+                    fontWeight = path.steps.size.map { stepCount ->
+                        if (stepCount > PathElevatorPath.stepCountLimit) FontWeight.bold
+                        else FontWeight.initial
+                    },
+                ),
+                tillDetach = tillDetach,
+            ),
         ),
-        createButton(
-            text = "Insert step",
-            onPressed = {
-                val idleMode = editMode.state.sample() as? EditPathElevatorMode.IdleMode
-                idleMode?.insertStep()
-            },
-            tillDetach = tillDetach,
-        ),
-    ),
-    tillDetach = tillDetach,
-)
+        horizontalGap = 4.px,
+        tillDetach = tillDetach,
+    )
+}
 
 private inline fun <reified Mode : EditorMode> createModeButton(
     editor: Editor,
