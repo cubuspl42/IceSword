@@ -11,6 +11,20 @@ data class IntLineSeg(
         )
     }
 
+    val direction: IntVec2
+        get() = pointB - pointA
+
+    fun shorten(a: Int): IntLineSeg {
+        val s = (a / length).coerceAtMost(0.5)
+        val pointAPrim = pointA + direction.scale(s)
+        val pointBPrim = pointB + direction.scale(-s)
+
+        return IntLineSeg(
+            pointA = pointAPrim,
+            pointB = pointBPrim,
+        )
+    }
+
     fun translate(t: IntVec2): IntLineSeg =
         IntLineSeg(
             pointA = pointA + t,

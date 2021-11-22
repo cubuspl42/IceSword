@@ -42,6 +42,8 @@ class WapSprite(
             )
         }
 
+    val center = boundingBox.map { it.center }
+
     override fun toString(): String = "WapSprite()"
 }
 

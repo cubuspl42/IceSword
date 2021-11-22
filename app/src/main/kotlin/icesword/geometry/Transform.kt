@@ -37,19 +37,38 @@ class Transform(
                 f = t.y.toDouble(),
             )
 
-        fun rotate(angleRad: Double): Transform {
+        fun rotateOfAngle(angleRad: Double): Transform {
             val cosAngle = cos(angleRad)
             val sinAngle = sin(angleRad)
 
-            return Transform(
-                a = cosAngle,
-                c = -sinAngle,
-                e = 0.0,
-                b = sinAngle,
-                d = cosAngle,
-                f = 0.0,
+            return rotate(
+                cosAngle = cosAngle,
+                sinAngle = sinAngle,
             )
         }
+
+        fun rotateOfDirection(direction: IntVec2): Transform {
+            val length = direction.length
+            val cosAngle = direction.x / length
+            val sinAngle = direction.y / length
+
+            return rotate(
+                cosAngle = cosAngle,
+                sinAngle = sinAngle,
+            )
+        }
+
+        private fun rotate(
+            cosAngle: Double,
+            sinAngle: Double,
+        ): Transform = Transform(
+            a = cosAngle,
+            c = -sinAngle,
+            e = 0.0,
+            b = sinAngle,
+            d = cosAngle,
+            f = 0.0,
+        )
     }
 
     val inversed: Transform by lazy { this.calculateInversed() }
@@ -116,11 +135,15 @@ class DynamicTransform(
 ) {
     companion object {
         val identity: DynamicTransform = DynamicTransform(
-           transform = Cell.constant(Transform.identity),
+            transform = Cell.constant(Transform.identity),
         )
 
         fun translate(t: Cell<IntVec2>): DynamicTransform = DynamicTransform(
             t.map(Transform.Companion::translate)
+        )
+
+        fun rotateOfDirection(direction: Cell<IntVec2>): DynamicTransform = DynamicTransform(
+            transform = direction.map(Transform.Companion::rotateOfDirection),
         )
     }
 

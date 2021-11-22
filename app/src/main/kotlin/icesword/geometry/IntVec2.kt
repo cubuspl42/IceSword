@@ -34,6 +34,8 @@ data class IntVec2(
 
     operator fun div(s: Int): IntVec2 = IntVec2(x / s, y / s)
 
+    fun scale(s: Double): IntVec2 = IntVec2((x * s).roundToInt(), (y * s).roundToInt())
+
     fun divRound(s: Int): IntVec2 = IntVec2(
         (x.toDouble() / s).roundToInt(),
         (y.toDouble() / s).roundToInt(),
@@ -52,6 +54,8 @@ data class IntVec2(
     operator fun unaryMinus(): IntVec2 = IntVec2(-x, -y)
 
     fun map(f: (Int) -> Int): IntVec2 = IntVec2(f(x), f(y))
+
+    fun negY(): IntVec2 = copy(x = x, y = -y)
 
     companion object {
         val ZERO = IntVec2(0, 0)

@@ -135,7 +135,7 @@ fun createVerticalMovementRangeOverlay(
     viewport = viewport,
     dynamicViewTransform = dynamicViewTransform,
     entityMovementRange = entityMovementRange,
-    rotation = Transform.rotate(PI / 2),
+    rotation = Transform.rotateOfAngle(PI / 2),
     handleCursor = Cursor.nsResize,
     extractInputCoord = { it.y },
     tillDetach = tillDetach,

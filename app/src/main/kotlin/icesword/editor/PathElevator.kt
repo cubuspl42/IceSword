@@ -15,6 +15,7 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
 import kotlinx.serialization.UseSerializers
+import kotlin.math.absoluteValue
 
 class PathElevatorStep(
     private val lazyPath: Lazy<PathElevatorPath>,
@@ -41,6 +42,8 @@ class PathElevatorStep(
             position = position,
         )
     }
+
+    val center by lazy { wapSprite.center }
 
     fun move(
         positionDelta: Cell<IntVec2>,
@@ -72,6 +75,26 @@ class PathElevatorStep(
     val next: PathElevatorStep? by lazy { path.getNext(this) }
 }
 
+class PathElevatorEdge(
+    startStep: PathElevatorStep,
+    endStep: PathElevatorStep,
+) {
+    val start = startStep.center
+
+    val end = endStep.center
+
+    val movementDelta = Cell.map2(
+        start,
+        end,
+    ) { startPosition, endPosition ->
+        endPosition - startPosition
+    }
+
+    val isValid = movementDelta.map {
+        it.x.absoluteValue == it.y.absoluteValue || it.x == 0 || it.y == 0
+    }
+}
+
 class PathElevatorPath(
     val position: Cell<IntVec2>,
     val steps: List<PathElevatorStep>,
@@ -89,12 +112,23 @@ class PathElevatorPath(
                 )
             }
 
-
             PathElevatorPath(
                 position = position,
                 steps = steps,
             )
         }
+    }
+
+    val edges by lazy {
+        steps.zipWithNext { startStep, endStep ->
+            PathElevatorEdge(
+                startStep = startStep,
+                endStep = endStep,
+            )
+        } + PathElevatorEdge(
+            startStep = steps.last(),
+            endStep = steps.first(),
+        )
     }
 
     fun getPrevious(node: PathElevatorStep): PathElevatorStep? {

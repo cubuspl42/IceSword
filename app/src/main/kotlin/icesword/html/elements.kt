@@ -5,6 +5,7 @@ import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
 import icesword.frp.reactIndefinitely
@@ -18,7 +19,6 @@ import kotlinx.css.Color
 import kotlinx.css.Display
 import kotlinx.css.FlexDirection
 import kotlinx.css.LinearDimension
-import kotlinx.css.li
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.Node
@@ -28,6 +28,7 @@ import org.w3c.dom.svg.SVGCircleElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGGElement
 import org.w3c.dom.svg.SVGLineElement
+import org.w3c.dom.svg.SVGPolygonElement
 import org.w3c.dom.svg.SVGRectElement
 import org.w3c.dom.svg.SVGSVGElement
 
@@ -252,8 +253,6 @@ fun createSvgLine(
 ): SVGElement {
     val line = document.createElementNS("http://www.w3.org/2000/svg", "line") as SVGLineElement
 
-    line.x1.baseVal.value
-
     linkSvgLength(
         length = line.x1.baseVal,
         attribute = pointA.map { it.x.toFloat() },
@@ -286,6 +285,49 @@ fun createSvgLine(
     )
 
     return line
+}
+
+fun createSvgPolygon(
+    svg: SVGSVGElement,
+    transform: DynamicTransform,
+    points: Cell<List<IntVec2>>,
+    stroke: Cell<Color>? = null,
+    fill: Cell<Color>? = null,
+    tillDetach: Till,
+): SVGElement {
+    val polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon") as SVGPolygonElement
+
+    linkSvgTransform(
+        svg = svg,
+        element = polygon,
+        transform = transform,
+        tillDetach = tillDetach,
+    )
+
+    linkAttribute(
+        element = polygon,
+        attributeName = "points",
+        attribute = points.map { points ->
+            points.joinToString(separator = " ") { "${it.x},${it.y}" }
+        },
+        till = tillDetach,
+    )
+
+    linkAttribute(
+        element = polygon,
+        attributeName = "stroke",
+        attribute = stroke?.map { it.value },
+        till = tillDetach,
+    )
+
+    linkAttribute(
+        element = polygon,
+        attributeName = "fill",
+        attribute = fill?.map { it.value },
+        till = tillDetach,
+    )
+
+    return polygon
 }
 
 
