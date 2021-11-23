@@ -29,8 +29,8 @@ data class LoadingWorldProcess(
 
 class App(
     private val wwdWorldTemplate: Wwd.World,
+    val rezIndex: RezIndex,
     val textureBank: TextureBank,
-    private val rezIndex: RezIndex,
     initialEditor: Editor,
 ) : CoroutineScope by MainScope() {
     companion object {
@@ -55,8 +55,8 @@ class App(
 
             return App(
                 wwdWorldTemplate = wwdWorldTemplate,
-                textureBank = textureBank,
                 rezIndex = combinedRezIndex,
+                textureBank = textureBank,
                 initialEditor = editor,
             )
         }

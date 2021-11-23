@@ -18,6 +18,7 @@ fun createAppView(
         val theEditorView = app.editor.mapTillNext(tillDetach) { editor, tillNext ->
             editor?.let {
                 editorView(
+                    rezIndex = app.rezIndex,
                     textureBank = app.textureBank,
                     dialogOverlay = dialogOverlay,
                     editor = editor,

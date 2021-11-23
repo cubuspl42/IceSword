@@ -21,9 +21,12 @@ import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
 import kotlinx.browser.window
+import kotlinx.css.BackgroundRepeat
+import kotlinx.css.px
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.DOMRect
 import org.w3c.dom.HTMLCanvasElement
+import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.ImageBitmap
 import org.w3c.dom.svg.SVGElement
@@ -32,9 +35,31 @@ import kotlin.math.roundToInt
 
 
 data class Texture(
+    val path: String,
     val imageBitmap: ImageBitmap,
     val sourceRect: IntRect,
-)
+) {
+    fun createImage(
+        width: Int? = null,
+        height: Int? = null,
+    ): HTMLElement {
+        val element = document.createElement("div") as HTMLDivElement
+
+        val effectiveWidth = (width ?: sourceRect.width).px
+        val effectiveHeight = (height ?: sourceRect.height).px
+
+        return element.apply {
+            style.apply {
+                this.width = effectiveWidth.value
+                this.height = effectiveHeight.value
+                backgroundImage = "url('$path')"
+                backgroundRepeat = BackgroundRepeat.noRepeat.toString()
+                backgroundPosition = "${(-sourceRect.xMin)}px ${(-sourceRect.yMin)}px"
+                backgroundSize = "$effectiveWidth $effectiveHeight"
+            }
+        }
+    }
+}
 
 class Tileset(
     val tileTextures: Map<Int, Texture>,

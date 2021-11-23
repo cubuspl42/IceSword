@@ -70,17 +70,21 @@ private suspend fun loadTileset(): Tileset {
     }
 
     suspend fun loadIndex(): Map<Int, IntRect> {
-        val textureIndexResponse = window.fetch(textureIndexPath).await()
+        val textureIndexResponse = window.fetch(tilesTextureIndexPath).await()
         val json = textureIndexResponse.json().await().asDynamic()
         return parseIndex(json)
     }
 
-    val imageBitmap = loadImage(imagePath = textureImagePath)
+    val imageBitmap = loadImage(imagePath = tilesTextureImagePath)
 
     val index = loadIndex()
 
     val tileTextures = index.mapValues { (_, frameRect) ->
-        Texture(imageBitmap, frameRect)
+        Texture(
+            path = tilesTextureImagePath,
+            imageBitmap = imageBitmap,
+            sourceRect = frameRect,
+        )
     }
 
     return Tileset(
@@ -89,20 +93,21 @@ private suspend fun loadTileset(): Tileset {
 }
 
 private suspend fun loadImageTexture(imagePath: String): Texture {
-    val ropeBitmap = loadImage(imagePath = imagePath)
+    val imageBitmap = loadImage(imagePath = imagePath)
 
-    val ropeTexture = Texture(
-        imageBitmap = ropeBitmap,
+    val texture = Texture(
+        path = imagePath,
+        imageBitmap = imageBitmap,
         sourceRect = IntRect(
             position = IntVec2.ZERO,
             size = IntSize(
-                width = ropeBitmap.width,
-                height = ropeBitmap.height,
+                width = imageBitmap.width,
+                height = imageBitmap.height,
             ),
         )
     )
 
-    return ropeTexture
+    return texture
 }
 
 private suspend fun loadImage(imagePath: String): ImageBitmap {

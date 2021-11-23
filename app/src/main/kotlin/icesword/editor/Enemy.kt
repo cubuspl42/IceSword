@@ -4,6 +4,8 @@ package icesword.editor
 
 import icesword.RezIndex
 import icesword.frp.Cell
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.MutableDynamicList
 import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -37,6 +39,16 @@ class Enemy(
                 initialRelativeMovementRange = data.relativeMovementRange,
             )
     }
+
+    private val _pickups = MutableDynamicList(
+        initialContent = listOf(
+            PickupKind.TreasureCoins,
+            PickupKind.TreasureCoins,
+            PickupKind.TreasureRingsGreen,
+        ),
+    )
+
+    val pickups: DynamicList<PickupKind> = _pickups
 
     override val entityPosition: EntityPosition =
         EntityPixelPosition(

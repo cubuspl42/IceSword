@@ -20,6 +20,8 @@ import kotlinx.css.Color
 import kotlinx.css.Display
 import kotlinx.css.FlexDirection
 import kotlinx.css.LinearDimension
+import kotlinx.css.properties.LineHeight
+import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.Node
@@ -27,6 +29,7 @@ import org.w3c.dom.Text
 import org.w3c.dom.css.CSSStyleDeclaration
 import org.w3c.dom.svg.SVGCircleElement
 import org.w3c.dom.svg.SVGElement
+import org.w3c.dom.svg.SVGForeignObjectElement
 import org.w3c.dom.svg.SVGGElement
 import org.w3c.dom.svg.SVGLineElement
 import org.w3c.dom.svg.SVGPolygonElement
@@ -344,7 +347,7 @@ fun createSvgPolygon(
     fill: Cell<Color>? = null,
     tillDetach: Till,
 ): SVGElement {
-    val polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon") as SVGPolygonElement
+    val polygon = createSvgElement("polygon") as SVGPolygonElement
 
     linkSvgTransform(
         svg = svg,
@@ -379,6 +382,33 @@ fun createSvgPolygon(
     return polygon
 }
 
+private fun createSvgElement(name: String): Element =
+    document.createElementNS("http://www.w3.org/2000/svg", name)
+
+fun createSvgForeignObject(
+    svg: SVGSVGElement,
+    transform: DynamicTransform,
+    width: Int,
+    height: Int,
+    child: HTMLElement,
+    tillDetach: Till,
+): SVGForeignObjectElement {
+    val foreignObject = createSvgElement("foreignObject") as SVGForeignObjectElement
+
+    foreignObject.width.baseVal.value = width.toFloat()
+    foreignObject.height.baseVal.value = height.toFloat()
+
+    linkSvgTransform(
+        svg = svg,
+        element = foreignObject,
+        transform = transform,
+        tillDetach = tillDetach,
+    )
+
+    foreignObject.appendChild(child)
+
+    return foreignObject
+}
 
 fun createContainer(
     children: DynamicSet<HTMLElement>,
@@ -442,6 +472,45 @@ fun createWrapper(
             till = tillDetach
         )
     }
+
+fun createTableContainer(
+    borderSpacing: LinearDimension,
+    rows: List<List<HTMLElement>>,
+): HTMLElement {
+    val root = createHtmlElement("div").apply {
+        style.apply {
+            display = "table"
+            this.borderSpacing = borderSpacing.value
+        }
+    }
+
+    val children = rows.map { cells ->
+        createHtmlElement("div").apply {
+            style.apply {
+                display = "table-row"
+            }
+
+            cells.forEach { cell ->
+                appendChild(
+                    createHtmlElement("div").apply {
+                        style.apply {
+                            display = "table-cell"
+                            textAlign = "center"
+                            verticalAlign = "middle"
+
+                            appendChild(cell)
+                        }
+                    },
+                )
+            }
+        }
+    }
+
+    children.forEach(root::appendChild)
+
+    return root
+}
+
 
 fun createSvgSwitch(
     child: Cell<SVGElement?>,

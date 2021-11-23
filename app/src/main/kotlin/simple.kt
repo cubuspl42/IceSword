@@ -16,8 +16,8 @@ import kotlinx.coroutines.launch
 import org.w3c.dom.Document
 import org.w3c.dom.HTMLElement
 
-const val textureImagePath = "images/spritesheets/LEVEL3_ACTION/texture.png"
-const val textureIndexPath = "images/spritesheets/LEVEL3_ACTION/texture.json"
+const val tilesTextureImagePath = "images/spritesheets/LEVEL3_ACTION/texture.png"
+const val tilesTextureIndexPath = "images/spritesheets/LEVEL3_ACTION/texture.json"
 
 val objectEntries = js("Object.entries") as (dynamic) -> Array<Array<Any?>>
 

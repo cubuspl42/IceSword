@@ -65,6 +65,7 @@ import kotlin.math.roundToInt
 
 
 fun worldView(
+    rezIndex: RezIndex,
     textureBank: TextureBank,
     dialogOverlay: DialogOverlay,
     editor: Editor,
@@ -232,7 +233,12 @@ fun worldView(
             },
             hybridNodes = DynamicSet.union2(
                 world.entities.mapNotNull {
-                    createEntityNode(editor = editor, entity = it)
+                    createEntityNode(
+                        rezIndex = rezIndex,
+                        textureBank = textureBank,
+                        editor = editor,
+                        entity = it
+                    )
                 },
                 DynamicSet.ofSingle(
                     editor.editorMode.map {

@@ -8,6 +8,7 @@ import icesword.RezIndex
 import icesword.frp.Cell
 import icesword.frp.map
 import icesword.geometry.IntRect
+import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.serialization.UseSerializers
 
@@ -41,6 +42,8 @@ class WapSprite(
                 position = it
             )
         }
+
+    val size: IntSize = imageMetadata.size
 
     val center = boundingBox.map { it.center }
 

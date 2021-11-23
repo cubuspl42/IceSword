@@ -1,5 +1,7 @@
 package icesword.scene
 
+import TextureBank
+import icesword.RezIndex
 import icesword.editor.Editor
 import icesword.editor.Elastic
 import icesword.editor.Elevator
@@ -25,6 +27,8 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
 fun createEntityNode(
+    rezIndex: RezIndex,
+    textureBank: TextureBank,
     editor: Editor,
     entity: Entity,
 ): HybridNode? {
@@ -33,6 +37,8 @@ fun createEntityNode(
         is HorizontalElevator -> null
         is VerticalElevator -> null
         is Enemy -> EnemyNode(
+            rezIndex = rezIndex,
+            textureBank = textureBank,
             editor = editor,
             enemy = entity,
         )

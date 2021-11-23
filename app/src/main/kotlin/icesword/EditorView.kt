@@ -8,6 +8,7 @@ import org.w3c.dom.HTMLElement
 
 
 fun editorView(
+    rezIndex: RezIndex,
     textureBank: TextureBank,
     dialogOverlay: DialogOverlay,
     editor: Editor,
@@ -37,9 +38,10 @@ fun editorView(
         )
         appendChild(
             worldView(
+                rezIndex = rezIndex,
+                textureBank = textureBank,
                 dialogOverlay = dialogOverlay,
                 editor = editor,
-                textureBank = textureBank,
                 tillDetach = tillDetach,
             ).apply {
                 style.apply {
