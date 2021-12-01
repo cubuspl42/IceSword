@@ -3,9 +3,12 @@ package icesword
 import icesword.editor.FloorSpikeRow
 import icesword.frp.Cell
 import icesword.frp.MutCell
+import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.html.DynamicStyleDeclaration
+import icesword.html.HTMLWidget
+import icesword.html.HTMLWidgetB
 import icesword.html.createButton
 import icesword.html.createColumn
 import icesword.html.createColumnDl
@@ -19,7 +22,26 @@ import kotlinx.css.px
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
 
-fun createEditFloorSpikeRowDialog(
+fun createEditFloorSpikeRowDialogWb(
+    floorSpikeRow: FloorSpikeRow,
+) = object : HTMLWidgetB<Dialog> {
+    override fun build(tillDetach: Till): Dialog {
+        val onClose = StreamSink<Unit>()
+
+        val content = createEditFloorSpikeRowDialog(
+            floorSpikeRow = floorSpikeRow,
+            onClosePressed = { onClose.send(Unit) },
+            tillDetach = tillDetach,
+        )
+
+        return Dialog(
+            content = HTMLWidget.of(content),
+            onClose = onClose,
+        )
+    }
+}
+
+private fun createEditFloorSpikeRowDialog(
     floorSpikeRow: FloorSpikeRow,
     onClosePressed: () -> Unit,
     tillDetach: Till,

@@ -57,6 +57,20 @@ fun createText(
     return textNode
 }
 
+fun createTextWb(
+    text: Cell<String>,
+) = object : HTMLWidgetB<HTMLWidget> {
+    override fun build(tillDetach: Till): HTMLWidget {
+        val textNode = document.createTextNode(text.sample())
+
+        text.values().reactTill(tillDetach) {
+            textNode.data = it
+        }
+
+        return HTMLWidget.of(textNode)
+    }
+}
+
 fun createStyledText(
     text: Cell<String>,
     style: DynamicStyleDeclaration? = null,
@@ -92,6 +106,7 @@ fun createStyledHtmlElement(
 
     return element
 }
+
 
 fun createHeading4(text: String): HTMLElement =
     createHtmlElement("h4").apply {
@@ -544,6 +559,31 @@ fun createColumn(
         tillDetach = tillDetach,
     ).apply {
         children.forEach(this::appendChild)
+    }
+}
+
+fun createColumnWb(
+    tagName: String = "div",
+    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    verticalGap: LinearDimension? = null,
+    children: List<HTMLWidgetB<*>>,
+) = object : HTMLWidgetB<HTMLWidget> {
+    override fun build(tillDetach: Till): HTMLWidget {
+        val element = createStyledHtmlElement(
+            tagName = tagName,
+            style = style.copy(
+                display = constant(Display.flex),
+                flexDirection = constant(FlexDirection.column),
+                gap = verticalGap?.let(::constant),
+            ),
+            tillDetach = tillDetach,
+        ).apply {
+            HTMLWidgetB.build(children, tillDetach).forEach {
+                appendChild(HTMLWidget.resolve(it))
+            }
+        }
+
+        return HTMLWidget.of(element)
     }
 }
 

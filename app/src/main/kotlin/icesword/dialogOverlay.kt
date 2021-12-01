@@ -6,42 +6,66 @@ import icesword.html.createStyledHtmlElement
 import icesword.html.linkChild
 import icesword.frp.Cell
 import icesword.frp.MutCell
+import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.mapNested
-import icesword.frp.reactTillNext
+import icesword.frp.mapTillNext
+import icesword.frp.reactTill
+import icesword.html.HTMLWidget
+import icesword.html.HTMLWidget.HTMLNestedWidget
+import icesword.html.HTMLWidgetB
 import kotlinx.css.PointerEvents
 import org.w3c.dom.HTMLElement
+import org.w3c.dom.Node
+
+class Dialog(
+    val content: HTMLWidget,
+    val onClose: Stream<Unit>,
+) : HTMLNestedWidget {
+    override val widget: HTMLWidget = content
+}
+
 
 class DialogOverlay(
     private val tillDetach: Till,
 ) {
-    private val _shownDialog = MutCell<HTMLElement?>(null)
+    private val _shownDialog = MutCell<HTMLWidgetB<Dialog>?>(null)
 
-    val shownDialog: Cell<HTMLElement?> = _shownDialog
+    val shownDialog: Cell<HTMLWidget?> =
+        _shownDialog.mapTillNext(tillDetach) { dialogBOrNull, tillNext ->
+            dialogBOrNull?.let { dialogB ->
+                val dialog = dialogB.build(tillDetach)
+
+                dialog.onClose.reactTill(tillNext) {
+                    _shownDialog.set(null)
+                }
+
+                dialog.widget
+            }
+        }
 
     fun showDialog(
-        dialog: HTMLElement,
-        tillClose: Till,
+        dialog: HTMLWidgetB<Dialog>?,
     ) {
-        if (_shownDialog.sample() != null) {
-            throw IllegalStateException()
-        }
-
         _shownDialog.set(dialog)
-
-        tillClose.subscribe {
-            _shownDialog.set(null)
-        }
     }
 
-    fun linkDialog(dialog: Cell<HTMLElement?>) {
-        dialog.reactTillNext(tillAbort = tillDetach) { dialogOrNull, tillNext ->
-            dialogOrNull?.let { dialog ->
+    fun linkDialog(dialogContent: Cell<HTMLElement?>) {
+        dialogContent.reactTill(tillDetach) { contentOrNull ->
+            if (contentOrNull != null) {
+                val content: HTMLElement = contentOrNull
+
                 showDialog(
-                    dialog = dialog,
-                    tillClose = tillNext,
+                    HTMLWidgetB.pure(
+                        Dialog(
+                            content = HTMLWidget.of(content),
+                            onClose = Stream.never(),
+                        )
+                    ),
                 )
+            } else {
+                showDialog(null)
             }
         }
     }
@@ -55,7 +79,7 @@ fun createDialogOverlay(
         tillDetach = tillDetach,
     )
 
-    fun createOverlay(dialog: HTMLElement) =
+    fun createOverlay(dialog: Node) =
         createHtmlElement("div").apply {
             className = "dialogOverlay"
 
@@ -71,7 +95,7 @@ fun createDialogOverlay(
             appendChild(dialog)
         }
 
-    val overlay = dialogOverlay.shownDialog.mapNested(::createOverlay)
+    val overlay = dialogOverlay.shownDialog.mapNested { createOverlay(HTMLWidget.resolve(it)) }
 
     val dialogOverlayWrapper = createStyledHtmlElement(
         tagName = "div",

@@ -3,13 +3,13 @@ package icesword
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.EditorMode
+import icesword.editor.Enemy
 import icesword.editor.FloorSpikeRow
 import icesword.editor.KnotSelectMode
 import icesword.editor.EntitySelectMode
 import icesword.editor.PathElevatorPath
 import icesword.editor.Tool
 import icesword.frp.Till
-import icesword.frp.TillMarker
 import icesword.frp.dynamic_list.size
 import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
@@ -260,17 +260,22 @@ private fun onEditPressed(
     dialogOverlay: DialogOverlay,
 ) {
     editor.selectedEntity.sample()?.let { selectedEntity ->
-        if (selectedEntity is FloorSpikeRow) {
-            val closeMarker = TillMarker()
-
-            dialogOverlay.showDialog(
-                dialog = createEditFloorSpikeRowDialog(
-                    floorSpikeRow = selectedEntity,
-                    onClosePressed = closeMarker::markReached,
-                    tillDetach = Till.never, // FIXME?
-                ),
-                tillClose = closeMarker,
-            )
+        when (selectedEntity) {
+            is Enemy -> {
+                dialogOverlay.showDialog(
+                    dialog = createEditEnemyDialog(
+                        enemy = selectedEntity,
+                    ),
+                )
+            }
+            is FloorSpikeRow -> {
+                dialogOverlay.showDialog(
+                    dialog = createEditFloorSpikeRowDialogWb(
+                        floorSpikeRow = selectedEntity,
+                    ),
+                )
+            }
+            else -> {}
         }
     }
 }
