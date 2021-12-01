@@ -1,10 +1,6 @@
-import icesword.JsonRezIndex
 import icesword.createAppView
-import icesword.createEditFloorSpikeRowDialog
 import icesword.editor.App
-import icesword.editor.FloorSpikeRow
 import icesword.frp.Till
-import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
 import icesword.wwd.Wwd.readWorld
 import kotlinx.browser.document

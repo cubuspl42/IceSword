@@ -1,5 +1,6 @@
 package icesword
 
+import TextureBank
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.EditorMode
@@ -27,6 +28,8 @@ import org.w3c.dom.HTMLElement
 
 
 fun createEditorToolBar(
+    rezIndex: RezIndex,
+    textureBank: TextureBank,
     editor: Editor,
     dialogOverlay: DialogOverlay,
     tillDetach: Till,
@@ -75,6 +78,8 @@ fun createEditorToolBar(
         text = "Edit",
         onPressed = {
             onEditPressed(
+                rezIndex = rezIndex,
+                textureBank = textureBank,
                 editor = editor,
                 dialogOverlay = dialogOverlay,
             )
@@ -256,6 +261,8 @@ private fun createToolButton(
     )
 
 private fun onEditPressed(
+    rezIndex: RezIndex,
+    textureBank: TextureBank,
     editor: Editor,
     dialogOverlay: DialogOverlay,
 ) {
@@ -264,6 +271,8 @@ private fun onEditPressed(
             is Enemy -> {
                 dialogOverlay.showDialog(
                     dialog = createEditEnemyDialog(
+                        rezIndex = rezIndex,
+                        textureBank = textureBank,
                         enemy = selectedEntity,
                     ),
                 )

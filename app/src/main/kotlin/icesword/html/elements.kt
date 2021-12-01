@@ -587,6 +587,37 @@ fun createColumnWb(
     }
 }
 
+fun createGrid(
+    tagName: String = "div",
+    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    gap: LinearDimension? = null,
+    children: List<HTMLWidgetB<*>>,
+) = object : HTMLWidgetB<HTMLWidget> {
+    override fun build(tillDetach: Till): HTMLWidget {
+        val element = createStyledHtmlElement(
+            tagName = tagName,
+            style = style.copy(
+                display = constant(Display.grid),
+                gap = gap?.let(::constant),
+            ),
+            tillDetach = tillDetach,
+        ).apply {
+            this.style.apply {
+                setProperty("grid-template-columns", "1fr 1fr 1fr")
+//                setProperty("grid-template-rows", "1f")
+
+            }
+
+            HTMLWidgetB.build(children, tillDetach).forEach {
+                appendChild(HTMLWidget.resolve(it))
+            }
+        }
+
+        return HTMLWidget.of(element)
+    }
+}
+
+
 fun createColumnDl(
     tagName: String = "div",
     style: DynamicStyleDeclaration = DynamicStyleDeclaration(),

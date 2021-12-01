@@ -41,6 +41,7 @@ data class DynamicStyleDeclaration(
     val fontWeight: Cell<FontWeight?>? = null,
     val flexDirection: Cell<FlexDirection>? = null,
     val gap: Cell<LinearDimension>? = null,
+    val justifyItems: Cell<Align>? = null,
     val alignItems: Cell<Align>? = null,
     val alignSelf: Cell<Align>? = null,
     val backgroundColor: Cell<Color>? = null,
@@ -91,6 +92,13 @@ data class DynamicStyleDeclaration(
             style = style,
             propertyName = "gap",
             property = gap?.map { it.toString() },
+            till = tillDetach
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "justify-items",
+            property = justifyItems?.map { it.toString() },
             till = tillDetach
         )
 

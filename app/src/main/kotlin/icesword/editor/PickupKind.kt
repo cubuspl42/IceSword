@@ -1,14 +1,41 @@
 package icesword.editor
 
 import icesword.ImageSetId
-import icesword.editor.WapObjectPrototype.ChaliceTreasurePrototype
+import icesword.editor.JeweledTreasureColor.*
+import icesword.editor.JeweledTreasureKind.Chalice
+import icesword.editor.JeweledTreasureKind.Cross
+import icesword.editor.JeweledTreasureKind.Crown
+import icesword.editor.JeweledTreasureKind.Gecko
+import icesword.editor.JeweledTreasureKind.Ring
+import icesword.editor.JeweledTreasureKind.Scepter
+import icesword.editor.JeweledTreasureKind.Skull
 import icesword.editor.WapObjectPrototype.CoinPrototype
-import icesword.editor.WapObjectPrototype.CrossTreasurePrototype
-import icesword.editor.WapObjectPrototype.CrownTreasurePrototype
-import icesword.editor.WapObjectPrototype.GeckoTreasurePrototype
-import icesword.editor.WapObjectPrototype.RingTreasurePrototype
-import icesword.editor.WapObjectPrototype.ScepterTreasurePrototype
-import icesword.editor.WapObjectPrototype.SkullTreasurePrototype
+
+enum class JeweledTreasureKind(
+    private val treasureImageId: String,
+) {
+    Ring("RINGS"),
+    Cross("CROSSES"),
+    Scepter("SCEPTERS"),
+    Gecko("GECKOS"),
+    Chalice("CHALICES"),
+    Crown("CROWNS"),
+    Skull("JEWELEDSKULL");
+
+    fun buildImageSetId(color: JeweledTreasureColor): ImageSetId = ImageSetId(
+        fullyQualifiedId = "GAME_IMAGES_TREASURE_${treasureImageId}_${color.colorId}",
+    )
+}
+
+enum class JeweledTreasureColor {
+    Red,
+    Green,
+    Blue,
+    Purple;
+
+    val colorId: String
+        get() = this.name.uppercase()
+}
 
 enum class PickupKind {
     TreasureGoldbars,
@@ -77,24 +104,30 @@ enum class PickupKind {
 
     val imageSetId: ImageSetId? by lazy {
         when (this) {
-            TreasureGoldbars -> null
-            TreasureRingsRed -> null
-            TreasureRingsGreen -> RingTreasurePrototype.imageSetId
-            TreasureRingsBlue -> null
-            TreasureRingsPurple -> null
+            TreasureGoldbars -> ImageSetId("GAME_IMAGES_TREASURE_GOLDBARS")
+
+            TreasureRingsRed -> Ring.buildImageSetId(Red)
+            TreasureRingsGreen -> Ring.buildImageSetId(Green)
+            TreasureRingsBlue -> Ring.buildImageSetId(Blue)
+            TreasureRingsPurple -> Ring.buildImageSetId(Purple)
+
             TreasureNecklace -> null
-            TreasureCrossesRed -> null
-            TreasureCrossesGreen -> CrossTreasurePrototype.imageSetId
-            TreasureCrossesBlue -> null
-            TreasureCrossesPurple -> null
-            TreasureSceptersRed -> null
-            TreasureSceptersGreen -> ScepterTreasurePrototype.imageSetId
-            TreasureSceptersBlue -> null
-            TreasureSceptersPurple -> null
-            TreasureGeckosRed -> null
-            TreasureGeckosGreen -> GeckoTreasurePrototype.imageSetId
-            TreasureGeckosBlue -> null
-            TreasureGeckosPurple -> null
+
+            TreasureCrossesRed -> Cross.buildImageSetId(Red)
+            TreasureCrossesGreen -> Cross.buildImageSetId(Green)
+            TreasureCrossesBlue -> Cross.buildImageSetId(Blue)
+            TreasureCrossesPurple -> Cross.buildImageSetId(Purple)
+
+            TreasureSceptersRed -> Scepter.buildImageSetId(Red)
+            TreasureSceptersGreen -> Scepter.buildImageSetId(Green)
+            TreasureSceptersBlue -> Scepter.buildImageSetId(Blue)
+            TreasureSceptersPurple -> Scepter.buildImageSetId(Purple)
+
+            TreasureGeckosRed -> Gecko.buildImageSetId(Red)
+            TreasureGeckosGreen -> Gecko.buildImageSetId(Green)
+            TreasureGeckosBlue -> Gecko.buildImageSetId(Blue)
+            TreasureGeckosPurple -> Gecko.buildImageSetId(Purple)
+
             AmmoDeathbag -> null
             AmmoShot -> null
             AmmoShotbag -> null
@@ -117,18 +150,22 @@ enum class PickupKind {
             CurseDeath -> null
             CurseTreasure -> null
             CurseFreeze -> null
-            TreasureChalicesRed -> null
-            TreasureChalicesGreen -> ChaliceTreasurePrototype.imageSetId
-            TreasureChalicesBlue -> null
-            TreasureChalicesPurple -> null
-            TreasureCrownsRed -> null
-            TreasureCrownsGreen -> CrownTreasurePrototype.imageSetId
-            TreasureCrownsBlue -> null
-            TreasureCrownsPurple -> null
-            TreasureSkullRed -> null
-            TreasureSkullGreen -> SkullTreasurePrototype.imageSetId
-            TreasureSkullBlue -> null
-            TreasureSkullPurple -> null
+
+            TreasureChalicesRed -> Chalice.buildImageSetId(Red)
+            TreasureChalicesGreen -> Chalice.buildImageSetId(Green)
+            TreasureChalicesBlue -> Chalice.buildImageSetId(Blue)
+            TreasureChalicesPurple -> Chalice.buildImageSetId(Purple)
+
+            TreasureCrownsRed -> Crown.buildImageSetId(Red)
+            TreasureCrownsGreen -> Crown.buildImageSetId(Green)
+            TreasureCrownsBlue -> Crown.buildImageSetId(Blue)
+            TreasureCrownsPurple -> Crown.buildImageSetId(Purple)
+
+            TreasureSkullRed -> Skull.buildImageSetId(Red)
+            TreasureSkullGreen -> Skull.buildImageSetId(Green)
+            TreasureSkullBlue -> Skull.buildImageSetId(Blue)
+            TreasureSkullPurple -> Skull.buildImageSetId(Purple)
+
             PowerupInvisibility -> null
             PowerupInvincibility -> null
             PowerupLife -> null
