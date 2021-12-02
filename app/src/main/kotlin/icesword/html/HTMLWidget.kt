@@ -2,6 +2,8 @@ package icesword.html
 
 import icesword.frp.Cell
 import icesword.frp.Till
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.frp.mapTillNext
 import org.w3c.dom.Node
 
@@ -41,6 +43,11 @@ interface HTMLWidgetB<W : HTMLWidget> {
 
         fun build(widgets: List<HTMLWidgetB<*>>, tillDetach: Till): List<HTMLWidget> =
             widgets.map { widgetB -> widgetB.build(tillDetach) }
+
+        fun buildDl(widgets: DynamicList<HTMLWidgetB<*>>, tillAbort: Till): DynamicList<HTMLWidget> =
+            widgets.mapTillRemoved(tillAbort) { childB, tillNext ->
+                childB.build(tillNext)
+            }
     }
 
     fun build(tillDetach: Till): W

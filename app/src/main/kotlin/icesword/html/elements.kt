@@ -5,6 +5,7 @@ import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
 import icesword.frp.reactIndefinitely
@@ -617,6 +618,33 @@ fun createGrid(
     }
 }
 
+fun createGridDl(
+    tagName: String = "div",
+    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    gap: LinearDimension? = null,
+    children: DynamicList<HTMLWidgetB<*>>,
+): HTMLWidgetB<HTMLWidget> {
+    val widgetB = createGrid(
+        tagName = tagName,
+        style = style,
+        gap = gap,
+        children = emptyList(),
+    )
+
+    return object : HTMLWidgetB<HTMLWidget> {
+        override fun build(tillDetach: Till): HTMLWidget {
+            val widget = widgetB.build(tillDetach)
+            val element = HTMLWidget.resolve(widget) as Element
+
+            linkNodeChildrenDl(
+                element = element,
+                children = HTMLWidgetB.buildDl(children)
+                    .map(HTMLWidget.Companion::resolve),
+                till = tillDetach,
+            )
+        }
+    }
+}
 
 fun createColumnDl(
     tagName: String = "div",
@@ -661,13 +689,31 @@ fun createRow(
         children.forEach(this::appendChild)
     }
 
-fun createRowDl(
+fun createRowWb(
     tagName: String = "div",
     style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
     horizontalGap: LinearDimension? = null,
-    children: DynamicList<Node>,
-    tillDetach: Till,
-): HTMLElement = TODO()
+    children: List<HTMLWidgetB<*>>,
+) = object : HTMLWidgetB<HTMLWidget> {
+    override fun build(tillDetach: Till): HTMLWidget {
+        val element = createStyledHtmlElement(
+            tagName = tagName,
+            style = style.copy(
+                display = constant(Display.flex),
+                flexDirection = constant(FlexDirection.row),
+                gap = horizontalGap?.let(::constant),
+            ),
+            tillDetach = tillDetach,
+        ).apply {
+            HTMLWidgetB.build(children, tillDetach).forEach {
+                appendChild(HTMLWidget.resolve(it))
+            }
+        }
+
+        return HTMLWidget.of(element)
+    }
+}
+
 
 fun createNumberInput(
     staticStyle: (CSSStyleDeclaration.() -> Unit)? = null,

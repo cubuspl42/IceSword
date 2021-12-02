@@ -6,6 +6,7 @@ import icesword.editor.PickupKind
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
+import icesword.frp.dynamic_list.mapNotNull
 import icesword.frp.units
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.HTMLWidget
@@ -13,12 +14,15 @@ import icesword.html.HTMLWidgetB
 import icesword.html.createButtonWb
 import icesword.html.createColumnWb
 import icesword.html.createGrid
+import icesword.html.createGridDl
+import icesword.html.createRowWb
 import icesword.html.createTextWb
 import icesword.html.createWrapper
 import icesword.html.flatMap
 import icesword.html.map
 import kotlinx.css.Align
 import kotlinx.css.Color
+import kotlinx.css.JustifyContent
 import kotlinx.css.px
 import org.w3c.dom.HTMLElement
 
@@ -49,6 +53,30 @@ fun createEditEnemyDialog(
             )
         }
 
+    fun createPickupSelectionGrid() = createGrid(
+        style = DynamicStyleDeclaration(
+            alignSelf = constant(Align.center),
+            justifyItems = constant(Align.center),
+            alignItems = constant(Align.center),
+        ),
+        gap = 8.px,
+        children = PickupKind.values().mapNotNull {
+            createPickupImage(it)
+        },
+    )
+
+    fun createEnemyPickupsGrid() = createGridDl(
+        style = DynamicStyleDeclaration(
+            alignSelf = constant(Align.center),
+            justifyItems = constant(Align.center),
+            alignItems = constant(Align.center),
+        ),
+        gap = 8.px,
+        children = enemy.pickups.mapNotNull {
+            createPickupImage(it)
+        },
+    )
+
     return createButtonWb(
         style = DynamicStyleDeclaration(
             alignSelf = constant(Align.flexEnd),
@@ -67,16 +95,15 @@ fun createEditEnemyDialog(
                 createTextWb(
                     text = constant("Enemy: ${enemy.imageSetId.fullyQualifiedId}"),
                 ),
-                createGrid(
+                createRowWb(
                     style = DynamicStyleDeclaration(
-                        alignSelf = constant(Align.center),
-                        justifyItems = constant(Align.center),
-                        alignItems = constant(Align.center),
+                        justifyContent = constant(JustifyContent.center),
                     ),
-                    gap = 8.px,
-                    children = PickupKind.values().mapNotNull {
-                        createPickupImage(it)
-                    },
+                    horizontalGap = 48.px,
+                    children = listOf(
+                        createPickupSelectionGrid(),
+                        createEnemyPickupsGrid(),
+                    ),
                 ),
                 createButtonWb(
                     style = DynamicStyleDeclaration(

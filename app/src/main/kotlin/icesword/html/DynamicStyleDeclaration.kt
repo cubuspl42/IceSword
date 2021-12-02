@@ -12,6 +12,7 @@ import kotlinx.css.Display
 import kotlinx.css.FlexDirection
 import kotlinx.css.FontStyle
 import kotlinx.css.FontWeight
+import kotlinx.css.JustifyContent
 import kotlinx.css.LinearDimension
 import kotlinx.css.PointerEvents
 import kotlinx.css.properties.Transforms
@@ -43,6 +44,7 @@ data class DynamicStyleDeclaration(
     val gap: Cell<LinearDimension>? = null,
     val justifyItems: Cell<Align>? = null,
     val alignItems: Cell<Align>? = null,
+    val justifyContent: Cell<JustifyContent>? = null,
     val alignSelf: Cell<Align>? = null,
     val backgroundColor: Cell<Color>? = null,
     val cursor: Cell<Cursor?>? = null,
@@ -106,6 +108,13 @@ data class DynamicStyleDeclaration(
             style = style,
             propertyName = "align-items",
             property = alignItems?.map { it.toString() },
+            till = tillDetach
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "justify-content",
+            property = justifyContent?.map { it.toString() },
             till = tillDetach
         )
 

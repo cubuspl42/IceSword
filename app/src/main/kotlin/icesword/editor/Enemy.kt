@@ -50,6 +50,14 @@ class Enemy(
 
     val pickups: DynamicList<PickupKind> = _pickups
 
+    fun removePickupAt(pickupIndex: Int) {
+        _pickups.removeAt(index = pickupIndex)
+    }
+
+    fun addPickup(pickup: PickupKind) {
+        _pickups.add(pickup)
+    }
+
     override val entityPosition: EntityPosition =
         EntityPixelPosition(
             initialPosition = initialPosition,
