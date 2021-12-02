@@ -10,6 +10,7 @@ import icesword.frp.dynamic_list.size
 import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
+import icesword.wwd.Geometry
 import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.Wwd
 import kotlinx.serialization.SerialName
@@ -91,9 +92,23 @@ class Enemy(
     )
 
     override fun exportWapObject(): Wwd.Object_ {
+        fun encodePickups(
+            pickup1: PickupKind?,
+            pickup2: PickupKind?,
+            pickup3: PickupKind?,
+            pickup4: PickupKind?,
+        ): Geometry.Rectangle = Geometry.Rectangle(
+            // Encoding order is taken from OpenClaw, maybe there was a reason
+            left = pickup1?.code ?: 0,
+            top = pickup4?.code ?: 0,
+            right = pickup2?.code ?: 0,
+            bottom = pickup3?.code ?: 0,
+        )
+
         val position = position.sample()
         val movementRange = relativeMovementRange.sample()
         val globalMovementRange = movementRange.translate(position)
+        val pickups = pickups.volatileContentView
 
         return wapObjectPrototype.wwdObjectPrototype.copy(
             x = position.x,
@@ -101,6 +116,19 @@ class Enemy(
             rangeRect = Rectangle.zero.copy(
                 left = globalMovementRange.minX,
                 right = globalMovementRange.maxX,
+            ),
+            powerUp = pickups.getOrNull(0)?.code ?: 0,
+            userRect1 = encodePickups(
+                pickup1 = pickups.getOrNull(1),
+                pickup2 = pickups.getOrNull(2),
+                pickup3 = pickups.getOrNull(3),
+                pickup4 = pickups.getOrNull(4),
+            ),
+            userRect2 = encodePickups(
+                pickup1 = pickups.getOrNull(5),
+                pickup2 = pickups.getOrNull(6),
+                pickup3 = pickups.getOrNull(7),
+                pickup4 = pickups.getOrNull(8),
             ),
         )
     }
