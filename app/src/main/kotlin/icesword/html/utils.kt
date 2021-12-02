@@ -112,7 +112,7 @@ fun linkHtmlChildrenDl(
 
 fun linkChild(
     element: HTMLElement,
-    child: Cell<HTMLElement?>,
+    child: Cell<Node?>,
     till: Till,
 ) {
     child.values().reactTill(till) { c ->

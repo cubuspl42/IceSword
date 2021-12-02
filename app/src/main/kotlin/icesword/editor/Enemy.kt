@@ -6,6 +6,7 @@ import icesword.RezIndex
 import icesword.frp.Cell
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
+import icesword.frp.dynamic_list.size
 import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -28,6 +29,8 @@ class Enemy(
     WapObjectExportable {
 
     companion object {
+        const val pickupCountLimit: Int = 9
+
         fun load(
             rezIndex: RezIndex,
             data: EnemyData,
@@ -55,7 +58,9 @@ class Enemy(
     }
 
     fun addPickup(pickup: PickupKind) {
-        _pickups.add(pickup)
+        if (pickups.size.sample() < pickupCountLimit) {
+            _pickups.add(pickup)
+        }
     }
 
     override val entityPosition: EntityPosition =

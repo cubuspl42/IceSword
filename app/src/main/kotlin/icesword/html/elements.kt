@@ -6,8 +6,11 @@ import icesword.frp.DynamicSet
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.map
+import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
+import icesword.frp.mapNested
+import icesword.frp.mapTillNext
 import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
 import icesword.frp.sample
@@ -21,7 +24,9 @@ import kotlinx.css.Color
 import kotlinx.css.Display
 import kotlinx.css.FlexDirection
 import kotlinx.css.LinearDimension
+import kotlinx.css.em
 import kotlinx.css.properties.LineHeight
+import kotlinx.css.px
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
@@ -108,6 +113,27 @@ fun createStyledHtmlElement(
     return element
 }
 
+fun createHTMLWidgetB(
+    tagName: String,
+    children: DynamicList<HTMLWidgetB<*>>,
+    style: DynamicStyleDeclaration? = null,
+) = object : HTMLWidgetB<HTMLWidget> {
+    override fun build(tillDetach: Till): HTMLWidget {
+        val element = document.createElement(tagName) as HTMLElement
+
+        style?.linkTo(element.style, tillDetach)
+
+        linkNodeChildrenDl(
+            element = element,
+            children = HTMLWidgetB.buildDl(children, tillDetach)
+                .map(HTMLWidget.Companion::resolve),
+            till = tillDetach,
+        )
+
+        return HTMLWidget.of(element)
+    }
+}
+
 
 fun createHeading4(text: String): HTMLElement =
     createHtmlElement("h4").apply {
@@ -115,6 +141,30 @@ fun createHeading4(text: String): HTMLElement =
             document.createTextNode(text),
         )
     }
+
+
+fun createHeading4Wb(text: Cell<String>): HTMLWidgetB<*> =
+    createHTMLWidgetB(
+        tagName = "h4",
+        style = DynamicStyleDeclaration(
+            margin = constant(0.25.em),
+        ),
+        children = staticListOf(
+            createTextWb(text),
+        ),
+    )
+
+
+fun createHeading5Wb(text: Cell<String>): HTMLWidgetB<*> =
+    createHTMLWidgetB(
+        tagName = "h5",
+        style = DynamicStyleDeclaration(
+            margin = constant(0.25.em),
+        ),
+        children = staticListOf(
+            createTextWb(text),
+        ),
+    )
 
 fun createSvgRoot(
     tillDetach: Till,
@@ -475,6 +525,7 @@ fun createContainer(
 fun createWrapper(
     child: Cell<HTMLElement?>,
     className: String? = null,
+    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
     tillDetach: Till,
 ): HTMLElement =
     createHtmlElement("div").apply {
@@ -482,12 +533,33 @@ fun createWrapper(
             this.className = "editorViewWrapper"
         }
 
+//        style?.linkTo(element.style, tillDetach)
+
         linkChild(
             element = this,
             child = child,
             till = tillDetach
         )
     }
+
+fun createWrapperWb(
+    tagName: String = "div",
+    style: DynamicStyleDeclaration? = null,
+    child: Cell<HTMLWidgetB<*>?>,
+): HTMLWidgetB<*> = object : HTMLWidgetB<HTMLWidget> {
+    override fun build(tillDetach: Till): HTMLWidget {
+        val element = document.createElement(tagName) as HTMLElement
+
+        style?.linkTo(element.style, tillDetach)
+
+        val childElement = HTMLWidgetB.build(child, tillDetach)
+            .mapNested(HTMLWidget.Companion::resolve)
+
+        linkChild(element, childElement, tillDetach)
+
+        return HTMLWidget.of(element)
+    }
+}
 
 fun createTableContainer(
     borderSpacing: LinearDimension,
@@ -566,6 +638,7 @@ fun createColumn(
 fun createColumnWb(
     tagName: String = "div",
     style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    flexStyle: FlexStyleDeclaration = FlexStyleDeclaration(),
     verticalGap: LinearDimension? = null,
     children: List<HTMLWidgetB<*>>,
 ) = object : HTMLWidgetB<HTMLWidget> {
@@ -573,9 +646,10 @@ fun createColumnWb(
         val element = createStyledHtmlElement(
             tagName = tagName,
             style = style.copy(
-                display = constant(Display.flex),
-                flexDirection = constant(FlexDirection.column),
-                gap = verticalGap?.let(::constant),
+                displayStyle = flexStyle.copy(
+                    direction = constant(FlexDirection.column),
+                    gap = flexStyle.gap ?: verticalGap?.let(::constant),
+                ),
             ),
             tillDetach = tillDetach,
         ).apply {
@@ -591,10 +665,14 @@ fun createColumnWb(
 fun createGrid(
     tagName: String = "div",
     style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    columnCount: Int = 3,
     gap: LinearDimension? = null,
     children: List<HTMLWidgetB<*>>,
 ) = object : HTMLWidgetB<HTMLWidget> {
     override fun build(tillDetach: Till): HTMLWidget {
+        val gridTemplateColumns = generateSequence { "1fr" }.take(columnCount)
+            .joinToString(" ")
+
         val element = createStyledHtmlElement(
             tagName = tagName,
             style = style.copy(
@@ -604,9 +682,7 @@ fun createGrid(
             tillDetach = tillDetach,
         ).apply {
             this.style.apply {
-                setProperty("grid-template-columns", "1fr 1fr 1fr")
-//                setProperty("grid-template-rows", "1f")
-
+                setProperty("grid-template-columns", gridTemplateColumns)
             }
 
             HTMLWidgetB.build(children, tillDetach).forEach {
@@ -638,10 +714,12 @@ fun createGridDl(
 
             linkNodeChildrenDl(
                 element = element,
-                children = HTMLWidgetB.buildDl(children)
+                children = HTMLWidgetB.buildDl(children, tillDetach)
                     .map(HTMLWidget.Companion::resolve),
                 till = tillDetach,
             )
+
+            return HTMLWidget.of(element)
         }
     }
 }

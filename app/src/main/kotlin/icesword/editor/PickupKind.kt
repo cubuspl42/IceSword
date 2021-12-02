@@ -102,16 +102,23 @@ enum class PickupKind {
     val code: Int
         get() = ordinal + 1
 
-    val imageSetId: ImageSetId? by lazy {
+    val imageSetId: ImageSetId by lazy {
+        // FIXME
+        val defaultImageSetId = ImageSetId(
+            fullyQualifiedId = "GAME_IMAGES_MONOLITH",
+        )
+
         when (this) {
-            TreasureGoldbars -> ImageSetId("GAME_IMAGES_TREASURE_GOLDBARS")
+            TreasureGoldbars -> ImageSetId(
+                fullyQualifiedId = "GAME_IMAGES_TREASURE_GOLDBARS",
+            )
 
             TreasureRingsRed -> Ring.buildImageSetId(Red)
             TreasureRingsGreen -> Ring.buildImageSetId(Green)
             TreasureRingsBlue -> Ring.buildImageSetId(Blue)
             TreasureRingsPurple -> Ring.buildImageSetId(Purple)
 
-            TreasureNecklace -> null
+            TreasureNecklace -> defaultImageSetId
 
             TreasureCrossesRed -> Cross.buildImageSetId(Red)
             TreasureCrossesGreen -> Cross.buildImageSetId(Green)
@@ -128,28 +135,28 @@ enum class PickupKind {
             TreasureGeckosBlue -> Gecko.buildImageSetId(Blue)
             TreasureGeckosPurple -> Gecko.buildImageSetId(Purple)
 
-            AmmoDeathbag -> null
-            AmmoShot -> null
-            AmmoShotbag -> null
-            PowerupCatnip1 -> null
-            PowerupCatnip2 -> null
-            HealthBreadwater -> null
-            Health25 -> null
-            Health10 -> null
-            Health15 -> null
-            AmmoMagic5 -> null
-            AmmoMagic10 -> null
-            AmmoMagic25 -> null
-            Mappiece -> null
-            Warp -> null
+            AmmoDeathbag -> defaultImageSetId
+            AmmoShot -> defaultImageSetId
+            AmmoShotbag -> defaultImageSetId
+            PowerupCatnip1 -> defaultImageSetId
+            PowerupCatnip2 -> defaultImageSetId
+            HealthBreadwater -> defaultImageSetId
+            Health25 -> defaultImageSetId
+            Health10 -> defaultImageSetId
+            Health15 -> defaultImageSetId
+            AmmoMagic5 -> defaultImageSetId
+            AmmoMagic10 -> defaultImageSetId
+            AmmoMagic25 -> defaultImageSetId
+            Mappiece -> defaultImageSetId
+            Warp -> defaultImageSetId
             TreasureCoins -> CoinPrototype.imageSetId
-            AmmoDynamite -> null
-            CurseAmmo -> null
-            CurseMagic -> null
-            CurseHealth -> null
-            CurseDeath -> null
-            CurseTreasure -> null
-            CurseFreeze -> null
+            AmmoDynamite -> defaultImageSetId
+            CurseAmmo -> defaultImageSetId
+            CurseMagic -> defaultImageSetId
+            CurseHealth -> defaultImageSetId
+            CurseDeath -> defaultImageSetId
+            CurseTreasure -> defaultImageSetId
+            CurseFreeze -> defaultImageSetId
 
             TreasureChalicesRed -> Chalice.buildImageSetId(Red)
             TreasureChalicesGreen -> Chalice.buildImageSetId(Green)
@@ -166,14 +173,14 @@ enum class PickupKind {
             TreasureSkullBlue -> Skull.buildImageSetId(Blue)
             TreasureSkullPurple -> Skull.buildImageSetId(Purple)
 
-            PowerupInvisibility -> null
-            PowerupInvincibility -> null
-            PowerupLife -> null
-            PowerupFireSword -> null
-            PowerupLightningSword -> null
-            PowerupFrostSword -> null
-            BossWarp -> null
-            Level2Gem -> null
+            PowerupInvisibility -> defaultImageSetId
+            PowerupInvincibility -> defaultImageSetId
+            PowerupLife -> defaultImageSetId
+            PowerupFireSword -> defaultImageSetId
+            PowerupLightningSword -> defaultImageSetId
+            PowerupFrostSword -> defaultImageSetId
+            BossWarp -> defaultImageSetId
+            Level2Gem -> defaultImageSetId
         }
     }
 }

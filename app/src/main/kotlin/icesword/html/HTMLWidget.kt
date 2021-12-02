@@ -30,7 +30,7 @@ sealed interface HTMLWidget : HTMLWidgetB<HTMLWidget> {
     }
 }
 
-interface HTMLWidgetB<W : HTMLWidget> {
+interface HTMLWidgetB<out W : HTMLWidget> {
     companion object {
         fun <W : HTMLWidget> pure(widget: W): HTMLWidgetB<W> = object : HTMLWidgetB<W> {
             override fun build(tillDetach: Till): W = widget

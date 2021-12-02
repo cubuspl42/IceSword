@@ -122,7 +122,7 @@ private fun createEditFloorSpikeRowDialog(
     return createColumn(
         style = DynamicStyleDeclaration(
             backgroundColor = Cell.constant(Color("#d1d1d1")),
-            padding = Cell.constant("16px"),
+            paddingString = Cell.constant("16px"),
             fontFamily = Cell.constant("sans-serif"),
         ),
         verticalGap = 8.px,

@@ -16,8 +16,13 @@ interface DynamicList<out E> {
         fun <E> of(list: List<E>): DynamicList<E> =
             ContentDynamicList(content = constant(list))
 
+        fun <E> ofSingle(element: Cell<E>): DynamicList<E> =
+            ContentDynamicList(content = element.map(::listOf))
+
         fun <E> merge(list: DynamicList<Stream<E>>): Stream<E> =
             list.content.divertMap { Stream.merge(it) }
+
+
     }
 
     val content: Cell<List<E>>
@@ -26,6 +31,9 @@ interface DynamicList<out E> {
     val volatileContentView: List<E>
         get() = content.sample()
 }
+
+fun <E> staticListOf(vararg elements: E): DynamicList<E> =
+    DynamicList.of(elements.toList())
 
 class ContentDynamicList<out E>(
     override val content: Cell<List<E>>,
@@ -85,6 +93,12 @@ fun <E, R> DynamicList<E>.map(
     transform: (element: E) -> R,
 ): DynamicList<R> = ContentDynamicList(
     content = this.content.map { it.map(transform) },
+)
+
+fun <E, R> DynamicList<E>.mapIndexed(
+    transform: (index: Int, element: E) -> R,
+): DynamicList<R> = ContentDynamicList(
+    content = this.content.map { it.mapIndexed(transform) },
 )
 
 fun <E, R : Any> DynamicList<E>.mapNotNull(
