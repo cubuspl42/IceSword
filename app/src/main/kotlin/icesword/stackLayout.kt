@@ -1,10 +1,10 @@
 package icesword
 
-import icesword.html.createHtmlElement
+import icesword.html.createHTMLElementRaw
 import org.w3c.dom.HTMLElement
 
 fun createStackLayout(children: List<HTMLElement>): HTMLElement =
-    createHtmlElement("div").apply {
+    createHTMLElementRaw("div").apply {
         className = "stack"
 
         style.apply {

@@ -41,6 +41,7 @@ data class DynamicStyleDeclaration(
     val display: Cell<Display>? = null,
     val displayStyle: FlexStyleDeclaration? = null,
     val margin: Cell<LinearDimension>? = null,
+    val marginBlock: Cell<LinearDimension>? = null,
     val padding: Cell<LinearDimension>? = null,
     val paddingString: Cell<String>? = null,
     val fontFamily: Cell<String>? = null,
@@ -86,6 +87,13 @@ data class DynamicStyleDeclaration(
             style = style,
             propertyName = "margin",
             property = margin?.map { it.toString() },
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "margin-block",
+            property = marginBlock?.map { it.toString() },
             till = tillDetach,
         )
 

@@ -19,7 +19,7 @@ import icesword.frp.mapTillNext
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.createButton
 import icesword.html.createContainer
-import icesword.html.createHtmlElement
+import icesword.html.createHTMLElementRaw
 import icesword.html.createRow
 import icesword.html.createStyledText
 import icesword.ui.createSelectButton
@@ -65,7 +65,7 @@ fun createEditorToolBar(
         tillDetach = tillDetach,
     )
 
-    val toolButtonsRow = createHtmlElement("div").apply {
+    val toolButtonsRow = createHTMLElementRaw("div").apply {
         className = "toolButtonsRow"
 
         appendChild(selectButton)
@@ -88,7 +88,7 @@ fun createEditorToolBar(
         tillDetach = tillDetach,
     )
 
-    val editButtonsRow = createHtmlElement("div").apply {
+    val editButtonsRow = createHTMLElementRaw("div").apply {
         className = "editButtonsRow"
 
         appendChild(editButton)
@@ -110,7 +110,7 @@ fun createEditorToolBar(
         tillDetach = tillDetach,
     )
 
-    val otherButtonsRow = createHtmlElement("div").apply {
+    val otherButtonsRow = createHTMLElementRaw("div").apply {
         className = "otherButtonsRow"
 
         appendChild(exportButton)

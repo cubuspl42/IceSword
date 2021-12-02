@@ -1,7 +1,7 @@
 package icesword.scene
 
 import TextureBank
-import icesword.html.createHtmlElement
+import icesword.html.createHTMLElementRaw
 import icesword.html.createSvgGroup
 import icesword.html.createSvgRoot
 import icesword.html.linkSvgChildren
@@ -373,7 +373,7 @@ fun scene(
 
     requestAnimationFrames()
 
-    val root = createHtmlElement("div").apply {
+    val root = createHTMLElementRaw("div").apply {
         className = "scene"
 
         style.apply {

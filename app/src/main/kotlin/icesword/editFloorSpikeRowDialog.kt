@@ -12,7 +12,7 @@ import icesword.html.HTMLWidgetB
 import icesword.html.createButton
 import icesword.html.createColumn
 import icesword.html.createColumnDl
-import icesword.html.createNumberInput
+import icesword.html.createNumberInputElement
 import icesword.html.createRow
 import icesword.html.createStaticText
 import kotlinx.css.Align
@@ -70,7 +70,7 @@ private fun createEditFloorSpikeRowDialog(
         horizontalGap = 4.px,
         children = listOf(
             createStaticText("$labelText:"),
-            createNumberInput(
+            createNumberInputElement(
                 staticStyle = {
                     width = 64.px.toString()
                 },

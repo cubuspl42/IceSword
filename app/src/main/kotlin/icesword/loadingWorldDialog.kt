@@ -1,6 +1,6 @@
 package icesword
 
-import icesword.html.createHtmlElement
+import icesword.html.createHTMLElementRaw
 import icesword.editor.LoadingWorldProcess
 import kotlinx.browser.document
 import org.w3c.dom.HTMLElement
@@ -8,7 +8,7 @@ import org.w3c.dom.HTMLElement
 fun createLoadingWorldDialog(
     loadingWorldProcess: LoadingWorldProcess
 ): HTMLElement =
-    createHtmlElement("div").apply {
+    createHTMLElementRaw("div").apply {
         className = "loadingWorldDialog"
 
         style.apply {

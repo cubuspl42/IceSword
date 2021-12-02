@@ -1,6 +1,6 @@
 package icesword
 
-import icesword.html.createHtmlElement
+import icesword.html.createHTMLElementRaw
 import icesword.html.linkChild
 import icesword.editor.App
 import icesword.frp.Till
@@ -24,10 +24,10 @@ fun createAppView(
                     editor = editor,
                     tillDetach = tillNext,
                 )
-            } ?: createHtmlElement("div")
+            } ?: createHTMLElementRaw("div")
         }
 
-        val editorViewWrapper = createHtmlElement("div").apply {
+        val editorViewWrapper = createHTMLElementRaw("div").apply {
             className = "editorViewWrapper"
 
             linkChild(this, theEditorView, till = tillDetach)

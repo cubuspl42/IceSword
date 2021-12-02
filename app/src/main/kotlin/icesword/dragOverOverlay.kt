@@ -1,6 +1,6 @@
 package icesword
 
-import icesword.html.createHtmlElement
+import icesword.html.createHTMLElementRaw
 import icesword.html.linkChild
 import icesword.html.linkProperty
 import icesword.html.onEvent
@@ -25,7 +25,7 @@ fun createDragoverOverlay(
 ): HTMLElement {
     val dragOverPreview = createDragoverPreview()
 
-    val dragoverPreviewWrapper = createHtmlElement("div").apply {
+    val dragoverPreviewWrapper = createHTMLElementRaw("div").apply {
         className = "dragoverPreviewWrapper"
 
         style.apply {
@@ -88,7 +88,7 @@ fun createDragoverOverlay(
 }
 
 private fun createDragoverPreview(): HTMLElement {
-    val root = createHtmlElement("div").apply {
+    val root = createHTMLElementRaw("div").apply {
         className = "dragoverPreview"
 
         style.apply {
@@ -100,7 +100,7 @@ private fun createDragoverPreview(): HTMLElement {
         }
 
         appendChild(
-            createHtmlElement("p").apply {
+            createHTMLElementRaw("p").apply {
                 style.apply {
                     fontFamily = "sans-serif"
                     color = "white"

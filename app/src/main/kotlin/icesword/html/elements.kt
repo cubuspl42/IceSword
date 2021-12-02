@@ -10,7 +10,6 @@ import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
 import icesword.frp.mapNested
-import icesword.frp.mapTillNext
 import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
 import icesword.frp.sample
@@ -25,8 +24,6 @@ import kotlinx.css.Display
 import kotlinx.css.FlexDirection
 import kotlinx.css.LinearDimension
 import kotlinx.css.em
-import kotlinx.css.properties.LineHeight
-import kotlinx.css.px
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
@@ -42,7 +39,7 @@ import org.w3c.dom.svg.SVGPolygonElement
 import org.w3c.dom.svg.SVGRectElement
 import org.w3c.dom.svg.SVGSVGElement
 
-fun createHtmlElement(tagName: String): HTMLElement =
+fun createHTMLElementRaw(tagName: String): HTMLElement =
     document.createElement(tagName) as HTMLElement
 
 fun createStaticText(
@@ -113,41 +110,77 @@ fun createStyledHtmlElement(
     return element
 }
 
+fun createHTMLElement(
+    tagName: String,
+    children: DynamicList<Node>,
+    style: DynamicStyleDeclaration? = null,
+    tillDetach: Till,
+): HTMLElement {
+    val element = document.createElement(tagName) as HTMLElement
+
+    style?.linkTo(element.style, tillDetach)
+
+    linkNodeChildrenDl(
+        element = element,
+        children = children,
+        till = tillDetach,
+    )
+
+    return element
+}
+
+fun createHTMLWidget(
+    tagName: String,
+    children: DynamicList<HTMLWidget>,
+    style: DynamicStyleDeclaration? = null,
+    tillDetach: Till,
+): HTMLWidget {
+    val element = createHTMLElement(
+        tagName = tagName,
+        children = children.map(HTMLWidget.Companion::resolve),
+        style = style,
+        tillDetach = tillDetach,
+    )
+
+    return HTMLWidget.of(element)
+}
+
 fun createHTMLWidgetB(
     tagName: String,
     children: DynamicList<HTMLWidgetB<*>>,
     style: DynamicStyleDeclaration? = null,
 ) = object : HTMLWidgetB<HTMLWidget> {
-    override fun build(tillDetach: Till): HTMLWidget {
-        val element = document.createElement(tagName) as HTMLElement
-
-        style?.linkTo(element.style, tillDetach)
-
-        linkNodeChildrenDl(
-            element = element,
-            children = HTMLWidgetB.buildDl(children, tillDetach)
-                .map(HTMLWidget.Companion::resolve),
-            till = tillDetach,
+    override fun build(tillDetach: Till): HTMLWidget =
+        createHTMLWidget(
+            tagName = tagName,
+            children = HTMLWidgetB.buildDl(children, tillDetach),
+            style = style,
+            tillDetach = tillDetach,
         )
-
-        return HTMLWidget.of(element)
-    }
 }
 
 
 fun createHeading4(text: String): HTMLElement =
-    createHtmlElement("h4").apply {
+    createHTMLElementRaw("h4").apply {
         appendChild(
             document.createTextNode(text),
         )
     }
+
+fun createLabel(text: String): HTMLWidgetB<*> =
+    createHTMLWidgetB(
+        tagName = "label",
+        children = staticListOf(
+            createTextWb(constant(text)),
+        ),
+    )
 
 
 fun createHeading4Wb(text: Cell<String>): HTMLWidgetB<*> =
     createHTMLWidgetB(
         tagName = "h4",
         style = DynamicStyleDeclaration(
-            margin = constant(0.25.em),
+            marginBlock = constant(0.25.em),
         ),
         children = staticListOf(
             createTextWb(text),
@@ -159,7 +192,7 @@ fun createHeading5Wb(text: Cell<String>): HTMLWidgetB<*> =
     createHTMLWidgetB(
         tagName = "h5",
         style = DynamicStyleDeclaration(
-            margin = constant(0.25.em),
+            marginBlock = constant(0.25.em),
         ),
         children = staticListOf(
             createTextWb(text),
@@ -480,7 +513,7 @@ fun createContainer(
     children: DynamicSet<HTMLElement>,
     tillDetach: Till,
 ): HTMLElement {
-    val root = createHtmlElement("div")
+    val root = createHTMLElementRaw("div")
 
     children.changes.reactTill(tillDetach) { change ->
         change.added.forEach { root.appendChild(it) }
@@ -497,7 +530,7 @@ fun createContainer(
     children: DynamicOrderedSet<HTMLElement>,
     tillDetach: Till,
 ): HTMLElement {
-    val root = createHtmlElement("div")
+    val root = createHTMLElementRaw("div")
 
     children.changes.reactTill(tillDetach) { change ->
         change.removed?.let {
@@ -528,7 +561,7 @@ fun createWrapper(
     style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
     tillDetach: Till,
 ): HTMLElement =
-    createHtmlElement("div").apply {
+    createHTMLElementRaw("div").apply {
         if (className != null) {
             this.className = "editorViewWrapper"
         }
@@ -565,7 +598,7 @@ fun createTableContainer(
     borderSpacing: LinearDimension,
     rows: List<List<HTMLElement>>,
 ): HTMLElement {
-    val root = createHtmlElement("div").apply {
+    val root = createHTMLElementRaw("div").apply {
         style.apply {
             display = "table"
             this.borderSpacing = borderSpacing.value
@@ -573,14 +606,14 @@ fun createTableContainer(
     }
 
     val children = rows.map { cells ->
-        createHtmlElement("div").apply {
+        createHTMLElementRaw("div").apply {
             style.apply {
                 display = "table-row"
             }
 
             cells.forEach { cell ->
                 appendChild(
-                    createHtmlElement("div").apply {
+                    createHTMLElementRaw("div").apply {
                         style.apply {
                             display = "table-cell"
                             textAlign = "center"
@@ -793,7 +826,7 @@ fun createRowWb(
 }
 
 
-fun createNumberInput(
+fun createNumberInputElement(
     staticStyle: (CSSStyleDeclaration.() -> Unit)? = null,
     initialValue: Int,
     onValueChanged: (Int) -> Unit,

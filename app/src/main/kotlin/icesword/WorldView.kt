@@ -31,7 +31,7 @@ import icesword.html.MouseButton
 import icesword.html.MousePosition
 import icesword.html.calculateRelativePosition
 import icesword.html.clientPosition
-import icesword.html.createHtmlElement
+import icesword.html.createHTMLElementRaw
 import icesword.html.onKeyDown
 import icesword.html.onMouseDown
 import icesword.html.onMouseDrag
@@ -73,7 +73,7 @@ fun worldView(
 ): HTMLElement {
     val world = editor.world
 
-    val root = createHtmlElement("div").apply {
+    val root = createHTMLElementRaw("div").apply {
         className = "worldView"
         tabIndex = 0
 

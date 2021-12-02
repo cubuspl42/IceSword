@@ -5,7 +5,6 @@ import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.frp.mapTillNext
-import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
 
 sealed interface HTMLWidget : HTMLWidgetB<HTMLWidget> {
@@ -18,7 +17,7 @@ sealed interface HTMLWidget : HTMLWidgetB<HTMLWidget> {
 
         fun resolve(widget: HTMLWidget): Node = when (widget) {
             is HTMLElementWidget -> widget.element
-            is HTMLNestedWidget -> resolve(widget.widget)
+            is HTMLShadowWidget -> resolve(widget.root)
         }
     }
 
@@ -26,8 +25,8 @@ sealed interface HTMLWidget : HTMLWidgetB<HTMLWidget> {
         val element: Node
     }
 
-    interface HTMLNestedWidget : HTMLWidget {
-        val widget: HTMLWidget
+    interface HTMLShadowWidget : HTMLWidget {
+        val root: HTMLWidget
     }
 }
 
@@ -64,6 +63,32 @@ fun <Wa : HTMLWidget, Wb : HTMLWidget> HTMLWidgetB<Wa>.map(transform: (widget: W
             val widgetA = self.build(tillDetach)
             val widgetB = transform(widgetA)
             return widgetB
+        }
+    }
+}
+
+fun <Wa : HTMLWidget, Wb : HTMLWidget> HTMLWidgetB<Wa>.mapTillDetach(
+    transform: (widget: Wa, tillDetach: Till) -> Wb,
+): HTMLWidgetB<Wb> {
+    val self = this
+    return object : HTMLWidgetB<Wb> {
+        override fun build(tillDetach: Till): Wb {
+            val widgetA = self.build(tillDetach)
+            val widgetB = transform(widgetA, tillDetach)
+            return widgetB
+        }
+    }
+}
+
+fun <Wa : HTMLWidget> HTMLWidgetB<Wa>.alsoTillDetach(
+    block: (widget: Wa, tillDetach: Till) -> Unit,
+): HTMLWidgetB<Wa> {
+    val self = this
+    return object : HTMLWidgetB<Wa> {
+        override fun build(tillDetach: Till): Wa {
+            val widgetA = self.build(tillDetach)
+            block(widgetA, tillDetach)
+            return widgetA
         }
     }
 }

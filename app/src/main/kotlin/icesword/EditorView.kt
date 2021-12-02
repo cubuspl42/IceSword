@@ -1,7 +1,7 @@
 package icesword
 
 import TextureBank
-import icesword.html.createHtmlElement
+import icesword.html.createHTMLElementRaw
 import icesword.editor.Editor
 import icesword.frp.Till
 import org.w3c.dom.HTMLElement
@@ -22,7 +22,7 @@ fun editorView(
         tillDetach = tillDetach,
     )
 
-    val bottomRow = createHtmlElement("div").apply {
+    val bottomRow = createHTMLElementRaw("div").apply {
         className = "editorBottomRow"
 
         style.apply {
@@ -53,7 +53,7 @@ fun editorView(
         )
     }
 
-    val root = createHtmlElement("div").apply {
+    val root = createHTMLElementRaw("div").apply {
         className = "editorView"
 
         style.display = "flex"

@@ -1,7 +1,7 @@
 package icesword
 
 import icesword.html.createHeading4
-import icesword.html.createHtmlElement
+import icesword.html.createHTMLElementRaw
 import icesword.editor.Editor
 import icesword.editor.ElasticPrototype
 import icesword.editor.InsertionPrototype
@@ -25,7 +25,6 @@ import icesword.editor.WapObjectPrototype.GeckoTreasurePrototype
 import icesword.editor.WapObjectPrototype.RatPrototype
 import icesword.editor.WapObjectPrototype.RingTreasurePrototype
 import icesword.editor.WapObjectPrototype.RobberThiefPrototype
-import icesword.editor.WapObjectPrototype.RopePrototype
 import icesword.editor.WapObjectPrototype.ScepterTreasurePrototype
 import icesword.editor.WapObjectPrototype.SkullTreasurePrototype
 import icesword.frp.Till
@@ -38,7 +37,7 @@ fun editorSideBar(
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
-    val root = createHtmlElement("div").apply {
+    val root = createHTMLElementRaw("div").apply {
         className = "editorSideBar"
 
         style.apply {
@@ -218,7 +217,7 @@ private fun createSection(
     title: String,
     children: List<HTMLElement>,
 ): HTMLElement =
-    createHtmlElement("div").apply {
+    createHTMLElementRaw("div").apply {
         className = "editorSideBarSection"
 
         style.apply {
@@ -238,7 +237,7 @@ private fun createSection(
         )
 
         appendChild(
-            createHtmlElement("div").apply {
+            createHTMLElementRaw("div").apply {
                 style.apply {
                     display = "flex"
                     flexDirection = "column"

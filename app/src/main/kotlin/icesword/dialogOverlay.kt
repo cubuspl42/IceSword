@@ -1,7 +1,7 @@
 package icesword
 
 import icesword.html.DynamicStyleDeclaration
-import icesword.html.createHtmlElement
+import icesword.html.createHTMLElementRaw
 import icesword.html.createStyledHtmlElement
 import icesword.html.linkChild
 import icesword.frp.Cell
@@ -13,7 +13,7 @@ import icesword.frp.mapNested
 import icesword.frp.mapTillNext
 import icesword.frp.reactTill
 import icesword.html.HTMLWidget
-import icesword.html.HTMLWidget.HTMLNestedWidget
+import icesword.html.HTMLWidget.HTMLShadowWidget
 import icesword.html.HTMLWidgetB
 import kotlinx.css.PointerEvents
 import org.w3c.dom.HTMLElement
@@ -22,8 +22,8 @@ import org.w3c.dom.Node
 class Dialog(
     val content: HTMLWidget,
     val onClose: Stream<Unit>,
-) : HTMLNestedWidget {
-    override val widget: HTMLWidget = content
+) : HTMLShadowWidget {
+    override val root: HTMLWidget = content
 }
 
 
@@ -41,7 +41,7 @@ class DialogOverlay(
                     _shownDialog.set(null)
                 }
 
-                dialog.widget
+                dialog.root
             }
         }
 
@@ -80,7 +80,7 @@ fun createDialogOverlay(
     )
 
     fun createOverlay(dialog: Node) =
-        createHtmlElement("div").apply {
+        createHTMLElementRaw("div").apply {
             className = "dialogOverlay"
 
             style.apply {
