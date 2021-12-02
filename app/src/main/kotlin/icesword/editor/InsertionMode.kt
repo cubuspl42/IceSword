@@ -293,6 +293,7 @@ class EnemyInsertionMode(
                 wapObjectPrototype = insertionPrototype.wapObjectPrototype,
                 initialPosition = insertionWorldPoint,
                 initialRelativeMovementRange = HorizontalRange(-128, 128),
+                initialPickups = emptyList(),
             )
         )
     }

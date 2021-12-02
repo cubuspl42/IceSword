@@ -6,6 +6,7 @@ import icesword.RezIndex
 import icesword.frp.Cell
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
+import icesword.frp.dynamic_list.sampleContent
 import icesword.frp.dynamic_list.size
 import icesword.frp.map
 import icesword.geometry.IntRect
@@ -22,6 +23,7 @@ class Enemy(
     private val wapObjectPrototype: WapObjectPrototype,
     initialPosition: IntVec2,
     initialRelativeMovementRange: HorizontalRange,
+    initialPickups: List<PickupKind>,
 ) :
     Entity(),
     EntityMovementRange<HorizontalRange> by EntityMovementRangeMixin(
@@ -41,15 +43,12 @@ class Enemy(
                 wapObjectPrototype = data.objectPrototype,
                 initialPosition = data.position,
                 initialRelativeMovementRange = data.relativeMovementRange,
+                initialPickups = data.pickups.take(pickupCountLimit),
             )
     }
 
     private val _pickups = MutableDynamicList(
-        initialContent = listOf(
-            PickupKind.TreasureCoins,
-            PickupKind.TreasureCoins,
-            PickupKind.TreasureRingsGreen,
-        ),
+        initialContent = initialPickups,
     )
 
     val pickups: DynamicList<PickupKind> = _pickups
@@ -89,6 +88,7 @@ class Enemy(
         objectPrototype = wapObjectPrototype,
         position = position.sample(),
         relativeMovementRange = relativeMovementRange.sample(),
+        pickups = pickups.sampleContent(),
     )
 
     override fun exportWapObject(): Wwd.Object_ {
@@ -140,4 +140,5 @@ data class EnemyData(
     val objectPrototype: WapObjectPrototype,
     val position: IntVec2,
     val relativeMovementRange: HorizontalRange = HorizontalRange.ZERO,
+    val pickups: List<PickupKind> = emptyList(),
 ) : EntityData()
