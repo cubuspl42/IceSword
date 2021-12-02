@@ -9,6 +9,7 @@ import icesword.editor.FloorSpikeRow
 import icesword.editor.KnotSelectMode
 import icesword.editor.EntitySelectMode
 import icesword.editor.PathElevatorPath
+import icesword.editor.Rope
 import icesword.editor.Tool
 import icesword.frp.Till
 import icesword.frp.dynamic_list.size
@@ -281,6 +282,13 @@ private fun onEditPressed(
                 dialogOverlay.showDialog(
                     dialog = createEditFloorSpikeRowDialogWb(
                         floorSpikeRow = selectedEntity,
+                    ),
+                )
+            }
+            is Rope -> {
+                dialogOverlay.showDialog(
+                    dialog = createEditRopeDialog(
+                        rope = selectedEntity,
                     ),
                 )
             }

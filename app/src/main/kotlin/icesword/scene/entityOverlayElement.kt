@@ -11,6 +11,7 @@ import icesword.editor.FloorSpikeRow
 import icesword.editor.HorizontalElevator
 import icesword.editor.KnotMesh
 import icesword.editor.PathElevator
+import icesword.editor.Rope
 import icesword.editor.StartPoint
 import icesword.editor.TileEntity
 import icesword.editor.VerticalElevator
@@ -50,6 +51,10 @@ fun createEntityNode(
         is PathElevator -> PathElevatorNode(
             editor = editor,
             pathElevator = entity,
+        )
+        is Rope -> RopeNode(
+            editor = editor,
+            rope = entity,
         )
     }
 }

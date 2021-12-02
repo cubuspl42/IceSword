@@ -89,10 +89,10 @@ fun editorSideBar(
                         knotPrototype = OvergroundRockPrototype,
                         tillDetach = tillDetach,
                     ),
-                    createInsertWapObjectButton(
+                    createInsertEntityButton(
                         editor = editor,
                         text = "Rope",
-                        wapObjectPrototype = RopePrototype,
+                        insertionPrototype = RopeInsertionPrototype,
                         tillDetach = tillDetach,
                     ),
                     createInsertWapObjectButton(

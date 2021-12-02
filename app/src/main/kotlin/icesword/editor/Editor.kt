@@ -10,6 +10,7 @@ import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.EntitySelectMode.EntityAreaSelectingMode
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
 import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
+import icesword.editor.InsertionPrototype.RopeInsertionPrototype
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till
@@ -283,6 +284,10 @@ class Editor(
                 world = world,
                 rezIndex = rezIndex,
                 insertionPrototype = insertionPrototype,
+            )
+            is RopeInsertionPrototype -> RopeInsertionMode(
+                world = world,
+                rezIndex = rezIndex,
             )
         }
 

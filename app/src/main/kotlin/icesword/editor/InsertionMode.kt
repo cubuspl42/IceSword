@@ -7,6 +7,7 @@ import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
+import icesword.editor.InsertionPrototype.RopeInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.WapObjectPrototype.ElevatorPrototype
@@ -41,6 +42,8 @@ sealed interface InsertionPrototype {
     object PathElevatorInsertionPrototype : InsertionPrototype
 
     object FloorSpikeInsertionPrototype : InsertionPrototype
+
+    object RopeInsertionPrototype : InsertionPrototype
 
     value class EnemyInsertionPrototype(
         val wapObjectPrototype: WapObjectPrototype,
@@ -294,6 +297,26 @@ class EnemyInsertionMode(
                 initialPosition = insertionWorldPoint,
                 initialRelativeMovementRange = HorizontalRange(-128, 128),
                 initialPickups = emptyList(),
+            )
+        )
+    }
+}
+
+class RopeInsertionMode(
+    private val world: World,
+    private val rezIndex: RezIndex,
+) : WapObjectAlikeInsertionMode(
+    rezIndex = rezIndex,
+    wapObjectPrototype = WapObjectPrototype.RopePrototype,
+) {
+    override val insertionPrototype = RopeInsertionPrototype
+
+    override fun insert(insertionWorldPoint: IntVec2) {
+        world.insertEntity(
+            Rope(
+                rezIndex = rezIndex,
+                initialPosition = insertionWorldPoint,
+                initialSwingDurationMs = 1500,
             )
         )
     }
