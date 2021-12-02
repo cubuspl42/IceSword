@@ -8,13 +8,20 @@ import icesword.editor.PickupKind
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.Till
+import icesword.frp.dynamic_list.map
+import icesword.frp.dynamic_list.mapIndexed
 import icesword.frp.map
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.HTMLWidget
+import icesword.html.createGridDl
 import icesword.html.createSvgForeignObject
 import icesword.html.createSvgGroup
 import icesword.html.createTableContainer
 import icesword.html.createWrapper
+import icesword.html.resolve
+import kotlinx.css.Align
 import kotlinx.css.px
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
@@ -59,25 +66,26 @@ class EnemyNode(
             it.topRight + IntVec2(4, 0)
         }
 
-        fun createPickupImage(pickupKind: PickupKind): HTMLElement {
+        fun createPickupImage(pickupKind: PickupKind): HTMLWidget {
+            val imageSetId = pickupKind.imageSetId
+
             val imageMetadata = rezIndex.getImageMetadata(
-                imageSetId = pickupKind.imageSetId!!,
+                imageSetId = imageSetId,
                 i = -1,
             )!!
 
             val texture = textureBank.getImageTexture(imageMetadata)!!
 
-            return createWrapper(
-                child = Cell.constant(texture.createImage()),
-                tillDetach = Till.never,
-            ).apply {
-                style.apply {
-                    display = "inline-block"
-
-                    width = 36.px.value
-                    height = 36.px.value
-                }
-            }
+            return HTMLWidget.of(
+                createWrapper(
+                    child = Cell.constant(texture.createImage()),
+                    tillDetach = Till.never,
+                ).apply {
+                    style.apply {
+                        display = "inline-block"
+                    }
+                },
+            )
         }
 
         val pickupsPreview = createSvgForeignObject(
@@ -85,27 +93,19 @@ class EnemyNode(
             transform = viewTransform * DynamicTransform.translate(pickupsPreviewPosition),
             width = 128,
             height = 128,
-            child = createTableContainer(
-                borderSpacing = 4.px,
-                rows = listOf(
-                    // TODO: Display actual enemy's pickups
-                    listOf(
-                        createPickupImage(PickupKind.TreasureCoins),
-                        createPickupImage(PickupKind.TreasureRingsGreen),
-                        createPickupImage(PickupKind.TreasureCrossesGreen),
-                    ),
-                    listOf(
-                        createPickupImage(PickupKind.TreasureSceptersGreen),
-                        createPickupImage(PickupKind.TreasureGeckosGreen),
-                        createPickupImage(PickupKind.TreasureChalicesGreen),
-                    ),
-                    listOf(
-                        createPickupImage(PickupKind.TreasureCrownsGreen),
-                        createPickupImage(PickupKind.TreasureSkullGreen),
-                        createPickupImage(PickupKind.TreasureRingsGreen),
-                    ),
-                )
-            ),
+            child = createGridDl(
+                style = DynamicStyleDeclaration(
+                    alignSelf = Cell.constant(Align.center),
+                    justifyItems = Cell.constant(Align.center),
+                    alignItems = Cell.constant(Align.center),
+                ),
+                gap = 8.px,
+                children = enemy.pickups.map { pickupKind ->
+                    createPickupImage(
+                        pickupKind = pickupKind,
+                    )
+                },
+            ).build(tillDetach).resolve() as HTMLElement,
             tillDetach = tillDetach,
         )
 

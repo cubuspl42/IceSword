@@ -5,6 +5,7 @@ import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.frp.mapTillNext
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
 
 sealed interface HTMLWidget : HTMLWidgetB<HTMLWidget> {
@@ -29,6 +30,9 @@ sealed interface HTMLWidget : HTMLWidgetB<HTMLWidget> {
         val widget: HTMLWidget
     }
 }
+
+fun HTMLWidget.resolve(): Node =
+    HTMLWidget.resolve(this)
 
 interface HTMLWidgetB<out W : HTMLWidget> {
     companion object {
