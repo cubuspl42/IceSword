@@ -9,7 +9,7 @@ import icesword.editor.PathElevatorStep
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
-import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.Till
 import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.toSet
 import icesword.frp.map
@@ -26,6 +26,7 @@ import icesword.ui.setupMoveController
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import org.w3c.dom.svg.SVGElement
+import org.w3c.dom.svg.SVGSVGElement
 import kotlin.math.roundToInt
 
 class PathElevatorNode(
@@ -62,26 +63,32 @@ private fun createStepArrow(
     context: HybridNode.OverlayBuildContext,
     edge: PathElevatorEdge,
 ): SVGElement = context.run {
+    val lineSeg = Cell.map2(
+        edge.start,
+        edge.end,
+    ) { startPosition, endPosition ->
+        IntLineSeg(
+            pointA = startPosition,
+            pointB = endPosition,
+        ).shorten(44)
+    }
+
+    val viewLineSeg = viewTransform.transform(lineSeg)
+
     createArrow(
-        context = context,
-        lineSeg = Cell.map2(
-            edge.start,
-            edge.end,
-        ) { startPosition, endPosition ->
-            IntLineSeg(
-                pointA = startPosition,
-                pointB = endPosition,
-            ).shorten(44)
-        },
+        svg = svg,
+        lineSeg = viewLineSeg,
         color = edge.isValid.map { if (it) Color.gray else Color.red },
+        tillDetach = tillDetach,
     )
 }
 
 private fun createArrow(
-    context: HybridNode.OverlayBuildContext,
+    svg: SVGSVGElement,
     lineSeg: Cell<IntLineSeg>,
     color: Cell<Color>,
-): SVGElement = context.run {
+    tillDetach: Till,
+): SVGElement {
     fun buildArrowPoints(length: Double): List<IntVec2> {
         val h0 = 8
         val h1 = 4
@@ -107,9 +114,7 @@ private fun createArrow(
         )
     }
 
-    val translate = DynamicTransform.translate(
-        t = viewTransform.transform(lineSeg.map { it.pointA }),
-    )
+    val translate = DynamicTransform.translate(lineSeg.map { it.pointA })
 
     val rotate = DynamicTransform.rotateOfDirection(
         direction = lineSeg.map { it.direction },
@@ -117,7 +122,7 @@ private fun createArrow(
 
     val alpha = 0.6
 
-    createSvgPolygon(
+    return createSvgPolygon(
         svg = svg,
         transform = translate * rotate,
         points = lineSeg.map { lineSeg ->

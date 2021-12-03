@@ -41,6 +41,11 @@ data class IntVec2(
         (y.toDouble() / s).roundToInt(),
     )
 
+    fun divRound(s: Double): IntVec2 = IntVec2(
+        (x.toDouble() / s).roundToInt(),
+        (y.toDouble() / s).roundToInt(),
+    )
+
     fun divFloor(s: Int): IntVec2 = IntVec2(
         x.divFloor(s),
         y.divFloor(s),

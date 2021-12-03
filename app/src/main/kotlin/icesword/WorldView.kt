@@ -8,7 +8,6 @@ import icesword.editor.InsertWapObjectCommand
 import icesword.editor.OffsetTilesView
 import icesword.editor.Tool
 import icesword.editor.WapObjectAlikeInsertionMode
-import icesword.editor.World
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.Stream
@@ -19,14 +18,15 @@ import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.mapNotNull
 import icesword.frp.mapTillRemoved
+import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
 import icesword.frp.switchMapNotNull
 import icesword.frp.tillNext
 import icesword.frp.units
+import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
-import icesword.geometry.Transform
 import icesword.html.MouseButton
 import icesword.html.MousePosition
 import icesword.html.calculateRelativePosition
@@ -88,10 +88,20 @@ fun worldView(
 
     root.onMouseDrag(button = MouseButton.Secondary, till = tillDetach)
         .reactTill(tillDetach) { mouseDrag ->
-            val initialXy = mouseDrag.position.sample()
-            val delta = mouseDrag.position.map { initialXy - it }
+            val initialClientPosition = mouseDrag.position.sample()
 
-            world.dragCamera(offsetDelta = delta, tillStop = mouseDrag.tillEnd)
+            val offsetDelta = Cell.map2(
+                mouseDrag.position,
+                editor.camera.zoom,
+            ) { clientPosition, zoom ->
+                val clientPositionDelta = initialClientPosition - clientPosition
+                clientPositionDelta.divRound(zoom)
+            }
+
+            editor.camera.drag(
+                offsetDelta = offsetDelta,
+                tillStop = mouseDrag.tillEnd,
+            )
         }
 
     editor.editorMode.reactTillNext(tillDetach) { mode, tillNext ->
@@ -107,13 +117,13 @@ fun worldView(
                 tillDetach = tillNext,
             )
             is BasicInsertionMode -> setupBasicInsertionModeController(
-                world = editor.world,
+                editor = editor,
                 insertionMode = mode,
                 root = root,
                 tillDetach = tillNext,
             )
             is WapObjectAlikeInsertionMode -> setupWapObjectAlikeInsertionModeController(
-                world = editor.world,
+                editor = editor,
                 insertionMode = mode,
                 root = root,
                 tillDetach = tillNext,
@@ -136,11 +146,9 @@ fun worldView(
     }
 
     return root.apply {
-        val viewTransform = world.cameraFocusPoint.map { -it }
+//        val viewTransform = editor.camera.focusPoint.map { -it }
 
-        val dynamicViewTransform = DynamicTransform(
-            transform = viewTransform.map { Transform.translate(it) },
-        )
+        val dynamicViewTransform = editor.camera.transform
 
         val wapObjectPreviewNode =
             editor.wapObjectAlikeInsertionMode.switchMapNotNull { insertionMode ->
@@ -155,7 +163,6 @@ fun worldView(
 
         val backFoilLayer = Layer(
             textureBank = textureBank,
-            transform = Cell.constant(IntVec2.ZERO),
             viewTransform = DynamicTransform.identity,
             nodes = DynamicSet.empty(),
             buildOverlayElements = {
@@ -174,7 +181,6 @@ fun worldView(
 
         val planeLayer = Layer(
             textureBank = textureBank,
-            transform = viewTransform,
             viewTransform = dynamicViewTransform,
             nodes = DynamicSet.union(
                 DynamicSet.of(
@@ -226,7 +232,7 @@ fun worldView(
                         editor = editor,
                         knotMesh = knotMesh,
                         viewport = this,
-                        viewTransform = viewTransform,
+                        viewTransform = dynamicViewTransform,
                         tillDetach = tillRemoved,
                     )
                 }
@@ -252,7 +258,6 @@ fun worldView(
 
         val planeUiLayer = Layer(
             textureBank = textureBank,
-            transform = Cell.constant(IntVec2.ZERO),
             viewTransform = DynamicTransform.identity,
             nodes = DynamicSet.union(
                 DynamicSet.of(
@@ -260,7 +265,7 @@ fun worldView(
                         DynamicSet.of(
                             setOf(
                                 StartPointUi(
-                                    viewTransform = viewTransform,
+                                    viewTransform = dynamicViewTransform,
                                     startPoint = world.startPointEntity,
                                 ),
                             )
@@ -268,14 +273,14 @@ fun worldView(
                         world.knotMeshes.mapTillRemoved(tillAbort = tillDetach) { knotMesh, _ ->
                             KnotMeshUi(
                                 editor = editor,
-                                viewTransform = viewTransform,
+                                viewTransform = dynamicViewTransform,
                                 knotMesh = knotMesh,
                             )
                         },
                         world.elastics.mapTillRemoved(tillAbort = tillDetach) { elastic, _ ->
                             ElasticUi(
                                 editor = editor,
-                                viewTransform = viewTransform,
+                                viewTransform = dynamicViewTransform,
                                 elastic = elastic,
                             )
                         },
@@ -307,7 +312,7 @@ fun worldView(
                                                 svg = svg,
                                                 startPoint = world.startPointEntity,
                                                 viewport = this,
-                                                viewTransform = viewTransform,
+                                                viewTransform = dynamicViewTransform,
                                                 tillDetach = tillDetach,
                                             ),
                                         ),
@@ -318,7 +323,7 @@ fun worldView(
                                             svg = svg,
                                             elastic = elastic,
                                             viewport = this,
-                                            viewTransform = viewTransform,
+                                            viewTransform = dynamicViewTransform,
                                             tillDetach = tillRemoved,
                                         )
                                     },
@@ -357,7 +362,7 @@ fun worldView(
                                             editor = editor,
                                             svg = svg,
                                             viewport = this,
-                                            viewTransform = viewTransform,
+                                            viewTransform = dynamicViewTransform,
                                             floorSpikeRow = floorSpikeRow,
                                             tillDetach = tillRemoved,
                                         )
@@ -367,7 +372,7 @@ fun worldView(
                                             it.areaSelectingMode.mapNested { areaSelectingMode ->
                                                 createAreaSelectionOverlayElement(
                                                     svg = svg,
-                                                    viewTransform = viewTransform,
+                                                    viewTransform = dynamicViewTransform,
                                                     areaSelectingMode = areaSelectingMode,
                                                     tillDetach = tillDetach,
                                                 )
@@ -379,7 +384,7 @@ fun worldView(
                                             it.selectMode.areaSelectingMode.mapNested { areaSelectingMode ->
                                                 createAreaSelectionOverlayElement(
                                                     svg = svg,
-                                                    viewTransform = viewTransform,
+                                                    viewTransform = dynamicViewTransform,
                                                     areaSelectingMode = areaSelectingMode,
                                                     tillDetach = tillDetach,
                                                 )
@@ -419,15 +424,13 @@ fun setupKnotBrushToolController(
     root: HTMLElement,
     tillDetach: Till,
 ) {
-    val world = editor.world
-
     root.onMouseDrag(button = MouseButton.Primary, till = tillDetach)
         .reactTill(tillDetach) { mouseDrag ->
             val viewportPosition =
                 mouseDrag.position.map(root::calculateRelativePosition)
 
             val knotCoord: Cell<IntVec2> =
-                world.transformToWorld(viewportPosition)
+                editor.camera.transformToWorld(viewportPosition)
 
             editor.paintKnots(
                 knotCoord = knotCoord,
@@ -437,7 +440,7 @@ fun setupKnotBrushToolController(
 }
 
 fun setupBasicInsertionModeController(
-    world: World,
+    editor: Editor,
     insertionMode: BasicInsertionMode,
     root: HTMLElement,
     tillDetach: Till,
@@ -448,7 +451,7 @@ fun setupBasicInsertionModeController(
                 root.calculateRelativePosition(event.clientPosition)
 
             val worldPosition: IntVec2 =
-                world.transformToWorld(cameraPoint = viewportPosition).sample()
+                editor.camera.transformToWorld(cameraPoint = viewportPosition).sample()
 
             insertionMode.insert(
                 insertionWorldPoint = worldPosition,
@@ -457,7 +460,7 @@ fun setupBasicInsertionModeController(
 }
 
 fun setupWapObjectAlikeInsertionModeController(
-    world: World,
+    editor: Editor,
     insertionMode: WapObjectAlikeInsertionMode,
     root: HTMLElement,
     tillDetach: Till,
@@ -467,7 +470,7 @@ fun setupWapObjectAlikeInsertionModeController(
             root.calculateRelativePosition(clientPosition)
 
         val worldPosition: IntVec2 =
-            world.transformToWorld(cameraPoint = viewportPosition).sample()
+            editor.camera.transformToWorld(cameraPoint = viewportPosition).sample()
 
         return worldPosition
     }

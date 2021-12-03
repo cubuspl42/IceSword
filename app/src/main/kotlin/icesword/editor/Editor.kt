@@ -106,6 +106,10 @@ class Editor(
         )
     }
 
+    val camera = EditorCamera(
+        initialFocusPoint = world.startPointEntity.position.sample(),
+    )
+
     private val _editorMode = MutCell<Tilled<EditorMode>>(
         initialValue = buildSelectMode(),
     )

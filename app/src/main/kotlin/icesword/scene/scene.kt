@@ -103,7 +103,6 @@ typealias BuildOverlayElements = (SVGSVGElement) -> DynamicSet<SVGElement>
 
 class Layer(
     textureBank: TextureBank,
-    private val transform: Cell<IntVec2>,
     private val viewTransform: DynamicTransform,
     nodes: DynamicSet<CanvasNode>,
     private val buildOverlayElements: BuildOverlayElements? = null,
@@ -118,14 +117,20 @@ class Layer(
     )
 
     fun draw(ctx: CanvasRenderingContext2D, viewportRect: IntRect) {
-        val transform = this.transform.sample()
+        val transform = this.viewTransform.transform.sample()
 
-        val inverseTransform = -transform
+        val inverseTransform = transform.inversed
 
-        val windowRect = viewportRect.translate(inverseTransform)
+        val windowRect = inverseTransform.transform(viewportRect)
 
-        ctx.resetTransform()
-        ctx.translate(transform.x.toDouble(), transform.y.toDouble())
+        ctx.setTransform(
+            transform.a,
+            transform.b,
+            transform.c,
+            transform.d,
+            transform.e,
+            transform.f,
+        )
 
         canvasNodes.volatileContentView.forEach {
             it.draw(ctx, windowRect)
@@ -135,7 +140,7 @@ class Layer(
     val onDirty: Stream<Unit> =
         Stream.merge(
             listOf(
-                transform.values().units(),
+                viewTransform.transform.values().units(),
                 canvasNodes.changes.units(),
                 DynamicSet.merge(canvasNodes.map(
                     tag = "Layer/onDirty/nodes.map"

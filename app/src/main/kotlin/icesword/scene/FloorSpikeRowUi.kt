@@ -50,14 +50,10 @@ fun createFloorSpikeRowOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,
-    viewTransform: Cell<IntVec2>,
+    viewTransform: DynamicTransform,
     floorSpikeRow: FloorSpikeRow,
     tillDetach: Till,
 ): SVGElement {
-    val dynamicViewTransform = DynamicTransform(
-        transform = viewTransform.map { Transform.translate(it) },
-    )
-
     val boundingBox = floorSpikeRow.boundingBox
 
     return createEntityFrameElement(
@@ -65,7 +61,7 @@ fun createFloorSpikeRowOverlayElement(
         svg = svg,
         outer = viewport,
         entity = floorSpikeRow,
-        boundingBox = dynamicViewTransform.transform(boundingBox),
+        boundingBox = viewTransform.transform(boundingBox),
         tillDetach = tillDetach,
     )
 }

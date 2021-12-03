@@ -1,11 +1,5 @@
 package icesword.scene
 
-import icesword.html.DynamicStyleDeclaration
-import icesword.html.MouseButton
-import icesword.html.createSvgCircle
-import icesword.html.createSvgGroup
-import icesword.html.createSvgRect
-import icesword.html.onMouseDrag
 import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.Elastic
@@ -21,8 +15,15 @@ import icesword.frp.mergeWith
 import icesword.frp.reactTill
 import icesword.frp.units
 import icesword.frp.values
+import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.MouseButton
+import icesword.html.createSvgCircle
+import icesword.html.createSvgGroup
+import icesword.html.createSvgRect
+import icesword.html.onMouseDrag
 import icesword.tileRect
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
@@ -33,17 +34,15 @@ import org.w3c.dom.svg.SVGSVGElement
 
 
 class ElasticUi private constructor(
-    private val editor: Editor,
-    private val viewTransform: Cell<IntVec2>,
+    private val viewTransform: DynamicTransform,
     private val elastic: Elastic,
     private val isSelected: Cell<Boolean>,
 ) : CanvasNode {
     constructor(
         editor: Editor,
-        viewTransform: Cell<IntVec2>,
+        viewTransform: DynamicTransform,
         elastic: Elastic,
     ) : this(
-        editor = editor,
         viewTransform = viewTransform,
         elastic = elastic,
         isSelected = editor.isEntitySelected(elastic)
@@ -56,14 +55,14 @@ class ElasticUi private constructor(
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
 
-        val viewTransform = this.viewTransform.sample()
-        val bounds = elastic.bounds.sample()
+        val viewTransform = this.viewTransform.transform.sample()
+        val bounds = elastic.tileBounds.sample()
         val isSelected = isSelected.sample()
 
         ctx.strokeStyle = if (isSelected) "red" else "rgba(103, 103, 131, 0.3)"
 
         bounds.points().forEach { globalTileCoord ->
-            val viewTileRect = tileRect(globalTileCoord).translate(viewTransform)
+            val viewTileRect = viewTransform.transform(tileRect(globalTileCoord))
 
             ctx.lineWidth = 1.0
 
@@ -75,7 +74,7 @@ class ElasticUi private constructor(
             )
         }
 
-        val viewBounds = bounds.translate(viewTransform)
+        val viewBounds = viewTransform.transform(bounds)
 
         ctx.lineWidth = 4.0
 
@@ -88,9 +87,9 @@ class ElasticUi private constructor(
     }
 
     override val onDirty: Stream<Unit> =
-        viewTransform.values().units()
+        viewTransform.transform.values().units()
             .mergeWith(metaTileCluster.localMetaTiles.changesUnits())
-            .mergeWith(elastic.bounds.values().units())
+            .mergeWith(elastic.tileBounds.values().units())
             .mergeWith(isSelected.values().units())
             .mergeWith(localTileCoords.changes.units())
 }
@@ -100,16 +99,14 @@ fun createElasticOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,
-    viewTransform: Cell<IntVec2>,
+    viewTransform: DynamicTransform,
     elastic: Elastic,
     tillDetach: Till,
 ): SVGElement {
-    val boxSize = elastic.size.map { it * TILE_SIZE }
+    val relativeViewBounds = viewTransform.transform(elastic.pixelBounds)
+        .map { it.copy(position = IntVec2.ZERO) }
 
-    val rootTranslate = Cell.map2(
-        viewTransform,
-        elastic.position,
-    ) { vt, ep -> vt + ep }
+    val rootTranslate = viewTransform.transform(elastic.position)
 
     val isSelected = editor.isEntitySelected(elastic)
 
@@ -122,7 +119,7 @@ fun createElasticOverlayElement(
         svg = svg,
         outer = viewport,
         entity = elastic,
-        boundingBox = boxSize.map { it.toRect() },
+        boundingBox = relativeViewBounds,
         tillDetach = tillDetach,
     )
 
@@ -133,12 +130,11 @@ fun createElasticOverlayElement(
     fun createHandle(
         cursor: Cursor,
         resize: (tileCoord: Cell<IntVec2>, till: Till) -> Unit,
-        sx: Int,
-        sy: Int,
+        corner: (IntRect) -> IntVec2,
     ): SVGElement {
         val handle = createSvgCircle(
             svg = svg,
-            translate = boxSize.map { IntVec2(it.width * sx, it.height * sy) },
+            translate = relativeViewBounds.map(corner),
             radius = 8.0f,
             stroke = handleStroke,
             style = DynamicStyleDeclaration(
@@ -162,10 +158,12 @@ fun createElasticOverlayElement(
             outer = viewport,
             till = tillDetach,
         ).reactTill(tillDetach) { mouseDrag ->
-            val initialPosition = mouseDrag.position.sample()
+            val worldPosition = viewTransform.inversed.transform(mouseDrag.position)
+
+            val initialPosition = worldPosition.sample()
 
             // TODO: Support dragging handle and camera at the same time
-            val deltaTileCoord = mouseDrag.position.map {
+            val deltaTileCoord = worldPosition.map {
                 val deltaPosition = it - initialPosition
                 deltaPosition.divRound(TILE_SIZE)
             }
@@ -184,22 +182,22 @@ fun createElasticOverlayElement(
             createHandle(
                 cursor = Cursor.nwseResize,
                 resize = elastic::resizeTopLeft,
-                sx = 0, sy = 0,
+                corner = { it.topLeft },
             ),
             createHandle(
                 cursor = Cursor.neswResize,
                 resize = elastic::resizeTopRight,
-                sx = 1, sy = 0,
+                corner = { it.topRight },
             ),
             createHandle(
                 cursor = Cursor.nwseResize,
                 resize = elastic::resizeBottomRight,
-                sx = 1, sy = 1,
+                corner = { it.bottomRight },
             ),
             createHandle(
                 cursor = Cursor.neswResize,
                 resize = elastic::resizeBottomLeft,
-                sx = 0, sy = 1,
+                corner = { it.bottomLeft },
             )
         )
 

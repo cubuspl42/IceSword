@@ -117,20 +117,22 @@ class Elastic(
 
     inner class BoundsEntityPosition : EntityPosition {
         override val position: Cell<IntVec2> by lazy {
-            bounds.map { it.topLeft * TILE_SIZE }
+            tileBounds.map { it.topLeft * TILE_SIZE }
         }
 
         override fun setPosition(newPosition: IntVec2) {
-            _bounds.update { b: IntRect ->
+            _tileBounds.update { b: IntRect ->
                 b.copy(position = newPosition.divRound(TILE_SIZE))
             }
         }
     }
 
-    private val _bounds = MutCell(initialBounds)
+    private val _tileBounds = MutCell(initialBounds)
 
-    val bounds: Cell<IntRect>
-        get() = _bounds
+    val tileBounds: Cell<IntRect>
+        get() = _tileBounds
+
+    val pixelBounds = tileBounds.map { it * TILE_SIZE }
 
     override val entityPosition = BoundsEntityPosition()
 
@@ -168,22 +170,22 @@ class Elastic(
         transform: (rect: IntRect, tileCoord: IntVec2) -> IntRect,
         till: Till,
     ) {
-        val initialTileCoord = sampleTileCoord(bounds.sample())
+        val initialTileCoord = sampleTileCoord(tileBounds.sample())
         val tileCoord = deltaTileCoord.map { initialTileCoord + it }
 
         tileCoord.reactTill(till) { tc ->
-            val oldRect = bounds.sample()
+            val oldRect = tileBounds.sample()
             val newRect = transform(oldRect, tc)
 
             if (newRect != oldRect) {
-                _bounds.set(newRect)
+                _tileBounds.set(newRect)
             }
         }
     }
 
-    val size = _bounds.map { it.size }
+    val size = _tileBounds.map { it.size }
 
-    private val boundsTopLeft = bounds.map { it.topLeft }
+    private val boundsTopLeft = tileBounds.map { it.topLeft }
 
     val metaTileCluster = MetaTileCluster(
         tileOffset = boundsTopLeft,
@@ -200,12 +202,12 @@ class Elastic(
     )
 
     override fun isSelectableIn(area: IntRect): Boolean =
-        (bounds.sample() * TILE_SIZE).overlaps(area)
+        (tileBounds.sample() * TILE_SIZE).overlaps(area)
 
     override fun toString(): String = "MetaTileCluster(boundsTopLeft=${boundsTopLeft.sample()})"
 
     fun expandRight() {
-        _bounds.update { b: IntRect ->
+        _tileBounds.update { b: IntRect ->
             val oldSize = b.size
 
             b.copy(
@@ -217,7 +219,7 @@ class Elastic(
     fun toData(): ElasticData =
         ElasticData(
             prototype = prototype,
-            bounds = bounds.sample(),
+            bounds = tileBounds.sample(),
         )
 }
 

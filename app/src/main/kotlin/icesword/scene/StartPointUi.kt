@@ -1,18 +1,17 @@
 package icesword.scene
 
-import icesword.html.DynamicStyleDeclaration
-import icesword.html.createSvgCircle
 import icesword.editor.Editor
 import icesword.editor.StartPoint
-import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.mergeWith
 import icesword.frp.units
 import icesword.frp.values
+import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
-import icesword.geometry.IntVec2
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.createSvgCircle
 import icesword.ui.EntityMoveDragController
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
@@ -23,14 +22,17 @@ import org.w3c.dom.svg.SVGSVGElement
 
 
 class StartPointUi(
-    private val viewTransform: Cell<IntVec2>,
+    private val viewTransform: DynamicTransform,
     private val startPoint: StartPoint,
 ) : CanvasNode {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-        val viewTransform = this.viewTransform.sample()
+        ctx.save()
+
+        val viewTransform = this.viewTransform.transform.sample()
 
         val position = startPoint.position.sample()
-        val viewPosition = position + viewTransform
+
+        ctx.setTransformT(viewTransform)
 
         ctx.fillStyle = "darkgray"
         ctx.strokeStyle = "black"
@@ -38,7 +40,7 @@ class StartPointUi(
 
         drawCircle(
             ctx = ctx,
-            center = viewPosition,
+            center = position,
             radius = 32.0,
         )
 
@@ -47,13 +49,15 @@ class StartPointUi(
 
         drawEquilateralTriangle(
             ctx = ctx,
-            center = viewPosition,
+            center = position,
             sideLength = 42,
         )
+
+        ctx.restore()
     }
 
     override val onDirty: Stream<Unit> =
-        viewTransform.values().units()
+        viewTransform.transform.values().units()
             .mergeWith(startPoint.position.values().units())
 }
 
@@ -62,7 +66,7 @@ fun createStartPointOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,
-    viewTransform: Cell<IntVec2>,
+    viewTransform: DynamicTransform,
     startPoint: StartPoint,
     tillDetach: Till,
 ): SVGElement {
@@ -75,17 +79,14 @@ fun createStartPointOverlayElement(
         it?.let { Cursor.move }
     }
 
-    val rootTranslate = Cell.map2(
-        viewTransform,
-        startPoint.position,
-    ) { vt, ep -> vt + ep }
+    val rootTranslate = DynamicTransform.translate(startPoint.position)
 
     val isSelected = editor.isEntitySelected(startPoint)
 
     val circle = createSvgCircle(
         svg = svg,
         radius = 32.0f,
-        translate = rootTranslate,
+        transform = viewTransform * rootTranslate,
         stroke = isSelected.map { if (it) "red" else "gray" },
         style = DynamicStyleDeclaration(
             cursor = circleCursor,

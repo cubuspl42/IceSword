@@ -255,26 +255,7 @@ class World(
 
     val tiles = metaTileLayer.tiles
 
-    private val _cameraFocusPoint = MutCell(initialStartPoint)
 
-    val cameraFocusPoint: Cell<IntVec2>
-        get() = _cameraFocusPoint
-
-    fun transformToWorld(cameraPoint: IntVec2): Cell<IntVec2> =
-        cameraFocusPoint.map { it + cameraPoint }
-
-    fun transformToWorld(cameraPoint: Cell<IntVec2>): Cell<IntVec2> =
-        cameraPoint.switchMap(this::transformToWorld)
-
-    fun dragCamera(
-        offsetDelta: Cell<IntVec2>,
-        tillStop: Till,
-    ) {
-        val initialFocusPoint = _cameraFocusPoint.sample()
-        val targetFocusPoint = offsetDelta.map { d -> initialFocusPoint + d }
-
-        targetFocusPoint.syncTill(_cameraFocusPoint, till = tillStop)
-    }
 
     fun export(): Wwd.World {
         val actionPlane = wwdWorld.planes[wwdPlaneIndex]

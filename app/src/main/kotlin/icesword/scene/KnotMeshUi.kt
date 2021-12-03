@@ -5,6 +5,7 @@ import icesword.TILE_SIZE
 import icesword.editor.*
 import icesword.frp.*
 import icesword.frp.Cell.Companion.constant
+import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
@@ -22,7 +23,7 @@ import org.w3c.dom.svg.SVGSVGElement
 
 class KnotMeshUi private constructor(
     private val editor: Editor,
-    private val viewTransform: Cell<IntVec2>,
+    private val viewTransform: DynamicTransform,
     private val knotMesh: KnotMesh,
     private val isSelected: Cell<Boolean>,
     private val isCovered: Cell<Boolean>,
@@ -31,7 +32,7 @@ class KnotMeshUi private constructor(
 ) : CanvasNode {
     constructor(
         editor: Editor,
-        viewTransform: Cell<IntVec2>,
+        viewTransform: DynamicTransform,
         knotMesh: KnotMesh,
     ) : this(
         editor = editor,
@@ -54,7 +55,7 @@ class KnotMeshUi private constructor(
     )
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-        val viewTransform = this.viewTransform.sample()
+        val viewTransform = this.viewTransform.transform.sample()
         val tileOffset = knotMesh.tileOffset.sample()
         val editorMode = editor.editorMode.sample()
         val localKnots = knotMesh.localKnots.volatileContentView
@@ -77,13 +78,13 @@ class KnotMeshUi private constructor(
         localTiles.forEach { localTileCoord ->
             val globalTileCoord = tileOffset + localTileCoord
             val rect = tileRect(globalTileCoord)
-            val viewRect = rect.translate(viewTransform)
+            val viewRect = viewTransform.transform(rect)
 
             val selectionColor = Color.red
 
             // Here, window rect = viewport rect...
             if (windowRect.overlaps(viewRect)) {
-               val strokeColor  = when {
+                val strokeColor = when {
                     isCovered -> Color.orange
                     isSelected && editorMode is KnotSelectMode -> selectionColor.withAlpha(0.3)
                     isSelected -> selectionColor
@@ -108,14 +109,14 @@ class KnotMeshUi private constructor(
 
         localKnots.forEach { localKnotCoord ->
             val globalKnotCoord = tileOffset + localKnotCoord
-            val center = knotCenter(globalKnotCoord) + viewTransform
+            val center = viewTransform.transform(knotCenter(globalKnotCoord))
             val isInSelectionArea = knotsInSelectionArea.contains(globalKnotCoord)
             val isKnotSelected = selectedKnots.contains(globalKnotCoord)
 
             val knotRect = tileRect(globalKnotCoord)
                 .translate(IntVec2(32, 32))
 
-            val viewRect = knotRect.translate(viewTransform)
+            val viewRect = viewTransform.transform(knotRect)
 
             // Here, window rect = viewport rect...
             if (windowRect.overlaps(viewRect)) {
@@ -148,7 +149,7 @@ class KnotMeshUi private constructor(
     }
 
     override val onDirty: Stream<Unit> =
-        viewTransform.values().units()
+        viewTransform.transform.values().units()
             .mergeWith(editor.editorMode.values().units())
             .mergeWith(isSelected.values().units())
             .mergeWith(isCovered.values().units())
@@ -163,7 +164,7 @@ fun createKnotMeshOverlayElement(
     svg: SVGSVGElement,
     knotMesh: KnotMesh,
     viewport: HTMLElement,
-    viewTransform: Cell<IntVec2>,
+    viewTransform: DynamicTransform,
     tillDetach: Till,
 ): SVGElement {
     fun createTileOverlay(

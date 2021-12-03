@@ -70,7 +70,7 @@ private fun setupSelectModeController(
             element.calculateRelativePosition(clientPosition)
 
         val worldPosition: IntVec2 =
-            world.transformToWorld(cameraPoint = viewportPosition).sample()
+            editor.camera.transformToWorld(cameraPoint = viewportPosition).sample()
 
         return worldPosition
     }

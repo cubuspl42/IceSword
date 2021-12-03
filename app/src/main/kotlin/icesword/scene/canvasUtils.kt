@@ -1,9 +1,21 @@
 package icesword.scene
 
 import icesword.geometry.IntVec2
+import icesword.geometry.Transform
 import org.w3c.dom.CanvasRenderingContext2D
 import kotlin.math.PI
 import kotlin.math.sqrt
+
+fun CanvasRenderingContext2D.setTransformT(transform: Transform) {
+    this.setTransform(
+        transform.a,
+        transform.b,
+        transform.c,
+        transform.d,
+        transform.e,
+        transform.f,
+    )
+}
 
 fun drawCircle(
     ctx: CanvasRenderingContext2D,

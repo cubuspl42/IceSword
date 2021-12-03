@@ -6,27 +6,25 @@ import icesword.editor.SelectMode
 import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.map
+import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
+import icesword.html.createSvgRectR
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
 fun createAreaSelectionOverlayElement(
     svg: SVGSVGElement,
-    viewTransform: Cell<IntVec2>,
+    viewTransform: DynamicTransform,
     areaSelectingMode: SelectMode<*>.AreaSelectingMode,
     tillDetach: Till,
 ): SVGElement {
     val rect = areaSelectingMode.selectionArea
 
-    val translate = Cell.map2(
-        viewTransform,
-        rect.map { it.position },
-    ) { vt, ep -> vt + ep }
+    val viewRect = viewTransform.transform(rect)
 
-    return createSvgRect(
+    return createSvgRectR(
         svg = svg,
-        translate = translate,
-        size = rect.map { it.size },
+        rect = viewRect,
         tillDetach = tillDetach,
     ).apply {
         setAttributeNS(null, "fill", "orange")

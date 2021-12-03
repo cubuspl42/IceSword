@@ -15,6 +15,7 @@ import icesword.frp.reactTill
 import icesword.frp.sample
 import icesword.frp.values
 import icesword.geometry.DynamicTransform
+import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
@@ -336,6 +337,31 @@ fun createSvgRect(
     )
 
     return rect
+}
+
+fun createSvgRectR(
+    svg: SVGSVGElement,
+    rect: Cell<IntRect>,
+    fill: Cell<Color>? = null,
+    fillOpacity: Cell<Double>? = null,
+    strokeString: Cell<String>? = null,
+    stroke: Cell<Color>? = null,
+    strokeWidth: Cell<Int>? = null,
+    style: DynamicStyleDeclaration? = null,
+    tillDetach: Till,
+): SVGElement {
+    return createSvgRect(
+        svg = svg,
+        size = rect.map { it.size },
+        translate = rect.map { it.position },
+        fill = fill,
+        fillOpacity = fillOpacity,
+        strokeString = strokeString,
+        stroke = stroke,
+        strokeWidth = strokeWidth,
+        style = style,
+        tillDetach = tillDetach,
+    )
 }
 
 fun createSvgCircle(

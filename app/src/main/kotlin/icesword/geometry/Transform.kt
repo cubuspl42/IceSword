@@ -37,6 +37,16 @@ class Transform(
                 f = t.y.toDouble(),
             )
 
+        fun scale(s: Double): Transform =
+            Transform(
+                a = s,
+                c = 0.0,
+                e = 0.0,
+                b = 0.0,
+                d = s,
+                f = 0.0,
+            )
+
         fun rotateOfAngle(angleRad: Double): Transform {
             val cosAngle = cos(angleRad)
             val sinAngle = sin(angleRad)
@@ -106,6 +116,8 @@ class Transform(
             y = (b * v.x + d * v.y + f).roundToInt(),
         )
 
+    // As IntRect cannot express rectangles not aligned to X/Y axis, this works
+    // as expected only for a transform rotating by a multiple of 90 degrees.
     fun transform(rect: IntRect): IntRect =
         rect.transform(this)
 
@@ -142,6 +154,10 @@ class DynamicTransform(
             t.map(Transform.Companion::translate)
         )
 
+        fun scale(t: Cell<Double>): DynamicTransform = DynamicTransform(
+            t.map(Transform.Companion::scale)
+        )
+
         fun rotateOfDirection(direction: Cell<IntVec2>): DynamicTransform = DynamicTransform(
             transform = direction.map(Transform.Companion::rotateOfDirection),
         )
@@ -153,11 +169,17 @@ class DynamicTransform(
         )
     }
 
+    fun transform(point: IntVec2): Cell<IntVec2> =
+        transform.map { it.transform(point) }
+
     fun transform(point: Cell<IntVec2>): Cell<IntVec2> =
         Cell.map2(transform, point) { t, p -> t.transform(p) }
 
     fun transform(rect: Cell<IntRect>): Cell<IntRect> =
         Cell.map2(transform, rect) { t, r -> t.transform(r) }
+
+    fun transform(rect: Cell<IntLineSeg>): Cell<IntLineSeg> =
+        Cell.map2(transform, rect) { t, ls -> t.transform(ls) }
 
     operator fun times(that: DynamicTransform): DynamicTransform =
         DynamicTransform(

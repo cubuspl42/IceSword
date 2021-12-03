@@ -9,7 +9,9 @@ import icesword.frp.Tilled
 import icesword.frp.filterDynamic
 import icesword.frp.map
 import icesword.frp.mergeWith
+import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
+import icesword.frp.values
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 

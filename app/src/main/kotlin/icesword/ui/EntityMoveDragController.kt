@@ -49,7 +49,7 @@ class EntityMoveDragController(
 
         val world = editor.world
 
-        val worldPosition = world.transformToWorld(mouseDrag.position)
+        val worldPosition = editor.camera.transformToWorld(mouseDrag.position)
         val initialWorldPosition = worldPosition.sample()
         val positionDelta = worldPosition.map {
             (it - initialWorldPosition)
