@@ -19,12 +19,16 @@ import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.browser.document
 import kotlinx.css.Align
+import kotlinx.css.BackgroundRepeat
 import kotlinx.css.Color
 import kotlinx.css.Display
 import kotlinx.css.FlexDirection
 import kotlinx.css.LinearDimension
+import kotlinx.css.ObjectFit
 import kotlinx.css.em
+import kotlinx.css.px
 import org.w3c.dom.Element
+import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.Node
@@ -847,3 +851,20 @@ fun createNumberInputElement(
 
     return input
 }
+
+fun createClippedImage(
+    width: LinearDimension,
+    height: LinearDimension,
+    path: String,
+): HTMLWidgetB<HTMLWidget> = createHTMLWidgetB(
+    tagName = "div",
+    style = DynamicStyleDeclaration(
+        width = constant(width),
+        height = constant(height),
+        backgroundImage = constant("url('$path')"),
+        backgroundRepeat = constant(BackgroundRepeat.noRepeat),
+        backgroundSize = constant(ObjectFit.contain),
+        backgroundPosition = constant("center center"),
+    ),
+    children = DynamicList.empty(),
+)

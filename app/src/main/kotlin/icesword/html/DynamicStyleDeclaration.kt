@@ -6,6 +6,7 @@ import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.geometry.IntVec2
 import kotlinx.css.Align
+import kotlinx.css.BackgroundRepeat
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.Display
@@ -13,6 +14,7 @@ import kotlinx.css.FlexDirection
 import kotlinx.css.FontWeight
 import kotlinx.css.JustifyContent
 import kotlinx.css.LinearDimension
+import kotlinx.css.ObjectFit
 import kotlinx.css.Overflow
 import kotlinx.css.PointerEvents
 import kotlinx.css.properties.Transforms
@@ -52,7 +54,11 @@ data class DynamicStyleDeclaration(
     val alignItems: Cell<Align>? = null,
     val justifyContent: Cell<JustifyContent>? = null,
     val alignSelf: Cell<Align>? = null,
-    val backgroundColor: Cell<Color>? = null,
+    val backgroundColor: Cell<Color?>? = null,
+    val backgroundImage: Cell<String?>? = null,
+    val backgroundRepeat: Cell<BackgroundRepeat?>? = null,
+    val backgroundPosition: Cell<String?>? = null,
+    val backgroundSize: Cell<ObjectFit?>? = null,
     val cursor: Cell<Cursor?>? = null,
     val transform: Cell<Transform?>? = null,
     val pointerEvents: Cell<PointerEvents?>? = null,
@@ -170,7 +176,35 @@ data class DynamicStyleDeclaration(
         linkProperty(
             style = style,
             propertyName = "background-color",
-            property = backgroundColor?.map { it.value },
+            property = backgroundColor?.map { it?.toString() },
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "background-image",
+            property = backgroundImage,
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "background-repeat",
+            property = backgroundRepeat?.map { it?.toString() },
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "background-position",
+            property = backgroundPosition,
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "background-size",
+            property = backgroundSize?.map { it?.toString() },
             till = tillDetach,
         )
 
