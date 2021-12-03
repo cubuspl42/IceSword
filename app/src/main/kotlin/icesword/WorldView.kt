@@ -37,6 +37,7 @@ import icesword.html.onMouseDown
 import icesword.html.onMouseDrag
 import icesword.html.onMouseMove
 import icesword.html.onMouseUp
+import icesword.html.onWheel
 import icesword.html.trackMousePosition
 import icesword.scene.ElasticUi
 import icesword.scene.FloorSpikeRowNode
@@ -145,9 +146,13 @@ fun worldView(
         }
     }
 
-    return root.apply {
-//        val viewTransform = editor.camera.focusPoint.map { -it }
+    root.onWheel().reactTill(tillDetach) {
+        val oldZoom = editor.camera.zoom.sample()
+        val zoomDelta = if (it.deltaY > 0.0) 0.1 else -0.1
+        editor.camera.setZoom(oldZoom + zoomDelta)
+    }
 
+    return root.apply {
         val dynamicViewTransform = editor.camera.transform
 
         val wapObjectPreviewNode =

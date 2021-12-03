@@ -18,7 +18,13 @@ class EditorCamera(
     private val focusPoint: Cell<IntVec2>
         get() = _focusPoint
 
-    val zoom: Cell<Double> = constant(0.5)
+    private val _zoom = MutCell(1.0)
+
+    val zoom: Cell<Double> = _zoom
+
+    fun setZoom(newZoom: Double) {
+        _zoom.set(newZoom)
+    }
 
     private val focusTransform = DynamicTransform.translate(focusPoint.map { -it })
 

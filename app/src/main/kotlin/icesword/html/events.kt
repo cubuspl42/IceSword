@@ -19,6 +19,7 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.events.MouseEvent
+import org.w3c.dom.events.WheelEvent
 
 fun Element.onMouseDown(button: MouseButton): Stream<MouseEvent> =
     this.onEvent<MouseEvent>("mousedown")
@@ -70,6 +71,9 @@ fun HTMLElement.onClick(): Stream<MouseEvent> =
 
 fun HTMLElement.onKeyDown(): Stream<KeyboardEvent> =
     this.onEvent("keydown", useCapture = true)
+
+fun HTMLElement.onWheel(): Stream<WheelEvent> =
+    this.onEvent("wheel", useCapture = true)
 
 enum class MouseButton {
     Primary,
