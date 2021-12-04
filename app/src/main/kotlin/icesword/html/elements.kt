@@ -349,20 +349,18 @@ fun createSvgRectR(
     strokeWidth: Cell<Int>? = null,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
-): SVGElement {
-    return createSvgRect(
-        svg = svg,
-        size = rect.map { it.size },
-        translate = rect.map { it.position },
-        fill = fill,
-        fillOpacity = fillOpacity,
-        strokeString = strokeString,
-        stroke = stroke,
-        strokeWidth = strokeWidth,
-        style = style,
-        tillDetach = tillDetach,
-    )
-}
+): SVGElement = createSvgRect(
+    svg = svg,
+    size = rect.map { it.size },
+    translate = rect.map { it.position },
+    fill = fill,
+    fillOpacity = fillOpacity,
+    strokeString = strokeString,
+    stroke = stroke,
+    strokeWidth = strokeWidth,
+    style = style,
+    tillDetach = tillDetach,
+)
 
 fun createSvgCircle(
     svg: SVGSVGElement,

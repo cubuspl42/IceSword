@@ -3,6 +3,7 @@
 package icesword.editor
 
 import icesword.RezIndex
+import icesword.geometry.IntLineSeg
 import icesword.geometry.IntVec2
 import icesword.wwd.Geometry
 import kotlinx.serialization.Serializable
@@ -34,6 +35,11 @@ data class HorizontalRange(
 
     override fun copyWithMax(max: Int): HorizontalRange =
         this.copy(maxX = max)
+
+    override fun toLineSeg(origin: IntVec2): IntLineSeg = IntLineSeg(
+        pointA = origin + IntVec2(minX, 0),
+        pointB = origin + IntVec2(maxX, 0),
+    )
 }
 
 class HorizontalElevator(
@@ -45,7 +51,6 @@ class HorizontalElevator(
     initialPosition = initialPosition,
     initialRelativeMovementRange = initialRelativeMovementRange,
 ), WapObjectExportable {
-
     companion object {
         fun load(
             rezIndex: RezIndex,
@@ -60,7 +65,7 @@ class HorizontalElevator(
 
     fun toData(): HorizontalElevatorData = HorizontalElevatorData(
         position = entityPosition.position.sample(),
-        relativeMovementRange = relativeMovementRange.sample(),
+        relativeMovementRange = movementRange.relativeMovementRange.sample(),
     )
 
     override fun exportElevatorRangeRect(): Geometry.Rectangle {

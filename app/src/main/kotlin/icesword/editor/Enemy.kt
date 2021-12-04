@@ -24,11 +24,7 @@ class Enemy(
     initialPosition: IntVec2,
     initialRelativeMovementRange: HorizontalRange,
     initialPickups: List<PickupKind>,
-) :
-    Entity(),
-    EntityMovementRange<HorizontalRange> by EntityMovementRangeMixin(
-        initialRelativeMovementRange = initialRelativeMovementRange,
-    ),
+) : Entity(),
     WapObjectExportable {
 
     companion object {
@@ -76,8 +72,10 @@ class Enemy(
         position = entityPosition.position,
     )
 
-    override val movementOrigin: Cell<IntVec2>
-        get() = wapSprite.boundingBox.map { it.center }
+    val movementRange = EntityMovementRangeMixin(
+        movementOrigin = wapSprite.center,
+        initialRelativeMovementRange = initialRelativeMovementRange,
+    )
 
     override fun isSelectableIn(area: IntRect): Boolean {
         val hitBox = wapSprite.boundingBox.sample()
@@ -87,7 +85,7 @@ class Enemy(
     override fun toEntityData(): EnemyData = EnemyData(
         objectPrototype = wapObjectPrototype,
         position = position.sample(),
-        relativeMovementRange = relativeMovementRange.sample(),
+        relativeMovementRange = movementRange.relativeMovementRange.sample(),
         pickups = pickups.sampleContent(),
     )
 
@@ -106,7 +104,7 @@ class Enemy(
         )
 
         val position = position.sample()
-        val movementRange = relativeMovementRange.sample()
+        val movementRange = movementRange.relativeMovementRange.sample()
         val globalMovementRange = movementRange.translate(position)
         val pickups = pickups.volatileContentView
 

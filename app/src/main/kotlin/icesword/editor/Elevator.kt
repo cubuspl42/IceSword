@@ -18,9 +18,6 @@ sealed class Elevator<Range : AxisRange<Range>>(
     initialRelativeMovementRange: Range,
 ) :
     Entity(),
-    EntityMovementRange<Range> by EntityMovementRangeMixin(
-        initialRelativeMovementRange = initialRelativeMovementRange,
-    ),
     WapObjectExportable {
 
     final override val entityPosition: EntityPosition =
@@ -34,13 +31,15 @@ sealed class Elevator<Range : AxisRange<Range>>(
         position = entityPosition.position,
     )
 
-    override val movementOrigin: Cell<IntVec2>
-        get() = wapSprite.boundingBox.map { it.center }
+    val movementRange = EntityMovementRangeMixin(
+        movementOrigin = wapSprite.center,
+        initialRelativeMovementRange = initialRelativeMovementRange,
+    )
 
     val globalMovementRange by lazy {
         Cell.map2(
             entityPosition.position,
-            relativeMovementRange,
+            movementRange.relativeMovementRange,
         ) { ep, mr ->
             mr.translate(ep)
         }

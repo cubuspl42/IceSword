@@ -3,6 +3,7 @@
 package icesword.editor
 
 import icesword.RezIndex
+import icesword.geometry.IntLineSeg
 import icesword.geometry.IntVec2
 import icesword.wwd.Geometry
 import icesword.wwd.Geometry.Rectangle
@@ -35,6 +36,11 @@ data class VerticalRange(
 
     override fun copyWithMax(max: Int): VerticalRange =
         this.copy(maxY = max)
+
+    override fun toLineSeg(origin: IntVec2): IntLineSeg = IntLineSeg(
+        pointA = origin + IntVec2(0, minY),
+        pointB = origin + IntVec2(0, maxY),
+    )
 }
 
 class VerticalElevator(
@@ -61,7 +67,7 @@ class VerticalElevator(
 
     fun toData(): VerticalElevatorData = VerticalElevatorData(
         position = entityPosition.position.sample(),
-        relativeMovementRange = relativeMovementRange.sample(),
+        relativeMovementRange = movementRange.relativeMovementRange.sample(),
     )
 
     override fun exportElevatorRangeRect(): Rectangle {

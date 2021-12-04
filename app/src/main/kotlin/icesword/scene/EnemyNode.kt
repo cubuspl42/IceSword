@@ -49,7 +49,7 @@ class EnemyNode(
                 svg = svg,
                 viewport = viewport,
                 viewTransform = viewTransform,
-                entityMovementRange = enemy,
+                entityMovementRange = enemy.movementRange,
                 tillDetach = tillDetach,
             )
 

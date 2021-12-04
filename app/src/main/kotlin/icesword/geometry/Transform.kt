@@ -2,7 +2,6 @@ package icesword.geometry
 
 import icesword.frp.Cell
 import icesword.frp.map
-import org.w3c.dom.DOMMatrix
 import org.w3c.dom.DOMMatrixReadOnly
 import org.w3c.dom.svg.SVGSVGElement
 import kotlin.math.cos
@@ -124,6 +123,10 @@ class Transform(
     fun transform(lineSeg: IntLineSeg): IntLineSeg =
         lineSeg.transform(this)
 
+    // Assumes uniform scaling
+    fun transformLength(l: Int): Int =
+        transform(IntVec2(l, 0)).x
+
     // The returned object is actually an instance of SVGMatrix
     fun toSVGMatrix(svg: SVGSVGElement): DOMMatrixReadOnly {
         val t = this
@@ -171,6 +174,12 @@ class DynamicTransform(
 
     fun transform(point: IntVec2): Cell<IntVec2> =
         transform.map { it.transform(point) }
+
+    fun transform(lineSeg: IntLineSeg): Cell<IntLineSeg> =
+        transform.map { it.transform(lineSeg) }
+
+    fun transformLength(point: Int): Cell<Int> =
+        transform.map { it.transformLength(point) }
 
     fun transform(point: Cell<IntVec2>): Cell<IntVec2> =
         Cell.map2(transform, point) { t, p -> t.transform(p) }

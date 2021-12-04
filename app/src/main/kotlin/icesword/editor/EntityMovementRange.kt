@@ -7,6 +7,7 @@ import icesword.frp.MutCell
 import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.reactTill
+import icesword.geometry.IntLineSeg
 import icesword.geometry.IntVec2
 import kotlinx.serialization.UseSerializers
 
@@ -20,12 +21,16 @@ interface AxisRange<Range> {
     fun copyWithMin(min: Int): Range
 
     fun copyWithMax(max: Int): Range
+
+    fun toLineSeg(origin: IntVec2): IntLineSeg
 }
 
 interface EntityMovementRange<Range : AxisRange<Range>> {
     val movementOrigin: Cell<IntVec2>
 
     val relativeMovementRange: Cell<Range>
+
+    val movementLine: Cell<IntLineSeg>
 
     fun resizeMovementRangeMin(
         minDelta: Cell<Int>,
@@ -39,18 +44,22 @@ interface EntityMovementRange<Range : AxisRange<Range>> {
 }
 
 class EntityMovementRangeMixin<Range : AxisRange<Range>>(
+    override val movementOrigin: Cell<IntVec2>,
     initialRelativeMovementRange: Range,
 ) : EntityMovementRange<Range> {
-
-    override val movementOrigin: Cell<IntVec2>
-        get() = throw UnsupportedOperationException()
-
     private val _relativeMovementRange = MutCell(
         initialValue = initialRelativeMovementRange,
     )
 
     override val relativeMovementRange: Cell<Range>
         get() = _relativeMovementRange
+
+    override val movementLine: Cell<IntLineSeg> = Cell.map2(
+        movementOrigin,
+        relativeMovementRange,
+    ) { mo, mr ->
+        mr.toLineSeg(mo)
+    }
 
     override fun resizeMovementRangeMin(
         minDelta: Cell<Int>,

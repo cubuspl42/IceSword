@@ -13,11 +13,14 @@ import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.map
+import icesword.frp.switchMap
 import icesword.geometry.DynamicTransform
+import icesword.geometry.IntLineSeg
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.geometry.Transform
 import icesword.html.createSvgGroupDt
+import icesword.html.createSvgRectR
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
@@ -25,6 +28,7 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 import kotlin.math.PI
+import kotlin.math.roundToInt
 
 fun createHorizontalElevatorOverlayElement(
     editor: Editor,
@@ -43,7 +47,7 @@ fun createHorizontalElevatorOverlayElement(
         svg = svg,
         viewport = viewport,
         viewTransform = viewTransform,
-        entityMovementRange = elevator,
+        entityMovementRange = elevator.movementRange,
         tillDetach = tillDetach,
     ),
     tillDetach = tillDetach,
@@ -66,7 +70,7 @@ fun createVerticalElevatorOverlayElement(
         svg = svg,
         viewport = viewport,
         dynamicViewTransform = viewTransform,
-        entityMovementRange = elevator,
+        entityMovementRange = elevator.movementRange,
         tillDetach = tillDetach,
     ),
     tillDetach = tillDetach,
@@ -151,25 +155,25 @@ private fun createMovementRangeOverlay(
     extractInputCoord: (IntVec2) -> Int,
     tillDetach: Till,
 ): SVGElement {
-    val center = dynamicViewTransform.transform(
-        point = entityMovementRange.movementOrigin,
-    )
+    val viewMovementLine = dynamicViewTransform.transform(entityMovementRange.movementLine)
 
-    // Note: this does not support scaling (zoom)
-    val movementRangeRect: Cell<IntRect> = entityMovementRange.relativeMovementRange.map {
+    val rootTranslate = viewMovementLine.map { it.pointA }
+
+    val movementRangeRect: Cell<IntRect> = viewMovementLine.map { lineSeg ->
         val sideLength = 64
-        val mr: AxisRange<*> = it
 
         IntRect.fromDiagonal(
-            pointA = IntVec2(mr.min, -(sideLength / 2)),
-            pointC = IntVec2(mr.max, +(sideLength / 2)),
+            pointA = IntVec2(0, -(sideLength / 2)),
+            pointC = IntVec2(lineSeg.length.roundToInt(), +(sideLength / 2)),
         )
     }
 
-    val movementRangeFrame: SVGElement = createSvgRect(
+    val viewMovementRangeRect = movementRangeRect
+//    val viewMovementRangeRect = dynamicViewTransform.transform(movementRangeRect)
+
+    val movementRangeFrame: SVGElement = createSvgRectR(
         svg = svg,
-        translate = movementRangeRect.map { it.topLeft },
-        size = movementRangeRect.map { it.size },
+        rect = viewMovementRangeRect,
         fill = constant(Color.gray),
         fillOpacity = constant(0.3),
         style = DynamicStyleDeclaration(
@@ -183,7 +187,7 @@ private fun createMovementRangeOverlay(
         cornerB: (IntRect) -> IntVec2,
         resizeExtremum: (extremumDelta: Cell<Int>, tillStop: Till) -> Unit,
     ): SVGElement {
-        val handleRect = movementRangeRect.map { rangeRect ->
+        val handleRect = viewMovementRangeRect.map { rangeRect ->
             val padding = IntVec2(4, 4)
             IntRect.fromDiagonal(
                 pointA = cornerA(rangeRect) - padding,
@@ -232,7 +236,7 @@ private fun createMovementRangeOverlay(
 
     val group = createSvgGroupDt(
         svg = svg,
-        transform = DynamicTransform.translate(center) * rotation,
+        transform = DynamicTransform.translate(rootTranslate) * rotation,
         tillDetach = tillDetach,
     ).apply {
         appendChild(movementRangeFrame)
