@@ -18,13 +18,11 @@ import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.mapNotNull
 import icesword.frp.mapTillRemoved
-import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
 import icesword.frp.switchMapNotNull
 import icesword.frp.tillNext
 import icesword.frp.units
-import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
 import icesword.html.MouseButton
@@ -146,10 +144,18 @@ fun worldView(
         }
     }
 
-    root.onWheel().reactTill(tillDetach) {
+    root.onWheel().reactTill(tillDetach) { ev ->
+        val viewportPoint = root.calculateRelativePosition(
+            clientPosition = ev.clientPosition,
+        )
+
         val oldZoom = editor.camera.zoom.sample()
-        val zoomDelta = if (it.deltaY > 0.0) 0.1 else -0.1
-        editor.camera.setZoom(oldZoom + zoomDelta)
+        val newZoom = oldZoom + if (ev.deltaY > 0.0) 0.1 else -0.1
+
+        editor.camera.zoom(
+            viewportPoint = viewportPoint,
+            newZoom = newZoom,
+        )
     }
 
     return root.apply {
