@@ -149,13 +149,15 @@ fun worldView(
             clientPosition = ev.clientPosition,
         )
 
-        val oldZoom = editor.camera.zoom.sample()
-        val newZoom = oldZoom + if (ev.deltaY > 0.0) 0.1 else -0.1
-
-        editor.camera.zoom(
-            viewportPoint = viewportPoint,
-            newZoom = newZoom,
-        )
+        if (ev.deltaY > 0.0) {
+            editor.camera.zoomIn(
+                viewportPoint = viewportPoint,
+            )
+        } else {
+            editor.camera.zoomOut(
+                viewportPoint = viewportPoint,
+            )
+        }
     }
 
     return root.apply {

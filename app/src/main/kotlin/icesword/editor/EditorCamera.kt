@@ -13,30 +13,49 @@ import icesword.frp.update
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
 import icesword.geometry.Transform
+import kotlin.math.pow
 
 // Equation:
 // viewportPoint = (worldPoint - focusPoint) * zoom
 data class CameraTransform(
     val focusPoint: IntVec2,
-    val zoom: Double,
+    val zoomExponent: Int,
 ) {
     companion object {
+        const val minZoomExponent = -4
+        const val maxZoomExponent = 4
+
         private fun solveForFocusPoint(
             worldPoint: IntVec2,
             viewportPoint: IntVec2,
             zoom: Double,
         ): IntVec2 =
             worldPoint - viewportPoint.divRound(zoom)
+
+        private fun calculateZoom(
+            zoomExponent: Int,
+        ): Double =
+            2.0.pow(zoomExponent)
     }
+
+    val zoom =
+        calculateZoom(zoomExponent)
 
     val transform =
         Transform.scale(zoom) * Transform.translate(-focusPoint)
 
     fun zoomedAround(
         viewportPoint: IntVec2,
-        newZoom: Double,
+        zoomExponentDelta: Int,
     ): CameraTransform {
+        val newZoomExponent = (zoomExponent + zoomExponentDelta).coerceIn(
+            minZoomExponent,
+            maxZoomExponent,
+        )
+
         val worldPoint = transform.inversed.transform(viewportPoint)
+
+        val newZoom = calculateZoom(newZoomExponent)
 
         val newFocusPoint = solveForFocusPoint(
             worldPoint = worldPoint,
@@ -46,7 +65,7 @@ data class CameraTransform(
 
         return CameraTransform(
             focusPoint = newFocusPoint,
-            zoom = newZoom,
+            zoomExponent = newZoomExponent,
         )
     }
 }
@@ -57,7 +76,7 @@ class EditorCamera(
     private val _transform = MutCell(
         CameraTransform(
             focusPoint = initialFocusPoint,
-            zoom = 1.0,
+            zoomExponent = 0,
         ),
     )
 
@@ -74,16 +93,34 @@ class EditorCamera(
         }
     }
 
-    fun zoom(
+    private fun zoom(
         viewportPoint: IntVec2,
-        newZoom: Double,
+        zoomExponentDelta: Int,
     ) {
         _transform.update {
             it.zoomedAround(
                 viewportPoint = viewportPoint,
-                newZoom = newZoom,
+                zoomExponentDelta = zoomExponentDelta,
             )
         }
+    }
+
+    fun zoomIn(
+        viewportPoint: IntVec2,
+    ) {
+        zoom(
+            viewportPoint,
+            zoomExponentDelta = 1,
+        )
+    }
+
+    fun zoomOut(
+        viewportPoint: IntVec2,
+    ) {
+        zoom(
+            viewportPoint,
+            zoomExponentDelta = -1,
+        )
     }
 
     private val focusTransform = DynamicTransform.translate(focusPoint.map { -it })

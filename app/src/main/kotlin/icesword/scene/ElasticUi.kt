@@ -56,12 +56,14 @@ class ElasticUi private constructor(
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
 
         val viewTransform = this.viewTransform.transform.sample()
-        val bounds = elastic.tileBounds.sample()
+        val tileBounds = elastic.tileBounds.sample()
+        val pixelBounds = tileBounds * TILE_SIZE
+
         val isSelected = isSelected.sample()
 
         ctx.strokeStyle = if (isSelected) "red" else "rgba(103, 103, 131, 0.3)"
 
-        bounds.points().forEach { globalTileCoord ->
+        tileBounds.points().forEach { globalTileCoord ->
             val viewTileRect = viewTransform.transform(tileRect(globalTileCoord))
 
             ctx.lineWidth = 1.0
@@ -74,7 +76,7 @@ class ElasticUi private constructor(
             )
         }
 
-        val viewBounds = viewTransform.transform(bounds)
+        val viewBounds = viewTransform.transform(pixelBounds)
 
         ctx.lineWidth = 4.0
 
