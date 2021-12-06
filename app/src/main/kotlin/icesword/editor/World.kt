@@ -154,6 +154,7 @@ class World(
                     is EnemyData -> Enemy.load(rezIndex = rezIndex, data = it)
                     is PathElevatorData -> PathElevator.load(rezIndex = rezIndex, data = it)
                     is RopeData -> Rope.load(rezIndex = rezIndex, data = it)
+                    is CrateStackData -> CrateStack.load(rezIndex = rezIndex, data = it)
                 }
             }.toSet()
 

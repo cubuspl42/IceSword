@@ -2,6 +2,8 @@ package icesword.scene
 
 import TextureBank
 import icesword.RezIndex
+import icesword.editor.CrateStack
+import icesword.editor.CrateStackData
 import icesword.editor.Editor
 import icesword.editor.Elastic
 import icesword.editor.Elevator
@@ -55,6 +57,10 @@ fun createEntityNode(
         is Rope -> RopeNode(
             editor = editor,
             rope = entity,
+        )
+        is CrateStack -> CrateStackNode(
+            editor = editor,
+            crateStack = entity,
         )
     }
 }

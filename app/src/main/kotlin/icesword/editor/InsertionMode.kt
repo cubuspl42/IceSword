@@ -2,6 +2,7 @@ package icesword.editor
 
 import icesword.RezIndex
 import icesword.editor.FloorSpikeRow.FloorSpikeConfig
+import icesword.editor.InsertionPrototype.CrateStackInsertionPrototype
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
@@ -12,6 +13,8 @@ import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.editor.WapObjectPrototype.FloorSpikePrototype
+import icesword.editor.WapObjectPrototype.RopePrototype
+import icesword.editor.WapObjectPrototype.StackedCratesPrototype
 import icesword.frp.Cell
 import icesword.frp.CellSlot
 import icesword.frp.Stream
@@ -44,6 +47,8 @@ sealed interface InsertionPrototype {
     object FloorSpikeInsertionPrototype : InsertionPrototype
 
     object RopeInsertionPrototype : InsertionPrototype
+
+    object CrateStackInsertionPrototype : InsertionPrototype
 
     value class EnemyInsertionPrototype(
         val wapObjectPrototype: WapObjectPrototype,
@@ -307,7 +312,7 @@ class RopeInsertionMode(
     private val rezIndex: RezIndex,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    wapObjectPrototype = WapObjectPrototype.RopePrototype,
+    wapObjectPrototype = RopePrototype,
 ) {
     override val insertionPrototype = RopeInsertionPrototype
 
@@ -317,6 +322,26 @@ class RopeInsertionMode(
                 rezIndex = rezIndex,
                 initialPosition = insertionWorldPoint,
                 initialSwingDurationMs = 1500,
+            )
+        )
+    }
+}
+
+class CrateStackInsertionMode(
+    private val world: World,
+    private val rezIndex: RezIndex,
+) : WapObjectAlikeInsertionMode(
+    rezIndex = rezIndex,
+    wapObjectPrototype = StackedCratesPrototype,
+) {
+    override val insertionPrototype = CrateStackInsertionPrototype
+
+    override fun insert(insertionWorldPoint: IntVec2) {
+        world.insertEntity(
+            CrateStack(
+                rezIndex = rezIndex,
+                initialPosition = insertionWorldPoint,
+                initialPickups = listOf(PickupKind.TreasureCoins),
             )
         )
     }

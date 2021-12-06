@@ -8,6 +8,7 @@ import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.EntitySelectMode.EntityAreaSelectingMode
+import icesword.editor.InsertionPrototype.CrateStackInsertionPrototype
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
 import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.RopeInsertionPrototype
@@ -290,6 +291,10 @@ class Editor(
                 insertionPrototype = insertionPrototype,
             )
             is RopeInsertionPrototype -> RopeInsertionMode(
+                world = world,
+                rezIndex = rezIndex,
+            )
+            is CrateStackInsertionPrototype -> CrateStackInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
             )

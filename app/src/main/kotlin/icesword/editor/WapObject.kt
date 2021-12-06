@@ -14,7 +14,7 @@ import kotlinx.serialization.Transient
 import kotlinx.serialization.UseSerializers
 import org.khronos.webgl.Uint8Array
 
-private fun encode(text: String): DataStreamObj.ByteString {
+fun encode(text: String): DataStreamObj.ByteString {
     val encodedText: ByteArray = text.encodeToByteArray()
     return DataStreamObj.ByteString(
         Uint8Array(encodedText.toTypedArray())
@@ -40,6 +40,17 @@ sealed class WapObjectPrototype {
             imageSet = encode("LEVEL_ROPE"),
             speedX = 1750,
         )
+    }
+
+    @Serializable
+    object StackedCratesPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL3_IMAGES_CRATES",
+        )
+
+        @Transient
+        override val wwdObjectPrototype = Wwd.Object_.empty()
     }
 
     @Serializable

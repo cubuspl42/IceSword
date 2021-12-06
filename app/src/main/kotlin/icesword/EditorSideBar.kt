@@ -137,6 +137,13 @@ private fun createInsertSection(
             insertionPrototype = RopeInsertionPrototype,
             tillDetach = tillDetach,
         ),
+        createInsertEntityButton(
+            editor = editor,
+            text = "Crate stack",
+            imagePath = "images/CLAW/LEVEL3/IMAGES/CRATES/FRAME001.png",
+            insertionPrototype = CrateStackInsertionPrototype,
+            tillDetach = tillDetach,
+        ),
         createInsertWapObjectButton(
             editor = editor,
             text = "CrumblingPeg",
