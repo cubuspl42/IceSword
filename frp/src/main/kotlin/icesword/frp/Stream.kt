@@ -58,6 +58,9 @@ fun <A> Stream<A>.correlate(sample: () -> A): Cell<A> =
 fun <A, B> Stream<A>.map(f: (A) -> B): Stream<B> =
     StreamMap(this, f)
 
+fun <A, B : Any> Stream<A>.mapNotNull(f: (A) -> B?): Stream<B> =
+    map(f).filter { it != null }.cast()
+
 fun <A, B> Stream<A>.mapTo(b: B): Stream<B> =
     this.map { b }
 
