@@ -3,6 +3,8 @@ package icesword.scene
 import TextureBank
 import icesword.editor.CrateStack
 import icesword.editor.Editor
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.map
 import org.w3c.dom.svg.SVGElement
 
 class CrateStackNode(
@@ -11,22 +13,28 @@ class CrateStackNode(
 ) : HybridNode {
     override fun buildCanvasNode(
         textureBank: TextureBank,
-    ): CanvasNode = WapSpriteNode(
-        textureBank = textureBank,
-        wapSprite = crateStack.wapSprite,
+    ): CanvasNode = GroupCanvasNode(
+        children = DynamicList.diff(
+            crateStack.outputStack.map { outputStack ->
+                outputStack.crates.map { crate ->
+                    WapSpriteNode(
+                        textureBank = textureBank,
+                        wapSprite = crate.wapSprite,
+                    )
+                }
+            },
+        ),
     )
 
     override fun buildOverlayElement(
         context: HybridNode.OverlayBuildContext,
     ): SVGElement = context.run {
-        val boundingBox = crateStack.wapSprite.boundingBox
-
         createEntityFrameElement(
             editor = editor,
             svg = svg,
             outer = viewport,
             entity = crateStack,
-            boundingBox = viewTransform.transform(boundingBox),
+            boundingBox = viewTransform.transform(crateStack.boundingBox),
             tillDetach = tillDetach,
         )
     }

@@ -32,6 +32,10 @@ class MutableDynamicList<A>(
         mutableContent.update { content -> content.filterIndexed { i, _ -> i != index } }
     }
 
+    fun removeLast() {
+        mutableContent.update { content -> content.dropLast(1) }
+    }
+
     fun insert(index: Int, element: A) {
         mutableContent.update {
             it.flatMapIndexed { i: Int, a: A ->

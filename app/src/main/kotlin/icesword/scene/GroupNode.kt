@@ -15,6 +15,7 @@ open class GroupNode(
     override fun buildCanvasNode(
         textureBank: TextureBank,
     ): CanvasNode = GroupCanvasNode(
+        // Should these children be pinned? (mapTillRemoved or something)
         children = children.mapNotNull {
             it.buildCanvasNode(textureBank = textureBank)
         },

@@ -1,6 +1,7 @@
 package icesword
 
 import TextureBank
+import icesword.editor.CrateStack
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.EditorMode
@@ -289,6 +290,13 @@ private fun onEditPressed(
                 dialogOverlay.showDialog(
                     dialog = createEditRopeDialog(
                         rope = selectedEntity,
+                    ),
+                )
+            }
+            is CrateStack -> {
+                dialogOverlay.showDialog(
+                    dialog = createEditCrateStackDialog(
+                        crateStack = selectedEntity,
                     ),
                 )
             }

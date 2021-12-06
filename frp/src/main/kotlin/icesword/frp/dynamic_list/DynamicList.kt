@@ -22,6 +22,9 @@ interface DynamicList<out E> {
         fun <E> merge(list: DynamicList<Stream<E>>): Stream<E> =
             list.content.divertMap { Stream.merge(it) }
 
+        fun <E> diff(content: Cell<List<E>>): DynamicList<E> =
+            ContentDynamicList(content = content)
+
         fun <E> empty(): DynamicList<E> =
             ContentDynamicList(constant(emptyList()))
     }

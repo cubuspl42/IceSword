@@ -5,6 +5,7 @@ package icesword.editor
 import icesword.ImageSetId
 import icesword.RezIndex
 import icesword.editor.WapObjectPrototype.StackedCratesPrototype
+import icesword.frp.Cell
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
 import icesword.frp.dynamic_list.sampleContent
@@ -15,6 +16,7 @@ import icesword.geometry.IntVec2
 import icesword.wwd.Geometry
 import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.Wwd
+import kotlinx.css.del
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -48,6 +50,16 @@ class CrateStack(
             )
     }
 
+    data class OutputCrate(
+        val position: IntVec2,
+        val bounds: IntRect,
+        val wapSprite: WapSprite,
+    )
+
+    data class OutputStack(
+        val crates: List<OutputCrate>,
+    )
+
     private val crateImageMetadata = rezIndex.getImageMetadata(
         imageSetId = crateImageSetId,
         i = -1,
@@ -59,13 +71,15 @@ class CrateStack(
 
     val pickups: DynamicList<PickupKind> = _pickups
 
-    fun removePickupAt(pickupIndex: Int) {
-        _pickups.removeAt(index = pickupIndex)
+    fun pushCrate() {
+        if (pickups.size.sample() < pickupCountLimit) {
+            _pickups.add(PickupKind.TreasureCoins)
+        }
     }
 
-    fun addPickup(pickup: PickupKind) {
-        if (pickups.size.sample() < pickupCountLimit) {
-            _pickups.add(pickup)
+    fun popCrate() {
+        if (pickups.size.sample() > 1) {
+            _pickups.removeLast()
         }
     }
 
@@ -79,12 +93,50 @@ class CrateStack(
         position = entityPosition.position,
     )
 
-    val boundingBox = wapSprite.boundingBox
+    private fun buildCrates(
+        size: Int,
+        position: IntVec2,
+    ): List<OutputCrate> {
+        val crate = OutputCrate(
+            position = position,
+            bounds = calculateWapSpriteBounds(
+                imageMetadata = crateImageMetadata,
+                position = position,
+            ),
+            wapSprite = WapSprite(
+                imageMetadata = crateImageMetadata,
+                position = Cell.constant(position),
+            ),
+        )
 
-    override fun isSelectableIn(area: IntRect): Boolean {
-        val hitBox = wapSprite.boundingBox.sample()
-        return hitBox.overlaps(area)
+        val delta = IntVec2(x = 0, y = -42)
+
+        val tail = if (size > 1) buildCrates(
+            size = size - 1,
+            position = position + delta,
+        ) else emptyList()
+
+        return listOf(crate) + tail
     }
+
+    val outputStack = Cell.map2(
+        entityPosition.position,
+        pickups.size,
+    ) { position, size ->
+        OutputStack(
+            crates = buildCrates(
+                size = size,
+                position = position,
+            ),
+        )
+    }
+
+    val boundingBox = outputStack.map { stack ->
+        IntRect.enclosing(rects = stack.crates.map { it.bounds })
+    }
+
+    override fun isSelectableIn(area: IntRect): Boolean =
+        boundingBox.sample().overlaps(area)
 
     override fun toEntityData(): CrateStackData = CrateStackData(
         position = position.sample(),
