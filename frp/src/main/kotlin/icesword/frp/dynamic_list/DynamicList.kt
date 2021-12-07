@@ -6,8 +6,10 @@ import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.divertMap
+import icesword.frp.filter
 import icesword.frp.map
 import icesword.frp.mapTillNext
+import icesword.frp.switchMap
 import icesword.frp.units
 import icesword.frp.values
 
@@ -24,6 +26,18 @@ interface DynamicList<out E> {
 
         fun <E> diff(content: Cell<List<E>>): DynamicList<E> =
             ContentDynamicList(content = content)
+
+        fun <E> fuse(content: DynamicList<Cell<E>>): DynamicList<E> =
+            ContentDynamicList(
+                content = content.content.switchMap { cells ->
+                    Cell.traverse(cells) { it }
+                },
+            )
+
+        fun <E> fuse(content: List<Cell<E>>): DynamicList<E> =
+            ContentDynamicList(
+                content = Cell.traverse(content) { it },
+            )
 
         fun <E> empty(): DynamicList<E> =
             ContentDynamicList(constant(emptyList()))
@@ -63,6 +77,15 @@ fun <E : Any> DynamicList<E>.last(): Cell<E> =
 
 fun <E : Any> DynamicList<E>.firstOrNull(): Cell<E?> =
     this.content.map { it.firstOrNull() }
+
+fun <E> DynamicList<Cell<E>>.fuse(): DynamicList<E> =
+    DynamicList.fuse(this)
+
+fun <A : Any> DynamicList<A?>.filterNotNull(): DynamicList<A> =
+    ContentDynamicList(content = this.content.map { it.filterNotNull() })
+
+fun <E : Any> DynamicList<Cell<E?>>.fuseNotNull(): DynamicList<E> =
+    this.fuse().filterNotNull()
 
 fun <E : Any> DynamicList<E>.drop(n: Int): DynamicList<E> =
     ContentDynamicList(content = this.content.map { it.drop(n) })

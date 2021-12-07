@@ -152,8 +152,8 @@ fun createHTMLWidget(
 
 fun createHTMLWidgetB(
     tagName: String,
-    children: DynamicList<HTMLWidgetB<*>>,
     style: DynamicStyleDeclaration? = null,
+    children: DynamicList<HTMLWidgetB<*>>,
 ) = object : HTMLWidgetB<HTMLWidget> {
     override fun build(tillDetach: Till): HTMLWidget =
         createHTMLWidget(

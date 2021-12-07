@@ -1,10 +1,13 @@
 package icesword.html
 
 import icesword.frp.Cell
+import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.frp.mapTillNext
+import org.w3c.dom.DragEvent
+import org.w3c.dom.Element
 import org.w3c.dom.Node
 
 sealed interface HTMLWidget : HTMLWidgetB<HTMLWidget> {
@@ -116,3 +119,15 @@ fun <Wa : HTMLWidget, Wb : HTMLWidget> HTMLWidgetB<Wa>.flatMap(transform: (widge
         }
     }
 }
+
+fun HTMLWidget.onDragEnter(): Stream<DragEvent> =
+    (this.resolve() as Element).onDragEnter()
+
+fun HTMLWidget.onDragOver(): Stream<DragEvent> =
+    (this.resolve() as Element).onDragOver()
+
+fun HTMLWidget.onDragLeave(): Stream<DragEvent> =
+    (this.resolve() as Element).onDragLeave()
+
+fun HTMLWidget.onDrop(): Stream<DragEvent> =
+    (this.resolve() as Element).onDrop()
