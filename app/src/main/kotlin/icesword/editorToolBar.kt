@@ -296,6 +296,8 @@ private fun onEditPressed(
             is CrateStack -> {
                 dialogOverlay.showDialog(
                     dialog = createEditCrateStackDialog(
+                        rezIndex = rezIndex,
+                        textureBank = textureBank,
                         crateStack = selectedEntity,
                     ),
                 )

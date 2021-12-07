@@ -7,6 +7,7 @@ import icesword.frp.reactTill
 import icesword.geometry.IntVec2
 import kotlinx.css.Align
 import kotlinx.css.BackgroundRepeat
+import kotlinx.css.BorderStyle
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.Display
@@ -37,6 +38,39 @@ interface Transform {
     }
 }
 
+data class BorderStyleDeclaration(
+    val style: Cell<BorderStyle?>? = null,
+    val color: Cell<Color?>? = null,
+    val width: Cell<LinearDimension?>? = null,
+) {
+    fun linkTo(
+        style: CSSStyleDeclaration,
+        tillDetach: Till,
+    ) {
+        linkProperty(
+            style = style,
+            propertyName = "border-style",
+            property = this.style?.map { it?.toString() },
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "border-color",
+            property = color?.map { it?.toString() },
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "border-width",
+            property = width?.map { it?.toString() },
+            till = tillDetach,
+        )
+    }
+}
+
+
 data class DynamicStyleDeclaration(
     val width: Cell<LinearDimension>? = null,
     val height: Cell<LinearDimension>? = null,
@@ -63,6 +97,7 @@ data class DynamicStyleDeclaration(
     val transform: Cell<Transform?>? = null,
     val pointerEvents: Cell<PointerEvents?>? = null,
     val overflow: Cell<Overflow?>? = null,
+    val border: BorderStyleDeclaration? = null,
 ) {
     fun linkTo(
         style: CSSStyleDeclaration,
@@ -237,6 +272,11 @@ data class DynamicStyleDeclaration(
         )
 
         displayStyle?.linkTo(
+            style = style,
+            tillDetach = tillDetach,
+        )
+
+        border?.linkTo(
             style = style,
             tillDetach = tillDetach,
         )

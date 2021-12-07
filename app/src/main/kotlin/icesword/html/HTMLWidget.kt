@@ -47,8 +47,8 @@ interface HTMLWidgetB<out W : HTMLWidget> {
         fun build(widgets: List<HTMLWidgetB<*>>, tillDetach: Till): List<HTMLWidget> =
             widgets.map { widgetB -> widgetB.build(tillDetach) }
 
-        fun buildDl(widgets: DynamicList<HTMLWidgetB<*>>, tillAbort: Till): DynamicList<HTMLWidget> =
-            widgets.mapTillRemoved(tillAbort) { childB, tillNext ->
+        fun <W : HTMLWidget> buildDl(widgets: DynamicList<HTMLWidgetB<W>>, tillDetach: Till): DynamicList<W> =
+            widgets.mapTillRemoved(tillDetach) { childB, tillNext ->
                 childB.build(tillNext)
             }
     }
@@ -75,6 +75,19 @@ fun <Wa : HTMLWidget, Wb : HTMLWidget> HTMLWidgetB<Wa>.mapTillDetach(
         override fun build(tillDetach: Till): Wb {
             val widgetA = self.build(tillDetach)
             val widgetB = transform(widgetA, tillDetach)
+            return widgetB
+        }
+    }
+}
+
+fun <Wa : HTMLWidget, Wb : HTMLWidget> HTMLWidgetB<Wa>.flatMapTillDetach(
+    transform: (widget: Wa, tillDetach: Till) -> HTMLWidgetB<Wb>,
+): HTMLWidgetB<Wb> {
+    val self = this
+    return object : HTMLWidgetB<Wb> {
+        override fun build(tillDetach: Till): Wb {
+            val widgetA = self.build(tillDetach)
+            val widgetB = transform(widgetA, tillDetach).build(tillDetach)
             return widgetB
         }
     }

@@ -605,12 +605,14 @@ fun createWrapper(
 
 fun createWrapperWb(
     tagName: String = "div",
+    attrs: HTMLElementAttrs? = null,
     style: DynamicStyleDeclaration? = null,
     child: Cell<HTMLWidgetB<*>?>,
 ): HTMLWidgetB<*> = object : HTMLWidgetB<HTMLWidget> {
     override fun build(tillDetach: Till): HTMLWidget {
         val element = document.createElement(tagName) as HTMLElement
 
+        attrs?.linkTo(element, tillDetach)
         style?.linkTo(element.style, tillDetach)
 
         val childElement = HTMLWidgetB.build(child, tillDetach)
@@ -718,6 +720,35 @@ fun createColumnWb(
                 appendChild(HTMLWidget.resolve(it))
             }
         }
+
+        return HTMLWidget.of(element)
+    }
+}
+
+fun createColumnWbDl(
+    tagName: String = "div",
+    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    flexStyle: FlexStyleDeclaration = FlexStyleDeclaration(),
+    verticalGap: LinearDimension? = null,
+    children: DynamicList<HTMLWidgetB<*>>,
+) = object : HTMLWidgetB<HTMLWidget> {
+    override fun build(tillDetach: Till): HTMLWidget {
+        val element = createStyledHtmlElement(
+            tagName = tagName,
+            style = style.copy(
+                displayStyle = flexStyle.copy(
+                    direction = constant(FlexDirection.column),
+                    gap = flexStyle.gap ?: verticalGap?.let(::constant),
+                ),
+            ),
+            tillDetach = tillDetach,
+        )
+
+        linkNodeChildrenDl(
+            element = element,
+            children = HTMLWidgetB.buildDl(children, tillDetach).map { it.resolve() },
+            till = tillDetach,
+        )
 
         return HTMLWidget.of(element)
     }
