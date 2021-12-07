@@ -6,8 +6,9 @@ import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.divertMap
-import icesword.frp.filter
+import icesword.frp.hold
 import icesword.frp.map
+import icesword.frp.mapNotNull
 import icesword.frp.mapTillNext
 import icesword.frp.switchMap
 import icesword.frp.units
@@ -110,8 +111,11 @@ fun <E> DynamicList<E>.indexOf(element: E): Cell<Int?> =
         if (i >= 0) i else null
     }
 
-fun <E> DynamicList<E>.get(index: Int): Cell<E> =
-    content.map { content -> content[index] }
+fun <E> DynamicList<E>.get(index: Int, till: Till): Cell<E> {
+    val steps = content.values().mapNotNull { it.getOrNull(index) }
+    val initialValue = this.volatileContentView[index]
+    return steps.hold(initialValue, till)
+}
 
 fun <E> DynamicList<E>.getOrNull(index: Int): Cell<E?> =
     content.map { content -> content.getOrNull(index) }
@@ -145,19 +149,11 @@ fun <E, R> DynamicList<E>.mapIndexed(
 )
 
 fun <E, R> DynamicList<E>.mapIndexedDynamic(
+    till: Till,
     transform: (index: Int, element: Cell<E>) -> R,
 ): DynamicList<R> = ContentDynamicList(
     content = this.size.map { size ->
-        (0 until size).map { index -> transform(index, this.get(index)) }
-    },
-)
-
-fun <E, R> DynamicList<E>.mapIndexedTillRemoved(
-    tillAbort: Till,
-    transform: (index: Int, element: Cell<E>, tillRemoved: Till) -> R,
-): DynamicList<R> = ContentDynamicList(
-    content = this.size.mapTillNext(tillAbort) { size, tillNextSize ->
-        (0 until size).map { index -> transform(index, this.get(index), tillNextSize) }
+        (0 until size).map { index -> transform(index, this.get(index, till)) }
     },
 )
 

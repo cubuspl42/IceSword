@@ -12,9 +12,7 @@ import icesword.frp.Tilled
 import icesword.frp.divertMap
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.firstOrNullDynamic
-import icesword.frp.dynamic_list.mapIndexed
 import icesword.frp.dynamic_list.mapIndexedDynamic
-import icesword.frp.dynamic_list.mapIndexedTillRemoved
 import icesword.frp.dynamic_list.mergeBy
 import icesword.frp.dynamic_list.sampleContent
 import icesword.frp.map
@@ -63,9 +61,7 @@ private class PickupWrapperWidget(
     val isDraggedOver: Cell<Boolean>,
     val onDropped: Stream<Unit>,
     override val root: HTMLWidget,
-) : HTMLWidget.HTMLShadowWidget {
-
-}
+) : HTMLWidget.HTMLShadowWidget
 
 private sealed interface CrateStackSectionState {
     val nextState: Stream<Tilled<CrateStackSectionState>>
@@ -194,7 +190,7 @@ fun createCrateStackSection(
 
     override fun build(tillDetach: Till): HTMLWidget = object {
         val pickupWrappers: DynamicList<PickupWrapperWidget> = HTMLWidgetB.buildDl(
-            widgets = pickupsPreview.mapIndexedDynamic { index: Int, pickupKind: Cell<PickupKind> ->
+            widgets = pickupsPreview.mapIndexedDynamic(tillDetach) { index: Int, pickupKind: Cell<PickupKind> ->
                 createPickupWrapper(
                     pickupIndex = index,
                     pickupKind = pickupKind,
