@@ -28,7 +28,7 @@ fun createPickupImage(
             tillDetach = Till.never,
         ).apply {
             style.apply {
-                display = "inline-block"
+                display = "block"
             }
         },
     )

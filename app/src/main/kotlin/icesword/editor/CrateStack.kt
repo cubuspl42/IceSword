@@ -120,8 +120,6 @@ class CrateStack(
     fun setPickups(
         pickups: List<PickupKind>,
     ) {
-        println("New pickups: $pickups")
-
         _pickups.replaceContent(pickups)
     }
 

@@ -24,6 +24,7 @@ import icesword.frp.units
 import icesword.html.BorderStyleDeclaration
 import icesword.html.DropTargetState
 import icesword.html.DynamicStyleDeclaration
+import icesword.html.FlexStyleDeclaration
 import icesword.html.HTMLElementAttrs
 import icesword.html.HTMLWidget
 import icesword.html.HTMLWidgetB
@@ -41,6 +42,7 @@ import icesword.ui.createPickupImage
 import kotlinx.css.Align
 import kotlinx.css.BorderStyle
 import kotlinx.css.Color
+import kotlinx.css.JustifyContent
 import kotlinx.css.px
 import org.w3c.dom.DataTransfer
 import org.w3c.dom.HTMLElement
@@ -158,7 +160,12 @@ fun createCrateStackSection(
                         child = constant(
                             createWrapperWb(
                                 style = DynamicStyleDeclaration(
-                                    padding = constant(4.px),
+                                    width = constant(42.px),
+                                    height = constant(42.px),
+                                    displayStyle = FlexStyleDeclaration(
+                                        justifyContent = constant(JustifyContent.center),
+                                        alignItems = constant(Align.center),
+                                    ),
                                     border = BorderStyleDeclaration(
                                         style = constant(BorderStyle.solid),
                                         color = constant(Color.yellow),

@@ -18,9 +18,13 @@ import org.w3c.dom.DataTransfer
 import org.w3c.dom.DragEvent
 
 sealed interface DropTargetState {
-    object Idle : DropTargetState
+    object Idle : DropTargetState {
+        override fun toString(): String = "Idle"
+    }
 
-    object DragOver : DropTargetState
+    object DragOver : DropTargetState {
+        override fun toString(): String = "DragOver"
+    }
 }
 
 class DropTargetWidget(
@@ -51,12 +55,13 @@ private sealed interface DropTargetWidgetState {
 private class DropTargetWidgetStateFactory(
     private val test: (dataTransfer: DataTransfer) -> Boolean,
     private val onDragEnter: Stream<DragEvent>,
+    private val childW: HTMLWidget,
 ) {
     fun buildIdleState(): Tilled<DropTargetWidgetState.Idle> = Tilled.pure(
-        DropTargetWidgetState.Idle(
-            nextState = onDragEnter.map { buildOverState() }
+            DropTargetWidgetState.Idle(
+                nextState = onDragEnter.map { buildOverState() }
+            )
         )
-    )
 
     fun buildOverState() = object : Tilled<DropTargetWidgetState.DragOver> {
         override fun build(till: Till): DropTargetWidgetState.DragOver {
@@ -99,6 +104,7 @@ fun createDropTarget(
     val onChildDragEnter = childW.onDragEnter()
 
     val stateFactory = DropTargetWidgetStateFactory(
+        childW = childW,
         onDragEnter = onChildDragEnter,
         test = test,
     )
