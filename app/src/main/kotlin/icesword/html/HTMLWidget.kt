@@ -47,6 +47,11 @@ interface HTMLWidgetB<out W : HTMLWidget> {
                 elementB?.build(tillNext)
             }
 
+        fun <W : HTMLWidget> build(widget: Cell<HTMLWidgetB<W>>, tillDetach: Till): Cell<W> =
+            widget.mapTillNext(tillDetach) { elementB, tillNext ->
+                elementB.build(tillNext)
+            }
+
         fun build(widgets: List<HTMLWidgetB<*>>, tillDetach: Till): List<HTMLWidget> =
             widgets.map { widgetB -> widgetB.build(tillDetach) }
 

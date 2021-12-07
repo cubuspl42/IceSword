@@ -72,8 +72,42 @@ class CrateStack(
     val pickups: DynamicList<PickupKind> = _pickups
 
     fun pushCrate() {
+        val pickupKinds = listOf(
+            PickupKind.TreasureCoins,
+            PickupKind.TreasureRingsRed,
+            PickupKind.TreasureRingsGreen,
+            PickupKind.TreasureRingsBlue,
+            PickupKind.TreasureRingsPurple,
+            PickupKind.TreasureCrossesRed,
+            PickupKind.TreasureCrossesGreen,
+            PickupKind.TreasureCrossesBlue,
+            PickupKind.TreasureCrossesPurple,
+            PickupKind.TreasureSceptersRed,
+            PickupKind.TreasureSceptersGreen,
+            PickupKind.TreasureSceptersBlue,
+            PickupKind.TreasureSceptersPurple,
+            PickupKind.TreasureGeckosRed,
+            PickupKind.TreasureGeckosGreen,
+            PickupKind.TreasureGeckosBlue,
+            PickupKind.TreasureGeckosPurple,
+            PickupKind.TreasureChalicesRed,
+            PickupKind.TreasureChalicesGreen,
+            PickupKind.TreasureChalicesBlue,
+            PickupKind.TreasureChalicesPurple,
+            PickupKind.TreasureCrownsRed,
+            PickupKind.TreasureCrownsGreen,
+            PickupKind.TreasureCrownsBlue,
+            PickupKind.TreasureCrownsPurple,
+            PickupKind.TreasureSkullRed,
+            PickupKind.TreasureSkullGreen,
+            PickupKind.TreasureSkullBlue,
+            PickupKind.TreasureSkullPurple,
+        )
+
+        val pickupKind = pickupKinds.shuffled().first()
+
         if (pickups.size.sample() < pickupCountLimit) {
-            _pickups.add(PickupKind.TreasureCoins)
+            _pickups.add(pickupKind)
         }
     }
 
@@ -81,6 +115,14 @@ class CrateStack(
         if (pickups.size.sample() > 1) {
             _pickups.removeLast()
         }
+    }
+
+    fun setPickups(
+        pickups: List<PickupKind>,
+    ) {
+        println("New pickups: $pickups")
+
+        _pickups.replaceContent(pickups)
     }
 
     override val entityPosition: EntityPosition =

@@ -27,6 +27,9 @@ interface DynamicList<out E> {
         fun <E> diff(content: Cell<List<E>>): DynamicList<E> =
             ContentDynamicList(content = content)
 
+        fun <E> diff(content: Cell<DynamicList<E>>): DynamicList<E> =
+            ContentDynamicList(content = content.switchMap { it.content })
+
         fun <E> fuse(content: DynamicList<Cell<E>>): DynamicList<E> =
             ContentDynamicList(
                 content = content.content.switchMap { cells ->
@@ -78,8 +81,19 @@ fun <E : Any> DynamicList<E>.last(): Cell<E> =
 fun <E : Any> DynamicList<E>.firstOrNull(): Cell<E?> =
     this.content.map { it.firstOrNull() }
 
+fun <E> DynamicList<E>.firstOrNull(predicate: (E) -> Boolean): Cell<E?> =
+    this.content.map { it.firstOrNull(predicate) }
+
+fun <E : Any> DynamicList<E>.firstOrNullDynamic(predicate: (E) -> Cell<Boolean>): Cell<E?> =
+    this.fuseBy { element ->
+        predicate(element).map { flag -> element.takeIf { flag } }
+    }.filterNotNull().firstOrNull()
+
 fun <E> DynamicList<Cell<E>>.fuse(): DynamicList<E> =
     DynamicList.fuse(this)
+
+fun <E, R> DynamicList<E>.fuseBy(transform: (E) -> Cell<R>): DynamicList<R> =
+    this.map(transform).fuse()
 
 fun <A : Any> DynamicList<A?>.filterNotNull(): DynamicList<A> =
     ContentDynamicList(content = this.content.map { it.filterNotNull() })
@@ -96,6 +110,9 @@ fun <E> DynamicList<E>.indexOf(element: E): Cell<Int?> =
         if (i >= 0) i else null
     }
 
+fun <E> DynamicList<E>.get(index: Int): Cell<E> =
+    content.map { content -> content[index] }
+
 fun <E> DynamicList<E>.getOrNull(index: Int): Cell<E?> =
     content.map { content -> content.getOrNull(index) }
 
@@ -106,7 +123,6 @@ fun <E> DynamicList<E>.withAppended(element: Cell<E>): DynamicList<E> =
             element,
         ) { content, element ->
             content + element
-
         },
     )
 
@@ -126,6 +142,23 @@ fun <E, R> DynamicList<E>.mapIndexed(
     transform: (index: Int, element: E) -> R,
 ): DynamicList<R> = ContentDynamicList(
     content = this.content.map { it.mapIndexed(transform) },
+)
+
+fun <E, R> DynamicList<E>.mapIndexedDynamic(
+    transform: (index: Int, element: Cell<E>) -> R,
+): DynamicList<R> = ContentDynamicList(
+    content = this.size.map { size ->
+        (0 until size).map { index -> transform(index, this.get(index)) }
+    },
+)
+
+fun <E, R> DynamicList<E>.mapIndexedTillRemoved(
+    tillAbort: Till,
+    transform: (index: Int, element: Cell<E>, tillRemoved: Till) -> R,
+): DynamicList<R> = ContentDynamicList(
+    content = this.size.mapTillNext(tillAbort) { size, tillNextSize ->
+        (0 until size).map { index -> transform(index, this.get(index), tillNextSize) }
+    },
 )
 
 fun <E, R : Any> DynamicList<E>.mapNotNull(

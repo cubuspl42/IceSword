@@ -44,4 +44,8 @@ class MutableDynamicList<A>(
             }
         }
     }
+
+    fun replaceContent(newContent: List<A>) {
+        mutableContent.set(newContent)
+    }
 }

@@ -1,7 +1,5 @@
 package icesword
 
-import frpjs.FastSet
-import frpjs.fastSetOf
 import icesword.collections.SetFactory
 
 enum class SegregationTag {
@@ -70,6 +68,43 @@ fun <T> Sequence<T>.toMutableSetThrough(through: SetFactory<T>): MutableSet<T> {
     return set
 }
 
+/**
+ * Moves the given item at the `oldIndex` to the `newIndex`
+ */
+fun <T> MutableList<T>.moveAt(oldIndex: Int, newIndex: Int) {
+    if (oldIndex !in indices) throw IllegalArgumentException()
+    if (newIndex !in indices) throw IllegalArgumentException()
+
+    if (oldIndex != newIndex) {
+        val item = this[oldIndex]
+        removeAt(oldIndex)
+        if (oldIndex > newIndex)
+            add(newIndex, item)
+        else
+            add(newIndex - 1, item)
+    }
+}
+
+fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
+    if (index1 !in indices) throw IllegalArgumentException()
+    if (index2 !in indices) throw IllegalArgumentException()
+
+    val tmp = this[index1]
+    this[index1] = this[index2]
+    this[index2] = tmp
+}
+
+//fun <T> List<T>.withMovedAt(
+//    oldIndex: Int,
+//    newIndex: Int,
+//): List<T> =
+//    toMutableList().apply { moveAt(oldIndex, newIndex) }
+
+fun <T> List<T>.withSwapped(
+    index1: Int,
+    index2: Int,
+): List<T> =
+    toMutableList().apply { swap(index1, index2) }
 
 //fun <T> Set<T>.minusFast(other: Set<T>): Set<T> = when {
 //    other.isEmpty() -> this.toSet()
