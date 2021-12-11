@@ -106,6 +106,12 @@ fun <T> List<T>.withSwapped(
 ): List<T> =
     toMutableList().apply { swap(index1, index2) }
 
+fun <T> List<T>.withReplaced(
+    index: Int,
+    value: T,
+): List<T> =
+    toMutableList().apply { this[index] = value }
+
 //fun <T> Set<T>.minusFast(other: Set<T>): Set<T> = when {
 //    other.isEmpty() -> this.toSet()
 //    else -> this.filterNotTo(fastSetOf()) { it in other }

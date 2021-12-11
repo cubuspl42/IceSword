@@ -65,6 +65,9 @@ fun <A : Any, B> Cell<A?>.switchMapNested(transform: (A) -> Cell<B>?): Cell<B?> 
 fun <A> Cell<Cell<A>>.switch(): Cell<A> =
     Cell.switch(this)
 
+fun <A> Cell<Stream<A>>.divert(): Stream<A> =
+    Cell.divert(this)
+
 fun <A : Any> Cell<Cell<A?>?>.switch(): Cell<A?> =
     Cell.switch(this.map { it ?: Cell.constant(null) })
 

@@ -21,14 +21,16 @@ class CellMapTillNext<A, B>(
                 tillNextSink.tillNext(tillAbort),
             )
 
-            val change = ValueChange(
-                oldValue = value,
-                newValue = newValue,
-            )
+            if (newValue != value) {
+                val change = ValueChange(
+                    oldValue = value,
+                    newValue = newValue,
+                )
 
-            value = newValue
+                value = newValue
 
-            notifyListeners(change)
+                notifyListeners(change)
+            }
         }
     }
 

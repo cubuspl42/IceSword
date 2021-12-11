@@ -11,15 +11,24 @@ import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.divertMap
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.firstNotNullOrNull
 import icesword.frp.dynamic_list.firstOrNullDynamic
+import icesword.frp.dynamic_list.fuseBy
 import icesword.frp.dynamic_list.mapIndexedDynamic
 import icesword.frp.dynamic_list.mergeBy
 import icesword.frp.dynamic_list.sampleContent
 import icesword.frp.map
 import icesword.frp.mapNested
+import icesword.frp.mapNotNull
+import icesword.frp.mapTillNext
+import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
+import icesword.frp.switchMap
 import icesword.frp.units
+import icesword.frp.values
 import icesword.html.BorderStyleDeclaration
+import icesword.html.DragGesture
+import icesword.html.DraggableState
 import icesword.html.DropTargetState
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.FlexStyleDeclaration
@@ -30,69 +39,112 @@ import icesword.html.alsoTillDetach
 import icesword.html.createColumnWb
 import icesword.html.createColumnWbDl
 import icesword.html.createDropTarget
+import icesword.html.createGrid
 import icesword.html.createHeading4Wb
+import icesword.html.createRowWb
 import icesword.html.createTextButtonWb
 import icesword.html.createWrapperWb
-import icesword.html.mapTillDetach
+import icesword.html.flatMapTillDetach
+import icesword.html.map
+import icesword.html.onDragGestureStart
 import icesword.html.onDragStart
-import icesword.html.resolve
+import icesword.html.trackDraggingState
 import icesword.ui.createPickupImage
 import kotlinx.css.Align
 import kotlinx.css.BorderStyle
 import kotlinx.css.Color
 import kotlinx.css.JustifyContent
+import kotlinx.css.Overflow
 import kotlinx.css.px
 import org.w3c.dom.DataTransfer
-import org.w3c.dom.HTMLElement
 import org.w3c.dom.get
 
-private const val pickupKindMimeType = "application/x-pickupkind"
+private fun pickupKindToMimeType(pickupKind: PickupKind): String =
+    "application/x-pickupkind.${pickupKind.name}"
 
-private class PickupElementWidget(
+private fun pickupKindFromMimeType(mimeType: String): PickupKind? {
+    return if (mimeType.startsWith("application/x-pickupkind.")) {
+        val name = mimeType.split(".")[1]
+        return PickupKind.values().first { it.name.lowercase() == name }
+    } else null
+}
+
+private class PickupDraggableWidget(
     val pickupKind: PickupKind,
-    val onDragStarted: Stream<Unit>,
+    val isDragged: Cell<Boolean>,
     override val root: HTMLWidget,
 ) : HTMLWidget.HTMLShadowWidget
 
-private class PickupWrapperWidget(
-    val pickupIndex: Int,
-    val pickupKind: Cell<PickupKind>,
-    val onDragStarted: Stream<Unit>,
-    val isDraggedOver: Cell<Boolean>,
-    val onDropped: Stream<Unit>,
+sealed interface PickupDropTargetState {
+    object Idle : PickupDropTargetState
+
+    value class PickupDraggedOver(
+        val pickupKind: PickupKind,
+    ) : PickupDropTargetState
+}
+
+private class PickupDropTarget(
+    val crateIndex: Int,
+    val onDragGestureStarted: Stream<DragGesture>,
+    val state: Cell<PickupDropTargetState>,
+    val onDropped: Stream<PickupKind>,
+    override val root: HTMLWidget,
+) : HTMLWidget.HTMLShadowWidget {
+    val draggedOverPickup = state.map {
+        (it as? PickupDropTargetState.PickupDraggedOver)?.pickupKind
+    }
+}
+
+data class DropTargetPickupDrag(
+    val dropTargetIndex: Int,
+    val draggedOverPickupKind: PickupKind,
+)
+
+private class PickupGalleryWidget(
+    val draggedPickup: Cell<PickupKind?>,
     override val root: HTMLWidget,
 ) : HTMLWidget.HTMLShadowWidget
+
+data class CratePickupDragGesture(
+    val crateIndex: Int,
+    val onEnd: Stream<Unit>,
+)
 
 private sealed interface CrateStackSectionState {
-    val nextState: Stream<Tilled<CrateStackSectionState>>
-
     val pickupsPreview: DynamicList<PickupKind>
 
+    // Reacting to changes from the model
     class Idle(
         override val pickupsPreview: DynamicList<PickupKind>,
-        override val nextState: Stream<Tilled<CrateStackSectionState>>,
     ) : CrateStackSectionState
 
-    class Dragged(
+    // Handling inserting a pickup from the gallery
+    class Inserting(
         override val pickupsPreview: DynamicList<PickupKind>,
-        override val nextState: Stream<Tilled<CrateStackSectionState>>,
+    ) : CrateStackSectionState
+
+    // Internally reordering pickups inside the crate stack
+    class Reordering(
+        override val pickupsPreview: DynamicList<PickupKind>,
     ) : CrateStackSectionState
 }
 
-fun createCrateStackSection(
+fun createEditCrateStackDialog(
     rezIndex: RezIndex,
     textureBank: TextureBank,
     crateStack: CrateStack,
-) = object : HTMLWidgetB<HTMLWidget> {
-    fun test(dataTransfer: DataTransfer): Boolean =
-        dataTransfer.items[0]?.type == pickupKindMimeType
+): HTMLWidgetB<Dialog> = EditCrateStackDialogObject(
+    crateStack = crateStack,
+    rezIndex = rezIndex,
+    textureBank = textureBank,
+).root
 
-    val pickupsPreviewLoop = CellLoop(crateStack.pickups)
-
-    val pickupsPreview: DynamicList<PickupKind> =
-        DynamicList.diff(pickupsPreviewLoop.asCell)
-
-    fun createPickupElement(pickupKind: PickupKind) =
+class EditCrateStackDialogObject(
+    private val crateStack: CrateStack,
+    private val rezIndex: RezIndex,
+    private val textureBank: TextureBank,
+) {
+    private fun createPickupDraggable(pickupKind: PickupKind) =
         createWrapperWb(
             attrs = HTMLElementAttrs(
                 draggable = constant(true),
@@ -102,34 +154,55 @@ fun createCrateStackSection(
                 textureBank = textureBank,
                 pickupKind = pickupKind,
             )),
-        ).mapTillDetach { root, tillDetach ->
-            val rootElement = root.resolve() as HTMLElement
+        ).flatMapTillDetach { draggable, tillDetach ->
+            val onDragStart = draggable.onDragStart()
 
-            val onDragStart = rootElement.onDragStart()
+            val draggingState = draggable.trackDraggingState(tillDetach)
 
             onDragStart.reactTill(tillDetach) { ev ->
                 ev.dataTransfer?.apply {
                     effectAllowed = "move"
-                    setData(pickupKindMimeType, pickupKind.name)
+                    setData(pickupKindToMimeType(pickupKind), "")
                 }
             }
 
-            PickupElementWidget(
-                pickupKind = pickupKind,
-                onDragStarted = onDragStart.units(),
-                root = root,
-            )
+            createWrapperWb(
+                style = DynamicStyleDeclaration(
+                    width = constant(42.px),
+                    height = constant(42.px),
+                    displayStyle = FlexStyleDeclaration(
+                        justifyContent = constant(JustifyContent.center),
+                        alignItems = constant(Align.center),
+                    ),
+                    border = BorderStyleDeclaration(
+                        style = constant(BorderStyle.solid),
+                        color = constant(Color.darkGray),
+                        width = constant(2.px),
+                    ),
+                    overflow = constant(Overflow.hidden),
+                ),
+                child = constant(draggable),
+            ).map { root ->
+                PickupDraggableWidget(
+                    pickupKind = pickupKind,
+                    isDragged = draggingState.map { it == DraggableState.Dragged },
+                    root = root,
+                )
+            }
         }
 
-    private fun createPickupWrapper(
+    private fun test(dataTransfer: DataTransfer): Boolean =
+        dataTransfer.items[0]?.type?.let(::pickupKindFromMimeType) != null
+
+    private fun createPickupDropTarget(
         pickupIndex: Int,
         pickupKind: Cell<PickupKind>,
-    ): HTMLWidgetB<PickupWrapperWidget> =
-        object : HTMLWidgetB<PickupWrapperWidget> {
-            override fun build(tillDetach: Till): PickupWrapperWidget {
-                val pickupElement = HTMLWidgetB.build(
+    ): HTMLWidgetB<PickupDropTarget> =
+        object : HTMLWidgetB<PickupDropTarget> {
+            override fun build(tillDetach: Till): PickupDropTarget {
+                val pickupDraggable = HTMLWidgetB.build(
                     widget = pickupKind.map {
-                        createPickupElement(
+                        createPickupDraggable(
                             pickupKind = it,
                         )
                     },
@@ -148,158 +221,265 @@ fun createCrateStackSection(
                             border = BorderStyleDeclaration(
                                 style = constant(BorderStyle.solid),
                                 color = dropTargetState.map {
-                                    if (it is DropTargetState.DragOver) Color.red else Color.transparent
+                                    if (it is DropTargetState.DraggedOver) Color.red else Color.transparent
                                 },
                                 width = constant(2.px),
                             ),
                         ),
-                        child = constant(
-                            createWrapperWb(
-                                style = DynamicStyleDeclaration(
-                                    width = constant(42.px),
-                                    height = constant(42.px),
-                                    displayStyle = FlexStyleDeclaration(
-                                        justifyContent = constant(JustifyContent.center),
-                                        alignItems = constant(Align.center),
-                                    ),
-                                    border = BorderStyleDeclaration(
-                                        style = constant(BorderStyle.solid),
-                                        color = constant(Color.yellow),
-                                        width = constant(2.px),
-                                    ),
-                                ),
-                                child = pickupElement,
-                            ),
-                        ),
+                        child = pickupDraggable,
                     ),
                     test = { test(it) },
                 ).build(tillDetach = tillDetach)
 
                 dropTargetStateLoop.close(dropTarget.state)
 
-                return PickupWrapperWidget(
-                    pickupIndex = pickupIndex,
-                    pickupKind = pickupKind,
-                    onDragStarted = pickupElement.divertMap { it.onDragStarted },
-                    isDraggedOver = dropTarget.state.map { it is DropTargetState.DragOver },
-                    onDropped = dropTarget.onDrop,
+                fun extractPickupKind(dataTransfer: DataTransfer): PickupKind? =
+                    dataTransfer.items[0]?.let { item ->
+                        pickupKindFromMimeType(item.type)
+                    }
+
+                val state: Cell<PickupDropTargetState> = dropTarget.state.map { dropTargetState ->
+                    when (dropTargetState) {
+                        DropTargetState.Idle -> PickupDropTargetState.Idle
+                        is DropTargetState.DraggedOver -> extractPickupKind(dropTargetState.dataTransfer)?.let {
+                            PickupDropTargetState.PickupDraggedOver(pickupKind = it)
+                        } ?: PickupDropTargetState.Idle
+                    }
+                }
+
+                return PickupDropTarget(
+                    crateIndex = pickupIndex,
+                    onDragGestureStarted = pickupDraggable.divertMap { it.onDragGestureStart() },
+                    state = state,
+                    onDropped = dropTarget.onDrop.mapNotNull(::extractPickupKind),
                     root = dropTarget,
                 )
             }
         }
 
-    override fun build(tillDetach: Till): HTMLWidget = object {
-        val pickupWrappers: DynamicList<PickupWrapperWidget> = HTMLWidgetB.buildDl(
-            widgets = pickupsPreview.mapIndexedDynamic(tillDetach) { index: Int, pickupKind: Cell<PickupKind> ->
-                createPickupWrapper(
-                    pickupIndex = index,
-                    pickupKind = pickupKind,
-                )
-            },
-            tillDetach = tillDetach,
-        )
+    @Suppress("IfThenToElvis")
+    private fun createCrateStackSection(
+        handleInsertion: Cell<Boolean>,
+    ) = object : HTMLWidgetB<HTMLWidget> {
+        val pickupsPreviewLoop = CellLoop(crateStack.pickups)
 
-        private fun buildIdleState(): Tilled<CrateStackSectionState.Idle> {
-            val nextState = pickupWrappers.mergeBy { wrapper ->
-                wrapper.onDragStarted.map {
-                    buildDraggedState(
-                        crateStackPickups = crateStack.pickups.sampleContent(),
-                        draggedPickupIndex = wrapper.pickupIndex,
+        val pickupsPreview: DynamicList<PickupKind> =
+            DynamicList.diff(pickupsPreviewLoop.asCell)
+
+        override fun build(tillDetach: Till): HTMLWidget = object {
+            val pickupWrappers: DynamicList<PickupDropTarget> = HTMLWidgetB.buildDl(
+                widgets = pickupsPreview.mapIndexedDynamic(tillDetach) { index: Int, pickupKind: Cell<PickupKind> ->
+                    createPickupDropTarget(
+                        pickupIndex = index,
+                        pickupKind = pickupKind,
+                    )
+                },
+                tillDetach = tillDetach,
+            )
+
+            val onCrateDragStarted = pickupWrappers.mergeBy { dropTarget ->
+                dropTarget.onDragGestureStarted.map { dragGesture ->
+                    CratePickupDragGesture(
+                        crateIndex = dropTarget.crateIndex,
+                        onEnd = dragGesture.onEnd,
                     )
                 }
             }
 
-            return Tilled.pure(
-                CrateStackSectionState.Idle(
-                    pickupsPreview = crateStack.pickups,
-                    nextState = nextState,
-                ),
-            )
-        }
+            val draggedCratePickup: Cell<CratePickupDragGesture?> =
+                Stream.follow<CratePickupDragGesture?>(
+                    initialValue = null,
+                    extractNext = { gesture ->
+                        if (gesture != null) gesture.onEnd.map { null }
+                        else onCrateDragStarted
+                    },
+                    till = tillDetach,
+                )
 
-        private fun buildDraggedState(
-            crateStackPickups: List<PickupKind>,
-            draggedPickupIndex: Int,
-        ): Tilled<CrateStackSectionState.Dragged> = object : Tilled<CrateStackSectionState.Dragged> {
-            val draggedOverPickupIndex = pickupWrappers
-                .firstOrNullDynamic { it.isDraggedOver }
-                .mapNested { it.pickupIndex }
+            val draggedPickupIndex = draggedCratePickup.map { it?.crateIndex }
+
+            val draggedOverDropTarget = pickupWrappers
+                .fuseBy { dropTarget ->
+                    dropTarget.draggedOverPickup.mapNested { pickupKind ->
+                        DropTargetPickupDrag(
+                            dropTargetIndex = dropTarget.crateIndex,
+                            draggedOverPickupKind = pickupKind,
+                        )
+                    }
+                }
+                .firstNotNullOrNull()
 
             val onDropped = pickupWrappers.mergeBy { wrapper ->
-                wrapper.onDropped.map { wrapper.pickupIndex }
+                wrapper.onDropped.map {
+                    DropTargetPickupDrag(
+                        dropTargetIndex = wrapper.crateIndex,
+                        draggedOverPickupKind = it,
+                    )
+                }
             }
 
-            val pickupsPreview = DynamicList.diff(
-                draggedOverPickupIndex.map { targetPickupIndex ->
-                    if (targetPickupIndex == null) crateStackPickups
-                    else crateStackPickups.withSwapped(draggedPickupIndex, targetPickupIndex)
-                },
+            private fun buildIdleState(): Tilled<CrateStackSectionState.Idle> = Tilled.pure(
+                CrateStackSectionState.Idle(
+                    pickupsPreview = crateStack.pickups,
+                ),
             )
 
-            override fun build(till: Till): CrateStackSectionState.Dragged {
-                onDropped.reactTill(till) { targetPickupIndex ->
-                    val newPickups = crateStackPickups.withSwapped(draggedPickupIndex, targetPickupIndex)
-                    crateStack.setPickups(newPickups)
+            private fun buildInsertingState(): Tilled<CrateStackSectionState.Inserting> =
+                object : Tilled<CrateStackSectionState.Inserting> {
+                    val crateStackPickups = crateStack.pickups.sampleContent()
+
+                    val pickupsPreview = DynamicList.diff(
+                        draggedOverDropTarget.map { it ->
+                            if (it == null) crateStackPickups
+                            else crateStackPickups.withReplaced(
+                                it.dropTargetIndex,
+                                it.draggedOverPickupKind,
+                            )
+                        },
+                    )
+
+                    override fun build(till: Till): CrateStackSectionState.Inserting {
+                        onDropped.reactTill(till) {
+                            val newPickups = crateStackPickups.withReplaced(
+                                it.dropTargetIndex,
+                                it.draggedOverPickupKind,
+                            )
+                            crateStack.setPickups(newPickups)
+                        }
+
+                        return CrateStackSectionState.Inserting(
+                            pickupsPreview = pickupsPreview,
+                        )
+                    }
                 }
 
-                return CrateStackSectionState.Dragged(
-                    pickupsPreview = pickupsPreview,
-                    nextState = onDropped.map { buildIdleState() },
+            private fun buildReorderingState(
+                draggedPickupIndex: Int,
+            ): Tilled<CrateStackSectionState.Reordering> =
+                object : Tilled<CrateStackSectionState.Reordering> {
+                    val crateStackPickups = crateStack.pickups.sampleContent()
+
+                    val pickupsPreview = DynamicList.diff(
+                        draggedOverDropTarget.map {
+                            if (it == null) crateStackPickups
+                            else crateStackPickups.withSwapped(
+                                draggedPickupIndex,
+                                it.dropTargetIndex,
+                            )
+                        },
+                    )
+
+                    override fun build(till: Till): CrateStackSectionState.Reordering {
+                        onDropped.reactTill(till) { it ->
+                            val newPickups = crateStackPickups.withSwapped(
+                                draggedPickupIndex,
+                                it.dropTargetIndex,
+                            )
+                            crateStack.setPickups(newPickups)
+                        }
+
+                        return CrateStackSectionState.Reordering(
+                            pickupsPreview = pickupsPreview,
+                        )
+                    }
+                }
+
+            val state = draggedPickupIndex.switchMap { draggedPickupIndex ->
+                if (draggedPickupIndex != null) constant(
+                    buildReorderingState(draggedPickupIndex = draggedPickupIndex),
+                ) else handleInsertion.map {
+                    if (it) buildInsertingState()
+                    else buildIdleState()
+                }
+            }.mapTillNext(tillDetach) { it, tillNext ->
+                it.build(tillNext)
+            }
+
+            val root = createColumnWbDl(
+                style = DynamicStyleDeclaration(
+                    alignSelf = constant(Align.center),
+                ),
+                reverse = true,
+                children = pickupWrappers,
+            ).build(tillDetach)
+
+            init {
+                pickupsPreviewLoop.close(
+                    state.map { it.pickupsPreview },
                 )
             }
-        }
+        }.root
+    }
 
-        val state: Cell<CrateStackSectionState> = Stream.follow<CrateStackSectionState>(
-            initialValue = buildIdleState(),
-            extractNext = { it.nextState },
-            till = tillDetach,
-        )
+    private fun createPickupGallery() = object : HTMLWidgetB<PickupGalleryWidget> {
+        override fun build(tillDetach: Till): PickupGalleryWidget {
+            val pickupDraggables = HTMLWidgetB.build(
+                PickupKind.values().map { pickupKind ->
+                    createPickupDraggable(
+                        pickupKind = pickupKind,
+                    )
+                },
+                tillDetach,
+            )
 
-        val root = createColumnWbDl(
-            style = DynamicStyleDeclaration(
-                alignSelf = constant(Align.center),
-            ),
-            children = pickupWrappers,
-        ).build(tillDetach)
+            val root = createGrid(
+                gap = 8.px,
+                columnCount = 4,
+                children = pickupDraggables,
+            ).build(tillDetach)
 
-        init {
-            pickupsPreviewLoop.close(
-                state.map { it.pickupsPreview },
+            return PickupGalleryWidget(
+                draggedPickup = DynamicList.of(pickupDraggables)
+                    .firstOrNullDynamic { it.isDragged }.map { it?.pickupKind },
+                root = root,
             )
         }
-    }.root
-}
+    }
 
-fun createEditCrateStackDialog(
-    rezIndex: RezIndex,
-    textureBank: TextureBank,
-    crateStack: CrateStack,
-): HTMLWidgetB<Dialog> = createBasicDialog(
-    content = createColumnWb(
-        verticalGap = 8.px,
-        children = listOf(
-            createHeading4Wb(
-                text = constant("Edit crate stack"),
-            ),
-            createTextButtonWb(
-                text = "+",
-            ).alsoTillDetach { button, tillDetach ->
-                button.onPressed.reactTill(tillDetach) {
-                    crateStack.pushCrate()
-                }
-            },
-            createTextButtonWb(
-                text = "-",
-            ).alsoTillDetach { button, tillDetach ->
-                button.onPressed.reactTill(tillDetach) {
-                    crateStack.popCrate()
-                }
-            },
-            createCrateStackSection(
-                rezIndex = rezIndex,
-                textureBank = textureBank,
-                crateStack = crateStack,
-            ),
-        ),
-    ),
-)
+    private fun createRoot() = object : HTMLWidgetB<Dialog> {
+        override fun build(tillDetach: Till): Dialog {
+            val pickupGallery = createPickupGallery().build(tillDetach)
+
+            val crateStackSection = createCrateStackSection(
+                handleInsertion = pickupGallery.draggedPickup.map { it != null },
+            ).build(tillDetach)
+
+            return createBasicDialog(
+                content = createColumnWb(
+                    verticalGap = 8.px,
+                    children = listOf(
+                        createHeading4Wb(
+                            text = constant("Edit crate stack"),
+                        ),
+                        createTextButtonWb(
+                            text = "+",
+                        ).alsoTillDetach { button, tillDetach ->
+                            button.onPressed.reactTill(tillDetach) {
+                                crateStack.pushCrate()
+                            }
+                        },
+                        createTextButtonWb(
+                            text = "-",
+                        ).alsoTillDetach { button, tillDetach ->
+                            button.onPressed.reactTill(tillDetach) {
+                                crateStack.popCrate()
+                            }
+                        },
+                        createRowWb(
+                            style = DynamicStyleDeclaration(
+                                padding = constant(20.px),
+                            ),
+                            horizontalGap = 40.px,
+                            children = listOf(
+                                pickupGallery,
+                                crateStackSection,
+                            ),
+                        ),
+                    ),
+                ),
+            ).build(tillDetach)
+        }
+    }
+
+    val root = createRoot()
+}

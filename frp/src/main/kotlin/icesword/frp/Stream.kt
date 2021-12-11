@@ -1,7 +1,7 @@
 package icesword.frp
 
 import frp.cell.CorrelateCell
-import icesword.frp.stream.FollowCell
+import icesword.frp.stream.FollowTillNextCell
 
 interface Tilled<out A> {
     companion object {
@@ -25,11 +25,21 @@ interface Stream<out A> : Observable<A> {
         ): Stream<A> = StreamMerge(streams)
 
         fun <A> follow(
+            initialValue: A,
+            extractNext: (A) -> Stream<A>,
+            till: Till,
+        ): Cell<A> = followTillNext(
+            initialValue = Tilled.pure(initialValue),
+            extractNext = { extractNext(it).map(Tilled.Companion::pure) },
+            till = till,
+        )
+
+        fun <A> followTillNext(
             initialValue: Tilled<A>,
             extractNext: (A) -> Stream<Tilled<A>>,
             till: Till,
         ): Cell<A> =
-            FollowCell(
+            FollowTillNextCell(
                 initialValue = initialValue,
                 extractNext = extractNext,
                 till = till,

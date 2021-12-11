@@ -1,17 +1,13 @@
 package icesword.editor
 
 import icesword.frp.Cell
-import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
-import icesword.frp.filterDynamic
 import icesword.frp.map
 import icesword.frp.mergeWith
-import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
-import icesword.frp.values
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 
@@ -47,7 +43,7 @@ class SelectMode<
 
     open inner class SelectModeState
 
-    val state: Cell<SelectModeState> = Stream.follow(
+    val state: Cell<SelectModeState> = Stream.followTillNext(
         initialValue = object : Tilled<IdleMode> {
             override fun build(till: Till) = IdleMode()
         },

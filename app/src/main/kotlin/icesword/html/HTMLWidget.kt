@@ -52,7 +52,7 @@ interface HTMLWidgetB<out W : HTMLWidget> {
                 elementB.build(tillNext)
             }
 
-        fun build(widgets: List<HTMLWidgetB<*>>, tillDetach: Till): List<HTMLWidget> =
+        fun <W : HTMLWidget> build(widgets: List<HTMLWidgetB<W>>, tillDetach: Till): List<W> =
             widgets.map { widgetB -> widgetB.build(tillDetach) }
 
         fun <W : HTMLWidget> buildDl(widgets: DynamicList<HTMLWidgetB<W>>, tillDetach: Till): DynamicList<W> =
@@ -136,3 +136,12 @@ fun HTMLWidget.onDragLeave(): Stream<DragEvent> =
 
 fun HTMLWidget.onDrop(): Stream<DragEvent> =
     (this.resolve() as Element).onDrop()
+
+fun HTMLWidget.onDragStart(): Stream<DragEvent> =
+    (this.resolve() as Element).onDragStart()
+
+fun HTMLWidget.trackDraggingState(till: Till): Cell<DraggableState> =
+    (this.resolve() as Element).trackDraggingState(till)
+
+fun HTMLWidget.onDragGestureStart(): Stream<DragGesture> =
+    (this.resolve() as Element).onDragGestureStart()

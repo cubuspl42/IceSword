@@ -90,6 +90,8 @@ fun <E : Any> DynamicList<E>.firstOrNullDynamic(predicate: (E) -> Cell<Boolean>)
         predicate(element).map { flag -> element.takeIf { flag } }
     }.filterNotNull().firstOrNull()
 
+fun <E : Any> DynamicList<E?>.firstNotNullOrNull(): Cell<E?> = filterNotNull().firstOrNull()
+
 fun <E> DynamicList<Cell<E>>.fuse(): DynamicList<E> =
     DynamicList.fuse(this)
 
@@ -152,8 +154,8 @@ fun <E, R> DynamicList<E>.mapIndexedDynamic(
     till: Till,
     transform: (index: Int, element: Cell<E>) -> R,
 ): DynamicList<R> = ContentDynamicList(
-    content = this.size.map { size ->
-        (0 until size).map { index -> transform(index, this.get(index, till)) }
+    content = this.size.mapTillNext(till) { size, tillNext ->
+        (0 until size).map { index -> transform(index, this.get(index, tillNext)) }
     },
 )
 

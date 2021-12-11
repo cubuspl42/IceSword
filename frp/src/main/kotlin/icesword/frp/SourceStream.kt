@@ -36,14 +36,16 @@ class CellHold<A>(
 
     init {
         subscribeTill(steps, till) {
-            val change = ValueChange(
-                oldValue = _currentValue,
-                newValue = it,
-            )
+            if (it != _currentValue) {
+                val change = ValueChange(
+                    oldValue = _currentValue,
+                    newValue = it,
+                )
 
-            _currentValue = it
+                _currentValue = it
 
-            notifyListeners(change)
+                notifyListeners(change)
+            }
         }
     }
 }

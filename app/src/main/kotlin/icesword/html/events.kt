@@ -48,6 +48,8 @@ fun Element.onChange(): Stream<Unit> =
 fun Element.onDragStart(): Stream<DragEvent> =
     this.onEvent<DragEvent>("dragstart")
 
+fun Element.onDragEnd(): Stream<DragEvent> =
+    this.onEvent<DragEvent>("dragend")
 
 fun Element.onDragEnter(): Stream<DragEvent> =
     this.onEvent<DragEvent>("dragenter")
@@ -61,80 +63,16 @@ fun Element.onDragLeave(): Stream<DragEvent> =
 fun Element.onDrop(): Stream<DragEvent> =
     this.onEvent<DragEvent>("drop")
 
+data class DragGesture(
+    val onEnd: Stream<Unit>,
+)
 
-sealed interface DragState {
-    val nextState: Stream<Tilled<DragState>>
-
-    class Idle(override val nextState: Stream<Tilled<DragState>>) : DragState
-    class Over(val enterEvent: DragEvent, override val nextState: Stream<Tilled<DragState>>) : DragState
-}
-
-class DragHandler(
-    private val element: Element,
-    till: Till,
-) {
-    private fun buildIdleState(): Tilled<DragState.Idle> = Tilled.pure(
-        DragState.Idle(
-            nextState = element.onDragEnter().map { buildOverState(event = it) }
+fun Element.onDragGestureStart(): Stream<DragGesture> =
+    this.onDragStart().map {
+        DragGesture(
+            onEnd = onDragEnd().units(),
         )
-    )
-
-    private fun buildOverState(event: DragEvent): Tilled<DragState.Over> = Tilled.pure(
-        DragState.Over(
-            enterEvent = event,
-            nextState = element.onDragLeave().map { buildIdleState() }
-        )
-    )
-
-    val state: Cell<DragState> =
-        Stream.follow<DragState>(
-            initialValue = buildIdleState(),
-            extractNext = { it.nextState },
-            till = till,
-        )
-
-    val onDrop: Stream<DragEvent> =
-        element.onDrop()
-}
-
-fun Element.handleDrags(
-    test: (dataTransfer: DataTransfer) -> Boolean,
-    till: Till,
-): DragHandler {
-    onDragEnter().reactTill(till) {
-        console.log("onDragEnter", it.target)
     }
-
-//    onDragOver().reactTill(till) {
-//        println("onDragOver: $it")
-//    }
-
-    onDragLeave().reactTill(till) {
-        console.log("onDragLeave", it.target)
-    }
-
-    onDragEnter().reactTill(till) { ev ->
-        ev.dataTransfer?.let {
-            if (test(it)) {
-                ev.preventDefault()
-            }
-        }
-    }
-
-    onDragOver().reactTill(till) { ev ->
-        ev.dataTransfer?.let {
-            if (test(it)) {
-                ev.preventDefault()
-            }
-        }
-    }
-
-    return DragHandler(
-        element = this,
-        till = till,
-    )
-}
-
 
 sealed interface MousePosition {
     value class Entered(val position: Cell<IntVec2>) : MousePosition
@@ -160,6 +98,16 @@ fun Element.trackMousePosition(till: Till): Cell<MousePosition> {
 
     return mousePosition
 }
+
+enum class DraggableState {
+    Idle,
+    Dragged,
+}
+
+fun Element.trackDraggingState(till: Till): Cell<DraggableState> =
+    onDragStart().map { DraggableState.Dragged }
+        .mergeWith(onDragEnd().map { DraggableState.Idle })
+        .hold(DraggableState.Idle, till)
 
 fun HTMLElement.onClick(): Stream<MouseEvent> =
     this.onEvent("click")

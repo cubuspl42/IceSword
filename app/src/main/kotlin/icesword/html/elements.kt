@@ -27,9 +27,7 @@ import kotlinx.css.FlexDirection
 import kotlinx.css.LinearDimension
 import kotlinx.css.ObjectFit
 import kotlinx.css.em
-import kotlinx.css.px
 import org.w3c.dom.Element
-import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.Node
@@ -730,6 +728,7 @@ fun createColumnWbDl(
     style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
     flexStyle: FlexStyleDeclaration = FlexStyleDeclaration(),
     verticalGap: LinearDimension? = null,
+    reverse: Boolean = false,
     children: DynamicList<HTMLWidgetB<*>>,
 ) = object : HTMLWidgetB<HTMLWidget> {
     override fun build(tillDetach: Till): HTMLWidget {
@@ -737,7 +736,9 @@ fun createColumnWbDl(
             tagName = tagName,
             style = style.copy(
                 displayStyle = flexStyle.copy(
-                    direction = constant(FlexDirection.column),
+                    direction = constant(
+                        if (reverse) FlexDirection.columnReverse else FlexDirection.column,
+                    ),
                     gap = flexStyle.gap ?: verticalGap?.let(::constant),
                 ),
             ),

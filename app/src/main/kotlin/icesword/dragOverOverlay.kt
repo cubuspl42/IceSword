@@ -96,7 +96,7 @@ private class DragOverOverlay(
             }
         }
 
-    val state = Stream.follow<DragOverOverlayState>(
+    val state = Stream.followTillNext<DragOverOverlayState>(
         initialValue = buildIdleState(),
         extractNext = { it.nextState },
         till = tillDetach,

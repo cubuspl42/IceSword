@@ -9,7 +9,7 @@ import icesword.frp.ValueChange
 import icesword.frp.or
 import icesword.frp.subscribeTill
 
-class FollowCell<A>(
+class FollowTillNextCell<A>(
     initialValue: Tilled<A>,
     private val extractNext: (A) -> Stream<Tilled<A>>,
     private val till: Till,

@@ -11,9 +11,9 @@ import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.fuseNotNull
 import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
+import icesword.frp.mapNotNull
 import icesword.frp.mergeWith
 import icesword.frp.reactTill
-import icesword.frp.units
 import org.w3c.dom.DataTransfer
 import org.w3c.dom.DragEvent
 
@@ -22,7 +22,9 @@ sealed interface DropTargetState {
         override fun toString(): String = "Idle"
     }
 
-    object DragOver : DropTargetState {
+    value class DraggedOver(
+        val dataTransfer: DataTransfer,
+    ) : DropTargetState {
         override fun toString(): String = "DragOver"
     }
 }
@@ -30,7 +32,7 @@ sealed interface DropTargetState {
 class DropTargetWidget(
     override val root: HTMLWidget,
     val state: Cell<DropTargetState>,
-    val onDrop: Stream<Unit>,
+    val onDrop: Stream<DataTransfer>,
 ) : HTMLWidget.HTMLShadowWidget
 
 private sealed interface DropTargetWidgetState {
@@ -45,6 +47,7 @@ private sealed interface DropTargetWidgetState {
     }
 
     class DragOver(
+        val dataTransfer: DataTransfer,
         val dropOverlay: HTMLWidget,
         override val onDrop: Stream<DragEvent>,
         override val nextState: Stream<Tilled<DropTargetWidgetState>>,
@@ -58,12 +61,16 @@ private class DropTargetWidgetStateFactory(
     private val childW: HTMLWidget,
 ) {
     fun buildIdleState(): Tilled<DropTargetWidgetState.Idle> = Tilled.pure(
-            DropTargetWidgetState.Idle(
-                nextState = onDragEnter.map { buildOverState() }
-            )
+        DropTargetWidgetState.Idle(
+            nextState = onDragEnter.mapNotNull { ev ->
+                ev.dataTransfer?.let { buildOverState(it) }
+            }
         )
+    )
 
-    fun buildOverState() = object : Tilled<DropTargetWidgetState.DragOver> {
+    fun buildOverState(
+        dataTransfer: DataTransfer,
+    ) = object : Tilled<DropTargetWidgetState.DragOver> {
         override fun build(till: Till): DropTargetWidgetState.DragOver {
             val dropOverlay = createHTMLWidgetB(
                 tagName = "div",
@@ -87,6 +94,7 @@ private class DropTargetWidgetStateFactory(
             val onDrop = dropOverlay.onDrop()
 
             return DropTargetWidgetState.DragOver(
+                dataTransfer = dataTransfer,
                 dropOverlay = dropOverlay,
                 onDrop = onDrop,
                 nextState = onDragLeave.mergeWith(onDrop).map {
@@ -109,7 +117,7 @@ fun createDropTarget(
         test = test,
     )
 
-    val state = Stream.follow<DropTargetWidgetState>(
+    val state = Stream.followTillNext<DropTargetWidgetState>(
         initialValue = stateFactory.buildIdleState(),
         extractNext = { it.nextState },
         till = tillDetach,
@@ -142,10 +150,12 @@ fun createDropTarget(
             state = state.map {
                 when (it) {
                     is DropTargetWidgetState.Idle -> DropTargetState.Idle
-                    is DropTargetWidgetState.DragOver -> DropTargetState.DragOver
+                    is DropTargetWidgetState.DragOver -> DropTargetState.DraggedOver(
+                        dataTransfer = it.dataTransfer,
+                    )
                 }
             },
-            onDrop = onDrop.units(),
+            onDrop = onDrop.mapNotNull { it.dataTransfer },
         )
     }
 }

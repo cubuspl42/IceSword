@@ -10,7 +10,6 @@ import icesword.frp.map
 import icesword.frp.switchMap
 import icesword.geometry.IntVec2
 import icesword.geometry.Line
-import kotlinx.css.pre
 import kotlin.math.absoluteValue
 import kotlin.math.max
 
@@ -136,7 +135,7 @@ class EditPathElevatorMode(
 
     val selectedStep: Cell<PathElevatorStep?> = _selectedStep
 
-    val state: Cell<State> = Stream.follow<State>(
+    val state: Cell<State> = Stream.followTillNext<State>(
         initialValue = Tilled.pure(IdleMode()),
         extractNext = { it.enterNextState },
         till = tillExit,
