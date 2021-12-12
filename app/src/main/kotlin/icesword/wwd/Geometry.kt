@@ -34,8 +34,7 @@ object Geometry {
         val top: Int,
         val right: Int,
         val bottom: Int,
-
-        ) {
+    ) {
         companion object {
             val zero: Rectangle
                 get() = Rectangle(0, 0, 0, 0)

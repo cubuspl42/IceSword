@@ -152,7 +152,7 @@ open class WapObjectInsertionMode(
         world.insertWapObject(
             WapObject(
                 rezIndex = rezIndex,
-                wapObjectPrototype = insertionPrototype.wapObjectPrototype,
+                initialWwdObject = insertionPrototype.wapObjectPrototype.wwdObjectPrototype,
                 initialPosition = insertionWorldPoint,
             )
         )

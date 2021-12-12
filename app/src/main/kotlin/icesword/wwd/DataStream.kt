@@ -33,6 +33,8 @@ object DataStreamObj {
             fun decode(b: ByteString): String =
                 b.decode()
 
+            fun encode(s: String): ByteString =
+                ByteString(encodeString(s))
         }
 
         val length get() = byteArray.length

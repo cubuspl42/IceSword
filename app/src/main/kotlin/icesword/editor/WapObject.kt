@@ -1,4 +1,7 @@
-@file:UseSerializers(IntVec2Serializer::class)
+@file:UseSerializers(
+    IntVec2Serializer::class,
+    WwdObjectSerializer::class,
+)
 
 package icesword.editor
 
@@ -255,7 +258,7 @@ interface WapObjectExportable {
 
 class WapObject(
     rezIndex: RezIndex,
-    val wapObjectPrototype: WapObjectPrototype,
+    private val initialWwdObject: Wwd.Object_,
     initialPosition: IntVec2,
 ) : Entity(), WapObjectExportable {
 
@@ -270,14 +273,14 @@ class WapObject(
         ): WapObject =
             WapObject(
                 rezIndex = rezIndex,
-                wapObjectPrototype = data.prototype,
+                initialWwdObject = data.wwdObject ?: data.prototype!!.wwdObjectPrototype,
                 initialPosition = data.position,
             )
     }
 
     val sprite = WapSprite.fromImageSet(
         rezIndex = rezIndex,
-        imageSetId = wapObjectPrototype.imageSetId,
+        imageSetId = expandImageSetId(initialWwdObject.imageSet.decode()),
         position = position,
     )
 
@@ -289,7 +292,7 @@ class WapObject(
     override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
 
-        return wapObjectPrototype.wwdObjectPrototype.copy(
+        return initialWwdObject.copy(
             x = position.x,
             y = position.y,
         )
@@ -297,7 +300,7 @@ class WapObject(
 
     fun toData(): WapObjectData =
         WapObjectData(
-            prototype = wapObjectPrototype,
+            wwdObject = initialWwdObject,
             position = position.sample(),
         )
 
@@ -307,6 +310,17 @@ class WapObject(
 
 @Serializable
 data class WapObjectData(
-    val prototype: WapObjectPrototype,
+    val prototype: WapObjectPrototype? = null,
+    val wwdObject: Wwd.Object_? = null,
     val position: IntVec2,
 )
+
+private fun expandImageSetId(shortImageSetId: String): ImageSetId = ImageSetId(
+    fullyQualifiedId = when {
+        shortImageSetId == "" -> ""
+        shortImageSetId.startsWith("GAME_") -> shortImageSetId.replace("GAME_", "GAME_IMAGES_")
+        shortImageSetId.startsWith("LEVEL_") -> shortImageSetId.replace("LEVEL_", "LEVEL3_IMAGES_")
+        else -> throw UnsupportedOperationException("Cannot expand short imageset ID: $shortImageSetId")
+    }
+)
+
