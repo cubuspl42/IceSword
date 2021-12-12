@@ -94,6 +94,13 @@ private fun createInsertSection(
     tillDetach: Till,
 ): HTMLElement {
     val children = listOf(
+        createInsertEntityButton(
+            editor = editor,
+            text = "WAP32 object",
+            imagePath = "images/wapObject.png",
+            insertionPrototype = WapObjectInsertionPrototype.Empty,
+            tillDetach = tillDetach,
+        ),
         createInsertElasticButton(
             editor = editor,
             prototype = LogPrototype,

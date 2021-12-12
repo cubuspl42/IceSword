@@ -36,7 +36,13 @@ sealed interface InsertionPrototype {
 
     value class WapObjectInsertionPrototype(
         val wapObjectPrototype: WapObjectPrototype,
-    ) : InsertionPrototype
+    ) : InsertionPrototype {
+        companion object {
+            val Empty = WapObjectInsertionPrototype(
+                wapObjectPrototype = WapObjectPrototype.EmptyPrototype,
+            )
+        }
+    }
 
     object HorizontalElevatorInsertionPrototype : InsertionPrototype
 

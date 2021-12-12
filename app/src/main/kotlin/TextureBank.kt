@@ -1,5 +1,6 @@
 import icesword.ImageMetadata
 import icesword.JsonRezIndex
+import icesword.editor.WapObject
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
@@ -8,10 +9,12 @@ import icesword.scene.Tileset
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import org.w3c.dom.ImageBitmap
+import org.w3c.dom.Text
 
 data class TextureBank(
     private val imagesTextures: Map<String, Texture>,
     val tileset: Tileset,
+    val wapObject: Texture,
 ) {
     companion object {
         suspend fun load(
@@ -30,9 +33,12 @@ data class TextureBank(
 
             val tileset = loadTileset()
 
+            val wapObject = loadImageTexture("images/wapObject.png")
+
             return TextureBank(
                 imagesTextures = imagesTextures,
                 tileset = tileset,
+                wapObject = wapObject,
             )
         }
     }

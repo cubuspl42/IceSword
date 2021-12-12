@@ -13,37 +13,62 @@ import icesword.geometry.IntVec2
 import kotlinx.serialization.UseSerializers
 
 class WapSprite(
-    val imageMetadata: ImageMetadata,
-    position: Cell<IntVec2>,
+    val size: IntSize,
+    val boundingBox: Cell<IntRect>,
+    val imageMetadata: ImageMetadata?,
 ) {
     companion object {
         fun fromImageSet(
             rezIndex: RezIndex,
             imageSetId: ImageSetId,
             position: Cell<IntVec2>,
-        ): WapSprite {
-            val imageMetadata = rezIndex.getImageMetadata(
-                imageSetId = imageSetId,
-                i = -1,
-            )!!
-
-            return WapSprite(
+        ): WapSprite = rezIndex.getImageMetadata(
+            imageSetId = imageSetId,
+            i = -1,
+        )?.let { imageMetadata ->
+            fromImageMetadata(
                 imageMetadata = imageMetadata,
                 position = position,
+            )
+        } ?: placeholder(
+            position = position,
+        )
+
+        fun fromImageMetadata(
+            imageMetadata: ImageMetadata,
+            position: Cell<IntVec2>,
+        ): WapSprite {
+            val size: IntSize = imageMetadata.size
+
+            val boundingBox: Cell<IntRect> =
+                position.map {
+                    calculateWapSpriteBounds(
+                        imageMetadata = imageMetadata,
+                        position = it
+                    )
+                }
+
+            return WapSprite(
+                size = size,
+                boundingBox = boundingBox,
+                imageMetadata = imageMetadata,
+            )
+        }
+
+        private fun placeholder(
+            position: Cell<IntVec2>,
+        ): WapSprite {
+            val size = IntSize(32, 32)
+            return WapSprite(
+                size = size,
+                boundingBox = position.map {
+                    size.toRect(it - size.div(2).toVec2())
+                },
+                imageMetadata = null,
             )
         }
     }
 
-
-    val boundingBox: Cell<IntRect> =
-        position.map {
-            calculateWapSpriteBounds(
-                imageMetadata = imageMetadata,
-                position = it
-            )
-        }
-
-    val size: IntSize = imageMetadata.size
 
     val center = boundingBox.map { it.center }
 

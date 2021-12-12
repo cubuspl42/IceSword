@@ -73,7 +73,7 @@ class PathElevatorStep(
     }
 
     val wapSprite by lazy {
-        WapSprite(
+        WapSprite.fromImageMetadata(
             imageMetadata = imageMetadata,
             position = position,
         )

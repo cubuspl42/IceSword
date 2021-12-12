@@ -128,7 +128,7 @@ class CrateStack(
             initialPosition = initialPosition,
         )
 
-    val wapSprite = WapSprite(
+    val wapSprite = WapSprite.fromImageMetadata(
         imageMetadata = crateImageMetadata,
         position = entityPosition.position,
     )
@@ -143,7 +143,7 @@ class CrateStack(
                 imageMetadata = crateImageMetadata,
                 position = position,
             ),
-            wapSprite = WapSprite(
+            wapSprite = WapSprite.fromImageMetadata(
                 imageMetadata = crateImageMetadata,
                 position = Cell.constant(position),
             ),

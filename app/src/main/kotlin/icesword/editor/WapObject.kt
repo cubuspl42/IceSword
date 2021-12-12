@@ -28,6 +28,17 @@ sealed class WapObjectPrototype {
     abstract val wwdObjectPrototype: Wwd.Object_
 
     @Serializable
+    object EmptyPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty()
+    }
+
+    @Serializable
     object RopePrototype : WapObjectPrototype() {
         @Transient
         override val imageSetId: ImageSetId = ImageSetId(
