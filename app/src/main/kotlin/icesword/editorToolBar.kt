@@ -12,6 +12,7 @@ import icesword.editor.EntitySelectMode
 import icesword.editor.PathElevatorPath
 import icesword.editor.Rope
 import icesword.editor.Tool
+import icesword.editor.WapObject
 import icesword.frp.Till
 import icesword.frp.dynamic_list.size
 import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
@@ -21,7 +22,7 @@ import icesword.html.DynamicStyleDeclaration
 import icesword.html.createButton
 import icesword.html.createContainer
 import icesword.html.createHTMLElementRaw
-import icesword.html.createRow
+import icesword.html.createRowElement
 import icesword.html.createStyledText
 import icesword.ui.createSelectButton
 import kotlinx.css.FontWeight
@@ -174,7 +175,7 @@ fun createContextualButtonsRow(
 fun createKnotSelectModeButtonsRow(
     knotSelectMode: KnotSelectMode,
     tillDetach: Till,
-): HTMLElement = createRow(
+): HTMLElement = createRowElement(
     children = listOf(
         createButton(
             text = "Remove knots",
@@ -200,7 +201,7 @@ fun createEditPathElevatorModeButtonsRow(
 ): HTMLElement {
     val path = editMode.pathElevator.path
 
-    return createRow(
+    return createRowElement(
         children = listOf(
             createButton(
                 text = "Remove step",
@@ -300,6 +301,13 @@ private fun onEditPressed(
                         textureBank = textureBank,
                         crateStack = selectedEntity,
                     ),
+                )
+            }
+            is WapObject -> {
+                dialogOverlay.showDialog(
+                    dialog = createWapObjectDialog(
+                        wapObject = selectedEntity,
+                    )
                 )
             }
             else -> {}

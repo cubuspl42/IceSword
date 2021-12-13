@@ -758,6 +758,7 @@ fun createColumnWbDl(
 fun createGrid(
     tagName: String = "div",
     style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
+    gridStyle: GridStyleDeclaration = GridStyleDeclaration(),
     columnCount: Int = 3,
     gap: LinearDimension? = null,
     children: List<HTMLWidgetB<*>>,
@@ -769,8 +770,9 @@ fun createGrid(
         val element = createStyledHtmlElement(
             tagName = tagName,
             style = style.copy(
-                display = constant(Display.grid),
-                gap = gap?.let(::constant),
+                displayStyle = gridStyle.copy(
+                    gap = gap?.let(::constant) ?: gridStyle.gap,
+                ),
             ),
             tillDetach = tillDetach,
         ).apply {
@@ -838,7 +840,7 @@ fun createColumnDl(
         )
     }
 
-fun createRow(
+fun createRowElement(
     tagName: String = "div",
     staticStyle: (CSSStyleDeclaration.() -> Unit)? = null,
     style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
@@ -859,31 +861,6 @@ fun createRow(
     ).apply {
         children.forEach(this::appendChild)
     }
-
-fun createRowWb(
-    tagName: String = "div",
-    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
-    horizontalGap: LinearDimension? = null,
-    children: List<HTMLWidgetB<*>>,
-) = object : HTMLWidgetB<HTMLWidget> {
-    override fun build(tillDetach: Till): HTMLWidget {
-        val element = createStyledHtmlElement(
-            tagName = tagName,
-            style = style.copy(
-                display = constant(Display.flex),
-                flexDirection = constant(FlexDirection.row),
-                gap = horizontalGap?.let(::constant),
-            ),
-            tillDetach = tillDetach,
-        ).apply {
-            HTMLWidgetB.build(children, tillDetach).forEach {
-                appendChild(HTMLWidget.resolve(it))
-            }
-        }
-
-        return HTMLWidget.of(element)
-    }
-}
 
 
 fun createNumberInputElement(

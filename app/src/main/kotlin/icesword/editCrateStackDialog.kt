@@ -21,11 +21,8 @@ import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.mapNotNull
 import icesword.frp.mapTillNext
-import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
 import icesword.frp.switchMap
-import icesword.frp.units
-import icesword.frp.values
 import icesword.html.BorderStyleDeclaration
 import icesword.html.DragGesture
 import icesword.html.DraggableState
@@ -41,7 +38,7 @@ import icesword.html.createColumnWbDl
 import icesword.html.createDropTarget
 import icesword.html.createGrid
 import icesword.html.createHeading4Wb
-import icesword.html.createRowWb
+import icesword.html.createRow
 import icesword.html.createTextButtonWb
 import icesword.html.createWrapperWb
 import icesword.html.flatMapTillDetach
@@ -465,7 +462,7 @@ class EditCrateStackDialogObject(
                                 crateStack.popCrate()
                             }
                         },
-                        createRowWb(
+                        createRow(
                             style = DynamicStyleDeclaration(
                                 padding = constant(20.px),
                             ),

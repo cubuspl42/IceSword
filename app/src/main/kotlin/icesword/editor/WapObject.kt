@@ -258,14 +258,9 @@ interface WapObjectExportable {
 
 class WapObject(
     rezIndex: RezIndex,
-    private val initialWwdObject: Wwd.Object_,
+    initialProps: WapObjectPropsData,
     initialPosition: IntVec2,
 ) : Entity(), WapObjectExportable {
-
-    override val entityPosition = EntityPixelPosition(
-        initialPosition = initialPosition,
-    )
-
     companion object {
         fun load(
             rezIndex: RezIndex,
@@ -273,14 +268,23 @@ class WapObject(
         ): WapObject =
             WapObject(
                 rezIndex = rezIndex,
-                initialWwdObject = data.wwdObject ?: data.prototype!!.wwdObjectPrototype,
+                initialProps = data.wwdObject,
                 initialPosition = data.position,
             )
     }
 
+    override val entityPosition = EntityPixelPosition(
+        initialPosition = initialPosition,
+    )
+
+    val props = WapObjectProps(initialProps = initialProps)
+
+    val wwdObject: WapObjectPropsData
+        get() = props.toData()
+
     val sprite = WapSprite.fromImageSet(
         rezIndex = rezIndex,
-        imageSetId = expandImageSetId(initialWwdObject.imageSet.decode()),
+        imageSetId = expandImageSetId(initialProps.imageSet),
         position = position,
     )
 
@@ -290,9 +294,10 @@ class WapObject(
     }
 
     override fun exportWapObject(): Wwd.Object_ {
+        val wwdObject = props.toData().toWwdObject()
         val position = position.sample()
 
-        return initialWwdObject.copy(
+        return wwdObject.copy(
             x = position.x,
             y = position.y,
         )
@@ -300,7 +305,7 @@ class WapObject(
 
     fun toData(): WapObjectData =
         WapObjectData(
-            wwdObject = initialWwdObject,
+            wwdObject = props.toData(),
             position = position.sample(),
         )
 
@@ -310,8 +315,7 @@ class WapObject(
 
 @Serializable
 data class WapObjectData(
-    val prototype: WapObjectPrototype? = null,
-    val wwdObject: Wwd.Object_? = null,
+    val wwdObject: WapObjectPropsData,
     val position: IntVec2,
 )
 

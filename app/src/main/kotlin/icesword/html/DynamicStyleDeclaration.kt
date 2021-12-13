@@ -75,7 +75,7 @@ data class DynamicStyleDeclaration(
     val width: Cell<LinearDimension>? = null,
     val height: Cell<LinearDimension>? = null,
     val display: Cell<Display>? = null,
-    val displayStyle: FlexStyleDeclaration? = null,
+    val displayStyle: DisplayStyleDeclaration? = null,
     val margin: Cell<LinearDimension>? = null,
     val marginBlock: Cell<LinearDimension>? = null,
     val padding: Cell<LinearDimension>? = null,
@@ -283,6 +283,12 @@ data class DynamicStyleDeclaration(
     }
 }
 
+sealed interface DisplayStyleDeclaration {
+    fun linkTo(
+        style: CSSStyleDeclaration,
+        tillDetach: Till,
+    )
+}
 
 data class FlexStyleDeclaration(
     val direction: Cell<FlexDirection>? = null,
@@ -291,8 +297,8 @@ data class FlexStyleDeclaration(
     val justifyContent: Cell<JustifyContent>? = null,
     // Alignment along the cross axis
     val alignItems: Cell<Align>? = null,
-) {
-    fun linkTo(
+) : DisplayStyleDeclaration {
+    override fun linkTo(
         style: CSSStyleDeclaration,
         tillDetach: Till,
     ) {
@@ -316,6 +322,49 @@ data class FlexStyleDeclaration(
             style = style,
             propertyName = "justify-content",
             property = justifyContent?.map { it.toString() },
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "align-items",
+            property = alignItems?.map { it.toString() },
+            till = tillDetach,
+        )
+    }
+}
+
+
+data class GridStyleDeclaration(
+    val gap: Cell<LinearDimension>? = null,
+    val justifyContent: Cell<JustifyContent>? = null,
+    val alignContent: Cell<Align>? = null,
+    val alignItems: Cell<Align>? = null,
+) : DisplayStyleDeclaration {
+    override fun linkTo(
+        style: CSSStyleDeclaration,
+        tillDetach: Till,
+    ) {
+        style.display = Display.grid.toString()
+
+        linkProperty(
+            style = style,
+            propertyName = "gap",
+            property = gap?.map { it.toString() },
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "justify-content",
+            property = justifyContent?.map { it.toString() },
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "align-content",
+            property = alignContent?.map { it.toString() },
             till = tillDetach,
         )
 

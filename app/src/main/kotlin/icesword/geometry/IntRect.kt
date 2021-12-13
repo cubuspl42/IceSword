@@ -3,6 +3,7 @@
 package icesword.geometry
 
 import icesword.editor.IntVec2Serializer
+import icesword.wwd.Geometry
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import kotlin.math.max
@@ -19,6 +20,11 @@ data class IntRect(
             size = IntSize.ZERO,
         )
 
+        fun fromRectangle(rect: Geometry.Rectangle): IntRect = IntRect(
+            position = IntVec2(rect.left, rect.top),
+            size = IntSize(rect.width, rect.height),
+        )
+
         fun fromDiagonal(pointA: IntVec2, pointC: IntVec2): IntRect {
             val tl = IntVec2(min(pointA.x, pointC.x), min(pointA.y, pointC.y))
             val br = IntVec2(max(pointA.x, pointC.x), max(pointA.y, pointC.y))
@@ -32,6 +38,16 @@ data class IntRect(
         ): IntRect = IntRect(
             position = center - IntVec2(sideLength / 2, sideLength / 2),
             size = IntSize(width = sideLength, height = sideLength),
+        )
+
+        fun fromLtrb(
+            left: Int,
+            top: Int,
+            right: Int,
+            bottom: Int,
+        ): IntRect = IntRect(
+            position = IntVec2(left, top),
+            size = IntSize(right - left, bottom - top)
         )
 
         fun enclosing(
@@ -71,6 +87,18 @@ data class IntRect(
 
     val yMax: Int
         get() = this.yMin + this.height
+
+    val left: Int
+        get() = xMin
+
+    val top: Int
+        get() = yMin
+
+    val right: Int
+        get() = xMax
+
+    val bottom: Int
+        get() = yMax
 
     val xyMin: IntVec2
         get() = IntVec2(this.xMin, this.yMin)
@@ -130,4 +158,11 @@ data class IntRect(
 
     fun contains(point: IntVec2): Boolean =
         point.x in (xMin until xMax) && point.y in (yMin until yMax)
+
+    fun toRectangle() = Geometry.Rectangle(
+        left = xMin,
+        top = yMin,
+        right = xMax,
+        bottom = yMax,
+    )
 }

@@ -20,8 +20,7 @@ import icesword.html.createGrid
 import icesword.html.createGridDl
 import icesword.html.createHeading4Wb
 import icesword.html.createHeading5Wb
-import icesword.html.createRowWb
-import icesword.html.createTextWb
+import icesword.html.createRow
 import icesword.html.createWrapper
 import icesword.html.createWrapperWb
 import icesword.html.flatMap
@@ -161,7 +160,7 @@ fun createEditEnemyDialog(
             verticalGap = 8.px,
             children = listOf(
                 closeButton,
-                createRowWb(
+                createRow(
                     style = DynamicStyleDeclaration(
                         alignItems = constant(Align.center),
                     ),

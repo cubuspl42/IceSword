@@ -2,19 +2,15 @@ package icesword
 
 import icesword.editor.Rope
 import icesword.frp.Cell.Companion.constant
-import icesword.frp.Till
-import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.reactTill
 import icesword.frp.values
-import icesword.html.HTMLWidget
 import icesword.html.HTMLWidgetB
 import icesword.html.alsoTillDetach
 import icesword.html.createColumnWb
-import icesword.html.createHeading4
 import icesword.html.createHeading4Wb
 import icesword.html.createLabel
 import icesword.html.createNumberInput
-import icesword.html.createRowWb
+import icesword.html.createRow
 import kotlinx.css.px
 
 fun createEditRopeDialog(
@@ -26,7 +22,7 @@ fun createEditRopeDialog(
             createHeading4Wb(
                 text = constant("Edit rope"),
             ),
-            createRowWb(
+            createRow(
                 horizontalGap = 16.px,
                 children = listOf(
                     createLabel(

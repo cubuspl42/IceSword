@@ -13,7 +13,7 @@ import icesword.html.createButton
 import icesword.html.createColumn
 import icesword.html.createColumnDl
 import icesword.html.createNumberInputElement
-import icesword.html.createRow
+import icesword.html.createRowElement
 import icesword.html.createStaticText
 import kotlinx.css.Align
 import kotlinx.css.BorderStyle
@@ -58,7 +58,7 @@ private fun createEditFloorSpikeRowDialog(
     fun createTimeInput(
         labelText: String,
         propertyMillis: MutCell<Int>,
-    ): HTMLElement = createRow(
+    ): HTMLElement = createRowElement(
         staticStyle = {
             borderStyle = BorderStyle.dashed.toString()
             borderWidth = 1.px.toString()
@@ -87,7 +87,7 @@ private fun createEditFloorSpikeRowDialog(
     fun createEditSpikeRow(
         config: FloorSpikeRow.FloorSpikeConfig,
         tillDetach: Till,
-    ): Node = createRow(
+    ): Node = createRowElement(
         style = DynamicStyleDeclaration(
             alignItems = Cell.constant(Align.center),
         ),
