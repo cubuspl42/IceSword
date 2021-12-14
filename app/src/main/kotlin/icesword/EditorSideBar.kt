@@ -1,8 +1,10 @@
 package icesword
 
 import icesword.editor.Editor
+import icesword.editor.InsertionPrototype
 import icesword.editor.KnotBrush
 import icesword.editor.Retail
+import icesword.editor.WapObjectPrototype
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.html.DynamicStyleDeclaration
@@ -11,7 +13,7 @@ import icesword.html.createGrid
 import icesword.html.createHTMLElementRaw
 import icesword.html.createHeading4
 import icesword.html.resolve
-import icesword.ui.retails.retail3.buildInsertionButtons
+import icesword.ui.retails.RetailUiPrototype
 import kotlinx.css.Align
 import kotlinx.css.px
 import org.w3c.dom.HTMLElement
@@ -67,7 +69,75 @@ private fun createInsertSection(
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
-    val children = buildInsertionButtons(
+    val staticInsertionButtons = listOf(
+        createInsertEntityButton(
+            editor = editor,
+            text = "WAP32 object",
+            imagePath = "images/wapObject.png",
+            insertionPrototype = InsertionPrototype.WapObjectInsertionPrototype.Empty,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Coin",
+            imagePath = "images/CLAW/GAME/IMAGES/TREASURE/COINS/FRAME001.png",
+            wapObjectPrototype = WapObjectPrototype.CoinPrototype,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Cross (treasure)",
+            imagePath = "images/CLAW/GAME/IMAGES/TREASURE/CROSSES/GREEN/CROSS3.png",
+            wapObjectPrototype = WapObjectPrototype.CrossTreasurePrototype,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Scepter (treasure)",
+            imagePath = "images/CLAW/GAME/IMAGES/TREASURE/SCEPTERS/GREEN/SCEPTR3.png",
+            wapObjectPrototype = WapObjectPrototype.ScepterTreasurePrototype,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Crown (treasure)",
+            imagePath = "images/CLAW/GAME/IMAGES/TREASURE/CROWNS/GREEN/CROWN3.png",
+            wapObjectPrototype = WapObjectPrototype.CrownTreasurePrototype,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Chalice (treasure)",
+            imagePath = "images/CLAW/GAME/IMAGES/TREASURE/CHALICES/GREEN/CHALICE3.png",
+            wapObjectPrototype = WapObjectPrototype.ChaliceTreasurePrototype,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Ring (treasure)",
+            imagePath = "images/CLAW/GAME/IMAGES/TREASURE/RINGS/GREEN/RING3.png",
+            wapObjectPrototype = WapObjectPrototype.RingTreasurePrototype,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Gecko (treasure)",
+            imagePath = "images/CLAW/GAME/IMAGES/TREASURE/GECKOS/GREEN/GECKO3.png",
+            wapObjectPrototype = WapObjectPrototype.GeckoTreasurePrototype,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Skull (treasure)",
+            imagePath = "images/CLAW/GAME/IMAGES/TREASURE/JEWELEDSKULL/GREEN/SKULL3.png",
+            wapObjectPrototype = WapObjectPrototype.SkullTreasurePrototype,
+            tillDetach = tillDetach,
+        ),
+    )
+
+    val retailUiPrototype = RetailUiPrototype.forRetail(Retail.theRetail)
+
+    val children = staticInsertionButtons + retailUiPrototype.buildInsertionButtons(
         retail = Retail.theRetail,
         editor = editor,
         tillDetach = tillDetach,

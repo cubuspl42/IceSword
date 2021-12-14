@@ -272,10 +272,12 @@ class Editor(
             is HorizontalElevatorInsertionPrototype -> HorizontalElevatorInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
+                insertionPrototype = insertionPrototype,
             )
             is VerticalElevatorInsertionPrototype -> VerticalElevatorInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
+                insertionPrototype = insertionPrototype,
             )
             is FloorSpikeInsertionPrototype -> FloorSpikeInsertionMode(
                 world = world,
@@ -284,6 +286,7 @@ class Editor(
             is PathElevatorInsertionPrototype -> PathElevatorInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
+                insertionPrototype = insertionPrototype,
             )
             is EnemyInsertionPrototype -> EnemyInsertionMode(
                 world = world,

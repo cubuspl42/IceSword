@@ -2,8 +2,8 @@
 
 package icesword.editor
 
+import icesword.ImageSetId
 import icesword.RezIndex
-import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.frp.Cell
 import icesword.frp.map
 import icesword.geometry.IntRect
@@ -12,8 +12,14 @@ import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.Wwd
 import kotlinx.serialization.UseSerializers
 
+data class ElevatorPrototype(
+    val elevatorImageSetId: ImageSetId,
+    val wwdObjectPrototype: Wwd.Object_,
+)
+
 sealed class Elevator<Range : AxisRange<Range>>(
     rezIndex: RezIndex,
+    private val prototype: ElevatorPrototype,
     initialPosition: IntVec2,
     initialRelativeMovementRange: Range,
 ) :
@@ -27,7 +33,7 @@ sealed class Elevator<Range : AxisRange<Range>>(
 
     val wapSprite = WapSprite.fromImageSet(
         rezIndex = rezIndex,
-        imageSetId = ElevatorPrototype.imageSetId,
+        imageSetId = prototype.elevatorImageSetId,
         position = entityPosition.position,
     )
 
@@ -55,7 +61,7 @@ sealed class Elevator<Range : AxisRange<Range>>(
     final override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
 
-        return ElevatorPrototype.wwdObjectPrototype.copy(
+        return prototype.wwdObjectPrototype.copy(
             x = position.x,
             y = position.y,
             rangeRect = exportElevatorRangeRect(),

@@ -12,9 +12,7 @@ import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.RopeInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
-import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.editor.WapObjectPrototype.FloorSpikePrototype
-import icesword.editor.WapObjectPrototype.StackedCratesPrototype
 import icesword.frp.Cell
 import icesword.frp.CellSlot
 import icesword.frp.Stream
@@ -26,8 +24,9 @@ import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 
 sealed interface InsertionPrototype {
-    value class ElasticInsertionPrototype(
+    data class ElasticInsertionPrototype(
         val elasticPrototype: ElasticPrototype,
+        val retail: Retail,
     ) : InsertionPrototype
 
     value class KnotMeshInsertionPrototype(
@@ -44,11 +43,11 @@ sealed interface InsertionPrototype {
         }
     }
 
-    object HorizontalElevatorInsertionPrototype : InsertionPrototype
+    value class HorizontalElevatorInsertionPrototype(val elevatorPrototype: ElevatorPrototype) : InsertionPrototype
 
-    object VerticalElevatorInsertionPrototype : InsertionPrototype
+    value class VerticalElevatorInsertionPrototype(val elevatorPrototype: ElevatorPrototype) : InsertionPrototype
 
-    object PathElevatorInsertionPrototype : InsertionPrototype
+    value class PathElevatorInsertionPrototype(val elevatorPrototype: ElevatorPrototype) : InsertionPrototype
 
     object FloorSpikeInsertionPrototype : InsertionPrototype
 
@@ -78,6 +77,9 @@ class ElasticInsertionMode(
 
         val elastic = Elastic(
             prototype = elasticPrototype,
+            generator = elasticPrototype.buildGenerator(
+                retail = insertionPrototype.retail,
+            ),
             initialBounds = IntRect(
                 position = tileAtPoint(insertionWorldPoint),
                 size = elasticPrototype.defaultSize,
@@ -164,9 +166,10 @@ open class WapObjectInsertionMode(
 abstract class ElevatorInsertionMode(
     rezIndex: RezIndex,
     private val world: World,
+    elevatorPrototype: ElevatorPrototype,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    imageSetId = ElevatorPrototype.imageSetId,
+    imageSetId = elevatorPrototype.elevatorImageSetId,
 ) {
     override fun insert(insertionWorldPoint: IntVec2) {
         val rangeRadius = 48
@@ -188,17 +191,19 @@ abstract class ElevatorInsertionMode(
 class HorizontalElevatorInsertionMode(
     private val rezIndex: RezIndex,
     world: World,
+    override val insertionPrototype: HorizontalElevatorInsertionPrototype,
 ) : ElevatorInsertionMode(
     rezIndex = rezIndex,
     world = world,
+    elevatorPrototype = insertionPrototype.elevatorPrototype,
 ) {
-    override val insertionPrototype = HorizontalElevatorInsertionPrototype
 
     override fun createElevator(
         insertionWorldPoint: IntVec2,
         rangeRadius: Int,
     ): Elevator<*> = HorizontalElevator(
         rezIndex = rezIndex,
+        prototype = insertionPrototype.elevatorPrototype,
         initialPosition = insertionWorldPoint,
         initialRelativeMovementRange = HorizontalRange(
             minX = -rangeRadius,
@@ -210,16 +215,16 @@ class HorizontalElevatorInsertionMode(
 class PathElevatorInsertionMode(
     private val world: World,
     private val rezIndex: RezIndex,
+    override val insertionPrototype: PathElevatorInsertionPrototype,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    imageSetId = ElevatorPrototype.imageSetId,
+    imageSetId = insertionPrototype.elevatorPrototype.elevatorImageSetId,
 ) {
-    override val insertionPrototype = PathElevatorInsertionPrototype
-
     override fun insert(insertionWorldPoint: IntVec2) {
         world.insertEntity(
             PathElevator(
                 rezIndex = rezIndex,
+                prototype = insertionPrototype.elevatorPrototype,
                 initialPosition = insertionWorldPoint,
                 initialStepsConfig = (0 until 8).map {
                     PathElevatorStepData(
@@ -234,17 +239,18 @@ class PathElevatorInsertionMode(
 class VerticalElevatorInsertionMode(
     private val rezIndex: RezIndex,
     world: World,
+    override val insertionPrototype: VerticalElevatorInsertionPrototype,
 ) : ElevatorInsertionMode(
     rezIndex = rezIndex,
     world = world,
+    elevatorPrototype = insertionPrototype.elevatorPrototype,
 ) {
-    override val insertionPrototype = VerticalElevatorInsertionPrototype
-
     override fun createElevator(
         insertionWorldPoint: IntVec2,
         rangeRadius: Int,
     ): Elevator<*> = VerticalElevator(
         rezIndex = rezIndex,
+        prototype = insertionPrototype.elevatorPrototype,
         initialPosition = insertionWorldPoint,
         initialRelativeMovementRange = VerticalRange(
             minY = -rangeRadius,
@@ -341,7 +347,7 @@ class CrateStackInsertionMode(
     override val insertionPrototype: CrateStackInsertionPrototype,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    imageSetId = StackedCratesPrototype.imageSetId,
+    imageSetId = insertionPrototype.crateStackPrototype.crateImageSetId,
 ) {
 
     override fun insert(insertionWorldPoint: IntVec2) {

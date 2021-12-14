@@ -4,18 +4,17 @@ package icesword.editor
 
 import icesword.ImageMetadata
 import icesword.RezIndex
-import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.frp.Cell
 import icesword.frp.Loop.Companion.looped
 import icesword.frp.MutCell
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
-import icesword.frp.dynamic_list.withAppended
 import icesword.frp.dynamic_list.first
 import icesword.frp.dynamic_list.getOrNull
 import icesword.frp.dynamic_list.indexOf
 import icesword.frp.dynamic_list.last
+import icesword.frp.dynamic_list.withAppended
 import icesword.frp.dynamic_list.zipWithNext
 import icesword.frp.map
 import icesword.frp.mapNested
@@ -182,7 +181,7 @@ class PathElevatorPath(
     initialSteps: List<PathElevatorStep>,
 ) {
     companion object {
-        val stepCountLimit = 8
+        const val stepCountLimit = 8
 
         fun create(
             imageMetadata: ImageMetadata,
@@ -261,6 +260,7 @@ class PathElevatorPath(
 
 class PathElevator(
     rezIndex: RezIndex,
+    prototype: ElevatorPrototype,
     initialPosition: IntVec2,
     initialStepsConfig: List<PathElevatorStepData>,
 ) :
@@ -270,16 +270,18 @@ class PathElevator(
     companion object {
         fun load(
             rezIndex: RezIndex,
+            retail: Retail,
             data: PathElevatorData,
         ): PathElevator = PathElevator(
             rezIndex = rezIndex,
+            prototype = retail.elevatorPrototype,
             initialPosition = data.position,
             initialStepsConfig = data.steps,
         )
     }
 
     private val elevatorImageMetadata = rezIndex.getImageMetadata(
-        imageSetId = ElevatorPrototype.imageSetId,
+        imageSetId = prototype.elevatorImageSetId,
         i = -1,
     )!!
 

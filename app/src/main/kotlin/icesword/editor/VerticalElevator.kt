@@ -45,10 +45,12 @@ data class VerticalRange(
 
 class VerticalElevator(
     rezIndex: RezIndex,
+    prototype: ElevatorPrototype,
     initialPosition: IntVec2,
     initialRelativeMovementRange: VerticalRange,
 ) : Elevator<VerticalRange>(
     rezIndex = rezIndex,
+    prototype = prototype,
     initialPosition = initialPosition,
     initialRelativeMovementRange = initialRelativeMovementRange,
 ), WapObjectExportable {
@@ -56,10 +58,12 @@ class VerticalElevator(
     companion object {
         fun load(
             rezIndex: RezIndex,
+            retail: Retail,
             data: VerticalElevatorData,
         ): VerticalElevator =
             VerticalElevator(
                 rezIndex = rezIndex,
+                prototype = retail.elevatorPrototype,
                 initialPosition = data.position,
                 initialRelativeMovementRange = data.relativeMovementRange,
             )

@@ -24,7 +24,7 @@ import kotlinx.serialization.UseSerializers
 class CrateStackPrototype(
     retail: Retail,
 ) {
-    val crateImageSetId = ImageSetId(fullyQualifiedId = "LEVEL${retail.naturalIndex}_IMAGES_CRATE")
+    val crateImageSetId = ImageSetId(fullyQualifiedId = "LEVEL${retail.naturalIndex}_IMAGES_CRATES")
 }
 
 class CrateStack(
@@ -40,8 +40,7 @@ class CrateStack(
 
         val crateObjectPrototype = Wwd.Object_.empty().copy(
             logic = encode("StackedCrates"),
-            imageSet = encode("LEVEL_CRATE"),
-            speedX = 1750,
+            imageSet = encode("LEVEL_CRATES"),
         )
 
         fun load(

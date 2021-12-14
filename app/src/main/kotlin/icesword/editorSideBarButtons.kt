@@ -5,6 +5,7 @@ import icesword.editor.ElasticPrototype
 import icesword.editor.InsertionPrototype
 import icesword.editor.KnotBrush
 import icesword.editor.KnotPrototype
+import icesword.editor.Retail
 import icesword.editor.WapObjectPrototype
 import icesword.frp.Till
 import icesword.frp.map
@@ -15,6 +16,7 @@ import org.w3c.dom.HTMLElement
 fun createInsertElasticButton(
     editor: Editor,
     prototype: ElasticPrototype,
+    retail: Retail,
     imagePath: String,
     tillDetach: Till,
 ): HTMLElement {
@@ -27,6 +29,7 @@ fun createInsertElasticButton(
         imagePath = imagePath,
         insertionPrototype = InsertionPrototype.ElasticInsertionPrototype(
             elasticPrototype = prototype,
+            retail = retail,
         ),
         tillDetach = tillDetach,
     )

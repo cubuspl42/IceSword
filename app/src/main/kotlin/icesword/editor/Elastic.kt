@@ -11,16 +11,25 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
+interface ElasticGenerator {
+    fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile>
+}
+
 @Serializable
 sealed class ElasticPrototype {
     abstract val defaultSize: IntSize
 
-    abstract fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile>
+    abstract fun buildGenerator(retail: Retail): ElasticGenerator
 }
 
 @Serializable
 @SerialName("Log")
 object LogPrototype : ElasticPrototype() {
+    private object Generator : ElasticGenerator {
+        override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> =
+            (0 until size.height).flatMap(::logLevel).toMap()
+    }
+
     private fun logLevel(i: Int): Set<Pair<IntVec2, MetaTile>> = setOf(
         IntVec2(-1, i) to MetaTile.LogLeft,
         IntVec2(0, i) to MetaTile.Log,
@@ -29,57 +38,70 @@ object LogPrototype : ElasticPrototype() {
 
     override val defaultSize: IntSize = IntSize(1, 4)
 
-    override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> =
-        (0 until size.height).flatMap(::logLevel).toMap()
+    override fun buildGenerator(retail: Retail): ElasticGenerator {
+        if (retail !is Retail.Retail3) throw UnsupportedOperationException()
+        return Generator
+    }
 }
 
 @Serializable
 @SerialName("TreeCrown")
 object TreeCrownPrototype : ElasticPrototype() {
+    private object Generator : ElasticGenerator {
+        override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
+            val columns =
+                listOf(
+                    setOf(
+                        IntVec2(0, 0) to MetaTile.LeavesUpperLeft,
+                        IntVec2(0, 1) to MetaTile.LeavesLowerLeft,
+                    ),
+                ) +
+                        (1..(size.width - 2)).map { j ->
+
+                            setOf(
+                                IntVec2(j, 0) to MetaTile.LeavesUpper,
+                                IntVec2(j, 1) to MetaTile.LeavesLower,
+                            )
+                        } +
+                        listOf(
+                            setOf(
+                                IntVec2(size.width - 1, 0) to MetaTile.LeavesUpperRight,
+                                IntVec2(size.width - 1, 1) to MetaTile.LeavesLowerRight,
+                            ),
+                        )
+
+            return columns.take(size.width).flatten().toMap()
+        }
+    }
+
     override val defaultSize: IntSize = IntSize(5, 2)
 
-    override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
-
-        val columns =
-            listOf(
-                setOf(
-                    IntVec2(0, 0) to MetaTile.LeavesUpperLeft,
-                    IntVec2(0, 1) to MetaTile.LeavesLowerLeft,
-                ),
-            ) +
-                    (1..(size.width - 2)).map { j ->
-
-                        setOf(
-                            IntVec2(j, 0) to MetaTile.LeavesUpper,
-                            IntVec2(j, 1) to MetaTile.LeavesLower,
-                        )
-                    } +
-                    listOf(
-                        setOf(
-                            IntVec2(size.width - 1, 0) to MetaTile.LeavesUpperRight,
-                            IntVec2(size.width - 1, 1) to MetaTile.LeavesLowerRight,
-                        ),
-                    )
-
-        return columns.take(size.width).flatten().toMap()
+    override fun buildGenerator(retail: Retail): ElasticGenerator {
+        if (retail !is Retail.Retail3) throw UnsupportedOperationException()
+        return Generator
     }
 }
-
 
 @Serializable
 @SerialName("Ladder")
 object LadderPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(1, 4)
 
-    override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
-        val n = size.height
-        return (0 until n).associate {
-            val metaTile = when (it) {
-                0 -> MetaTile.LadderTop
-                n - 1 -> MetaTile.LadderBottom
-                else -> MetaTile.Ladder
+    override fun buildGenerator(retail: Retail): ElasticGenerator {
+        if (retail !is RetailLadderPrototype) throw UnsupportedOperationException()
+
+        return object : ElasticGenerator {
+            override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
+                val n = size.height
+                return (0 until n).associate {
+                    val metaTile = when (it) {
+                        0 -> retail.ladderTop
+                        n - 1 -> retail.ladderBottom
+                        else -> retail.ladder
+                    }
+                    IntVec2(0, it) to metaTile
+                }
             }
-            IntVec2(0, it) to metaTile
         }
     }
 }
@@ -87,30 +109,42 @@ object LadderPrototype : ElasticPrototype() {
 @Serializable
 @SerialName("Spikes")
 object SpikesPrototype : ElasticPrototype() {
+    private object Generator : ElasticGenerator {
+        override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
+            val n = size.width
+            return (0 until n).flatMap {
+                listOf(
+                    IntVec2(it, 0) to MetaTile.SpikeTop,
+                    IntVec2(it, 1) to MetaTile.SpikeBottom,
+                )
+            }.toMap()
+        }
+    }
+
     override val defaultSize: IntSize = IntSize(4, 2)
 
-    override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
-        val n = size.width
-        return (0 until n).flatMap {
-            listOf(
-                IntVec2(it, 0) to MetaTile.SpikeTop,
-                IntVec2(it, 1) to MetaTile.SpikeBottom,
-            )
-        }.toMap()
+    override fun buildGenerator(retail: Retail): ElasticGenerator {
+        if (retail !is Retail.Retail3) throw UnsupportedOperationException()
+        return Generator
     }
 }
 
 class Elastic(
     private val prototype: ElasticPrototype,
+    private val generator: ElasticGenerator,
     initialBounds: IntRect,
 ) :
     Entity(),
     EntityPosition {
 
     companion object {
-        fun load(data: ElasticData): Elastic =
+        fun load(
+            retail: Retail,
+            data: ElasticData,
+        ): Elastic =
             Elastic(
                 prototype = data.prototype,
+                generator = data.prototype.buildGenerator(retail = retail),
                 initialBounds = data.bounds,
             )
     }
@@ -190,31 +224,15 @@ class Elastic(
     val metaTileCluster = MetaTileCluster(
         tileOffset = boundsTopLeft,
         localMetaTiles = DynamicMap.diff(
-            size.map { prototype.buildMetaTiles(it) },
+            size.map { generator.buildMetaTiles(it) },
             tag = "metaTileCluster.localMetaTilesDynamic",
         )
-
-//            .also {
-//                it.changes.subscribe {
-//                    println("Elastic localMetaTilesDynamic change: $it")
-//                }
-//            }
     )
 
     override fun isSelectableIn(area: IntRect): Boolean =
         (tileBounds.sample() * TILE_SIZE).overlaps(area)
 
     override fun toString(): String = "MetaTileCluster(boundsTopLeft=${boundsTopLeft.sample()})"
-
-    fun expandRight() {
-        _tileBounds.update { b: IntRect ->
-            val oldSize = b.size
-
-            b.copy(
-                size = oldSize.copy(width = oldSize.width + 1),
-            )
-        }
-    }
 
     fun toData(): ElasticData =
         ElasticData(

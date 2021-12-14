@@ -43,6 +43,8 @@ class World(
             rezIndex: RezIndex,
             wwdWorld: Wwd.World,
         ): World {
+            val retail = Retail.theRetail
+
             val startPoint = IntVec2(wwdWorld.startX, wwdWorld.startY)
 
             val initialKnotMeshes = setOf(
@@ -65,32 +67,11 @@ class World(
 
             val initialElastics = setOf(
                 Elastic(
-                    prototype = LogPrototype,
+                    prototype = LadderPrototype,
+                    generator = LadderPrototype.buildGenerator(retail = retail),
                     initialBounds = IntRect(
                         position = IntVec2(83, 82),
-                        size = IntSize(1, 16),
-                    ),
-                ),
-                Elastic(
-                    prototype = TreeCrownPrototype,
-
-                    initialBounds = IntRect(
-                        position = IntVec2(81, 92),
-                        size = IntSize(5, 2),
-                    ),
-                ),
-                Elastic(
-                    prototype = TreeCrownPrototype,
-                    initialBounds = IntRect(
-                        position = IntVec2(79, 87),
-                        size = IntSize(5, 2),
-                    ),
-                ),
-                Elastic(
-                    prototype = TreeCrownPrototype,
-                    initialBounds = IntRect(
-                        position = IntVec2(83, 84),
-                        size = IntSize(5, 2),
+                        size = IntSize(1, 8),
                     ),
                 ),
             )
@@ -119,6 +100,8 @@ class World(
             ): Set<E> =
                 entitiesData.map { load(it) }.toSet()
 
+            val retail = Retail.theRetail
+
             val initialKnotMeshes = loadInitialEntities(
                 entitiesData = worldData.knotMeshes,
                 load = { KnotMesh.load(it) },
@@ -126,17 +109,17 @@ class World(
 
             val initialElastics = loadInitialEntities(
                 entitiesData = worldData.elastics,
-                load = { Elastic.load(it) },
+                load = { Elastic.load(retail = retail, data = it) },
             )
 
             val initialHorizontalElevators = loadInitialEntities(
                 entitiesData = worldData.horizontalElevators,
-                load = { HorizontalElevator.load(rezIndex = rezIndex, data = it) },
+                load = { HorizontalElevator.load(rezIndex = rezIndex, retail = retail, data = it) },
             )
 
             val initialVerticalElevators = loadInitialEntities(
                 entitiesData = worldData.verticalElevators,
-                load = { VerticalElevator.load(rezIndex = rezIndex, data = it) },
+                load = { VerticalElevator.load(rezIndex = rezIndex, retail = retail, data = it) },
             )
 
             val initialWapObjects = loadInitialEntities(
@@ -149,12 +132,10 @@ class World(
                 load = { FloorSpikeRow.load(rezIndex = rezIndex, data = it) },
             )
 
-            val retail = Retail.theRetail
-
             val initialEntities = worldData.entities.map {
                 when (it) {
                     is EnemyData -> Enemy.load(rezIndex = rezIndex, data = it)
-                    is PathElevatorData -> PathElevator.load(rezIndex = rezIndex, data = it)
+                    is PathElevatorData -> PathElevator.load(rezIndex = rezIndex, retail = retail, data = it)
                     is RopeData -> Rope.load(rezIndex = rezIndex, retail = retail, data = it)
                     is CrateStackData -> CrateStack.load(rezIndex = rezIndex, retail = retail, data = it)
                 }

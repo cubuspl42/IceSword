@@ -53,7 +53,21 @@ sealed class WapObjectPrototype {
     }
 
     @Serializable
-    object CrumblingPegPrototype : WapObjectPrototype() {
+    object Level1CrumblingPegPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL1_IMAGES_CRUMBLINGPEG",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("CrumblingPeg"),
+            imageSet = encode("LEVEL_CRUMBLINGPEG"),
+        )
+    }
+
+    @Serializable
+    object Level3CrumblingPegPrototype : WapObjectPrototype() {
         @Transient
         override val imageSetId: ImageSetId = ImageSetId(
             fullyQualifiedId = "LEVEL3_IMAGES_CRUMBLINPEG1",
@@ -174,7 +188,49 @@ sealed class WapObjectPrototype {
     }
 
     @Serializable
-    object RatPrototype : WapObjectPrototype() {
+    object OfficerPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL1_IMAGES_OFFICER",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("Officer"),
+            imageSet = encode("LEVEL_OFFICER"),
+        )
+    }
+
+    @Serializable
+    object SoldierPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL1_IMAGES_SOLDIER",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("Soldier"),
+            imageSet = encode("LEVEL_SOLDIER"),
+        )
+    }
+
+    @Serializable
+    object Level1RatPrototype : WapObjectPrototype() {
+        @Transient
+        override val imageSetId: ImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL1_IMAGES_RAT",
+        )
+
+        @Transient
+        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
+            logic = encode("Rat"),
+            imageSet = encode("LEVEL_RAT"),
+        )
+    }
+
+    @Serializable
+    object Level3RatPrototype : WapObjectPrototype() {
         @Transient
         override val imageSetId: ImageSetId = ImageSetId(
             fullyQualifiedId = "LEVEL3_IMAGES_RAT",
@@ -187,9 +243,8 @@ sealed class WapObjectPrototype {
         )
     }
 
-
     @Serializable
-    object ElevatorPrototype : WapObjectPrototype() {
+    object Level3ElevatorPrototype : WapObjectPrototype() {
         @Transient
         override val imageSetId: ImageSetId = ImageSetId(
             fullyQualifiedId = "LEVEL3_IMAGES_ELEVATOR1",
@@ -304,12 +359,15 @@ data class WapObjectData(
     val position: IntVec2,
 )
 
-private fun expandImageSetId(shortImageSetId: String): ImageSetId = ImageSetId(
-    fullyQualifiedId = when {
-        shortImageSetId == "" -> ""
-        shortImageSetId.startsWith("GAME_") -> shortImageSetId.replace("GAME_", "GAME_IMAGES_")
-        shortImageSetId.startsWith("LEVEL_") -> shortImageSetId.replace("LEVEL_", "LEVEL3_IMAGES_")
-        else -> throw UnsupportedOperationException("Cannot expand short imageset ID: $shortImageSetId")
-    }
-)
-
+private fun expandImageSetId(shortImageSetId: String): ImageSetId {
+    val retail = Retail.theRetail
+    return ImageSetId(
+        fullyQualifiedId = when {
+            shortImageSetId == "" -> ""
+            shortImageSetId.startsWith("GAME_") -> shortImageSetId.replace("GAME_", "GAME_IMAGES_")
+            shortImageSetId.startsWith("LEVEL_") -> shortImageSetId.replace("LEVEL_",
+                "LEVEL${retail.naturalIndex}_IMAGES_")
+            else -> throw UnsupportedOperationException("Cannot expand short imageset ID: $shortImageSetId")
+        }
+    )
+}

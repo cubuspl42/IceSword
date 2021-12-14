@@ -19,10 +19,6 @@ open class MetaTile(
 
     object GrassUpper : MetaTile(604)
 
-    object LadderTop : MetaTile(668)
-    object Ladder : MetaTile(669)
-    object LadderBottom : MetaTile(670)
-
     object SpikeTop : MetaTile(698)
     object SpikeBottom : MetaTile(704)
 
