@@ -2,7 +2,6 @@
 
 package icesword.editor
 
-import icesword.editor.KnotPrototype.*
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.MutableDynamicSet
@@ -23,15 +22,19 @@ import kotlinx.serialization.UseSerializers
 @Serializable
 sealed class KnotPrototype {
     @Serializable
-    sealed class RockPrototype : KnotPrototype()
+    sealed class Level3RockPrototype : KnotPrototype()
 
     @Serializable
     @SerialName("UndergroundRock")
-    object UndergroundRockPrototype : RockPrototype()
+    object Level3UndergroundRockPrototype : Level3RockPrototype()
 
     @Serializable
     @SerialName("OvergroundRock")
-    object OvergroundRockPrototype : RockPrototype()
+    object Level3OvergroundRockPrototype : Level3RockPrototype()
+
+    @Serializable
+    @SerialName("Level1Foundation")
+    object Level1Foundation : KnotPrototype()
 
     override fun toString(): String =
         this::class.simpleName ?: "?"

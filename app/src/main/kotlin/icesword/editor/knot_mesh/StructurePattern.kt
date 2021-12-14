@@ -64,14 +64,14 @@ data class StructureConvexPattern(
     fun buildMatchers(): List<KnotPatternMatcher> {
         val empty = emptyList<KnotPatternMatcher>()
         return (topLeft?.buildConvexTopLeftMatcher() ?: empty) +
-                (top?.buildConvexTopMatcher() ?: empty) +
                 (topRight?.buildConvexTopRightMatcher() ?: empty) +
-                (left?.buildConvexLeftMatcher() ?: empty) +
-                (fill?.buildConvexFillMatcher()?.let(::listOf) ?: empty) +
-                (right?.buildConvexRightMatcher() ?: empty) +
                 (bottomLeft?.buildConvexBottomLeftMatcher() ?: empty) +
+                (bottomRight?.buildConvexBottomRightMatcher() ?: empty) +
+                (top?.buildConvexTopMatcher() ?: empty) +
+                (left?.buildConvexLeftMatcher() ?: empty) +
+                (right?.buildConvexRightMatcher() ?: empty) +
                 (bottom?.buildConvexBottomMatcher() ?: empty) +
-                (bottomRight?.buildConvexBottomRightMatcher() ?: empty)
+                (fill?.buildConvexFillMatcher()?.let(::listOf) ?: empty)
     }
 }
 

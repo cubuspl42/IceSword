@@ -3,17 +3,11 @@
 package icesword.editor
 
 import icesword.RezIndex
-import icesword.editor.KnotPrototype.OvergroundRockPrototype
-import icesword.editor.KnotPrototype.UndergroundRockPrototype
-import icesword.frp.Cell
+import icesword.editor.KnotPrototype.Level3OvergroundRockPrototype
+import icesword.editor.KnotPrototype.Level3UndergroundRockPrototype
 import icesword.frp.DynamicSet
-import icesword.frp.MutCell
 import icesword.frp.MutableDynamicSet
-import icesword.frp.Till
 import icesword.frp.filterType
-import icesword.frp.map
-import icesword.frp.switchMap
-import icesword.frp.syncTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
@@ -51,17 +45,17 @@ class World(
             val initialKnotMeshes = setOf(
                 KnotMesh.createSquare(
                     initialTileOffset = tileAtPoint(startPoint) + IntVec2(-2, 4),
-                    knotPrototype = UndergroundRockPrototype,
+                    knotPrototype = Level3UndergroundRockPrototype,
                     initialSideLength = 16,
                 ),
                 KnotMesh.createSquare(
                     initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, -4),
-                    knotPrototype = OvergroundRockPrototype,
+                    knotPrototype = Level3OvergroundRockPrototype,
                     initialSideLength = 4,
                 ),
                 KnotMesh.createSquare(
                     initialTileOffset = tileAtPoint(startPoint) + IntVec2(12, -4),
-                    knotPrototype = OvergroundRockPrototype,
+                    knotPrototype = Level3OvergroundRockPrototype,
                     initialSideLength = 1,
                 ),
             )

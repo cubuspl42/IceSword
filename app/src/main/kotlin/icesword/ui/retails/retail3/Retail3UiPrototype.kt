@@ -56,13 +56,13 @@ object Retail3UiPrototype : RetailUiPrototype {
         ),
         createInsertKnotMeshButton(
             editor = editor,
-            knotPrototype = KnotPrototype.UndergroundRockPrototype,
+            knotPrototype = KnotPrototype.Level3UndergroundRockPrototype,
             imagePath = "images/CLAW/LEVEL3/TILES/ACTION/621.png",
             tillDetach = tillDetach,
         ),
         createInsertKnotMeshButton(
             editor = editor,
-            knotPrototype = KnotPrototype.OvergroundRockPrototype,
+            knotPrototype = KnotPrototype.Level3OvergroundRockPrototype,
             imagePath = "images/CLAW/LEVEL3/TILES/ACTION/604.png",
             tillDetach = tillDetach,
         ),

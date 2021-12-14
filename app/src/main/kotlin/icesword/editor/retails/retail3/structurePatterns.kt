@@ -16,7 +16,7 @@ private val grass = object : StructurePattern(
     )
 ) {
     override fun test(knotPrototype: KnotPrototype): Boolean =
-        knotPrototype is KnotPrototype.OvergroundRockPrototype
+        knotPrototype is KnotPrototype.Level3OvergroundRockPrototype
 }
 
 private val rock = object : StructurePattern(
@@ -39,7 +39,7 @@ private val rock = object : StructurePattern(
     ),
 ) {
     override fun test(knotPrototype: KnotPrototype): Boolean =
-        knotPrototype is KnotPrototype.RockPrototype
+        knotPrototype is KnotPrototype.Level3RockPrototype
 }
 
 val retail3StructurePatterns = listOf(

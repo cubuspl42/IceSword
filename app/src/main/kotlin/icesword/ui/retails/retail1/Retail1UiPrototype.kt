@@ -73,6 +73,12 @@ object Retail1UiPrototype : RetailUiPrototype {
             ),
             tillDetach = tillDetach,
         ),
+        createInsertKnotMeshButton(
+            editor = editor,
+            knotPrototype = KnotPrototype.Level1Foundation,
+            imagePath = "images/CLAW/LEVEL1/TILES/ACTION/303.png",
+            tillDetach = tillDetach,
+        ),
 
         createInsertEnemyButton(
             editor = editor,
