@@ -1,5 +1,6 @@
 import icesword.ImageMetadata
 import icesword.JsonRezIndex
+import icesword.editor.Retail
 import icesword.editor.WapObject
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
@@ -19,11 +20,12 @@ data class TextureBank(
     companion object {
         suspend fun load(
             rezIndex: JsonRezIndex,
+            retail: Retail,
         ): TextureBank {
             val imagesTextures = rezIndex.getAllImagesMetadata()
                 // TODO: Support all retails and/or remove this performance trick
                 .filter { metadata ->
-                    setOf("GAME/", "LEVEL3/").any { metadata.pidImagePath.startsWith(it) } &&
+                    setOf("GAME/", "LEVEL${retail.naturalIndex}/").any { metadata.pidImagePath.startsWith(it) } &&
                             setOf("001", "/TREASURE/", "LOGO0").any { metadata.pidImagePath.contains(it) }
                 }
                 .associate {
@@ -75,19 +77,23 @@ private suspend fun loadTileset(): Tileset {
         }.toMap()
     }
 
+    val retail = Retail.theRetail
+
+    val tilesetReference = buildTilesetSpritesheetReference(retail = retail)
+
     suspend fun loadIndex(): Map<Int, IntRect> {
-        val textureIndexResponse = window.fetch(tilesTextureIndexPath).await()
+        val textureIndexResponse = window.fetch(tilesetReference.indexPath).await()
         val json = textureIndexResponse.json().await().asDynamic()
         return parseIndex(json)
     }
 
-    val imageBitmap = loadImage(imagePath = tilesTextureImagePath)
+    val imageBitmap = loadImage(imagePath = tilesetReference.imagePath)
 
     val index = loadIndex()
 
     val tileTextures = index.mapValues { (_, frameRect) ->
         Texture(
-            path = tilesTextureImagePath,
+            path = tilesetReference.imagePath,
             imageBitmap = imageBitmap,
             sourceRect = frameRect,
         )

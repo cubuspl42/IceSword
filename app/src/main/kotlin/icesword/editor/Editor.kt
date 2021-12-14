@@ -293,10 +293,12 @@ class Editor(
             is RopeInsertionPrototype -> RopeInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
+                insertionPrototype = insertionPrototype,
             )
             is CrateStackInsertionPrototype -> CrateStackInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
+                insertionPrototype = insertionPrototype,
             )
         }
 

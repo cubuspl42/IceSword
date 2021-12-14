@@ -39,6 +39,7 @@ class App(
 
             val textureBank = TextureBank.load(
                 rezIndex = jsonRezIndex,
+                retail = Retail.theRetail,
             )
 
             val combinedRezIndex = CombinedRezIndex(

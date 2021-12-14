@@ -13,8 +13,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
+class RopePrototype(
+    retail: Retail,
+) {
+    val imageSetId = ImageSetId(fullyQualifiedId = "LEVEL${retail.naturalIndex}_IMAGES_ROPE")
+}
+
 class Rope(
     rezIndex: RezIndex,
+    prototype: RopePrototype,
     initialPosition: IntVec2,
     initialSwingDurationMs: Int,
 ) :
@@ -22,16 +29,19 @@ class Rope(
     WapObjectExportable {
 
     companion object {
-        val imageSetId = ImageSetId(
-            fullyQualifiedId = "LEVEL3_IMAGES_ROPE",
+        private val wwdObjectPrototype = Wwd.Object_.empty().copy(
+            logic = encode("AniRope"),
+            imageSet = encode("LEVEL_ROPE"),
         )
 
         fun load(
             rezIndex: RezIndex,
+            retail: Retail,
             data: RopeData,
         ): Rope =
             Rope(
                 rezIndex = rezIndex,
+                prototype = RopePrototype(retail = retail),
                 initialPosition = data.position,
                 initialSwingDurationMs = data.swingDurationMs,
             )
@@ -44,7 +54,7 @@ class Rope(
 
     val wapSprite = WapSprite.fromImageSet(
         rezIndex = rezIndex,
-        imageSetId = imageSetId,
+        imageSetId = prototype.imageSetId,
         position = entityPosition.position,
     )
 
@@ -72,7 +82,7 @@ class Rope(
         val position = position.sample()
         val speed = swingDurationMs.sample()
 
-        return WapObjectPrototype.RopePrototype.wwdObjectPrototype.copy(
+        return wwdObjectPrototype.copy(
             x = position.x,
             y = position.y,
             speedX = speed,

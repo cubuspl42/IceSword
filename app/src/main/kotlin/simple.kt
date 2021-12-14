@@ -1,5 +1,6 @@
 import icesword.createAppView
 import icesword.editor.App
+import icesword.editor.Retail
 import icesword.frp.Till
 import icesword.wwd.Wwd
 import icesword.wwd.Wwd.readWorld
@@ -12,8 +13,17 @@ import kotlinx.coroutines.launch
 import org.w3c.dom.Document
 import org.w3c.dom.HTMLElement
 
-const val tilesTextureImagePath = "images/spritesheets/LEVEL3_ACTION/texture.png"
-const val tilesTextureIndexPath = "images/spritesheets/LEVEL3_ACTION/texture.json"
+data class TilesetSpritesheetReference(
+    val imagePath: String,
+    val indexPath: String,
+)
+
+fun buildTilesetSpritesheetReference(retail: Retail): TilesetSpritesheetReference {
+    return TilesetSpritesheetReference(
+        imagePath = "images/spritesheets/LEVEL${retail.naturalIndex}_ACTION/texture.png",
+        indexPath = "images/spritesheets/LEVEL${retail.naturalIndex}_ACTION/texture.json",
+    )
+}
 
 val objectEntries = js("Object.entries") as (dynamic) -> Array<Array<Any?>>
 

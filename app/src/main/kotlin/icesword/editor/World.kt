@@ -149,12 +149,14 @@ class World(
                 load = { FloorSpikeRow.load(rezIndex = rezIndex, data = it) },
             )
 
+            val retail = Retail.theRetail
+
             val initialEntities = worldData.entities.map {
                 when (it) {
                     is EnemyData -> Enemy.load(rezIndex = rezIndex, data = it)
                     is PathElevatorData -> PathElevator.load(rezIndex = rezIndex, data = it)
-                    is RopeData -> Rope.load(rezIndex = rezIndex, data = it)
-                    is CrateStackData -> CrateStack.load(rezIndex = rezIndex, data = it)
+                    is RopeData -> Rope.load(rezIndex = rezIndex, retail = retail, data = it)
+                    is CrateStackData -> CrateStack.load(rezIndex = rezIndex, retail = retail, data = it)
                 }
             }.toSet()
 
@@ -255,7 +257,6 @@ class World(
     )
 
     val tiles = metaTileLayer.tiles
-
 
 
     fun export(): Wwd.World {

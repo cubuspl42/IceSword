@@ -42,21 +42,6 @@ sealed class WapObjectPrototype {
     }
 
     @Serializable
-    object RopePrototype : WapObjectPrototype() {
-        @Transient
-        override val imageSetId: ImageSetId = ImageSetId(
-            fullyQualifiedId = "LEVEL3_IMAGES_ROPE",
-        )
-
-        @Transient
-        override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
-            logic = encode("AniRope"),
-            imageSet = encode("LEVEL_ROPE"),
-            speedX = 1750,
-        )
-    }
-
-    @Serializable
     object StackedCratesPrototype : WapObjectPrototype() {
         @Transient
         override val imageSetId: ImageSetId = ImageSetId(

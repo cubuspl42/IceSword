@@ -1,11 +1,12 @@
 package icesword.editor
 
+import icesword.ImageSetId
 import icesword.RezIndex
 import icesword.editor.FloorSpikeRow.FloorSpikeConfig
 import icesword.editor.InsertionPrototype.CrateStackInsertionPrototype
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
-import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
+import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.RopeInsertionPrototype
@@ -13,7 +14,6 @@ import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.WapObjectPrototype.ElevatorPrototype
 import icesword.editor.WapObjectPrototype.FloorSpikePrototype
-import icesword.editor.WapObjectPrototype.RopePrototype
 import icesword.editor.WapObjectPrototype.StackedCratesPrototype
 import icesword.frp.Cell
 import icesword.frp.CellSlot
@@ -52,9 +52,9 @@ sealed interface InsertionPrototype {
 
     object FloorSpikeInsertionPrototype : InsertionPrototype
 
-    object RopeInsertionPrototype : InsertionPrototype
+    value class RopeInsertionPrototype(val ropePrototype: RopePrototype) : InsertionPrototype
 
-    object CrateStackInsertionPrototype : InsertionPrototype
+    value class CrateStackInsertionPrototype(val crateStackPrototype: CrateStackPrototype) : InsertionPrototype
 
     value class EnemyInsertionPrototype(
         val wapObjectPrototype: WapObjectPrototype,
@@ -109,7 +109,7 @@ data class InsertWapObjectCommand(
 
 abstract class WapObjectAlikeInsertionMode(
     private val rezIndex: RezIndex,
-    private val wapObjectPrototype: WapObjectPrototype,
+    private val imageSetId: ImageSetId,
 ) : InsertionMode {
     private val _placementWorldPointSlot = CellSlot<IntVec2>()
 
@@ -117,7 +117,7 @@ abstract class WapObjectAlikeInsertionMode(
         _placementWorldPointSlot.linkedCell.mapNested { placementPosition ->
             WapSprite.fromImageSet(
                 rezIndex = rezIndex,
-                imageSetId = wapObjectPrototype.imageSetId,
+                imageSetId = imageSetId,
                 position = placementPosition,
             )
         }
@@ -146,7 +146,7 @@ open class WapObjectInsertionMode(
     override val insertionPrototype: WapObjectInsertionPrototype,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    wapObjectPrototype = insertionPrototype.wapObjectPrototype,
+    imageSetId = insertionPrototype.wapObjectPrototype.imageSetId,
 ) {
     override fun insert(insertionWorldPoint: IntVec2) {
         world.insertWapObject(
@@ -166,7 +166,7 @@ abstract class ElevatorInsertionMode(
     private val world: World,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    wapObjectPrototype = ElevatorPrototype,
+    imageSetId = ElevatorPrototype.imageSetId,
 ) {
     override fun insert(insertionWorldPoint: IntVec2) {
         val rangeRadius = 48
@@ -212,7 +212,7 @@ class PathElevatorInsertionMode(
     private val rezIndex: RezIndex,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    wapObjectPrototype = ElevatorPrototype,
+    imageSetId = ElevatorPrototype.imageSetId,
 ) {
     override val insertionPrototype = PathElevatorInsertionPrototype
 
@@ -258,7 +258,7 @@ class FloorSpikeInsertionMode(
     private val rezIndex: RezIndex,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    wapObjectPrototype = FloorSpikePrototype,
+    imageSetId = FloorSpikePrototype.imageSetId,
 ) {
     override val insertionPrototype = FloorSpikeInsertionPrototype
 
@@ -300,7 +300,7 @@ class EnemyInsertionMode(
     override val insertionPrototype: InsertionPrototype.EnemyInsertionPrototype,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    wapObjectPrototype = insertionPrototype.wapObjectPrototype,
+    imageSetId = insertionPrototype.wapObjectPrototype.imageSetId,
 ) {
     override fun insert(insertionWorldPoint: IntVec2) {
         world.insertEntity(
@@ -318,16 +318,16 @@ class EnemyInsertionMode(
 class RopeInsertionMode(
     private val world: World,
     private val rezIndex: RezIndex,
+    override val insertionPrototype: RopeInsertionPrototype,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    wapObjectPrototype = RopePrototype,
+    imageSetId = insertionPrototype.ropePrototype.imageSetId,
 ) {
-    override val insertionPrototype = RopeInsertionPrototype
-
     override fun insert(insertionWorldPoint: IntVec2) {
         world.insertEntity(
             Rope(
                 rezIndex = rezIndex,
+                prototype = insertionPrototype.ropePrototype,
                 initialPosition = insertionWorldPoint,
                 initialSwingDurationMs = 1500,
             )
@@ -338,16 +338,17 @@ class RopeInsertionMode(
 class CrateStackInsertionMode(
     private val world: World,
     private val rezIndex: RezIndex,
+    override val insertionPrototype: CrateStackInsertionPrototype,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    wapObjectPrototype = StackedCratesPrototype,
+    imageSetId = StackedCratesPrototype.imageSetId,
 ) {
-    override val insertionPrototype = CrateStackInsertionPrototype
 
     override fun insert(insertionWorldPoint: IntVec2) {
         world.insertEntity(
             CrateStack(
                 rezIndex = rezIndex,
+                prototype = insertionPrototype.crateStackPrototype,
                 initialPosition = insertionWorldPoint,
                 initialPickups = listOf(PickupKind.TreasureCoins),
             )

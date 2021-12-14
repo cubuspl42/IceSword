@@ -21,8 +21,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
+class CrateStackPrototype(
+    retail: Retail,
+) {
+    val crateImageSetId = ImageSetId(fullyQualifiedId = "LEVEL${retail.naturalIndex}_IMAGES_CRATE")
+}
+
 class CrateStack(
     rezIndex: RezIndex,
+    prototype: CrateStackPrototype,
     initialPosition: IntVec2,
     initialPickups: List<PickupKind>,
 ) : Entity(),
@@ -30,8 +37,6 @@ class CrateStack(
 
     companion object {
         const val pickupCountLimit: Int = 8
-
-        val crateImageSetId: ImageSetId = StackedCratesPrototype.imageSetId
 
         val crateObjectPrototype = Wwd.Object_.empty().copy(
             logic = encode("StackedCrates"),
@@ -41,10 +46,12 @@ class CrateStack(
 
         fun load(
             rezIndex: RezIndex,
+            retail: Retail,
             data: CrateStackData,
         ): CrateStack =
             CrateStack(
                 rezIndex = rezIndex,
+                prototype = CrateStackPrototype(retail = retail),
                 initialPosition = data.position,
                 initialPickups = data.pickups.take(pickupCountLimit),
             )
@@ -61,7 +68,7 @@ class CrateStack(
     )
 
     private val crateImageMetadata = rezIndex.getImageMetadata(
-        imageSetId = crateImageSetId,
+        imageSetId = prototype.crateImageSetId,
         i = -1,
     )!!
 
