@@ -1,6 +1,14 @@
 package icesword.editor
 
 import icesword.ImageSetId
+import icesword.editor.knot_mesh.KnotMetaTileBuilder
+import icesword.editor.knot_mesh.KnotPatternMatcher
+import icesword.editor.knot_mesh.MetaTilePattern1x1
+import icesword.editor.knot_mesh.MetaTilePattern2x1
+import icesword.editor.knot_mesh.StructureConvexPattern
+import icesword.editor.knot_mesh.StructurePattern
+import icesword.editor.retails.retail3.retail3StructurePatterns
+import icesword.geometry.IntVec2
 import icesword.wwd.Wwd
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -14,14 +22,31 @@ interface RetailLadderPrototype {
 sealed class Retail(
     val naturalIndex: Int,
 ) {
-
     companion object {
         // TODO: Nuke
-        val theRetail = Retail1
+        val theRetail = Retail3
     }
 
     open val elevatorPrototype: ElevatorPrototype
         get() = TODO()
+
+    open val structurePatterns: List<StructurePattern> =
+        emptyList()
+
+    fun buildKnotMetaTileBuilder(): KnotMetaTileBuilder = object : KnotMetaTileBuilder {
+        private val structureMatchers =
+            structurePatterns.map { it.toKnotMetaTileBuilder() }
+
+        override fun buildMetaTile(
+            tileCoord: IntVec2,
+            globalKnots: Map<IntVec2, KnotPrototype>,
+        ): MetaTile? = structureMatchers.firstNotNullOfOrNull {
+            it.buildMetaTile(
+                tileCoord = tileCoord,
+                globalKnots = globalKnots,
+            )
+        }
+    }
 
     object Retail1 : Retail(naturalIndex = 1), RetailLadderPrototype {
         override val ladderTop = MetaTile(310)
@@ -59,6 +84,8 @@ sealed class Retail(
                 imageSet = encode("LEVEL_ELEVATOR1"),
             ),
         )
+
+        override val structurePatterns = retail3StructurePatterns
     }
 
     object Retail4 : Retail(naturalIndex = 4)

@@ -26,6 +26,7 @@ import org.khronos.webgl.Int32Array
 import org.khronos.webgl.set
 
 class World(
+    retail: Retail,
     private val wwdWorld: Wwd.World,
     initialStartPoint: IntVec2,
     initialKnotMeshes: Set<KnotMesh>,
@@ -77,6 +78,7 @@ class World(
             )
 
             return World(
+                retail = retail,
                 wwdWorld = wwdWorld,
                 initialStartPoint = startPoint,
                 initialKnotMeshes = initialKnotMeshes,
@@ -142,6 +144,7 @@ class World(
             }.toSet()
 
             return World(
+                retail = retail,
                 wwdWorld = wwdWorldTemplate,
                 initialStartPoint = worldData.startPoint,
                 initialKnotMeshes = initialKnotMeshes,
@@ -230,6 +233,7 @@ class World(
 
     val knotMeshLayer = KnotMeshLayer(
         knotMeshes = knotMeshes,
+        knotMetaTileBuilder = retail.buildKnotMetaTileBuilder(),
     )
 
     val metaTileLayer = MetaTileLayer(

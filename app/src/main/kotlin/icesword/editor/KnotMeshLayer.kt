@@ -3,13 +3,20 @@ package icesword.editor
 import icesword.frp.Cell
 import icesword.frp.DynamicMap
 import icesword.frp.DynamicSet
-import icesword.frp.MutableDynamicSet
 import icesword.frp.map
 import icesword.frp.project
 import icesword.geometry.IntVec2
 
+interface KnotMetaTileBuilder {
+    fun buildMetaTile(
+        tileCoord: IntVec2,
+        globalKnots: Map<IntVec2, KnotPrototype>,
+    ): MetaTile?
+}
+
 class KnotMeshLayer(
     knotMeshes: DynamicSet<KnotMesh>,
+    knotMetaTileBuilder: KnotMetaTileBuilder,
 ) {
     private val globalKnots: DynamicMap<IntVec2, KnotPrototype> = DynamicMap.unionMerge(
         through = IntVec2.mapFactory(),
@@ -23,7 +30,7 @@ class KnotMeshLayer(
     private val globalTiles: DynamicMap<IntVec2, MetaTile> = globalKnots.project(
         projectKey = { knotCoord: IntVec2 -> tilesAroundKnotForTileBuilding(knotCoord) },
         buildValue = { tileCoord: IntVec2, globalKnots: Map<IntVec2, KnotPrototype> ->
-            buildTile(
+            knotMetaTileBuilder.buildMetaTile(
                 tileCoord = tileCoord,
                 globalKnots = globalKnots,
             ) ?: MetaTile.None
