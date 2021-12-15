@@ -2,6 +2,9 @@ package icesword.editor.retails.retail1
 
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
+import icesword.editor.elastic.ElasticStructurePattern
+import icesword.editor.elastic.ElasticStructurePatternOrientation
+import icesword.editor.elastic.RectangularMetaTilePattern
 import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.MetaTilePattern2x1
 import icesword.editor.knot_mesh.StructureConcavePattern
@@ -30,6 +33,22 @@ private val foundation = object : KnotStructurePattern(
     override fun test(knotPrototype: KnotPrototype): Boolean =
         knotPrototype is KnotPrototype.Level1Foundation
 }
+
+val retail1LadderPattern = ElasticStructurePattern(
+    startingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(MetaTile(310)),
+        width = 1,
+    ),
+    repeatingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(MetaTile(311)),
+        width = 1,
+    ),
+    endingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(MetaTile(312)),
+        width = 1,
+    ),
+    orientation = ElasticStructurePatternOrientation.Vertical,
+)
 
 val retail1KnotStructurePatterns: List<KnotStructurePattern> = listOf(
     foundation,

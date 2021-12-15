@@ -2,18 +2,14 @@ package icesword.editor.retails
 
 import icesword.ImageSetId
 import icesword.editor.ElevatorPrototype
-import icesword.editor.MetaTile
 import icesword.editor.encode
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.editor.retails.retail3.retail3KnotStructurePatterns
+import icesword.editor.retails.retail3.retail3LadderPattern
 import icesword.wwd.Wwd
 
 object Retail3 : Retail(naturalIndex = 3), RetailLadderPrototype {
-    override val ladderTop = MetaTile(668)
-
-    override val ladder = MetaTile(669)
-
-    override val ladderBottom = MetaTile(670)
+    override val ladderGenerator = retail3LadderPattern.toElasticGenerator()
 
     override val elevatorPrototype = ElevatorPrototype(
         elevatorImageSetId = ImageSetId(

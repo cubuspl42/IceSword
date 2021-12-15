@@ -1,5 +1,6 @@
 package icesword.editor.retails
 
+import icesword.editor.ElasticGenerator
 import icesword.editor.ElevatorPrototype
 import icesword.editor.KnotMetaTileBuilder
 import icesword.editor.KnotPrototype
@@ -8,9 +9,7 @@ import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.geometry.IntVec2
 
 interface RetailLadderPrototype {
-    val ladderTop: MetaTile
-    val ladder: MetaTile
-    val ladderBottom: MetaTile
+    val ladderGenerator: ElasticGenerator
 }
 
 sealed class Retail(

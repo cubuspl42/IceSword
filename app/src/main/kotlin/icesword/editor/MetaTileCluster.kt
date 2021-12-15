@@ -1,6 +1,7 @@
 package icesword.editor
 
 import icesword.editor.retails.Retail3
+import icesword.editor.retails.retail3.Retail3MetaTiles
 import icesword.frp.*
 import icesword.geometry.IntVec2
 
@@ -93,8 +94,8 @@ private fun buildTile(metaTiles: Set<MetaTile?>): Int? {
 
         // Ladder connection to tree crown
         // Tile 660 is like 644, but with the "Climb" attribute
-        containsAll(Retail3.ladderTop, MetaTile.LeavesUpper) -> 660
-        containsAll(Retail3.ladder, MetaTile.LeavesLower) -> 667
+        containsAll(Retail3MetaTiles.ladderTop, MetaTile.LeavesUpper) -> 660
+        containsAll(Retail3MetaTiles.ladder, MetaTile.LeavesLower) -> 667
 
         // Spikes
         containsAll(MetaTile.SpikeTop, MetaTile.RockRightSide) -> 712

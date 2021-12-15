@@ -92,20 +92,7 @@ object LadderPrototype : ElasticPrototype() {
 
     override fun buildGenerator(retail: Retail): ElasticGenerator {
         if (retail !is RetailLadderPrototype) throw UnsupportedOperationException()
-
-        return object : ElasticGenerator {
-            override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
-                val n = size.height
-                return (0 until n).associate {
-                    val metaTile = when (it) {
-                        0 -> retail.ladderTop
-                        n - 1 -> retail.ladderBottom
-                        else -> retail.ladder
-                    }
-                    IntVec2(0, it) to metaTile
-                }
-            }
-        }
+        return retail.ladderGenerator
     }
 }
 

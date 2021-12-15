@@ -2,11 +2,14 @@ package icesword.editor.retails.retail3
 
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
+import icesword.editor.elastic.ElasticStructurePattern
+import icesword.editor.elastic.ElasticStructurePatternOrientation
+import icesword.editor.elastic.RectangularMetaTilePattern
+import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.MetaTilePattern2x1
 import icesword.editor.knot_mesh.StructureConcavePattern
 import icesword.editor.knot_mesh.StructureConvexPattern
-import icesword.editor.knot_mesh.KnotStructurePattern
 
 private val grass = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
@@ -41,6 +44,28 @@ private val rock = object : KnotStructurePattern(
     override fun test(knotPrototype: KnotPrototype): Boolean =
         knotPrototype is KnotPrototype.Level3RockPrototype
 }
+
+object Retail3MetaTiles {
+    val ladderTop = MetaTile(668)
+
+    val ladder = MetaTile(669)
+}
+
+val retail3LadderPattern = ElasticStructurePattern(
+    startingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(Retail3MetaTiles.ladderTop),
+        width = 1,
+    ),
+    repeatingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(Retail3MetaTiles.ladder),
+        width = 1,
+    ),
+    endingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(MetaTile(670)),
+        width = 1,
+    ),
+    orientation = ElasticStructurePatternOrientation.Vertical,
+)
 
 val retail3KnotStructurePatterns = listOf(
     grass,
