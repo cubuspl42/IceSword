@@ -5,7 +5,7 @@ import icesword.editor.ElasticPrototype
 import icesword.editor.InsertionPrototype
 import icesword.editor.KnotBrush
 import icesword.editor.KnotPrototype
-import icesword.editor.Retail
+import icesword.editor.retails.Retail
 import icesword.editor.WapObjectPrototype
 import icesword.frp.Till
 import icesword.frp.map

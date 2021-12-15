@@ -4,6 +4,7 @@ package icesword.editor
 
 import icesword.ImageSetId
 import icesword.RezIndex
+import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.geometry.IntRect

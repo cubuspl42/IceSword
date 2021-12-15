@@ -15,6 +15,7 @@ import icesword.editor.InsertionPrototype.CrateStackInsertionPrototype
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
 import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.RopeInsertionPrototype
+import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Till

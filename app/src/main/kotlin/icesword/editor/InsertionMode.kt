@@ -13,6 +13,7 @@ import icesword.editor.InsertionPrototype.RopeInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.WapObjectPrototype.FloorSpikePrototype
+import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.CellSlot
 import icesword.frp.Stream

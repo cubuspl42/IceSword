@@ -11,17 +11,17 @@ import icesword.editor.InsertionPrototype
 import icesword.editor.KnotPrototype
 import icesword.editor.LadderPrototype
 import icesword.editor.LogPrototype
-import icesword.editor.Retail
 import icesword.editor.RopePrototype
 import icesword.editor.SpikesPrototype
 import icesword.editor.TreeCrownPrototype
 import icesword.editor.WapObjectPrototype
+import icesword.editor.retails.Retail3
 import icesword.frp.Till
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
 object Retail3UiPrototype : RetailUiPrototype {
-    override val retail = Retail.Retail3
+    override val retail = Retail3
 
     override fun buildInsertionButtons(
         editor: Editor,

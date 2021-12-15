@@ -1,9 +1,7 @@
 package icesword.editor
 
-import icesword.editor.Retail.Retail3
+import icesword.editor.retails.Retail3
 import icesword.frp.*
-import icesword.geometry.IntRect
-import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 
 class MetaTileCluster(

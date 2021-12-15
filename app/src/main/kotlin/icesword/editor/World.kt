@@ -5,6 +5,7 @@ package icesword.editor
 import icesword.RezIndex
 import icesword.editor.KnotPrototype.Level3OvergroundRockPrototype
 import icesword.editor.KnotPrototype.Level3UndergroundRockPrototype
+import icesword.editor.retails.Retail
 import icesword.frp.DynamicSet
 import icesword.frp.MutableDynamicSet
 import icesword.frp.filterType

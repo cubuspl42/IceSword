@@ -7,6 +7,7 @@ package icesword.editor
 
 import icesword.ImageSetId
 import icesword.RezIndex
+import icesword.editor.retails.Retail
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.DataStreamObj

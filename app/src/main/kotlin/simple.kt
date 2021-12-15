@@ -1,6 +1,6 @@
 import icesword.createAppView
 import icesword.editor.App
-import icesword.editor.Retail
+import icesword.editor.retails.Retail
 import icesword.frp.Till
 import icesword.wwd.Wwd
 import icesword.wwd.Wwd.readWorld

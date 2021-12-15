@@ -3,6 +3,9 @@
 package icesword.editor
 
 import icesword.TILE_SIZE
+import icesword.editor.retails.Retail
+import icesword.editor.retails.Retail3
+import icesword.editor.retails.RetailLadderPrototype
 import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
@@ -39,7 +42,7 @@ object LogPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(1, 4)
 
     override fun buildGenerator(retail: Retail): ElasticGenerator {
-        if (retail !is Retail.Retail3) throw UnsupportedOperationException()
+        if (retail !is Retail3) throw UnsupportedOperationException()
         return Generator
     }
 }
@@ -77,7 +80,7 @@ object TreeCrownPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(5, 2)
 
     override fun buildGenerator(retail: Retail): ElasticGenerator {
-        if (retail !is Retail.Retail3) throw UnsupportedOperationException()
+        if (retail !is Retail3) throw UnsupportedOperationException()
         return Generator
     }
 }
@@ -124,7 +127,7 @@ object SpikesPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(4, 2)
 
     override fun buildGenerator(retail: Retail): ElasticGenerator {
-        if (retail !is Retail.Retail3) throw UnsupportedOperationException()
+        if (retail !is Retail3) throw UnsupportedOperationException()
         return Generator
     }
 }

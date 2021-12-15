@@ -5,6 +5,7 @@ package icesword.editor
 import icesword.ImageSetId
 import icesword.RezIndex
 import icesword.editor.WapObjectPrototype.StackedCratesPrototype
+import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList

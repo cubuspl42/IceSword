@@ -3,6 +3,7 @@
 package icesword.editor
 
 import icesword.RezIndex
+import icesword.editor.retails.Retail
 import icesword.geometry.IntLineSeg
 import icesword.geometry.IntVec2
 import icesword.wwd.Geometry

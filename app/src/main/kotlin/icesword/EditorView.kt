@@ -3,7 +3,7 @@ package icesword
 import TextureBank
 import icesword.html.createHTMLElementRaw
 import icesword.editor.Editor
-import icesword.editor.Retail
+import icesword.editor.retails.Retail
 import icesword.frp.Till
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement

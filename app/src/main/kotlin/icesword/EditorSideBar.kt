@@ -3,7 +3,7 @@ package icesword
 import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
 import icesword.editor.KnotBrush
-import icesword.editor.Retail
+import icesword.editor.retails.Retail
 import icesword.editor.WapObjectPrototype
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till

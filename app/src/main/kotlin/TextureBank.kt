@@ -1,6 +1,6 @@
 import icesword.ImageMetadata
 import icesword.JsonRezIndex
-import icesword.editor.Retail
+import icesword.editor.retails.Retail
 import icesword.editor.WapObject
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
