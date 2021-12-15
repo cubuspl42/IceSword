@@ -6,9 +6,9 @@ import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.MetaTilePattern2x1
 import icesword.editor.knot_mesh.StructureConcavePattern
 import icesword.editor.knot_mesh.StructureConvexPattern
-import icesword.editor.knot_mesh.StructurePattern
+import icesword.editor.knot_mesh.KnotStructurePattern
 
-private val foundation = object : StructurePattern(
+private val foundation = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
         topLeft = MetaTilePattern1x1(MetaTile(303)),
         top = MetaTilePattern1x1(MetaTile(304)),
@@ -31,6 +31,6 @@ private val foundation = object : StructurePattern(
         knotPrototype is KnotPrototype.Level1Foundation
 }
 
-val retail1StructurePatterns: List<StructurePattern> = listOf(
+val retail1KnotStructurePatterns: List<KnotStructurePattern> = listOf(
     foundation,
 )

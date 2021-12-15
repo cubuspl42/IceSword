@@ -92,7 +92,7 @@ data class StructureConcavePattern(
 
 // A meta-tile pattern describing a "structure", i.e. a meta-tile shape
 // typically representing some kind of foundation, like rocks or bricks.
-abstract class StructurePattern(
+abstract class KnotStructurePattern(
     val convexPattern: StructureConvexPattern,
     val concavePattern: StructureConcavePattern? = null,
     val fill: MetaTile? = null,

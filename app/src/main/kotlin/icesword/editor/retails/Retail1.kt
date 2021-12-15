@@ -4,8 +4,8 @@ import icesword.ImageSetId
 import icesword.editor.ElevatorPrototype
 import icesword.editor.MetaTile
 import icesword.editor.encode
-import icesword.editor.knot_mesh.StructurePattern
-import icesword.editor.retails.retail1.retail1StructurePatterns
+import icesword.editor.knot_mesh.KnotStructurePattern
+import icesword.editor.retails.retail1.retail1KnotStructurePatterns
 import icesword.wwd.Wwd
 
 object Retail1 : Retail(naturalIndex = 1), RetailLadderPrototype {
@@ -25,6 +25,6 @@ object Retail1 : Retail(naturalIndex = 1), RetailLadderPrototype {
         ),
     )
 
-    override val structurePatterns: List<StructurePattern> =
-        retail1StructurePatterns
+    override val knotStructurePatterns: List<KnotStructurePattern> =
+        retail1KnotStructurePatterns
 }

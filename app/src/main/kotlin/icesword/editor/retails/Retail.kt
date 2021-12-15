@@ -4,7 +4,7 @@ import icesword.editor.ElevatorPrototype
 import icesword.editor.KnotMetaTileBuilder
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
-import icesword.editor.knot_mesh.StructurePattern
+import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.geometry.IntVec2
 
 interface RetailLadderPrototype {
@@ -39,14 +39,14 @@ sealed class Retail(
     open val elevatorPrototype: ElevatorPrototype
         get() = TODO()
 
-    open val structurePatterns: List<StructurePattern> =
+    open val knotStructurePatterns: List<KnotStructurePattern> =
         emptyList()
 
     // TODO: Elastics
 
     fun buildKnotMetaTileBuilder(): KnotMetaTileBuilder = object : KnotMetaTileBuilder {
         private val structureMatchers =
-            structurePatterns.map { it.toKnotMetaTileBuilder() }
+            knotStructurePatterns.map { it.toKnotMetaTileBuilder() }
 
         override fun buildMetaTile(
             tileCoord: IntVec2,

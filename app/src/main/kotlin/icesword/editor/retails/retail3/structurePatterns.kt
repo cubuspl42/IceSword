@@ -6,9 +6,9 @@ import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.MetaTilePattern2x1
 import icesword.editor.knot_mesh.StructureConcavePattern
 import icesword.editor.knot_mesh.StructureConvexPattern
-import icesword.editor.knot_mesh.StructurePattern
+import icesword.editor.knot_mesh.KnotStructurePattern
 
-private val grass = object : StructurePattern(
+private val grass = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
         topLeft = MetaTilePattern2x1(MetaTile(603), MetaTile(604)),
         top = MetaTilePattern1x1(MetaTile(606)),
@@ -19,7 +19,7 @@ private val grass = object : StructurePattern(
         knotPrototype is KnotPrototype.Level3OvergroundRockPrototype
 }
 
-private val rock = object : StructurePattern(
+private val rock = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
         topLeft = MetaTilePattern2x1(MetaTile(620), MetaTile(621)),
         top = MetaTilePattern1x1(MetaTile(622)),
@@ -42,7 +42,7 @@ private val rock = object : StructurePattern(
         knotPrototype is KnotPrototype.Level3RockPrototype
 }
 
-val retail3StructurePatterns = listOf(
+val retail3KnotStructurePatterns = listOf(
     grass,
     rock,
 )
