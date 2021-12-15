@@ -16,6 +16,7 @@ data class RowStyleDeclaration(
 
 fun createRow(
     tagName: String = "div",
+    className: String? = null,
     style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
     rowStyle: RowStyleDeclaration = RowStyleDeclaration(),
     horizontalGap: LinearDimension? = null,
@@ -33,6 +34,10 @@ fun createRow(
             ),
             tillDetach = tillDetach,
         ).apply {
+            if (className != null) {
+                this.className = className
+            }
+
             HTMLWidgetB.build(children, tillDetach).forEach {
                 appendChild(HTMLWidget.resolve(it))
             }

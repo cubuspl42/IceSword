@@ -13,20 +13,29 @@ import icesword.editor.PathElevatorPath
 import icesword.editor.Rope
 import icesword.editor.Tool
 import icesword.editor.WapObject
+import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.dynamic_list.size
 import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
 import icesword.frp.mapTillNext
 import icesword.html.DynamicStyleDeclaration
+import icesword.html.HTMLWidget
+import icesword.html.RowStyleDeclaration
 import icesword.html.createButton
 import icesword.html.createContainer
 import icesword.html.createHTMLElementRaw
+import icesword.html.createRow
 import icesword.html.createRowElement
 import icesword.html.createStyledText
+import icesword.html.resolve
 import icesword.ui.createSelectButton
+import kotlinx.css.Color
 import kotlinx.css.FontWeight
+import kotlinx.css.JustifyContent
 import kotlinx.css.px
+import kotlinx.css.style
 import org.w3c.dom.HTMLElement
 
 
@@ -128,7 +137,6 @@ fun createEditorToolBar(
     val fixedButtonsRows = DynamicOrderedSet.of(listOf(
         toolButtonsRow,
         editButtonsRow,
-        otherButtonsRow,
     ))
 
     val contextualButtonsRow = editor.editorMode.mapTillNext(tillDetach) { it, tillNext ->
@@ -138,7 +146,7 @@ fun createEditorToolBar(
         )
     }
 
-    val root = createContainer(
+    val leftButtonRow = createContainer(
         children = DynamicOrderedSet.concat(
             fixedButtonsRows,
             DynamicOrderedSet.ofSingle(
@@ -147,16 +155,26 @@ fun createEditorToolBar(
         ),
         tillDetach = tillDetach,
     ).apply {
-        className = "editorToolBar"
-
         style.apply {
             display = "flex"
             setProperty("gap", "16px")
-
-            backgroundColor = "grey"
-            padding = "4px"
         }
     }
+
+    val root = createRow(
+        className = "editorToolBar",
+        style = DynamicStyleDeclaration(
+            padding = constant(4.px),
+            backgroundColor = constant(Color.gray),
+        ),
+        rowStyle = RowStyleDeclaration(
+            justifyContentHorizontally = constant(JustifyContent.spaceBetween),
+        ),
+        children = listOf(
+            HTMLWidget.of(leftButtonRow),
+            HTMLWidget.of(otherButtonsRow),
+        ),
+    ).build(tillDetach).resolve() as HTMLElement
 
     return root
 }
