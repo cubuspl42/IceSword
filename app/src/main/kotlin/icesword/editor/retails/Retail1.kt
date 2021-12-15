@@ -1,9 +1,7 @@
 package icesword.editor.retails
 
 import icesword.ImageSetId
-import icesword.editor.ElasticGenerator
 import icesword.editor.ElevatorPrototype
-import icesword.editor.MetaTile
 import icesword.editor.encode
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.editor.retails.retail1.retail1KnotStructurePatterns

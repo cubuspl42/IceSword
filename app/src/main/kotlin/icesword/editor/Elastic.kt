@@ -6,6 +6,7 @@ import icesword.TILE_SIZE
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail3
 import icesword.editor.retails.RetailLadderPrototype
+import icesword.editor.retails.doublePilePattern
 import icesword.editor.retails.retail2PlatformPattern
 import icesword.frp.*
 import icesword.geometry.IntRect
@@ -126,6 +127,17 @@ object PlatformPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(5, 2)
 
     private val platformGenerator = retail2PlatformPattern.toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator =
+        platformGenerator
+}
+
+@Serializable
+@SerialName("Level2DoublePile")
+object DoublePilePrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(1, 3)
+
+    private val platformGenerator = doublePilePattern.toElasticGenerator()
 
     override fun buildGenerator(retail: Retail): ElasticGenerator =
         platformGenerator

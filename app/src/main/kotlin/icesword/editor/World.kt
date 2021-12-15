@@ -251,6 +251,7 @@ class World(
     )
 
     val metaTileLayer = MetaTileLayer(
+        tileGenerator = retail.tileGenerator,
         knotMeshLayer = knotMeshLayer,
         elastics = elastics,
     )

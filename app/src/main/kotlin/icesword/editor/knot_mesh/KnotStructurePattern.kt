@@ -13,7 +13,7 @@ interface KnotPatternMatcherContext {
 }
 
 interface KnotPatternMatcher {
-    fun buildTile(context: KnotPatternMatcherContext): MetaTile?
+    fun buildMetaTile(context: KnotPatternMatcherContext): MetaTile?
 }
 
 interface CornerMetaTilePattern {
@@ -115,7 +115,7 @@ abstract class KnotStructurePattern(
                     globalKnots.containsKey(tileCoord + relativeCoord)
             }
 
-            return matchers.firstNotNullOfOrNull { it.buildTile(context) }
+            return matchers.firstNotNullOfOrNull { it.buildMetaTile(context) }
         }
     }
 }
