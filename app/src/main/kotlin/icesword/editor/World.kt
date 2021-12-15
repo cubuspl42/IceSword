@@ -20,7 +20,7 @@ import org.khronos.webgl.Int32Array
 import org.khronos.webgl.set
 
 class World(
-    retail: Retail,
+    val retail: Retail,
     private val wwdWorld: Wwd.World,
     initialStartPoint: IntVec2,
     initialKnotMeshes: Set<KnotMesh>,
@@ -35,10 +35,11 @@ class World(
         private const val wwdPlaneIndex = 1
 
         fun importWwd(
-            rezIndex: RezIndex,
             wwdWorld: Wwd.World,
         ): World {
-            val retail = Retail.theRetail
+            val name = wwdWorld.name.decode()
+
+            val retail = extractRetail(name)
 
             val startPoint = IntVec2(wwdWorld.startX, wwdWorld.startY)
 
@@ -96,7 +97,8 @@ class World(
             ): Set<E> =
                 entitiesData.map { load(it) }.toSet()
 
-            val retail = Retail.theRetail
+            // TODO: Remove the default (3)
+            val retail = Retail.fromNaturalIndex(worldData.retailNaturalIndex ?: 3)
 
             val initialKnotMeshes = loadInitialEntities(
                 entitiesData = worldData.knotMeshes,
@@ -120,7 +122,7 @@ class World(
 
             val initialWapObjects = loadInitialEntities(
                 entitiesData = worldData.wapObjects,
-                load = { WapObject.load(rezIndex = rezIndex, data = it) },
+                load = { WapObject.load(rezIndex = rezIndex, retail = retail, data = it) },
             )
 
             val initialFloorSpikeRows = loadInitialEntities(
@@ -316,6 +318,7 @@ class World(
             .mapNotNull { it.toEntityData() }
 
         return WorldData(
+            retailNaturalIndex = retail.naturalIndex,
             startPoint = startPoint,
             knotMeshes = knotMeshes,
             elastics = elastics,
@@ -341,6 +344,7 @@ class World(
 
 @Serializable
 data class WorldData(
+    val retailNaturalIndex: Int? = null,
     val startPoint: IntVec2,
     val knotMeshes: Set<KnotMeshData>,
     val elastics: Set<ElasticData>,
@@ -359,3 +363,13 @@ data class WorldData(
 data class LegacyWapObjectData(
     val position: IntVec2,
 )
+
+private val levelIndexRegex = """(\d+)""".toRegex()
+
+fun extractRetail(name: String): Retail {
+    val levelIndexMatch =
+        levelIndexRegex.find(name) ?: throw IllegalArgumentException("No retail index in world's name: $name")
+    val levelNaturalIndex = levelIndexMatch.value.toInt()
+    val retail = Retail.fromNaturalIndex(levelNaturalIndex)
+    return retail
+}

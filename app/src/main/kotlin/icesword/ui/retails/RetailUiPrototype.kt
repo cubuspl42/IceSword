@@ -27,8 +27,9 @@ interface RetailUiPrototype {
         }
     }
 
+    val retail: Retail
+
     fun buildInsertionButtons(
-        retail: Retail,
         editor: Editor,
         tillDetach: Till,
     ): List<HTMLElement>

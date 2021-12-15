@@ -23,7 +23,7 @@ class WapSpriteNode(
     private val alpha: Double = 1.0,
 ) : CanvasNode {
     private val texture = wapSprite.imageMetadata?.let { imageMetadata ->
-        textureBank.getImageTexture(pidImagePath = imageMetadata.pidImagePath)!!
+        textureBank.getImageTexture(pidImagePath = imageMetadata.pidImagePath)
     } ?: textureBank.wapObject
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {

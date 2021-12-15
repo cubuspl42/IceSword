@@ -37,6 +37,7 @@ class App(
         suspend fun load(): App {
             val jsonRezIndex = JsonRezIndex.load()
 
+            // TODO: Load for each editor instance separately?
             val textureBank = TextureBank.load(
                 rezIndex = jsonRezIndex,
                 retail = Retail.theRetail,

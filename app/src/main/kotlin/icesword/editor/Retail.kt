@@ -17,6 +17,24 @@ sealed class Retail(
     val naturalIndex: Int,
 ) {
     companion object {
+        fun fromNaturalIndex(retailNaturalIndex: Int): Retail = when (retailNaturalIndex) {
+            1 -> Retail1
+            2 -> Retail2
+            3 -> Retail3
+            4 -> Retail4
+            5 -> Retail5
+            6 -> Retail6
+            7 -> Retail7
+            8 -> Retail8
+            9 -> Retail9
+            10 -> Retail10
+            11 -> Retail11
+            12 -> Retail12
+            13 -> Retail13
+            14 -> Retail14
+            else -> throw IllegalArgumentException("No such retail: $retailNaturalIndex")
+        }
+
         // TODO: Nuke
         val theRetail = Retail1
     }

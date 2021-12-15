@@ -54,7 +54,6 @@ class Editor(
             wwdWorld: Wwd.World,
         ): Editor {
             val world = World.importWwd(
-                rezIndex = rezIndex,
                 wwdWorld = wwdWorld,
             )
 
@@ -106,6 +105,9 @@ class Editor(
             tillExit = till,
         )
     }
+
+    val retail: Retail
+        get() = world.retail
 
     val camera = EditorCamera(
         initialFocusPoint = world.startPointEntity.position.sample(),
@@ -266,6 +268,7 @@ class Editor(
             )
             is WapObjectInsertionPrototype -> WapObjectInsertionMode(
                 rezIndex = rezIndex,
+                retail = retail,
                 world = world,
                 insertionPrototype = insertionPrototype,
             )

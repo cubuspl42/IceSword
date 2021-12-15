@@ -144,6 +144,7 @@ abstract class WapObjectAlikeInsertionMode(
 
 open class WapObjectInsertionMode(
     private val rezIndex: RezIndex,
+    private val retail: Retail,
     private val world: World,
     override val insertionPrototype: WapObjectInsertionPrototype,
 ) : WapObjectAlikeInsertionMode(
@@ -154,6 +155,7 @@ open class WapObjectInsertionMode(
         world.insertWapObject(
             WapObject(
                 rezIndex = rezIndex,
+                retail = retail,
                 initialProps = WapObjectPropsData.fromWwdObject(
                     wwdObject = insertionPrototype.wapObjectPrototype.wwdObjectPrototype,
                 ),

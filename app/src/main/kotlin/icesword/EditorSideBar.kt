@@ -22,6 +22,7 @@ import org.w3c.dom.Node
 
 fun editorSideBar(
     editor: Editor,
+    retailUiPrototype: RetailUiPrototype,
     tillDetach: Till,
 ): HTMLElement {
     val root = createHTMLElementRaw("div").apply {
@@ -44,6 +45,7 @@ fun editorSideBar(
         listOf(
             createInsertSection(
                 editor = editor,
+                retailUiPrototype = retailUiPrototype,
                 tillDetach = tillDetach,
             ),
             createSection(
@@ -67,6 +69,7 @@ fun editorSideBar(
 
 private fun createInsertSection(
     editor: Editor,
+    retailUiPrototype: RetailUiPrototype,
     tillDetach: Till,
 ): HTMLElement {
     val staticInsertionButtons = listOf(
@@ -135,10 +138,7 @@ private fun createInsertSection(
         ),
     )
 
-    val retailUiPrototype = RetailUiPrototype.forRetail(Retail.theRetail)
-
     val children = staticInsertionButtons + retailUiPrototype.buildInsertionButtons(
-        retail = Retail.theRetail,
         editor = editor,
         tillDetach = tillDetach,
     )

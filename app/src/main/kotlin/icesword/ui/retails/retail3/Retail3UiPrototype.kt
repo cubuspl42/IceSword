@@ -21,8 +21,9 @@ import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
 object Retail3UiPrototype : RetailUiPrototype {
+    override val retail = Retail.Retail3
+
     override fun buildInsertionButtons(
-        retail: Retail,
         editor: Editor,
         tillDetach: Till,
     ): List<HTMLElement> = listOf(

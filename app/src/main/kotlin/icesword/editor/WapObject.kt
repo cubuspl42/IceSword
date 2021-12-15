@@ -298,16 +298,19 @@ interface WapObjectExportable {
 
 class WapObject(
     rezIndex: RezIndex,
+    retail: Retail,
     initialProps: WapObjectPropsData,
     initialPosition: IntVec2,
 ) : Entity(), WapObjectExportable {
     companion object {
         fun load(
             rezIndex: RezIndex,
+            retail: Retail,
             data: WapObjectData,
         ): WapObject =
             WapObject(
                 rezIndex = rezIndex,
+                retail = retail,
                 initialProps = data.wwdObject,
                 initialPosition = data.position,
             )
@@ -324,7 +327,10 @@ class WapObject(
 
     val sprite = WapSprite.fromImageSet(
         rezIndex = rezIndex,
-        imageSetId = expandImageSetId(initialProps.imageSet),
+        imageSetId = expandImageSetId(
+            retail = retail,
+            shortImageSetId = initialProps.imageSet,
+        ),
         position = position,
     )
 
@@ -359,15 +365,15 @@ data class WapObjectData(
     val position: IntVec2,
 )
 
-private fun expandImageSetId(shortImageSetId: String): ImageSetId {
-    val retail = Retail.theRetail
-    return ImageSetId(
-        fullyQualifiedId = when {
-            shortImageSetId == "" -> ""
-            shortImageSetId.startsWith("GAME_") -> shortImageSetId.replace("GAME_", "GAME_IMAGES_")
-            shortImageSetId.startsWith("LEVEL_") -> shortImageSetId.replace("LEVEL_",
-                "LEVEL${retail.naturalIndex}_IMAGES_")
-            else -> throw UnsupportedOperationException("Cannot expand short imageset ID: $shortImageSetId")
-        }
-    )
-}
+private fun expandImageSetId(
+    retail: Retail,
+    shortImageSetId: String,
+): ImageSetId = ImageSetId(
+    fullyQualifiedId = when {
+        shortImageSetId == "" -> ""
+        shortImageSetId.startsWith("GAME_") -> shortImageSetId.replace("GAME_", "GAME_IMAGES_")
+        shortImageSetId.startsWith("LEVEL_") -> shortImageSetId.replace("LEVEL_",
+            "LEVEL${retail.naturalIndex}_IMAGES_")
+        else -> throw UnsupportedOperationException("Cannot expand short imageset ID: $shortImageSetId")
+    }
+)

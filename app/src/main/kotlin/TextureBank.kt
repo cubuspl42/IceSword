@@ -33,7 +33,7 @@ data class TextureBank(
                     it.pidImagePath to loadImageTexture(imagePath = imagePath)
                 }
 
-            val tileset = loadTileset()
+            val tileset = loadTileset(retail = retail)
 
             val wapObject = loadImageTexture("images/wapObject.png")
 
@@ -45,14 +45,16 @@ data class TextureBank(
         }
     }
 
-    fun getImageTexture(pidImagePath: String): Texture? =
-        imagesTextures[pidImagePath]
+    fun getImageTexture(pidImagePath: String): Texture =
+        imagesTextures[pidImagePath] ?: wapObject
 
     fun getImageTexture(imageMetadata: ImageMetadata): Texture? =
         getImageTexture(pidImagePath = imageMetadata.pidImagePath)
 }
 
-private suspend fun loadTileset(): Tileset {
+private suspend fun loadTileset(
+    retail: Retail,
+): Tileset {
     fun parseIndex(
         indexJson: dynamic,
     ): Map<Int, IntRect> {
@@ -76,8 +78,6 @@ private suspend fun loadTileset(): Tileset {
             frameId to frameRect
         }.toMap()
     }
-
-    val retail = Retail.theRetail
 
     val tilesetReference = buildTilesetSpritesheetReference(retail = retail)
 
