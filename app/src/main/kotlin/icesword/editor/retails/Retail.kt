@@ -6,6 +6,7 @@ import icesword.editor.KnotMetaTileBuilder
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
+import icesword.editor.TileGeneratorContext
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.geometry.IntVec2
 
@@ -42,8 +43,9 @@ sealed class Retail(
     open val knotStructurePatterns: List<KnotStructurePattern> =
         emptyList()
 
-    open val tileGenerator: TileGenerator
-        get() = TODO()
+    open val tileGenerator: TileGenerator = object : TileGenerator {
+        override fun buildTile(context: TileGeneratorContext): Int? = null
+    }
 
     fun buildKnotMetaTileBuilder(): KnotMetaTileBuilder = object : KnotMetaTileBuilder {
         private val structureMatchers =
