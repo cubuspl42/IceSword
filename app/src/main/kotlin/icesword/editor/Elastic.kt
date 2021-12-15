@@ -6,6 +6,7 @@ import icesword.TILE_SIZE
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail3
 import icesword.editor.retails.RetailLadderPrototype
+import icesword.editor.retails.retail2PlatformPattern
 import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
@@ -117,6 +118,17 @@ object SpikesPrototype : ElasticPrototype() {
         if (retail !is Retail3) throw UnsupportedOperationException()
         return Generator
     }
+}
+
+@Serializable
+@SerialName("Level2Platform")
+object PlatformPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(5, 2)
+
+    private val platformGenerator = retail2PlatformPattern.toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator =
+        platformGenerator
 }
 
 class Elastic(
