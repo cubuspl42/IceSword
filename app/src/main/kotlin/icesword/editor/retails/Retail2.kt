@@ -6,7 +6,6 @@ import icesword.editor.TileGeneratorContext
 import icesword.editor.elastic.ElasticStructurePattern
 import icesword.editor.elastic.ElasticStructurePatternOrientation
 import icesword.editor.elastic.RectangularMetaTilePattern
-import icesword.editor.retails.retail3.Retail3MetaTiles
 import icesword.geometry.IntSize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

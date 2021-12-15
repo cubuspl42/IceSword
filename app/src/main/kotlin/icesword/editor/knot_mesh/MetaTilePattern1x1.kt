@@ -50,7 +50,7 @@ data class MetaTilePattern1x1(
         }
     })
 
-    override fun buildConvexFillMatcher() = object : KnotPatternMatcher {
+    override fun buildMatcher() = object : KnotPatternMatcher {
         override fun buildMetaTile(context: KnotPatternMatcherContext) = context.run {
             if (
                 testKnot(IntVec2(-1, -1)) &&

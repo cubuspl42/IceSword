@@ -7,13 +7,15 @@ import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
 import icesword.editor.encode
 import icesword.editor.knot_mesh.KnotStructurePattern
-import icesword.editor.retails.retail3.Retail3MetaTiles
 import icesword.editor.retails.retail3.retail3KnotStructurePatterns
 import icesword.editor.retails.retail3.retail3LadderPattern
 import icesword.wwd.Wwd
 
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
+        val metaTiles = Retail3.MetaTiles
+        val ladder = Retail3.MetaTiles.Ladder
+
         when {
             // Tree crown
             containsAll(MetaTile.Log, MetaTile.LeavesUpper) -> 647
@@ -30,12 +32,12 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(MetaTile.Log, MetaTile.LeavesLowerLeft) -> 661
 
             // Tree root
-            containsAll(MetaTile.Log, MetaTile.GrassUpper) -> 666
+            containsAll(MetaTile.Log, metaTiles.grass) -> 666
 
             // Ladder connection to tree crown
             // Tile 660 is like 644, but with the "Climb" attribute
-            containsAll(Retail3MetaTiles.ladderTop, MetaTile.LeavesUpper) -> 660
-            containsAll(Retail3MetaTiles.ladder, MetaTile.LeavesLower) -> 667
+            containsAll(ladder.top, MetaTile.LeavesUpper) -> 660
+            containsAll(ladder.core, MetaTile.LeavesLower) -> 667
 
             // Spikes
             containsAll(MetaTile.SpikeTop, MetaTile.RockRightSide) -> 712
@@ -54,6 +56,16 @@ private val retailTileGenerator = object : TileGenerator {
 }
 
 object Retail3 : Retail(naturalIndex = 3), RetailLadderPrototype {
+    object MetaTiles {
+        object Ladder {
+            val top = MetaTile(668)
+
+            val core = MetaTile(669)
+        }
+
+        val grass = MetaTile(604)
+    }
+
     override val ladderGenerator = retail3LadderPattern.toElasticGenerator()
 
     override val elevatorPrototype = ElevatorPrototype(

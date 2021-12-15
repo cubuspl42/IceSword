@@ -186,13 +186,13 @@ data class MetaTilePattern2x1(
         object : KnotPatternMatcher {
             override fun buildMetaTile(context: KnotPatternMatcherContext) = context.run {
                 if (
+                    testKnot(IntVec2(-2, -1)) &&
                     testKnot(IntVec2(-1, -1)) &&
                     testKnot(IntVec2(0, -1)) &&
-                    testKnot(IntVec2(1, -1)) &&
-                    !knotExists(IntVec2(-1, 0)) &&
-                    !knotExists(IntVec2(0, 0)) &&
-                    testKnot(IntVec2(1, 0))
-                ) left else null
+                    !knotExists(IntVec2(-2, 0)) &&
+                    testKnot(IntVec2(-1, 0)) &&
+                    testKnot(IntVec2(0, 0))
+                ) right else null
             }
         },
         object : KnotPatternMatcher {
@@ -202,7 +202,7 @@ data class MetaTilePattern2x1(
                     testKnot(IntVec2(0, -1)) &&
                     !knotExists(IntVec2(-1, 0)) &&
                     testKnot(IntVec2(0, 0))
-                ) right else null
+                ) left else null
             }
         },
     )
@@ -236,13 +236,13 @@ data class MetaTilePattern2x1(
         object : KnotPatternMatcher {
             override fun buildMetaTile(context: KnotPatternMatcherContext) = context.run {
                 if (
-                    !knotExists(IntVec2(-1, -1)) &&
-                    !knotExists(IntVec2(0, -1)) &&
-                    testKnot(IntVec2(1, -1)) &&
+                    !knotExists(IntVec2(-2, -1)) &&
+                    testKnot(IntVec2(-1, -1)) &&
+                    testKnot(IntVec2(0, -1)) &&
+                    testKnot(IntVec2(-2, 0)) &&
                     testKnot(IntVec2(-1, 0)) &&
-                    testKnot(IntVec2(0, 0)) &&
-                    testKnot(IntVec2(1, 0))
-                ) left else null
+                    testKnot(IntVec2(0, 0))
+                ) right else null
             }
         },
         object : KnotPatternMatcher {
@@ -252,7 +252,7 @@ data class MetaTilePattern2x1(
                     testKnot(IntVec2(0, -1)) &&
                     testKnot(IntVec2(-1, 0)) &&
                     testKnot(IntVec2(0, 0))
-                ) right else null
+                ) left else null
             }
         },
     )

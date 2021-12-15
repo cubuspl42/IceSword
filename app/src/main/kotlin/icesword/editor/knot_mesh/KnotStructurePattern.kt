@@ -35,7 +35,7 @@ interface CornerMetaTilePattern {
 }
 
 interface FillMetaTilePattern {
-    fun buildConvexFillMatcher(): KnotPatternMatcher
+    fun buildMatcher(): KnotPatternMatcher
 }
 
 interface VerticalMetaTilePattern {
@@ -55,7 +55,6 @@ data class StructureConvexPattern(
     val top: VerticalMetaTilePattern? = null,
     val topRight: CornerMetaTilePattern? = null,
     val left: HorizontalMetaTilePattern? = null,
-    val fill: FillMetaTilePattern? = null,
     val right: HorizontalMetaTilePattern? = null,
     val bottomLeft: CornerMetaTilePattern? = null,
     val bottom: VerticalMetaTilePattern? = null,
@@ -70,8 +69,7 @@ data class StructureConvexPattern(
                 (top?.buildConvexTopMatcher() ?: empty) +
                 (left?.buildConvexLeftMatcher() ?: empty) +
                 (right?.buildConvexRightMatcher() ?: empty) +
-                (bottom?.buildConvexBottomMatcher() ?: empty) +
-                (fill?.buildConvexFillMatcher()?.let(::listOf) ?: empty)
+                (bottom?.buildConvexBottomMatcher() ?: empty)
     }
 }
 
@@ -95,13 +93,14 @@ data class StructureConcavePattern(
 abstract class KnotStructurePattern(
     val convexPattern: StructureConvexPattern,
     val concavePattern: StructureConcavePattern? = null,
-    val fill: MetaTile? = null,
+    val fill: FillMetaTilePattern? = null,
 ) {
     abstract fun test(knotPrototype: KnotPrototype): Boolean
 
     fun toKnotMetaTileBuilder(): KnotMetaTileBuilder = object : KnotMetaTileBuilder {
         private val matchers = convexPattern.buildMatchers() +
-                (concavePattern?.buildMatchers() ?: emptyList())
+                (concavePattern?.buildMatchers() ?: emptyList()) +
+                (fill?.buildMatcher()?.let(::listOf) ?: emptyList())
 
         override fun buildMetaTile(
             tileCoord: IntVec2,

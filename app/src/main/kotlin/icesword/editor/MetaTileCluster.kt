@@ -1,8 +1,18 @@
 package icesword.editor
 
-import icesword.editor.retails.Retail3
-import icesword.editor.retails.retail3.Retail3MetaTiles
-import icesword.frp.*
+import icesword.frp.Cell
+import icesword.frp.DynamicMap
+import icesword.frp.DynamicSet
+import icesword.frp.adjust
+import icesword.frp.associateWith
+import icesword.frp.associateWithDynamic
+import icesword.frp.fuseValues
+import icesword.frp.getKeys
+import icesword.frp.map
+import icesword.frp.switchMap
+import icesword.frp.unionMapDynamic
+import icesword.frp.unionWith
+import icesword.frp.valuesSet
 import icesword.geometry.IntVec2
 
 interface TileGeneratorContext {
