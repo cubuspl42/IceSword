@@ -39,30 +39,35 @@ fun createEditorToolBar(
 ): HTMLElement {
     val selectButton = createModeButton<EntitySelectMode>(
         editor = editor,
+        name = "Select",
         enterMode = { editor.enterSelectMode() },
         tillDetach = tillDetach,
     )
 
     val knotSelectButton = createModeButton<KnotSelectMode>(
         editor = editor,
+        name = "Select knots",
         enterMode = { editor.enterKnotSelectMode() },
         tillDetach = tillDetach,
     )
 
     val editPathElevatorButton = createModeButton<EditPathElevatorMode>(
         editor = editor,
+        name = "Edit path",
         enterMode = { editor.enterEditPathElevatorMode() },
         tillDetach = tillDetach,
     )
 
     val moveButton = createToolButton(
         editor = editor,
+        name = "Move",
         tool = Tool.MOVE,
         tillDetach = tillDetach,
     )
 
     val knotBrushButton = createToolButton(
         editor = editor,
+        name = "Knot brush",
         tool = Tool.KNOT_BRUSH,
         tillDetach = tillDetach,
     )
@@ -239,12 +244,13 @@ fun createEditPathElevatorModeButtonsRow(
 
 private inline fun <reified Mode : EditorMode> createModeButton(
     editor: Editor,
+    name: String,
     crossinline enterMode: () -> Unit,
     tillDetach: Till,
 ): HTMLElement =
     createSelectButton(
         value = true, // TODO: Improve this
-        name = Mode::class.simpleName ?: "???",
+        name = name,
         selected = editor.editorMode.map { it is Mode },
         select = { enterMode() },
         tillDetach = tillDetach,
@@ -252,12 +258,13 @@ private inline fun <reified Mode : EditorMode> createModeButton(
 
 private fun createToolButton(
     editor: Editor,
+    name: String,
     tool: Tool,
     tillDetach: Till,
 ): HTMLElement =
     createSelectButton(
         value = tool,
-        name = tool.name,
+        name = name,
         selected = editor.selectedTool,
         select = editor::selectTool,
         tillDetach = tillDetach,
