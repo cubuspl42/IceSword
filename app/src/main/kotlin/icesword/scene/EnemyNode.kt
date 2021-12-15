@@ -107,7 +107,9 @@ class EnemyNode(
                 },
             ).build(tillDetach).resolve() as HTMLElement,
             tillDetach = tillDetach,
-        )
+        ).apply {
+            style.setProperty("pointer-events", "none")
+        }
 
         createSvgGroup(
             svg = svg,
