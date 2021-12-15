@@ -82,16 +82,7 @@ class World(
                         ),
                     )
 
-                    val initialElastics = setOf(
-                        Elastic(
-                            prototype = LadderPrototype,
-                            generator = LadderPrototype.buildGenerator(retail = retail),
-                            initialBounds = IntRect(
-                                position = IntVec2(83, 82),
-                                size = IntSize(1, 8),
-                            ),
-                        ),
-                    )
+                    val initialElastics = emptySet<Elastic>()
 
                     return World(
                         retail = retail,
