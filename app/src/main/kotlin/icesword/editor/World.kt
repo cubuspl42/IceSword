@@ -19,6 +19,24 @@ import kotlinx.serialization.UseSerializers
 import org.khronos.webgl.Int32Array
 import org.khronos.webgl.set
 
+interface WorldImporter {
+    val retail: Retail
+
+    fun import(
+        rezIndex: RezIndex,
+    ): World
+}
+
+
+interface WorldLoader {
+    val retail: Retail
+
+    fun load(
+        wwdWorldTemplate: Wwd.World,
+        rezIndex: RezIndex,
+    ): World
+}
+
 class World(
     val retail: Retail,
     private val wwdWorld: Wwd.World,
@@ -36,121 +54,129 @@ class World(
 
         fun importWwd(
             wwdWorld: Wwd.World,
-        ): World {
-            val name = wwdWorld.name.decode()
+        ): WorldImporter {
+            return object : WorldImporter {
+                private val name = wwdWorld.name.decode()
 
-            val retail = extractRetail(name)
+                override val retail: Retail = extractRetail(name)
 
-            val startPoint = IntVec2(wwdWorld.startX, wwdWorld.startY)
+                override fun import(rezIndex: RezIndex): World {
+                    val startPoint = IntVec2(wwdWorld.startX, wwdWorld.startY)
 
-            val initialKnotMeshes = setOf(
-                KnotMesh.createSquare(
-                    initialTileOffset = tileAtPoint(startPoint) + IntVec2(-2, 4),
-                    knotPrototype = Level3UndergroundRockPrototype,
-                    initialSideLength = 16,
-                ),
-                KnotMesh.createSquare(
-                    initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, -4),
-                    knotPrototype = Level3OvergroundRockPrototype,
-                    initialSideLength = 4,
-                ),
-                KnotMesh.createSquare(
-                    initialTileOffset = tileAtPoint(startPoint) + IntVec2(12, -4),
-                    knotPrototype = Level3OvergroundRockPrototype,
-                    initialSideLength = 1,
-                ),
-            )
+                    val initialKnotMeshes = setOf(
+                        KnotMesh.createSquare(
+                            initialTileOffset = tileAtPoint(startPoint) + IntVec2(-2, 4),
+                            knotPrototype = Level3UndergroundRockPrototype,
+                            initialSideLength = 16,
+                        ),
+                        KnotMesh.createSquare(
+                            initialTileOffset = tileAtPoint(startPoint) + IntVec2(8, -4),
+                            knotPrototype = Level3OvergroundRockPrototype,
+                            initialSideLength = 4,
+                        ),
+                        KnotMesh.createSquare(
+                            initialTileOffset = tileAtPoint(startPoint) + IntVec2(12, -4),
+                            knotPrototype = Level3OvergroundRockPrototype,
+                            initialSideLength = 1,
+                        ),
+                    )
 
-            val initialElastics = setOf(
-                Elastic(
-                    prototype = LadderPrototype,
-                    generator = LadderPrototype.buildGenerator(retail = retail),
-                    initialBounds = IntRect(
-                        position = IntVec2(83, 82),
-                        size = IntSize(1, 8),
-                    ),
-                ),
-            )
+                    val initialElastics = setOf(
+                        Elastic(
+                            prototype = LadderPrototype,
+                            generator = LadderPrototype.buildGenerator(retail = retail),
+                            initialBounds = IntRect(
+                                position = IntVec2(83, 82),
+                                size = IntSize(1, 8),
+                            ),
+                        ),
+                    )
 
-            return World(
-                retail = retail,
-                wwdWorld = wwdWorld,
-                initialStartPoint = startPoint,
-                initialKnotMeshes = initialKnotMeshes,
-                initialElastics = initialElastics,
-                initialHorizontalElevators = emptySet(),
-                initialVerticalElevators = emptySet(),
-                initialWapObjects = emptySet(),
-                initialFloorSpikeRows = emptySet(),
-                initialEntities = emptySet(),
-            )
+                    return World(
+                        retail = retail,
+                        wwdWorld = wwdWorld,
+                        initialStartPoint = startPoint,
+                        initialKnotMeshes = initialKnotMeshes,
+                        initialElastics = initialElastics,
+                        initialHorizontalElevators = emptySet(),
+                        initialVerticalElevators = emptySet(),
+                        initialWapObjects = emptySet(),
+                        initialFloorSpikeRows = emptySet(),
+                        initialEntities = emptySet(),
+                    )
+                }
+            }
         }
 
         fun load(
-            rezIndex: RezIndex,
-            wwdWorldTemplate: Wwd.World,
             worldData: WorldData,
-        ): World {
-            fun <D, E> loadInitialEntities(
+        ) = object : WorldLoader {
+            private fun <D, E> loadInitialEntities(
                 entitiesData: Set<D>,
                 load: (D) -> E,
             ): Set<E> =
                 entitiesData.map { load(it) }.toSet()
 
             // TODO: Remove the default (3)
-            val retail = Retail.fromNaturalIndex(worldData.retailNaturalIndex ?: 3)
+            override val retail =
+                Retail.fromNaturalIndex(worldData.retailNaturalIndex ?: 3)
 
-            val initialKnotMeshes = loadInitialEntities(
-                entitiesData = worldData.knotMeshes,
-                load = { KnotMesh.load(it) },
-            )
+            override fun load(
+                wwdWorldTemplate: Wwd.World,
+                rezIndex: RezIndex,
+            ): World {
+                val initialKnotMeshes = loadInitialEntities(
+                    entitiesData = worldData.knotMeshes,
+                    load = { KnotMesh.load(it) },
+                )
 
-            val initialElastics = loadInitialEntities(
-                entitiesData = worldData.elastics,
-                load = { Elastic.load(retail = retail, data = it) },
-            )
+                val initialElastics = loadInitialEntities(
+                    entitiesData = worldData.elastics,
+                    load = { Elastic.load(retail = retail, data = it) },
+                )
 
-            val initialHorizontalElevators = loadInitialEntities(
-                entitiesData = worldData.horizontalElevators,
-                load = { HorizontalElevator.load(rezIndex = rezIndex, retail = retail, data = it) },
-            )
+                val initialHorizontalElevators = loadInitialEntities(
+                    entitiesData = worldData.horizontalElevators,
+                    load = { HorizontalElevator.load(rezIndex = rezIndex, retail = retail, data = it) },
+                )
 
-            val initialVerticalElevators = loadInitialEntities(
-                entitiesData = worldData.verticalElevators,
-                load = { VerticalElevator.load(rezIndex = rezIndex, retail = retail, data = it) },
-            )
+                val initialVerticalElevators = loadInitialEntities(
+                    entitiesData = worldData.verticalElevators,
+                    load = { VerticalElevator.load(rezIndex = rezIndex, retail = retail, data = it) },
+                )
 
-            val initialWapObjects = loadInitialEntities(
-                entitiesData = worldData.wapObjects,
-                load = { WapObject.load(rezIndex = rezIndex, retail = retail, data = it) },
-            )
+                val initialWapObjects = loadInitialEntities(
+                    entitiesData = worldData.wapObjects,
+                    load = { WapObject.load(rezIndex = rezIndex, retail = retail, data = it) },
+                )
 
-            val initialFloorSpikeRows = loadInitialEntities(
-                entitiesData = worldData.floorSpikeRows,
-                load = { FloorSpikeRow.load(rezIndex = rezIndex, data = it) },
-            )
+                val initialFloorSpikeRows = loadInitialEntities(
+                    entitiesData = worldData.floorSpikeRows,
+                    load = { FloorSpikeRow.load(rezIndex = rezIndex, data = it) },
+                )
 
-            val initialEntities = worldData.entities.map {
-                when (it) {
-                    is EnemyData -> Enemy.load(rezIndex = rezIndex, data = it)
-                    is PathElevatorData -> PathElevator.load(rezIndex = rezIndex, retail = retail, data = it)
-                    is RopeData -> Rope.load(rezIndex = rezIndex, retail = retail, data = it)
-                    is CrateStackData -> CrateStack.load(rezIndex = rezIndex, retail = retail, data = it)
-                }
-            }.toSet()
+                val initialEntities = worldData.entities.map {
+                    when (it) {
+                        is EnemyData -> Enemy.load(rezIndex = rezIndex, data = it)
+                        is PathElevatorData -> PathElevator.load(rezIndex = rezIndex, retail = retail, data = it)
+                        is RopeData -> Rope.load(rezIndex = rezIndex, retail = retail, data = it)
+                        is CrateStackData -> CrateStack.load(rezIndex = rezIndex, retail = retail, data = it)
+                    }
+                }.toSet()
 
-            return World(
-                retail = retail,
-                wwdWorld = wwdWorldTemplate,
-                initialStartPoint = worldData.startPoint,
-                initialKnotMeshes = initialKnotMeshes,
-                initialElastics = initialElastics,
-                initialHorizontalElevators = initialHorizontalElevators,
-                initialVerticalElevators = initialVerticalElevators,
-                initialWapObjects = initialWapObjects,
-                initialFloorSpikeRows = initialFloorSpikeRows,
-                initialEntities = initialEntities,
-            )
+                return World(
+                    retail = retail,
+                    wwdWorld = wwdWorldTemplate,
+                    initialStartPoint = worldData.startPoint,
+                    initialKnotMeshes = initialKnotMeshes,
+                    initialElastics = initialElastics,
+                    initialHorizontalElevators = initialHorizontalElevators,
+                    initialVerticalElevators = initialVerticalElevators,
+                    initialWapObjects = initialWapObjects,
+                    initialFloorSpikeRows = initialFloorSpikeRows,
+                    initialEntities = initialEntities,
+                )
+            }
         }
     }
 

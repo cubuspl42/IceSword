@@ -29,36 +29,23 @@ data class LoadingWorldProcess(
 
 class App(
     private val wwdWorldTemplate: Wwd.World,
-    val rezIndex: RezIndex,
-    val textureBank: TextureBank,
+    private val jsonRezIndex: JsonRezIndex,
     initialEditor: Editor,
 ) : CoroutineScope by MainScope() {
     companion object {
         suspend fun load(): App {
             val jsonRezIndex = JsonRezIndex.load()
 
-            // TODO: Load for each editor instance separately?
-            val textureBank = TextureBank.load(
-                rezIndex = jsonRezIndex,
-                retail = Retail.theRetail,
-            )
-
-            val combinedRezIndex = CombinedRezIndex(
-                delegate = jsonRezIndex,
-                textureBank = textureBank,
-            )
-
             val wwdWorldTemplate: Wwd.World = fetchWorld()
 
             val editor = Editor.importWwd(
-                rezIndex = combinedRezIndex,
+                jsonRezIndex = jsonRezIndex,
                 wwdWorld = wwdWorldTemplate,
             )
 
             return App(
                 wwdWorldTemplate = wwdWorldTemplate,
-                rezIndex = combinedRezIndex,
-                textureBank = textureBank,
+                jsonRezIndex = jsonRezIndex,
                 initialEditor = editor,
             )
         }
@@ -103,7 +90,7 @@ class App(
         val world = Wwd.readWorld(worldBuffer)
 
         val editor = Editor.importWwd(
-            rezIndex = rezIndex,
+            jsonRezIndex = jsonRezIndex,
             wwdWorld = world,
         )
 
@@ -116,7 +103,7 @@ class App(
         val projectData = Json.decodeFromString<ProjectData>(projectDataString)
 
         val editor = Editor.loadProject(
-            rezIndex = rezIndex,
+            jsonRezIndex = jsonRezIndex,
             wwdWorldTemplate = wwdWorldTemplate,
             projectData = projectData,
         )

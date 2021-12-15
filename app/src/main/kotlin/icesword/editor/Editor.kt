@@ -1,5 +1,8 @@
 package icesword.editor
 
+import TextureBank
+import icesword.CombinedRezIndex
+import icesword.JsonRezIndex
 import icesword.RezIndex
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
@@ -43,39 +46,70 @@ enum class Tool : EditorMode {
 }
 
 class Editor(
-    private val rezIndex: RezIndex,
+    val rezIndex: RezIndex,
+    val textureBank: TextureBank,
     val world: World,
     // FIXME: Manage Editor's lifetime
     tillDispose: Till = Till.never,
 ) {
     companion object {
-        fun importWwd(
-            rezIndex: RezIndex,
+        suspend fun importWwd(
+            jsonRezIndex: JsonRezIndex,
             wwdWorld: Wwd.World,
         ): Editor {
-            val world = World.importWwd(
+            val worldImporter = World.importWwd(
                 wwdWorld = wwdWorld,
             )
 
+            val textureBank = TextureBank.load(
+                rezIndex = jsonRezIndex,
+                retail = worldImporter.retail,
+            )
+
+            val combinedRezIndex = CombinedRezIndex(
+                delegate = jsonRezIndex,
+                textureBank = textureBank,
+            )
+
+            val world = worldImporter.import(
+                rezIndex = combinedRezIndex,
+            )
+
             return Editor(
-                rezIndex = rezIndex,
+                rezIndex = combinedRezIndex,
+                textureBank = textureBank,
                 world = world,
             )
         }
 
-        fun loadProject(
-            rezIndex: RezIndex,
+        suspend fun loadProject(
+            jsonRezIndex: JsonRezIndex,
+            // TODO: Load WWD template dynamically?
             wwdWorldTemplate: Wwd.World,
             projectData: ProjectData,
         ): Editor {
-            val world = World.load(
-                rezIndex = rezIndex,
+            val worldLoader = World.load(
                 worldData = projectData.world,
+            )
+
+            val textureBank = TextureBank.load(
+                rezIndex = jsonRezIndex,
+                retail = worldLoader.retail,
+            )
+
+            val combinedRezIndex = CombinedRezIndex(
+                delegate = jsonRezIndex,
+                textureBank = textureBank,
+            )
+
+            val world = worldLoader.load(
                 wwdWorldTemplate = wwdWorldTemplate,
+                rezIndex = combinedRezIndex,
             )
 
             return Editor(
-                rezIndex = rezIndex,
+                rezIndex = combinedRezIndex,
+                textureBank = textureBank,
                 world = world,
             )
         }

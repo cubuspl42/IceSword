@@ -34,9 +34,6 @@ sealed class Retail(
             14 -> Retail14
             else -> throw IllegalArgumentException("No such retail: $retailNaturalIndex")
         }
-
-        // TODO: Nuke
-        val theRetail = Retail1
     }
 
     open val elevatorPrototype: ElevatorPrototype
