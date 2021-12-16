@@ -96,13 +96,13 @@ fun <A, R> DynamicSet<A>.map(
     ).validated(tag)
 
 fun <A : Any> DynamicSet<A?>.filterNotNull(): DynamicSet<A> =
-    this.filter { it != null }.map { it!! }
+    this.filter { it != null }.map(tag = "filterNotNull") { it!! }
 
 fun <A, R : Any> DynamicSet<A>.mapNotNull(
     tag: String = "mapNotNull",
     transform: (A) -> R?,
 ): DynamicSet<R> =
-    this.map { transform(it) }.filterNotNull()
+    this.map(tag = "mapNotNull") { transform(it) }.filterNotNull()
 
 fun <A, R> DynamicSet<A>.mapTillRemoved(
     tillAbort: Till,
@@ -173,7 +173,7 @@ fun <A> DynamicSet<A>.filterDynamic(test: (A) -> Cell<Boolean>): DynamicSet<A> =
 inline fun <A, reified B : A> DynamicSet<A>.filterType(): DynamicSet<B> =
     this.mapNotNull { it as? B }
 
-const val enableSetValidation: Boolean = false
+const val enableSetValidation: Boolean = true
 
 fun <A> DynamicSet<A>.validated(sourceTag: String): DynamicSet<A> =
     if (enableSetValidation) ValidatedDynamicSet(this, sourceTag = sourceTag)
