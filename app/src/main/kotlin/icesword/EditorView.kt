@@ -3,8 +3,8 @@ package icesword
 import TextureBank
 import icesword.html.createHTMLElementRaw
 import icesword.editor.Editor
-import icesword.editor.retails.Retail
 import icesword.frp.Till
+import icesword.frp.reactTill
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -75,5 +75,65 @@ fun editorView(
         )
     }
 
+    setupEditDialogController(
+        editor = editor,
+        textureBank = textureBank,
+        rezIndex = rezIndex,
+        dialogOverlay = dialogOverlay,
+        tillDetach = tillDetach,
+    )
+
     return root
+}
+
+private fun setupEditDialogController(
+    rezIndex: RezIndex,
+    textureBank: TextureBank,
+    editor: Editor,
+    dialogOverlay: DialogOverlay,
+    tillDetach: Till,
+) {
+    editor.editEnemyPickups.reactTill(tillDetach) { enemy ->
+        dialogOverlay.showDialog(
+            dialog = createEditEnemyDialog(
+                rezIndex = rezIndex,
+                textureBank = textureBank,
+                enemy = enemy,
+            ),
+        )
+    }
+
+    editor.editFloorSpikeRowSpikes.reactTill(tillDetach) { floorSpikeRow ->
+        dialogOverlay.showDialog(
+            dialog = createEditFloorSpikeRowDialogWb(
+                floorSpikeRow = floorSpikeRow,
+            ),
+        )
+    }
+
+    editor.editRopeSpeed.reactTill(tillDetach) { rope ->
+        dialogOverlay.showDialog(
+            dialog = createEditRopeDialog(
+                rope = rope,
+            ),
+        )
+    }
+
+    editor.editCrateStackPickups.reactTill(tillDetach) { crateStack ->
+        dialogOverlay.showDialog(
+            dialog = createEditCrateStackDialog(
+                rezIndex = rezIndex,
+                textureBank = textureBank,
+                crateStack = crateStack,
+            ),
+        )
+    }
+
+    editor.editWapObjectProperties.reactTill(tillDetach) { wapObject ->
+        dialogOverlay.showDialog(
+            dialog = createWapObjectDialog(
+                wapObject = wapObject,
+            )
+        )
+    }
 }

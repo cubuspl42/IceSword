@@ -2,20 +2,24 @@ package icesword
 
 import TextureBank
 import icesword.editor.CrateStack
+import icesword.editor.CrateStackSelectionMode
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.EditorMode
-import icesword.editor.Enemy
+import icesword.editor.EnemySelectionMode
 import icesword.editor.FloorSpikeRow
 import icesword.editor.KnotSelectMode
 import icesword.editor.EntitySelectMode
+import icesword.editor.FloorSpikeRowSelectionMode
 import icesword.editor.KnotMeshSelectionMode
 import icesword.editor.PathElevatorPath
 import icesword.editor.PathElevatorSelectionMode
 import icesword.editor.Rope
+import icesword.editor.RopeSelectionMode
 import icesword.editor.SelectionMode
 import icesword.editor.Tool
 import icesword.editor.WapObject
+import icesword.editor.WapObjectSelectionMode
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.dynamic_list.size
@@ -24,6 +28,7 @@ import icesword.frp.map
 import icesword.frp.mapTillNext
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.HTMLWidget
+import icesword.html.HTMLWidgetB
 import icesword.html.RowStyleDeclaration
 import icesword.html.buildElement
 import icesword.html.createButton
@@ -32,6 +37,7 @@ import icesword.html.createHTMLElementRaw
 import icesword.html.createRow
 import icesword.html.createRowElement
 import icesword.html.createStyledText
+import icesword.html.createTextButtonWb
 import icesword.html.resolve
 import icesword.ui.createSelectButton
 import kotlinx.css.Color
@@ -70,25 +76,6 @@ fun createEditorToolBar(
         appendChild(moveButton)
     }
 
-    val editButton = createButton(
-        text = "Edit",
-        onPressed = {
-            onEditPressed(
-                rezIndex = rezIndex,
-                textureBank = textureBank,
-                editor = editor,
-                dialogOverlay = dialogOverlay,
-            )
-        },
-        tillDetach = tillDetach,
-    )
-
-    val editButtonsRow = createHTMLElementRaw("div").apply {
-        className = "editButtonsRow"
-
-        appendChild(editButton)
-    }
-
     val exportButton = createButton(
         text = "Export",
         onPressed = {
@@ -112,11 +99,6 @@ fun createEditorToolBar(
         appendChild(saveButton)
     }
 
-    val fixedButtonsRows = DynamicOrderedSet.of(listOf(
-        toolButtonsRow,
-        editButtonsRow,
-    ))
-
     val selectionModeButtonsRow = editor.selectionMode.mapTillNext(tillDetach) { it, tillNext ->
         createSelectionModeButtonsRow(
             editor = editor,
@@ -134,7 +116,9 @@ fun createEditorToolBar(
 
     val leftButtonRow = createContainer(
         children = DynamicOrderedSet.concatAll(
-            fixedButtonsRows,
+            DynamicOrderedSet.ofSingle(
+                constant(toolButtonsRow),
+            ),
             DynamicOrderedSet.ofSingle(
                 selectionModeButtonsRow,
             ),
@@ -184,6 +168,21 @@ fun createSelectionModeButtonsRow(
         pathElevatorSelectionMode = selectionMode,
         tillDetach = tillDetach,
     )
+    is EnemySelectionMode -> createEnemySelectionModeButtonsRow(
+        selectionMode = selectionMode,
+    ).buildElement(tillDetach = tillDetach)
+    is FloorSpikeRowSelectionMode -> createFloorSpikeRowSelectionModeButtonsRow(
+        selectionMode = selectionMode,
+    ).buildElement(tillDetach = tillDetach)
+    is RopeSelectionMode -> createRopeSelectionModeButtonsRow(
+        selectionMode = selectionMode,
+    ).buildElement(tillDetach = tillDetach)
+    is CrateStackSelectionMode -> createCrateStackSelectionModeButtonsRow(
+        selectionMode = selectionMode,
+    ).buildElement(tillDetach = tillDetach)
+    is WapObjectSelectionMode -> createWapObjectSelectionModeButtonsRow(
+        selectionMode = selectionMode,
+    ).buildElement(tillDetach = tillDetach)
     null -> null
 }
 
@@ -316,6 +315,92 @@ fun createEditPathElevatorModeButtonsRow(
     )
 }
 
+
+fun createEnemySelectionModeButtonsRow(
+    selectionMode: EnemySelectionMode,
+): HTMLWidgetB<*> {
+    val editTreasuresButton = createTextButtonWb(
+        text = "Edit pickups",
+        onPressed = {
+            selectionMode.editPickups()
+        },
+    )
+
+    return createRow(
+        children = listOf(
+            editTreasuresButton,
+        ),
+    )
+}
+
+fun createFloorSpikeRowSelectionModeButtonsRow(
+    selectionMode: FloorSpikeRowSelectionMode,
+): HTMLWidgetB<*> {
+    val editTreasuresButton = createTextButtonWb(
+        text = "Edit spikes",
+        onPressed = {
+            selectionMode.editSpikes()
+        },
+    )
+
+    return createRow(
+        children = listOf(
+            editTreasuresButton,
+        ),
+    )
+}
+
+fun createRopeSelectionModeButtonsRow(
+    selectionMode: RopeSelectionMode,
+): HTMLWidgetB<*> {
+    val editTreasuresButton = createTextButtonWb(
+        text = "Edit speed",
+        onPressed = {
+            selectionMode.editSpeed()
+        },
+    )
+
+    return createRow(
+        children = listOf(
+            editTreasuresButton,
+        ),
+    )
+}
+
+fun createCrateStackSelectionModeButtonsRow(
+    selectionMode: CrateStackSelectionMode,
+): HTMLWidgetB<*> {
+    val editTreasuresButton = createTextButtonWb(
+        text = "Edit pickups",
+        onPressed = {
+            selectionMode.editPickups()
+        },
+    )
+
+    return createRow(
+        children = listOf(
+            editTreasuresButton,
+        ),
+    )
+}
+
+fun createWapObjectSelectionModeButtonsRow(
+    selectionMode: WapObjectSelectionMode,
+): HTMLWidgetB<*> {
+    val editTreasuresButton = createTextButtonWb(
+        text = "Edit properties",
+        onPressed = {
+            selectionMode.editProperties()
+        },
+    )
+
+    return createRow(
+        children = listOf(
+            editTreasuresButton,
+        ),
+    )
+}
+
 private inline fun <reified Mode : EditorMode> createModeButton(
     editor: Editor,
     name: String,
@@ -344,55 +429,3 @@ private fun createToolButton(
         select = { enterMode() },
         tillDetach = tillDetach,
     )
-
-private fun onEditPressed(
-    rezIndex: RezIndex,
-    textureBank: TextureBank,
-    editor: Editor,
-    dialogOverlay: DialogOverlay,
-) {
-    editor.selectedEntity.sample()?.let { selectedEntity ->
-        when (selectedEntity) {
-            is Enemy -> {
-                dialogOverlay.showDialog(
-                    dialog = createEditEnemyDialog(
-                        rezIndex = rezIndex,
-                        textureBank = textureBank,
-                        enemy = selectedEntity,
-                    ),
-                )
-            }
-            is FloorSpikeRow -> {
-                dialogOverlay.showDialog(
-                    dialog = createEditFloorSpikeRowDialogWb(
-                        floorSpikeRow = selectedEntity,
-                    ),
-                )
-            }
-            is Rope -> {
-                dialogOverlay.showDialog(
-                    dialog = createEditRopeDialog(
-                        rope = selectedEntity,
-                    ),
-                )
-            }
-            is CrateStack -> {
-                dialogOverlay.showDialog(
-                    dialog = createEditCrateStackDialog(
-                        rezIndex = rezIndex,
-                        textureBank = textureBank,
-                        crateStack = selectedEntity,
-                    ),
-                )
-            }
-            is WapObject -> {
-                dialogOverlay.showDialog(
-                    dialog = createWapObjectDialog(
-                        wapObject = selectedEntity,
-                    )
-                )
-            }
-            else -> {}
-        }
-    }
-}

@@ -11,3 +11,23 @@ interface KnotMeshSelectionMode : SelectionMode {
 interface PathElevatorSelectionMode : SelectionMode {
     fun enterEditPathElevatorMode()
 }
+
+interface EnemySelectionMode : SelectionMode {
+    fun editPickups()
+}
+
+interface FloorSpikeRowSelectionMode : SelectionMode {
+    fun editSpikes()
+}
+
+interface RopeSelectionMode : SelectionMode {
+    fun editSpeed()
+}
+
+interface CrateStackSelectionMode : SelectionMode {
+    fun editPickups()
+}
+
+interface WapObjectSelectionMode : SelectionMode {
+    fun editProperties()
+}

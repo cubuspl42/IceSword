@@ -18,6 +18,8 @@ import icesword.editor.InsertionPrototype.RopeInsertionPrototype
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.MutCell
+import icesword.frp.Stream
+import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.contains
@@ -235,6 +237,31 @@ class Editor(
     val selectedEntity: Cell<Entity?> =
         selectedEntities.map { it.singleOrNull() }
 
+    private val _editEnemyPickups = StreamSink<Enemy>()
+
+    val editEnemyPickups: Stream<Enemy>
+        get() = _editEnemyPickups
+
+    private val _editFloorSpikeRowSpikes = StreamSink<FloorSpikeRow>()
+
+    val editFloorSpikeRowSpikes: Stream<FloorSpikeRow>
+        get() = _editFloorSpikeRowSpikes
+
+    private val _editRopeSpeed = StreamSink<Rope>()
+
+    val editRopeSpeed: Stream<Rope>
+        get() = _editRopeSpeed
+
+    private val _editCrateStackPickups = StreamSink<CrateStack>()
+
+    val editCrateStackPickups: Stream<CrateStack>
+        get() = _editCrateStackPickups
+
+    private val _editWapObjectProperties = StreamSink<WapObject>()
+
+    val editWapObjectProperties: Stream<WapObject>
+        get() = _editWapObjectProperties
+
     val selectionMode: Cell<SelectionMode?> =
         selectedEntity.map { selectedEntity ->
             when (selectedEntity) {
@@ -243,11 +270,23 @@ class Editor(
                         this@Editor.enterEditPathElevatorMode()
                     }
                 }
-                is FloorSpikeRow -> null
-                is WapObject -> null
+                is FloorSpikeRow -> object : FloorSpikeRowSelectionMode {
+                    override fun editSpikes() {
+                        _editFloorSpikeRowSpikes.send(selectedEntity)
+                    }
+                }
+                is WapObject -> object : WapObjectSelectionMode {
+                    override fun editProperties() {
+                        _editWapObjectProperties.send(selectedEntity)
+                    }
+                }
                 is HorizontalElevator -> null
                 is VerticalElevator -> null
-                is Enemy -> null
+                is Enemy -> object : EnemySelectionMode {
+                    override fun editPickups() {
+                        _editEnemyPickups.send(selectedEntity)
+                    }
+                }
                 is StartPoint -> null
                 is Elastic -> null
                 is KnotMesh -> object : KnotMeshSelectionMode {
@@ -260,8 +299,16 @@ class Editor(
                     }
                 }
                 is TileEntity -> null
-                is Rope -> null
-                is CrateStack -> null
+                is Rope -> object : RopeSelectionMode {
+                    override fun editSpeed() {
+                        _editRopeSpeed.send(selectedEntity)
+                    }
+                }
+                is CrateStack -> object : CrateStackSelectionMode {
+                    override fun editPickups() {
+                        _editCrateStackPickups.send(selectedEntity)
+                    }
+                }
                 null -> null
             }
         }
