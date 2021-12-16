@@ -20,6 +20,11 @@ interface DynamicOrderedSet<A> {
             set1 = set1,
             set2 = set2,
         )
+
+        fun <A> concatAll(
+            vararg sets: DynamicOrderedSet<A>,
+        ): DynamicOrderedSet<A> =
+            sets.reduce { acc, it -> concat(acc, it) }
     }
 
     val volatileContentView: List<A>

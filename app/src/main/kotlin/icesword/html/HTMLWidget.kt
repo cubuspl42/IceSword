@@ -8,6 +8,7 @@ import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.frp.mapTillNext
 import org.w3c.dom.DragEvent
 import org.w3c.dom.Element
+import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
 
 sealed interface HTMLWidget : HTMLWidgetB<HTMLWidget> {
@@ -63,6 +64,9 @@ interface HTMLWidgetB<out W : HTMLWidget> {
 
     fun build(tillDetach: Till): W
 }
+
+fun <W : HTMLWidget> HTMLWidgetB<W>.buildElement(tillDetach: Till): HTMLElement =
+    build(tillDetach).resolve() as HTMLElement
 
 fun <Wa : HTMLWidget, Wb : HTMLWidget> HTMLWidgetB<Wa>.map(transform: (widget: Wa) -> Wb): HTMLWidgetB<Wb> {
     val self = this

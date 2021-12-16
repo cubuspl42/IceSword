@@ -160,7 +160,7 @@ class Editor(
         enterModeTilled(buildSelectMode())
     }
 
-    fun enterKnotSelectMode() {
+    private fun enterKnotSelectMode() {
         (selectedEntity.sample() as? KnotMesh)?.let { selectedKnotMesh ->
             enterModeTilled(buildKnotSelectMode(
                 knotMesh = selectedKnotMesh,
@@ -168,7 +168,7 @@ class Editor(
         }
     }
 
-    fun enterEditPathElevatorMode() {
+    private fun enterEditPathElevatorMode() {
         (selectedEntity.sample() as? PathElevator)?.let { selectedPathElevator ->
             enterModeTilled(buildEditPathElevatorMode(
                 pathElevator = selectedPathElevator,
@@ -209,7 +209,11 @@ class Editor(
             it?.coveredEntities?.contains(entity) ?: Cell.constant(false)
         }
 
-    fun selectTool(tool: Tool) {
+    fun enterMoveMode() {
+        selectTool(Tool.MOVE)
+    }
+
+    private fun selectTool(tool: Tool) {
         enterMode(tool)
     }
 
@@ -230,6 +234,37 @@ class Editor(
 
     val selectedEntity: Cell<Entity?> =
         selectedEntities.map { it.singleOrNull() }
+
+    val selectionMode: Cell<SelectionMode?> =
+        selectedEntity.map { selectedEntity ->
+            when (selectedEntity) {
+                is PathElevator -> object : PathElevatorSelectionMode {
+                    override fun enterEditPathElevatorMode() {
+                        this@Editor.enterEditPathElevatorMode()
+                    }
+                }
+                is FloorSpikeRow -> null
+                is WapObject -> null
+                is HorizontalElevator -> null
+                is VerticalElevator -> null
+                is Enemy -> null
+                is StartPoint -> null
+                is Elastic -> null
+                is KnotMesh -> object : KnotMeshSelectionMode {
+                    override fun enterKnotSelectMode() {
+                        this@Editor.enterKnotSelectMode()
+                    }
+
+                    override fun enterKnotBrushMode() {
+                        this@Editor.selectTool(Tool.KNOT_BRUSH)
+                    }
+                }
+                is TileEntity -> null
+                is Rope -> null
+                is CrateStack -> null
+                null -> null
+            }
+        }
 
     fun selectEntities(entities: Set<Entity>) {
         _selectedEntities.set(entities)

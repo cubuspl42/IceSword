@@ -9,11 +9,13 @@ import icesword.editor.Enemy
 import icesword.editor.FloorSpikeRow
 import icesword.editor.KnotSelectMode
 import icesword.editor.EntitySelectMode
+import icesword.editor.KnotMeshSelectionMode
 import icesword.editor.PathElevatorPath
+import icesword.editor.PathElevatorSelectionMode
 import icesword.editor.Rope
+import icesword.editor.SelectionMode
 import icesword.editor.Tool
 import icesword.editor.WapObject
-import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.dynamic_list.size
@@ -23,6 +25,7 @@ import icesword.frp.mapTillNext
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.HTMLWidget
 import icesword.html.RowStyleDeclaration
+import icesword.html.buildElement
 import icesword.html.createButton
 import icesword.html.createContainer
 import icesword.html.createHTMLElementRaw
@@ -35,7 +38,6 @@ import kotlinx.css.Color
 import kotlinx.css.FontWeight
 import kotlinx.css.JustifyContent
 import kotlinx.css.px
-import kotlinx.css.style
 import org.w3c.dom.HTMLElement
 
 
@@ -53,31 +55,11 @@ fun createEditorToolBar(
         tillDetach = tillDetach,
     )
 
-    val knotSelectButton = createModeButton<KnotSelectMode>(
-        editor = editor,
-        name = "Select knots",
-        enterMode = { editor.enterKnotSelectMode() },
-        tillDetach = tillDetach,
-    )
-
-    val editPathElevatorButton = createModeButton<EditPathElevatorMode>(
-        editor = editor,
-        name = "Edit path",
-        enterMode = { editor.enterEditPathElevatorMode() },
-        tillDetach = tillDetach,
-    )
-
     val moveButton = createToolButton(
         editor = editor,
         name = "Move",
         tool = Tool.MOVE,
-        tillDetach = tillDetach,
-    )
-
-    val knotBrushButton = createToolButton(
-        editor = editor,
-        name = "Knot brush",
-        tool = Tool.KNOT_BRUSH,
+        enterMode = { editor.enterMoveMode() },
         tillDetach = tillDetach,
     )
 
@@ -85,10 +67,7 @@ fun createEditorToolBar(
         className = "toolButtonsRow"
 
         appendChild(selectButton)
-        appendChild(knotSelectButton)
-        appendChild(editPathElevatorButton)
         appendChild(moveButton)
-        appendChild(knotBrushButton)
     }
 
     val editButton = createButton(
@@ -133,22 +112,32 @@ fun createEditorToolBar(
         appendChild(saveButton)
     }
 
-
     val fixedButtonsRows = DynamicOrderedSet.of(listOf(
         toolButtonsRow,
         editButtonsRow,
     ))
 
+    val selectionModeButtonsRow = editor.selectionMode.mapTillNext(tillDetach) { it, tillNext ->
+        createSelectionModeButtonsRow(
+            editor = editor,
+            selectionMode = it,
+            tillDetach = tillNext,
+        )
+    }
+
     val contextualButtonsRow = editor.editorMode.mapTillNext(tillDetach) { it, tillNext ->
-        createContextualButtonsRow(
+        createEditorModeButtonsRow(
             editorMode = it,
             tillDetach = tillNext,
         )
     }
 
     val leftButtonRow = createContainer(
-        children = DynamicOrderedSet.concat(
+        children = DynamicOrderedSet.concatAll(
             fixedButtonsRows,
+            DynamicOrderedSet.ofSingle(
+                selectionModeButtonsRow,
+            ),
             DynamicOrderedSet.ofSingle(
                 contextualButtonsRow,
             ),
@@ -179,7 +168,26 @@ fun createEditorToolBar(
     return root
 }
 
-fun createContextualButtonsRow(
+
+fun createSelectionModeButtonsRow(
+    editor: Editor,
+    selectionMode: SelectionMode?,
+    tillDetach: Till,
+): HTMLElement? = when (selectionMode) {
+    is KnotMeshSelectionMode -> createKnotMeshSelectionModeButtonsRow(
+        editor = editor,
+        knotMeshSelectionMode = selectionMode,
+        tillDetach = tillDetach,
+    )
+    is PathElevatorSelectionMode -> createPathElevatorSelectionModeButtonsRow(
+        editor = editor,
+        pathElevatorSelectionMode = selectionMode,
+        tillDetach = tillDetach,
+    )
+    null -> null
+}
+
+fun createEditorModeButtonsRow(
     editorMode: EditorMode,
     tillDetach: Till,
 ): HTMLElement? =
@@ -194,6 +202,35 @@ fun createContextualButtonsRow(
         )
         else -> null
     }
+
+fun createKnotMeshSelectionModeButtonsRow(
+    editor: Editor,
+    knotMeshSelectionMode: KnotMeshSelectionMode,
+    tillDetach: Till,
+): HTMLElement {
+    val knotBrushButton = createToolButton(
+        editor = editor,
+        name = "Knot brush",
+        tool = Tool.KNOT_BRUSH,
+        enterMode = { knotMeshSelectionMode.enterKnotBrushMode() },
+        tillDetach = tillDetach,
+    )
+
+    val knotSelectButton = createModeButton<KnotSelectMode>(
+        editor = editor,
+        name = "Select knots",
+        enterMode = { knotMeshSelectionMode.enterKnotSelectMode() },
+        tillDetach = tillDetach,
+    )
+
+
+    return createRow(
+        children = listOf(
+            HTMLWidget.of(knotBrushButton),
+            HTMLWidget.of(knotSelectButton),
+        ),
+    ).buildElement(tillDetach = tillDetach)
+}
 
 fun createKnotSelectModeButtonsRow(
     knotSelectMode: KnotSelectMode,
@@ -217,6 +254,25 @@ fun createKnotSelectModeButtonsRow(
     ),
     tillDetach = tillDetach,
 )
+
+fun createPathElevatorSelectionModeButtonsRow(
+    editor: Editor,
+    pathElevatorSelectionMode: PathElevatorSelectionMode,
+    tillDetach: Till,
+): HTMLElement {
+    val editPathElevatorButton = createModeButton<EditPathElevatorMode>(
+        editor = editor,
+        name = "Edit path",
+        enterMode = { pathElevatorSelectionMode.enterEditPathElevatorMode() },
+        tillDetach = tillDetach,
+    )
+
+    return createRow(
+        children = listOf(
+            HTMLWidget.of(editPathElevatorButton),
+        ),
+    ).buildElement(tillDetach = tillDetach)
+}
 
 fun createEditPathElevatorModeButtonsRow(
     editMode: EditPathElevatorMode,
@@ -278,13 +334,14 @@ private fun createToolButton(
     editor: Editor,
     name: String,
     tool: Tool,
+    enterMode: () -> Unit,
     tillDetach: Till,
 ): HTMLElement =
     createSelectButton(
         value = tool,
         name = name,
         selected = editor.selectedTool,
-        select = editor::selectTool,
+        select = { enterMode() },
         tillDetach = tillDetach,
     )
 

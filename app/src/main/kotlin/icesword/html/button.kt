@@ -1,5 +1,6 @@
 package icesword.html
 
+import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.reactTill
@@ -42,21 +43,12 @@ class HTMLButton(
 fun createTextButtonWb(
     style: DynamicStyleDeclaration? = null,
     text: String,
-) = object : HTMLWidgetB<HTMLButton> {
-    override fun build(tillDetach: Till): HTMLButton {
-        val element = createStyledHtmlElement(
-            tagName = "button",
-            style = style,
-            tillDetach = tillDetach,
-        ).apply {
-            innerText = text
-        }
-
-        return HTMLButton(
-            element = element as HTMLButtonElement,
-        )
-    }
-}
+    onPressed: (() -> Unit)? = null,
+): HTMLWidgetB<HTMLButton> = createButtonWb(
+    style = style,
+    child = createTextWb(Cell.constant(text)),
+    onPressed = onPressed,
+)
 
 fun createButtonWb(
     style: DynamicStyleDeclaration? = null,

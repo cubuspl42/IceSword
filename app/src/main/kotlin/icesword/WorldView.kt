@@ -133,7 +133,7 @@ fun worldView(
     root.onKeyDown().reactTill(tillDetach) {
         when (it.key) {
             "s" -> editor.enterSelectMode()
-            "v" -> editor.selectTool(Tool.MOVE)
+            "v" -> editor.enterMoveMode()
             "1" -> {
                 val tileCoord = IntVec2(79, 92)
                 val tileId = editor.world.tiles.volatileContentView[tileCoord]
