@@ -6,6 +6,7 @@ import icesword.editor.App
 import icesword.frp.Till
 import icesword.frp.mapNested
 import icesword.frp.mapTillNext
+import icesword.frp.reactTill
 import org.w3c.dom.HTMLElement
 
 fun createAppView(
@@ -21,6 +22,7 @@ fun createAppView(
                     rezIndex = editor.rezIndex,
                     textureBank = editor.textureBank,
                     dialogOverlay = dialogOverlay,
+                    app = app,
                     editor = editor,
                     tillDetach = tillNext,
                 )
@@ -33,11 +35,23 @@ fun createAppView(
             linkChild(this, theEditorView, till = tillDetach)
         }
 
-        val loadingWorldDialog = app.loadingWorldProcess.mapNested {
-            createLoadingWorldDialog(it)
-        }
+        dialogOverlay.linkDialog(
+            dialogContent = app.creatingNewProjectProcess.mapNested {
+                createCreatingNewProjectDialog()
+            }
+        )
 
-        dialogOverlay.linkDialog(loadingWorldDialog)
+        dialogOverlay.linkDialog(
+            dialogContent = app.loadingWorldProcess.mapNested {
+                createLoadingWorldDialog(it)
+            }
+        )
+
+        setupNewProjectDialogController(
+            app = app,
+            dialogOverlay = dialogOverlay,
+            tillDetach = tillDetach,
+        )
 
         editorViewWrapper
     },
@@ -47,3 +61,17 @@ fun createAppView(
     },
     tillDetach = tillDetach,
 )
+
+private fun setupNewProjectDialogController(
+    app: App,
+    dialogOverlay: DialogOverlay,
+    tillDetach: Till,
+) {
+    app.configureNewProject.reactTill(tillDetach) { newProjectContext ->
+        dialogOverlay.showDialog(
+            createConfigureNewProjectDialog(
+                newProjectContext = newProjectContext,
+            ),
+        )
+    }
+}

@@ -1,13 +1,13 @@
 package icesword.editor
 
-import TextureBank
 import fetchWorld
 import icesword.JsonRezIndex
-import icesword.CombinedRezIndex
-import icesword.RezIndex
+import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.DynamicLock
 import icesword.frp.MutCell
+import icesword.frp.Stream
+import icesword.frp.StreamSink
 import icesword.frp.map
 import icesword.wwd.Wwd
 import kotlinx.coroutines.CoroutineScope
@@ -22,10 +22,17 @@ import org.w3c.files.Blob
 import org.w3c.files.File
 import kotlin.js.Promise
 
+sealed interface AppProcess
+
+object CreatingNewProjectProcess : AppProcess
 
 data class LoadingWorldProcess(
     val worldFilename: String,
-)
+) : AppProcess
+
+interface NewProjectContext {
+    fun createWithBase(retail: Retail)
+}
 
 class App(
     private val wwdWorldTemplate: Wwd.World,
@@ -56,32 +63,63 @@ class App(
     val editor: Cell<Editor?>
         get() = _editor
 
-    private val _loadWorldLock = DynamicLock<LoadingWorldProcess>()
+    private val _appLock = DynamicLock<AppProcess>()
 
-    val loadingWorldProcess: Cell<LoadingWorldProcess?> = _loadWorldLock.owningProcess
+    val creatingNewProjectProcess: Cell<CreatingNewProjectProcess?> =
+        _appLock.owningProcess.map { it as? CreatingNewProjectProcess }
 
-    val canLoadWorld: Cell<Boolean> = _loadWorldLock.isLocked.map { !it }
+    val loadingWorldProcess: Cell<LoadingWorldProcess?> =
+        _appLock.owningProcess.map { it as? LoadingWorldProcess }
+
+    val canLoadWorld: Cell<Boolean> = _appLock.isLocked.map { !it }
+
+    private val _configureNewProject = StreamSink<NewProjectContext>()
+
+    val configureNewProject: Stream<NewProjectContext>
+        get() = _configureNewProject
+
+    fun createNewProject() {
+        _configureNewProject.send(
+            object : NewProjectContext {
+                override fun createWithBase(retail: Retail) {
+                    launch {
+                        _appLock.runNowIfFree(
+                            process = CreatingNewProjectProcess,
+                        ) {
+                            setUpEditor {
+                                Editor.createProject(
+                                    jsonRezIndex = jsonRezIndex,
+                                    wwdWorldTemplate = wwdWorldTemplate,
+                                    retail = retail,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        )
+    }
 
     fun loadWorld(file: File) {
-        suspend fun loadEditor(load: suspend () -> Editor) {
-            delay(100)
-
-            val editor = load()
-
-            _editor.set(editor)
-        }
-
         launch {
-            _loadWorldLock.synchronized(
+            _appLock.runNow(
                 process = LoadingWorldProcess(worldFilename = file.name),
             ) {
                 if (file.name.endsWith(".json")) {
-                    loadEditor { loadProject(file = file) }
+                    setUpEditor { loadProject(file = file) }
                 } else {
-                    loadEditor { importWorld(file = file) }
+                    setUpEditor { importWorld(file = file) }
                 }
             }
         }
+    }
+
+    private suspend fun setUpEditor(load: suspend () -> Editor) {
+        delay(100)
+
+        val editor = load()
+
+        _editor.set(editor)
     }
 
     private suspend fun importWorld(file: File): Editor {

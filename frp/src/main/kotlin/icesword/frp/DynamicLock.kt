@@ -9,9 +9,9 @@ class DynamicLock<Process : Any> {
     val isLocked: Cell<Boolean> =
         _owningProcess.map { it != null }
 
-    suspend fun synchronized(
+    suspend fun runNow(
         process: Process,
-        runProcess: suspend () -> Unit,
+        run: suspend () -> Unit,
     ) {
         val owningProcess = this.owningProcess.sample()
         if (owningProcess != null) {
@@ -20,7 +20,24 @@ class DynamicLock<Process : Any> {
 
         try {
             _owningProcess.set(process)
-            runProcess()
+            run()
+        } finally {
+            _owningProcess.set(null)
+        }
+    }
+
+    suspend fun runNowIfFree(
+        process: Process,
+        run: suspend () -> Unit,
+    ) {
+        val owningProcess = this.owningProcess.sample()
+        if (owningProcess != null) {
+            return
+        }
+
+        try {
+            _owningProcess.set(process)
+            run()
         } finally {
             _owningProcess.set(null)
         }

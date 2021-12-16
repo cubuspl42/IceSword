@@ -1,6 +1,7 @@
 package icesword
 
 import TextureBank
+import icesword.editor.App
 import icesword.editor.CrateStack
 import icesword.editor.CrateStackSelectionMode
 import icesword.editor.EditPathElevatorMode
@@ -48,10 +49,8 @@ import org.w3c.dom.HTMLElement
 
 
 fun createEditorToolBar(
-    rezIndex: RezIndex,
-    textureBank: TextureBank,
+    app: App,
     editor: Editor,
-    dialogOverlay: DialogOverlay,
     tillDetach: Till,
 ): HTMLElement {
     val selectButton = createModeButton<EntitySelectMode>(
@@ -76,6 +75,14 @@ fun createEditorToolBar(
         appendChild(moveButton)
     }
 
+    val newButton = createButton(
+        text = "New",
+        onPressed = {
+            app.createNewProject()
+        },
+        tillDetach = tillDetach,
+    )
+
     val exportButton = createButton(
         text = "Export",
         onPressed = {
@@ -92,12 +99,14 @@ fun createEditorToolBar(
         tillDetach = tillDetach,
     )
 
-    val otherButtonsRow = createHTMLElementRaw("div").apply {
-        className = "otherButtonsRow"
-
-        appendChild(exportButton)
-        appendChild(saveButton)
-    }
+    val otherButtonsRow = createRow(
+        className = "otherButtonsRow",
+        children = listOf(
+            HTMLWidget.of(newButton),
+            HTMLWidget.of(exportButton),
+            HTMLWidget.of(saveButton),
+        )
+    ).buildElement(tillDetach)
 
     val selectionModeButtonsRow = editor.selectionMode.mapTillNext(tillDetach) { it, tillNext ->
         createSelectionModeButtonsRow(

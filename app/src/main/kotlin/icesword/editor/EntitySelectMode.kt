@@ -9,6 +9,7 @@ import icesword.frp.Tilled
 import icesword.frp.filterDynamic
 import icesword.frp.map
 import icesword.frp.mergeWith
+import icesword.frp.pin
 import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -58,9 +59,7 @@ class EntitySelectMode(
         tillExit: Till,
     ) {
         val coveredEntities: DynamicSet<Entity> =
-            getEntitiesInArea(
-                area = selectionArea,
-            )
+            getEntitiesInArea(area = selectionArea).pin(tillExit)
 
         init {
             confirm.reactTill(till = tillExit) {

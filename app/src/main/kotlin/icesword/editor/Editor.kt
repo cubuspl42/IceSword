@@ -56,6 +56,34 @@ class Editor(
     tillDispose: Till = Till.never,
 ) {
     companion object {
+        suspend fun createProject(
+            jsonRezIndex: JsonRezIndex,
+            retail: Retail,
+            // TODO: Load WWD template dynamically?
+            wwdWorldTemplate: Wwd.World,
+        ): Editor {
+            val textureBank = TextureBank.load(
+                rezIndex = jsonRezIndex,
+                retail = retail,
+            )
+
+            val combinedRezIndex = CombinedRezIndex(
+                delegate = jsonRezIndex,
+                textureBank = textureBank,
+            )
+
+            val world = World.createEmpty(
+                retail = retail,
+                wwdWorld = wwdWorldTemplate,
+            )
+
+            return Editor(
+                rezIndex = combinedRezIndex,
+                textureBank = textureBank,
+                world = world,
+            )
+        }
+
         suspend fun importWwd(
             jsonRezIndex: JsonRezIndex,
             wwdWorld: Wwd.World,

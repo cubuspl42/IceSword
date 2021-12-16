@@ -53,6 +53,22 @@ class World(
     companion object {
         private const val wwdPlaneIndex = 1
 
+        fun createEmpty(
+            retail: Retail,
+            wwdWorld: Wwd.World,
+        ): World = World(
+            retail = retail,
+            wwdWorld = wwdWorld,
+            initialStartPoint = IntVec2.ZERO,
+            initialKnotMeshes = emptySet(),
+            initialElastics = emptySet(),
+            initialWapObjects = emptySet(),
+            initialHorizontalElevators = emptySet(),
+            initialVerticalElevators = emptySet(),
+            initialFloorSpikeRows = emptySet(),
+            initialEntities = emptySet(),
+        )
+
         fun importWwd(
             wwdWorld: Wwd.World,
         ): WorldImporter {

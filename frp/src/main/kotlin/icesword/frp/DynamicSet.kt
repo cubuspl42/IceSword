@@ -114,6 +114,13 @@ fun <A, R> DynamicSet<A>.mapTillRemoved(
         tillAbort = tillAbort,
     ).validated("mapTillNext")
 
+fun <A> DynamicSet<A>.pin(
+    till: Till,
+): DynamicSet<A> {
+    changes.reactTill(till) { }
+    return this
+}
+
 fun <A> DynamicSet<A>.sample(): Set<A> = volatileContentView.toSet()
 
 

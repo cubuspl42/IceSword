@@ -15,6 +15,7 @@ import icesword.frp.reactTill
 import icesword.html.HTMLWidget
 import icesword.html.HTMLWidget.HTMLShadowWidget
 import icesword.html.HTMLWidgetB
+import icesword.html.map
 import kotlinx.css.PointerEvents
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
@@ -51,18 +52,18 @@ class DialogOverlay(
         _shownDialog.set(dialog)
     }
 
-    fun linkDialog(dialogContent: Cell<HTMLElement?>) {
+    fun linkDialog(dialogContent: Cell<HTMLWidgetB<*>?>) {
         dialogContent.reactTill(tillDetach) { contentOrNull ->
             if (contentOrNull != null) {
-                val content: HTMLElement = contentOrNull
+                val content: HTMLWidgetB<*> = contentOrNull
 
                 showDialog(
-                    HTMLWidgetB.pure(
+                    content.map {
                         Dialog(
-                            content = HTMLWidget.of(content),
+                            content = it,
                             onClose = Stream.never(),
                         )
-                    ),
+                    },
                 )
             } else {
                 showDialog(null)

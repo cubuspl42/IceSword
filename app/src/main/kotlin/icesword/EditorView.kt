@@ -1,6 +1,7 @@
 package icesword
 
 import TextureBank
+import icesword.editor.App
 import icesword.html.createHTMLElementRaw
 import icesword.editor.Editor
 import icesword.frp.Till
@@ -13,6 +14,7 @@ fun editorView(
     rezIndex: RezIndex,
     textureBank: TextureBank,
     dialogOverlay: DialogOverlay,
+    app: App,
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
@@ -20,10 +22,8 @@ fun editorView(
         RetailUiPrototype.forRetail(editor.retail)
 
     val toolBar = createEditorToolBar(
-        rezIndex = rezIndex,
-        textureBank = textureBank,
+        app = app,
         editor = editor,
-        dialogOverlay = dialogOverlay,
         tillDetach = tillDetach,
     )
 

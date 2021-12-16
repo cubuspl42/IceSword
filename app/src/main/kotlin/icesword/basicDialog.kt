@@ -1,6 +1,8 @@
 package icesword
 
 import icesword.frp.Cell
+import icesword.frp.Stream
+import icesword.frp.mergeWith
 import icesword.frp.units
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.FlexStyleDeclaration
@@ -15,6 +17,7 @@ import kotlinx.css.px
 
 fun createBasicDialog(
     content: HTMLWidgetB<*>,
+    onClose: Stream<Unit> = Stream.never(),
 ): HTMLWidgetB<Dialog> = createTextButtonWb(
     style = DynamicStyleDeclaration(
         alignSelf = Cell.constant(Align.flexEnd),
@@ -34,14 +37,11 @@ fun createBasicDialog(
         children = listOf(
             closeButton,
             content,
-            createTextButtonWb(
-                text = "Save",
-            ),
         ),
     ).map { content ->
         Dialog(
             content = content,
-            onClose = closeButton.onPressed.units(),
+            onClose = closeButton.onPressed.units().mergeWith(onClose),
         )
     }
 }
