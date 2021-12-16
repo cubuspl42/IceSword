@@ -3,6 +3,7 @@ package icesword.editor
 import fetchWorld
 import icesword.JsonRezIndex
 import icesword.editor.retails.Retail
+import icesword.editor.retails.Retail1
 import icesword.frp.Cell
 import icesword.frp.DynamicLock
 import icesword.frp.MutCell
@@ -35,7 +36,6 @@ interface NewProjectContext {
 }
 
 class App(
-    private val wwdWorldTemplate: Wwd.World,
     private val jsonRezIndex: JsonRezIndex,
     initialEditor: Editor,
 ) : CoroutineScope by MainScope() {
@@ -43,15 +43,16 @@ class App(
         suspend fun load(): App {
             val jsonRezIndex = JsonRezIndex.load()
 
-            val wwdWorldTemplate: Wwd.World = fetchWorld()
+            val wwdWorld: Wwd.World = fetchWorld(
+                retail = Retail1,
+            )
 
             val editor = Editor.importWwd(
                 jsonRezIndex = jsonRezIndex,
-                wwdWorld = wwdWorldTemplate,
+                wwdWorld = wwdWorld,
             )
 
             return App(
-                wwdWorldTemplate = wwdWorldTemplate,
                 jsonRezIndex = jsonRezIndex,
                 initialEditor = editor,
             )
@@ -89,7 +90,6 @@ class App(
                             setUpEditor {
                                 Editor.createProject(
                                     jsonRezIndex = jsonRezIndex,
-                                    wwdWorldTemplate = wwdWorldTemplate,
                                     retail = retail,
                                 )
                             }
@@ -142,7 +142,6 @@ class App(
 
         val editor = Editor.loadProject(
             jsonRezIndex = jsonRezIndex,
-            wwdWorldTemplate = wwdWorldTemplate,
             projectData = projectData,
         )
 

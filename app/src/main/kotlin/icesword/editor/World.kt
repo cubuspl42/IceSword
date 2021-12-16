@@ -56,10 +56,11 @@ class World(
         fun createEmpty(
             retail: Retail,
             wwdWorld: Wwd.World,
+            initialStartPoint: IntVec2,
         ): World = World(
             retail = retail,
             wwdWorld = wwdWorld,
-            initialStartPoint = IntVec2.ZERO,
+            initialStartPoint = initialStartPoint,
             initialKnotMeshes = emptySet(),
             initialElastics = emptySet(),
             initialWapObjects = emptySet(),

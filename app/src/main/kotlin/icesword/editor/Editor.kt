@@ -1,6 +1,7 @@
 package icesword.editor
 
 import TextureBank
+import fetchWorld
 import icesword.CombinedRezIndex
 import icesword.JsonRezIndex
 import icesword.RezIndex
@@ -59,8 +60,6 @@ class Editor(
         suspend fun createProject(
             jsonRezIndex: JsonRezIndex,
             retail: Retail,
-            // TODO: Load WWD template dynamically?
-            wwdWorldTemplate: Wwd.World,
         ): Editor {
             val textureBank = TextureBank.load(
                 rezIndex = jsonRezIndex,
@@ -72,9 +71,14 @@ class Editor(
                 textureBank = textureBank,
             )
 
+            val wwdWorldTemplate: Wwd.World = fetchWorld(
+                retail = retail,
+            )
+
             val world = World.createEmpty(
                 retail = retail,
                 wwdWorld = wwdWorldTemplate,
+                initialStartPoint = IntVec2(512 * 64, 512 * 64)
             )
 
             return Editor(
@@ -115,22 +119,26 @@ class Editor(
 
         suspend fun loadProject(
             jsonRezIndex: JsonRezIndex,
-            // TODO: Load WWD template dynamically?
-            wwdWorldTemplate: Wwd.World,
             projectData: ProjectData,
         ): Editor {
             val worldLoader = World.load(
                 worldData = projectData.world,
             )
 
+            val retail = worldLoader.retail
+
             val textureBank = TextureBank.load(
                 rezIndex = jsonRezIndex,
-                retail = worldLoader.retail,
+                retail = retail,
             )
 
             val combinedRezIndex = CombinedRezIndex(
                 delegate = jsonRezIndex,
                 textureBank = textureBank,
+            )
+
+            val wwdWorldTemplate: Wwd.World = fetchWorld(
+                retail = retail,
             )
 
             val world = worldLoader.load(

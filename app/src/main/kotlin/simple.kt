@@ -46,13 +46,11 @@ external interface FrameRect {
     val y: Int
 }
 
-
-suspend fun fetchWorld(): Wwd.World {
-    val response = window.fetch("worlds/WORLD.WWD").await()
+suspend fun fetchWorld(retail: Retail): Wwd.World {
+    val infix = retail.naturalIndex.toString().padStart(2, '0')
+    val response = window.fetch("worlds/RETAIL$infix.WWD").await()
     val worldBuffer = response.arrayBuffer().await()
     val world = readWorld(worldBuffer)
-
-//    println("World name: ${world.name.decode()}")
 
     return world
 }
