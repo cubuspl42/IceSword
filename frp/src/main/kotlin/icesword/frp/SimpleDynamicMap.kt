@@ -17,4 +17,6 @@ abstract class SimpleDynamicMap<K, V>(
             { volatileContentView.toMap() },
             changes.map { volatileContentView.toMap() },
         )
+
+    override fun toString(): String = "SimpleDynamicMap(id=$id)"
 }

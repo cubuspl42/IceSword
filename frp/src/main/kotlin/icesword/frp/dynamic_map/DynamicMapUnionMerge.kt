@@ -13,27 +13,8 @@ class DynamicMapUnionMerge<K, V, R>(
 
     private var mutableContent: MutableMap<K, R>? = null
 
-//    override val volatileContentView: Map<K, R>
-//        get() {
-//            val initialKeys = maps.volatileContentView.flatMap { it.volatileContentView.keys }.toSet()
-//            return initialKeys.associateWith { key ->
-//                val values = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
-//                merge(values)
-//            }
-//        }
-
     override val volatileContentView: Map<K, R>
         get() = this.mutableContent!!
-
-
-//    override fun containsKeyNow(key: K): Boolean =
-//        maps.volatileContentView.any { it.containsKeyNow(key) }
-//
-//    override fun getNow(key: K): R? {
-//        val values: Set<V> = maps.volatileContentView.mapNotNull { it.getNow(key) }.toSet()
-//        return if (values.isEmpty()) null
-//        else merge(values)
-//    }
 
     private var subscriptionOuter: Subscription? = null
 
@@ -45,9 +26,20 @@ class DynamicMapUnionMerge<K, V, R>(
 
             val allMaps = maps.volatileContentView
 
-            outerChange.added.forEach { subscribeToInner(it) }
+            outerChange.added.forEach {
+                val subscriptionMap =
+                    this.subscriptionMap ?: throw IllegalStateException("Subscription map is not initialized")
+
+                subscriptionMap[it] = subscribeToInner(it)
+            }
+
             outerChange.removed.forEach {
-                val subscription = subscriptionMap!!.remove(it)!!
+                val subscriptionMap =
+                    this.subscriptionMap ?: throw IllegalStateException("Subscription map is not initialized")
+
+                val subscription = subscriptionMap.remove(it)
+                    ?: throw IllegalStateException("Subscription map did not contain subscription for $it")
+
                 subscription.unsubscribe()
             }
 
