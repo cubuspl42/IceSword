@@ -78,7 +78,7 @@ class Editor(
             val world = World.createEmpty(
                 retail = retail,
                 wwdWorld = wwdWorldTemplate,
-                initialStartPoint = IntVec2(512 * 64, 512 * 64)
+                initialStartPoint = IntVec2(100 * 64, 50 * 64)
             )
 
             return Editor(
