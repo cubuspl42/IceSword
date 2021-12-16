@@ -367,9 +367,11 @@ class World(
     }
 
     fun removeEntities(entities: Set<Entity>) {
-        _entities.removeAll(entities)
+        _entities.removeAll(
+            // Start point cannot be removed
+            entities.filter { it != startPointEntity }.toSet(),
+        )
     }
-
 
     init {
         tiles.changes.subscribe { change ->
