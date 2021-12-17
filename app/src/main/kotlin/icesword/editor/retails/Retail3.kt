@@ -7,6 +7,7 @@ import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
 import icesword.editor.encode
 import icesword.editor.knot_mesh.KnotStructurePattern
+import icesword.editor.retails.Retail3.MetaTiles.Rock
 import icesword.editor.retails.retail3.retail3KnotStructurePatterns
 import icesword.editor.retails.retail3.retail3LadderPattern
 import icesword.wwd.Wwd
@@ -40,15 +41,15 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(ladder.core, MetaTile.LeavesLower) -> 667
 
             // Spikes
-            containsAll(MetaTile.SpikeTop, MetaTile.RockRightSide) -> 712
-            containsAll(MetaTile.SpikeBottom, MetaTile.RockLowerLeftCorner) -> 713
+            containsAll(MetaTile.SpikeTop, Rock.RightSide) -> 712
+            containsAll(MetaTile.SpikeBottom, Rock.LowerLeftCorner) -> 713
 
-            containsAll(MetaTile.SpikeBottom, MetaTile.RockTop) -> 704
+            containsAll(MetaTile.SpikeBottom, Rock.Top) -> 704
 
-            containsAll(MetaTile.SpikeTop, MetaTile.RockLeftSideOuter) -> 701
-            containsAll(MetaTile.SpikeTop, MetaTile.RockLeftSideInner) -> 702
-            containsAll(MetaTile.SpikeBottom, MetaTile.RockLowerRightCornerOuter) -> 704
-            containsAll(MetaTile.SpikeBottom, MetaTile.RockLowerRightCornerInner) -> 709 // 696
+            containsAll(MetaTile.SpikeTop, Rock.LeftSideOuter) -> 701
+            containsAll(MetaTile.SpikeTop, Rock.LeftSideInner) -> 702
+            containsAll(MetaTile.SpikeBottom, Rock.LowerRightCornerOuter) -> 704
+            containsAll(MetaTile.SpikeBottom, Rock.LowerRightCornerInner) -> 709 // 696
 
             else -> null
         }
@@ -61,6 +62,16 @@ object Retail3 : Retail(naturalIndex = 3), RetailLadderPrototype {
             val top = MetaTile(668)
 
             val core = MetaTile(669)
+        }
+
+        object Rock {
+            object Top : MetaTile(622)
+            object LeftSideOuter : MetaTile(624)
+            object LeftSideInner : MetaTile(625)
+            object RightSide : MetaTile(631)
+            object LowerLeftCorner : MetaTile(638)
+            object LowerRightCornerOuter : MetaTile(642)
+            object LowerRightCornerInner : MetaTile(643)
         }
 
         val grass = MetaTile(604)

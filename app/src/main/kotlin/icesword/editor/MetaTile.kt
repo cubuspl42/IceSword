@@ -19,12 +19,4 @@ open class MetaTile(
 
     object SpikeTop : MetaTile(698)
     object SpikeBottom : MetaTile(704)
-
-    object RockTop : MetaTile(622)
-    object RockLeftSideOuter : MetaTile(624)
-    object RockLeftSideInner : MetaTile(625)
-    object RockRightSide : MetaTile(631)
-    object RockLowerLeftCorner : MetaTile(638)
-    object RockLowerRightCornerOuter : MetaTile(642)
-    object RockLowerRightCornerInner : MetaTile(643)
 }
