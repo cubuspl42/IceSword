@@ -5,6 +5,7 @@ import icesword.createInsertEnemyButton
 import icesword.createInsertEntityButton
 import icesword.createInsertKnotMeshButton
 import icesword.createInsertWapObjectButton
+import icesword.editor.ColumnPrototype
 import icesword.editor.CrateStackPrototype
 import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
@@ -29,6 +30,13 @@ object Retail1UiPrototype : RetailUiPrototype {
             prototype = LadderPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL1/TILES/ACTION/311.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = ColumnPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL1/TILES/ACTION/933.png",
             tillDetach = tillDetach,
         ),
         createInsertEntityButton(

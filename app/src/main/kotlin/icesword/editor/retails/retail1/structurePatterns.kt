@@ -10,11 +10,12 @@ import icesword.editor.knot_mesh.MetaTilePattern2x1
 import icesword.editor.knot_mesh.StructureConcavePattern
 import icesword.editor.knot_mesh.StructureConvexPattern
 import icesword.editor.knot_mesh.KnotStructurePattern
+import icesword.editor.retails.Retail1
 
 private val foundation = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
         topLeft = MetaTilePattern1x1(MetaTile(303)),
-        top = MetaTilePattern1x1(MetaTile(304)),
+        top = MetaTilePattern1x1(Retail1.MetaTiles.Foundation.top),
         topRight = MetaTilePattern2x1(MetaTile(305), MetaTile(307)),
         left = MetaTilePattern1x1(MetaTile(302)),
         right = MetaTilePattern1x1(MetaTile(308)),
@@ -45,6 +46,22 @@ val retail1LadderPattern = ElasticStructurePattern(
     ),
     endingPattern = RectangularMetaTilePattern(
         metaTiles = listOf(MetaTile(312)),
+        width = 1,
+    ),
+    orientation = ElasticStructurePatternOrientation.Vertical,
+)
+
+val retail1ColumnPattern = ElasticStructurePattern(
+    startingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(MetaTile(933)),
+        width = 1,
+    ),
+    repeatingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(MetaTile(934)),
+        width = 1,
+    ),
+    endingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(Retail1.MetaTiles.Column.bottom),
         width = 1,
     ),
     orientation = ElasticStructurePatternOrientation.Vertical,

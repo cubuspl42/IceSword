@@ -7,6 +7,7 @@ import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail3
 import icesword.editor.retails.RetailLadderPrototype
 import icesword.editor.retails.doublePilePattern
+import icesword.editor.retails.retail1.retail1ColumnPattern
 import icesword.editor.retails.retail2PlatformPattern
 import icesword.frp.*
 import icesword.geometry.IntRect
@@ -126,10 +127,9 @@ object SpikesPrototype : ElasticPrototype() {
 object PlatformPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(5, 2)
 
-    private val platformGenerator = retail2PlatformPattern.toElasticGenerator()
+    private val generator = retail2PlatformPattern.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator =
-        platformGenerator
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
 
 @Serializable
@@ -137,10 +137,19 @@ object PlatformPrototype : ElasticPrototype() {
 object DoublePilePrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(1, 3)
 
-    private val platformGenerator = doublePilePattern.toElasticGenerator()
+    private val generator = doublePilePattern.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator =
-        platformGenerator
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
+
+@Serializable
+@SerialName("Level1Column")
+object ColumnPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(1, 4)
+
+    private val generator = retail1ColumnPattern.toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
 
 class Elastic(

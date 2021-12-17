@@ -2,13 +2,37 @@ package icesword.editor.retails
 
 import icesword.ImageSetId
 import icesword.editor.ElevatorPrototype
+import icesword.editor.MetaTile
+import icesword.editor.TileGenerator
+import icesword.editor.TileGeneratorContext
 import icesword.editor.encode
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.editor.retails.retail1.retail1KnotStructurePatterns
 import icesword.editor.retails.retail1.retail1LadderPattern
 import icesword.wwd.Wwd
 
+private val retailTileGenerator = object : TileGenerator {
+    override fun buildTile(context: TileGeneratorContext): Int? = context.run {
+        when {
+            // Foundation top / column bottom
+            containsAll(Retail1.MetaTiles.Foundation.top, Retail1.MetaTiles.Column.bottom) -> 935
+
+            else -> null
+        }
+    }
+}
+
 object Retail1 : Retail(naturalIndex = 1), RetailLadderPrototype {
+    object MetaTiles {
+        object Foundation {
+            val top = MetaTile(304)
+        }
+
+        object Column {
+            val bottom = MetaTile(935)
+        }
+    }
+
     override val ladderGenerator = retail1LadderPattern.toElasticGenerator()
 
     override val elevatorPrototype = ElevatorPrototype(
@@ -23,4 +47,6 @@ object Retail1 : Retail(naturalIndex = 1), RetailLadderPrototype {
 
     override val knotStructurePatterns: List<KnotStructurePattern> =
         retail1KnotStructurePatterns
+
+    override val tileGenerator: TileGenerator = retailTileGenerator
 }
