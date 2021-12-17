@@ -141,7 +141,7 @@ class World(
 
                 val initialElastics = loadInitialEntities(
                     entitiesData = worldData.elastics,
-                    load = { Elastic.load(retail = retail, data = it) },
+                    load = { Elastic.load(rezIndex = rezIndex, retail = retail, data = it) },
                 )
 
                 val initialHorizontalElevators = loadInitialEntities(

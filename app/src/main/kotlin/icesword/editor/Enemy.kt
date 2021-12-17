@@ -3,12 +3,10 @@
 package icesword.editor
 
 import icesword.RezIndex
-import icesword.frp.Cell
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
 import icesword.frp.dynamic_list.sampleContent
 import icesword.frp.dynamic_list.size
-import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.Geometry
@@ -66,7 +64,7 @@ class Enemy(
 
     val imageSetId = wapObjectPrototype.imageSetId
 
-    val wapSprite = WapSprite.fromImageSet(
+    val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = imageSetId,
         position = entityPosition.position,

@@ -26,7 +26,14 @@ data class TextureBank(
                 // TODO: Support all retails and/or remove this performance trick
                 .filter { metadata ->
                     setOf("GAME/", "LEVEL${retail.naturalIndex}/").any { metadata.pidImagePath.startsWith(it) } &&
-                            setOf("001", "/TREASURE/", "LOGO0", "/1.PID").any { metadata.pidImagePath.contains(it) }
+                            // It's getting ridiculous
+                            setOf(
+                                "001",
+                                "/TREASURE/",
+                                "LOGO0",
+                                "/1.PID",
+                                "CENTER2",
+                            ).any { metadata.pidImagePath.contains(it) }
                 }
                 .associate {
                     val imagePath = "images/CLAW/${it.pidImagePath.replace(".PID", ".png")}"

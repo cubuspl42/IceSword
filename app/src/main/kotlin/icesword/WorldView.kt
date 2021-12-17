@@ -39,7 +39,6 @@ import icesword.html.onMouseMove
 import icesword.html.onMouseUp
 import icesword.html.onWheel
 import icesword.html.trackMousePosition
-import icesword.scene.ElasticUi
 import icesword.scene.FloorSpikeRowNode
 import icesword.scene.KnotMeshUi
 import icesword.scene.Layer
@@ -50,10 +49,9 @@ import icesword.scene.WapSpriteNode
 import icesword.scene.createAreaSelectionOverlayElement
 import icesword.scene.createBackFoilOverlayElement
 import icesword.scene.createEditorModeModeNode
-import icesword.scene.createElasticOverlayElement
 import icesword.scene.createEntityNode
-import icesword.scene.createHorizontalElevatorOverlayElement
 import icesword.scene.createFloorSpikeRowOverlayElement
+import icesword.scene.createHorizontalElevatorOverlayElement
 import icesword.scene.createKnotMeshOverlayElement
 import icesword.scene.createStartPointOverlayElement
 import icesword.scene.createVerticalElevatorOverlayElement
@@ -265,6 +263,7 @@ fun worldView(
                         rezIndex = rezIndex,
                         textureBank = textureBank,
                         editor = editor,
+                        viewTransform = dynamicViewTransform,
                         entity = it
                     )
                 },
@@ -297,13 +296,6 @@ fun worldView(
                                 editor = editor,
                                 viewTransform = dynamicViewTransform,
                                 knotMesh = knotMesh,
-                            )
-                        },
-                        world.elastics.mapTillRemoved(tillAbort = tillDetach) { elastic, _ ->
-                            ElasticUi(
-                                editor = editor,
-                                viewTransform = dynamicViewTransform,
-                                elastic = elastic,
                             )
                         },
                     ),
@@ -339,16 +331,6 @@ fun worldView(
                                             ),
                                         ),
                                     ),
-                                    world.elastics.mapTillRemoved(tillAbort = tillDetach) { elastic, tillRemoved ->
-                                        createElasticOverlayElement(
-                                            editor = editor,
-                                            svg = svg,
-                                            elastic = elastic,
-                                            viewport = this,
-                                            viewTransform = dynamicViewTransform,
-                                            tillDetach = tillRemoved,
-                                        )
-                                    },
                                     world.wapObjects.mapTillRemoved(tillAbort = tillDetach) { wapObject, tillRemoved ->
                                         createWapObjectOverlayElement(
                                             editor = editor,

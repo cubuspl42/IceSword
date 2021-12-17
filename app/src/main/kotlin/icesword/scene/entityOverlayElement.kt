@@ -33,10 +33,16 @@ fun createEntityNode(
     rezIndex: RezIndex,
     textureBank: TextureBank,
     editor: Editor,
+    viewTransform: DynamicTransform,
     entity: Entity,
 ): HybridNode? {
     return when (entity) {
-        is Elastic -> null
+        is Elastic -> ElasticNode(
+            rezIndex = rezIndex,
+            editor = editor,
+            elastic = entity,
+            viewTransform = viewTransform,
+        )
         is HorizontalElevator -> null
         is VerticalElevator -> null
         is Enemy -> EnemyNode(

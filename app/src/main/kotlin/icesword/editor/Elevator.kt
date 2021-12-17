@@ -5,7 +5,6 @@ package icesword.editor
 import icesword.ImageSetId
 import icesword.RezIndex
 import icesword.frp.Cell
-import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.Geometry.Rectangle
@@ -31,7 +30,7 @@ sealed class Elevator<Range : AxisRange<Range>>(
             initialPosition = initialPosition,
         )
 
-    val wapSprite = WapSprite.fromImageSet(
+    val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = prototype.elevatorImageSetId,
         position = entityPosition.position,

@@ -2,6 +2,8 @@
 
 package icesword.editor
 
+import icesword.JsonRezIndex
+import icesword.RezIndex
 import icesword.TILE_SIZE
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail3
@@ -13,12 +15,25 @@ import icesword.frp.*
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import icesword.tileTopLeftCorner
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
+data class ElasticWapObjectBuildContext(
+    val tileBounds: IntRect,
+) {
+    val position: IntVec2
+        get() = tileTopLeftCorner(tileBounds.topLeft)
+
+    val size: IntSize
+        get() = tileBounds.size
+}
+
 interface ElasticGenerator {
     fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile>
+
+    fun buildWapObject(): WapObjectPropsData? = null
 }
 
 @Serializable
@@ -153,6 +168,8 @@ object ColumnPrototype : ElasticPrototype() {
 }
 
 class Elastic(
+    rezIndex: RezIndex,
+    retail: Retail,
     private val prototype: ElasticPrototype,
     private val generator: ElasticGenerator,
     initialBounds: IntRect,
@@ -162,10 +179,13 @@ class Elastic(
 
     companion object {
         fun load(
+            rezIndex: RezIndex,
             retail: Retail,
             data: ElasticData,
         ): Elastic =
             Elastic(
+                rezIndex = rezIndex,
+                retail = retail,
                 prototype = data.prototype,
                 generator = data.prototype.buildGenerator(retail = retail),
                 initialBounds = data.bounds,
@@ -251,6 +271,22 @@ class Elastic(
             tag = "metaTileCluster.localMetaTilesDynamic",
         )
     )
+
+    val wapObjectProps = generator.buildWapObject()
+
+    val wapObjectSprite = wapObjectProps?.let { props ->
+        DynamicWapSprite.fromImageSet(
+            rezIndex = rezIndex,
+            imageSetId = expandImageSetId(
+                retail = retail,
+                shortImageSetId = props.imageSet,
+            ),
+            position = position.map {
+                it + IntVec2(props.x, props.y)
+            },
+            i = props.i,
+        )
+    }
 
     override fun isSelectableIn(area: IntRect): Boolean =
         (tileBounds.sample() * TILE_SIZE).overlaps(area)

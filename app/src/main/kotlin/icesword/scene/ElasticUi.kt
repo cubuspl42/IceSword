@@ -1,5 +1,7 @@
 package icesword.scene
 
+import TextureBank
+import icesword.RezIndex
 import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.Elastic
@@ -33,7 +35,7 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
 
-class ElasticUi private constructor(
+private class ElasticUi private constructor(
     private val viewTransform: DynamicTransform,
     private val elastic: Elastic,
     private val isSelected: Cell<Boolean>,
@@ -96,8 +98,45 @@ class ElasticUi private constructor(
             .mergeWith(localTileCoords.changes.units())
 }
 
+class ElasticNode(
+    private val rezIndex: RezIndex,
+    private val editor: Editor,
+    private val elastic: Elastic,
+    private val viewTransform: DynamicTransform,
+) : HybridNode {
+    //    override fun buildCanvasNode(
+//        textureBank: TextureBank,
+//    ): CanvasNode = ElasticUi(
+//        editor = editor,
+//        viewTransform = viewTransform,
+//        elastic = elastic,
+//    )
 
-fun createElasticOverlayElement(
+    override fun buildCanvasNode(
+        textureBank: TextureBank,
+    ): CanvasNode = elastic.wapObjectSprite?.let {
+        WapSpriteNode(
+            textureBank = textureBank,
+            wapSprite = it,
+        )
+    } ?: NoopCanvasNode()
+
+    override fun buildOverlayElement(
+        context: HybridNode.OverlayBuildContext,
+    ): SVGElement = context.run {
+        createElasticOverlayElement(
+            editor = editor,
+            svg = svg,
+            viewport = viewport,
+            viewTransform = viewTransform,
+            elastic = elastic,
+            tillDetach = tillDetach,
+        )
+    }
+}
+
+
+private fun createElasticOverlayElement(
     editor: Editor,
     svg: SVGSVGElement,
     viewport: HTMLElement,

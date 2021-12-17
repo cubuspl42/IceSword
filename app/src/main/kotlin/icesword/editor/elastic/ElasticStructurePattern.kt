@@ -1,7 +1,9 @@
 package icesword.editor.elastic
 
 import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticWapObjectBuildContext
 import icesword.editor.MetaTile
+import icesword.editor.WapObjectPropsData
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 
@@ -38,6 +40,7 @@ data class ElasticStructurePattern(
     val startingPattern: RectangularMetaTilePattern,
     val repeatingPattern: RectangularMetaTilePattern,
     val endingPattern: RectangularMetaTilePattern,
+    val wapObject: WapObjectPropsData? = null,
     val orientation: ElasticStructurePatternOrientation,
 ) {
     fun toElasticGenerator(): ElasticGenerator = object : ElasticGenerator {
@@ -67,5 +70,7 @@ data class ElasticStructurePattern(
 
             return buildLayers(length = length)
         }
+
+        override fun buildWapObject(): WapObjectPropsData? = wapObject
     }
 }

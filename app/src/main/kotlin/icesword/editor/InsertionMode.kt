@@ -70,6 +70,8 @@ sealed interface BasicInsertionMode : InsertionMode {
 }
 
 class ElasticInsertionMode(
+    private val rezIndex: RezIndex,
+    private val retail: Retail,
     private val world: World,
     override val insertionPrototype: ElasticInsertionPrototype,
 ) : BasicInsertionMode {
@@ -77,6 +79,8 @@ class ElasticInsertionMode(
         val elasticPrototype = insertionPrototype.elasticPrototype
 
         val elastic = Elastic(
+            rezIndex = rezIndex,
+            retail = retail,
             prototype = elasticPrototype,
             generator = elasticPrototype.buildGenerator(
                 retail = insertionPrototype.retail,
@@ -116,9 +120,9 @@ abstract class WapObjectAlikeInsertionMode(
 ) : InsertionMode {
     private val _placementWorldPointSlot = CellSlot<IntVec2>()
 
-    val wapObjectPreview: Cell<WapSprite?> =
+    val wapObjectPreview: Cell<DynamicWapSprite?> =
         _placementWorldPointSlot.linkedCell.mapNested { placementPosition ->
-            WapSprite.fromImageSet(
+            DynamicWapSprite.fromImageSet(
                 rezIndex = rezIndex,
                 imageSetId = imageSetId,
                 position = placementPosition,

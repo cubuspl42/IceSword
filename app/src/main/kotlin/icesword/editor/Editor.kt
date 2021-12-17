@@ -410,6 +410,8 @@ class Editor(
     ) {
         val insertionMode = when (insertionPrototype) {
             is ElasticInsertionPrototype -> ElasticInsertionMode(
+                rezIndex = rezIndex,
+                retail = retail,
                 world = world,
                 insertionPrototype = insertionPrototype,
             )

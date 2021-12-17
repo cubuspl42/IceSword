@@ -4,14 +4,15 @@ import TextureBank
 import icesword.editor.Editor
 import icesword.editor.Entity
 import icesword.editor.WapObject
-import icesword.editor.WapSprite
+import icesword.editor.DynamicWapSprite
 import icesword.frp.Stream
 import icesword.frp.Till
+import icesword.frp.map
+import icesword.frp.mergeWith
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
-import icesword.scene.HybridNode.OverlayBuildContext
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
@@ -19,12 +20,14 @@ import org.w3c.dom.svg.SVGSVGElement
 
 class WapSpriteNode(
     textureBank: TextureBank,
-    private val wapSprite: WapSprite,
+    private val wapSprite: DynamicWapSprite,
     private val alpha: Double = 1.0,
 ) : CanvasNode {
-    private val texture = wapSprite.imageMetadata?.let { imageMetadata ->
-        textureBank.getImageTexture(pidImagePath = imageMetadata.pidImagePath)
-    } ?: textureBank.wapObject
+    private val dynamicTexture = wapSprite.imageMetadata.map { imageMetadata ->
+        imageMetadata?.let { imageMetadata ->
+            textureBank.getImageTexture(pidImagePath = imageMetadata.pidImagePath)
+        } ?: textureBank.wapObject
+    }
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
         ctx.save()
@@ -32,6 +35,8 @@ class WapSpriteNode(
         val boundingBox = wapSprite.boundingBox.sample()
 
         ctx.globalAlpha = alpha
+
+        val texture = dynamicTexture.sample()
 
         drawWapSprite(
             ctx,
@@ -44,6 +49,7 @@ class WapSpriteNode(
 
     override val onDirty: Stream<Unit> =
         wapSprite.boundingBox.values().units()
+            .mergeWith(dynamicTexture.values().units())
 }
 
 fun drawWapSprite(
@@ -82,7 +88,7 @@ fun createWapSpriteOverlayElement(
     viewport: HTMLElement,
     viewTransform: DynamicTransform,
     entity: Entity,
-    wapSprite: WapSprite,
+    wapSprite: DynamicWapSprite,
     tillDetach: Till,
 ): SVGElement {
     val box = createEntityFrameElement(

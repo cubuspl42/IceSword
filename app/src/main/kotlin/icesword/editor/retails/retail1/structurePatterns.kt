@@ -2,6 +2,7 @@ package icesword.editor.retails.retail1
 
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
+import icesword.editor.WapObjectPropsData
 import icesword.editor.elastic.ElasticStructurePattern
 import icesword.editor.elastic.ElasticStructurePatternOrientation
 import icesword.editor.elastic.RectangularMetaTilePattern
@@ -63,6 +64,13 @@ val retail1ColumnPattern = ElasticStructurePattern(
     endingPattern = RectangularMetaTilePattern(
         metaTiles = listOf(Retail1.MetaTiles.Column.bottom),
         width = 1,
+    ),
+    wapObject = WapObjectPropsData(
+        x = 28,
+        y = 32,
+        i = 2,
+        logic = "DoNothing",
+        imageSet = "LEVEL_ARCHESFRONT",
     ),
     orientation = ElasticStructurePatternOrientation.Vertical,
 )

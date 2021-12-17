@@ -8,7 +8,11 @@ import icesword.geometry.IntVec2
 
 value class ImageSetId(
     val fullyQualifiedId: String,
-)
+) {
+    companion object {
+        val empty = ImageSetId(fullyQualifiedId = "")
+    }
+}
 
 data class ImageMetadata(
     val pidImagePath: String,

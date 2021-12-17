@@ -4,7 +4,6 @@ package icesword.editor
 
 import icesword.ImageSetId
 import icesword.RezIndex
-import icesword.editor.WapObjectPrototype.StackedCratesPrototype
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.dynamic_list.DynamicList
@@ -15,9 +14,7 @@ import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.Geometry
-import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.Wwd
-import kotlinx.css.del
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -60,7 +57,7 @@ class CrateStack(
     data class OutputCrate(
         val position: IntVec2,
         val bounds: IntRect,
-        val wapSprite: WapSprite,
+        val wapSprite: DynamicWapSprite,
     )
 
     data class OutputStack(
@@ -135,7 +132,7 @@ class CrateStack(
             initialPosition = initialPosition,
         )
 
-    val wapSprite = WapSprite.fromImageMetadata(
+    val wapSprite = DynamicWapSprite.fromImageMetadata(
         imageMetadata = crateImageMetadata,
         position = entityPosition.position,
     )
@@ -150,7 +147,7 @@ class CrateStack(
                 imageMetadata = crateImageMetadata,
                 position = position,
             ),
-            wapSprite = WapSprite.fromImageMetadata(
+            wapSprite = DynamicWapSprite.fromImageMetadata(
                 imageMetadata = crateImageMetadata,
                 position = Cell.constant(position),
             ),

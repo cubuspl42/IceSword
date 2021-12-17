@@ -53,7 +53,7 @@ class Rope(
             initialPosition = initialPosition,
         )
 
-    val wapSprite = WapSprite.fromImageSet(
+    val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = prototype.imageSetId,
         position = entityPosition.position,

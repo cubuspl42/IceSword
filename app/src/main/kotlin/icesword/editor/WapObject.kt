@@ -323,10 +323,7 @@ class WapObject(
 
     val props = WapObjectProps(initialProps = initialProps)
 
-    val wwdObject: WapObjectPropsData
-        get() = props.toData()
-
-    val sprite = WapSprite.fromImageSet(
+    val sprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = expandImageSetId(
             retail = retail,
@@ -366,7 +363,7 @@ data class WapObjectData(
     val position: IntVec2,
 )
 
-private fun expandImageSetId(
+fun expandImageSetId(
     retail: Retail,
     shortImageSetId: String,
 ): ImageSetId = ImageSetId(
