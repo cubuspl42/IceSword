@@ -16,6 +16,7 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileTopLeftCorner
+import icesword.wwd.Wwd
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -175,7 +176,8 @@ class Elastic(
     initialBounds: IntRect,
 ) :
     Entity(),
-    EntityPosition {
+    EntityPosition,
+    WapObjectExportable {
 
     companion object {
         fun load(
@@ -292,6 +294,18 @@ class Elastic(
         (tileBounds.sample() * TILE_SIZE).overlaps(area)
 
     override fun toString(): String = "MetaTileCluster(boundsTopLeft=${boundsTopLeft.sample()})"
+
+    override fun exportWapObjects(): List<Wwd.Object_> {
+        val position = this.position.sample()
+
+        return if (wapObjectProps != null) listOf(
+            wapObjectProps.copy(
+                x = position.x + wapObjectProps.x,
+                y = position.y + wapObjectProps.y,
+            ).toWwdObject(),
+        )
+        else emptyList()
+    }
 
     fun toData(): ElasticData =
         ElasticData(
