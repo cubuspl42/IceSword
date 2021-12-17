@@ -5,6 +5,7 @@ import TextureBank
 import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
 import icesword.editor.InsertWapObjectCommand
+import icesword.editor.KnotBrushMode
 import icesword.editor.OffsetTilesView
 import icesword.editor.Tool
 import icesword.editor.WapObjectAlikeInsertionMode
@@ -110,8 +111,9 @@ fun worldView(
                 root = root,
                 tillDetach = tillNext,
             )
-            Tool.KNOT_BRUSH -> setupKnotBrushToolController(
+            is KnotBrushMode -> setupKnotBrushToolController(
                 editor = editor,
+                knotBrushMode = mode,
                 root = root,
                 tillDetach = tillNext,
             )
@@ -434,6 +436,7 @@ fun setupMoveToolController(
 
 fun setupKnotBrushToolController(
     editor: Editor,
+    knotBrushMode: KnotBrushMode,
     root: HTMLElement,
     tillDetach: Till,
 ) {
@@ -445,7 +448,7 @@ fun setupKnotBrushToolController(
             val knotCoord: Cell<IntVec2> =
                 editor.camera.transformToWorld(viewportPosition)
 
-            editor.paintKnots(
+            knotBrushMode.paintKnots(
                 knotCoord = knotCoord,
                 till = mouseDrag.tillEnd,
             )

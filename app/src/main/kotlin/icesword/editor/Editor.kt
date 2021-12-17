@@ -46,7 +46,6 @@ interface EditorMode
 
 enum class Tool : EditorMode {
     MOVE,
-    KNOT_BRUSH
 }
 
 class Editor(
@@ -206,6 +205,16 @@ class Editor(
         }
     }
 
+    private fun enterKnotBrushMode(
+        knotMesh: KnotMesh,
+    ) {
+        enterMode(
+            editorMode = KnotBrushMode(
+                knotMesh = knotMesh,
+            ),
+        )
+    }
+
     private fun enterEditPathElevatorMode() {
         (selectedEntity.sample() as? PathElevator)?.let { selectedPathElevator ->
             enterModeTilled(buildEditPathElevatorMode(
@@ -253,15 +262,6 @@ class Editor(
 
     private fun selectTool(tool: Tool) {
         enterMode(tool)
-    }
-
-    private val _selectedKnotBrush = MutCell(KnotBrush.Additive)
-
-    val selectedKnotBrush: Cell<KnotBrush> = _selectedKnotBrush
-
-    fun selectKnotBrush(knotBrush: KnotBrush) {
-        selectTool(Tool.KNOT_BRUSH)
-        _selectedKnotBrush.set(knotBrush)
     }
 
     // TODO: Restore the select-entity-below functionality
@@ -331,7 +331,9 @@ class Editor(
                     }
 
                     override fun enterKnotBrushMode() {
-                        this@Editor.selectTool(Tool.KNOT_BRUSH)
+                        this@Editor.enterKnotBrushMode(
+                            knotMesh = selectedEntity,
+                        )
                     }
                 }
                 is TileEntity -> null
@@ -374,32 +376,6 @@ class Editor(
         val selectedEntities = this.selectedEntities.sample()
 
         world.removeEntities(selectedEntities)
-    }
-
-    fun paintKnots(
-        knotCoord: Cell<IntVec2>,
-        till: Till,
-    ) {
-        val selectedKnotMeshOrNull: KnotMesh? =
-            selectedEntity.sample() as? KnotMesh
-
-        val selectedBrush: KnotBrush =
-            selectedKnotBrush.sample()
-
-        selectedKnotMeshOrNull?.let { selectedKnotMesh ->
-            knotCoord.reactTill(till) { worldPosition ->
-                val globalKnotCoord = closestKnot(worldPosition)
-
-                when (selectedBrush) {
-                    KnotBrush.Additive -> selectedKnotMesh.putKnot(
-                        globalKnotCoord = globalKnotCoord,
-                    )
-                    KnotBrush.Eraser -> selectedKnotMesh.removeKnot(
-                        globalKnotCoord = globalKnotCoord,
-                    )
-                }
-            }
-        }
     }
 
     val insertionMode: Cell<InsertionMode?> = editorMode.map { it as? InsertionMode }

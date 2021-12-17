@@ -4,6 +4,7 @@ import icesword.editor.Editor
 import icesword.editor.ElasticPrototype
 import icesword.editor.InsertionPrototype
 import icesword.editor.KnotBrush
+import icesword.editor.KnotBrushMode
 import icesword.editor.KnotPrototype
 import icesword.editor.retails.Retail
 import icesword.editor.WapObjectPrototype
@@ -102,16 +103,3 @@ fun createInsertEntityButton(
         selected = editor.insertionMode.map { it?.insertionPrototype },
         select = { editor.enterInsertionMode(it) },
     ).build(tillDetach = tillDetach).element
-
-fun createKnotBrushButton(
-    editor: Editor,
-    knotBrush: KnotBrush,
-    tillDetach: Till,
-): HTMLElement =
-    createSelectButton(
-        value = knotBrush,
-        name = knotBrush.name,
-        selected = editor.selectedKnotBrush,
-        select = editor::selectKnotBrush,
-        tillDetach = tillDetach,
-    )

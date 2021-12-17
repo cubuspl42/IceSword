@@ -1,25 +1,22 @@
 package icesword
 
-import TextureBank
 import icesword.editor.App
-import icesword.editor.CrateStack
 import icesword.editor.CrateStackSelectionMode
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.EditorMode
 import icesword.editor.EnemySelectionMode
-import icesword.editor.FloorSpikeRow
 import icesword.editor.KnotSelectMode
 import icesword.editor.EntitySelectMode
 import icesword.editor.FloorSpikeRowSelectionMode
+import icesword.editor.KnotBrush
+import icesword.editor.KnotBrushMode
 import icesword.editor.KnotMeshSelectionMode
 import icesword.editor.PathElevatorPath
 import icesword.editor.PathElevatorSelectionMode
-import icesword.editor.Rope
 import icesword.editor.RopeSelectionMode
 import icesword.editor.SelectionMode
 import icesword.editor.Tool
-import icesword.editor.WapObject
 import icesword.editor.WapObjectSelectionMode
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
@@ -200,6 +197,9 @@ fun createEditorModeButtonsRow(
     tillDetach: Till,
 ): HTMLElement? =
     when (editorMode) {
+        is KnotBrushMode -> createKnotBrushModeButtonsRow(
+            knotBrushMode = editorMode,
+        ).buildElement(tillDetach)
         is KnotSelectMode -> createKnotSelectModeButtonsRow(
             knotSelectMode = editorMode,
             tillDetach = tillDetach,
@@ -216,10 +216,9 @@ fun createKnotMeshSelectionModeButtonsRow(
     knotMeshSelectionMode: KnotMeshSelectionMode,
     tillDetach: Till,
 ): HTMLElement {
-    val knotBrushButton = createToolButton(
+    val knotBrushButton = createModeButton<KnotBrushMode>(
         editor = editor,
         name = "Knot brush",
-        tool = Tool.KNOT_BRUSH,
         enterMode = { knotMeshSelectionMode.enterKnotBrushMode() },
         tillDetach = tillDetach,
     )
@@ -238,6 +237,36 @@ fun createKnotMeshSelectionModeButtonsRow(
             HTMLWidget.of(knotSelectButton),
         ),
     ).buildElement(tillDetach = tillDetach)
+}
+
+fun createKnotBrushModeButtonsRow(
+    knotBrushMode: KnotBrushMode,
+): HTMLWidgetB<*> = createRow(
+    children = listOf(
+        createKnotBrushButton(
+            knotBrushMode = knotBrushMode,
+            knotBrush = KnotBrush.Additive,
+        ),
+        createKnotBrushButton(
+            knotBrushMode = knotBrushMode,
+            knotBrush = KnotBrush.Eraser,
+        ),
+    ),
+)
+
+private fun createKnotBrushButton(
+    knotBrushMode: KnotBrushMode,
+    knotBrush: KnotBrush,
+): HTMLWidgetB<*> = object : HTMLWidgetB<HTMLWidget> {
+    override fun build(tillDetach: Till): HTMLWidget = HTMLWidget.of(
+        createSelectButton(
+            value = knotBrush,
+            name = knotBrush.name,
+            selected = knotBrushMode.selectedKnotBrush,
+            select = knotBrushMode::selectKnotBrush,
+            tillDetach = tillDetach,
+        ),
+    )
 }
 
 fun createKnotSelectModeButtonsRow(

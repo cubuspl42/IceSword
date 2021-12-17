@@ -3,7 +3,6 @@ package icesword
 import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
 import icesword.editor.KnotBrush
-import icesword.editor.retails.Retail
 import icesword.editor.WapObjectPrototype
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
@@ -47,21 +46,6 @@ fun editorSideBar(
                 editor = editor,
                 retailUiPrototype = retailUiPrototype,
                 tillDetach = tillDetach,
-            ),
-            createSection(
-                title = "Knot brush",
-                children = listOf(
-                    createKnotBrushButton(
-                        editor = editor,
-                        knotBrush = KnotBrush.Additive,
-                        tillDetach = tillDetach,
-                    ),
-                    createKnotBrushButton(
-                        editor = editor,
-                        knotBrush = KnotBrush.Eraser,
-                        tillDetach = tillDetach,
-                    ),
-                ),
             ),
         ).forEach(::appendChild)
     }
