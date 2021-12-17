@@ -3,16 +3,12 @@ package icesword.editor
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.Stream
-import icesword.frp.StreamSink
 import icesword.frp.Till
-import icesword.frp.Tilled
 import icesword.frp.filterDynamic
 import icesword.frp.map
-import icesword.frp.mergeWith
 import icesword.frp.pin
 import icesword.frp.reactTill
 import icesword.geometry.IntRect
-import icesword.geometry.IntVec2
 
 
 class EntitySelectMode(
@@ -49,10 +45,6 @@ class EntitySelectMode(
         }
     }
 
-    private fun selectEntities(entities: Set<Entity>) {
-        editor.selectEntities(entities)
-    }
-
     inner class EntityAreaSelectingMode(
         selectionArea: Cell<IntRect>,
         confirm: Stream<Unit>,
@@ -63,7 +55,10 @@ class EntitySelectMode(
 
         init {
             confirm.reactTill(till = tillExit) {
-                selectEntities(coveredEntities.volatileContentView)
+                editor.selectEntitiesByArea(
+                    entities = coveredEntities.volatileContentView,
+                    selectionArea = selectionArea.sample(),
+                )
             }
         }
 

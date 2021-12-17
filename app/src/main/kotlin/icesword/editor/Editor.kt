@@ -30,6 +30,7 @@ import icesword.frp.mapTillNext
 import icesword.frp.reactTill
 import icesword.frp.switchMap
 import icesword.frp.switchMapNotNull
+import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.DumpWwd.dumpWwd
 import icesword.wwd.OutputDataStream.OutputStream
@@ -285,8 +286,6 @@ class Editor(
         enterMode(tool)
     }
 
-    // TODO: Restore the select-entity-below functionality
-
     private val _selectedEntities: MutCell<Set<Entity>> = MutCell(emptySet())
 
     private val selectedEntities: Cell<Set<Entity>> = _selectedEntities
@@ -372,9 +371,35 @@ class Editor(
             }
         }
 
-    fun selectEntities(entities: Set<Entity>) {
-        println("Selecting entities: $entities")
-        _selectedEntities.set(entities)
+    fun selectEntitiesByArea(
+        entities: Set<Entity>,
+        selectionArea: IntRect,
+    ) {
+        val viewTransform = camera.transform.transform.sample()
+        val viewSelectionArea = viewTransform.transform(selectionArea)
+
+        if (viewSelectionArea.area > 4) {
+            _selectedEntities.set(entities)
+        } else {
+            // If selection area is very small, let's assume the intention was
+            // to select the next entity, not perform actual area selection
+
+            val selectedEntities = this.selectedEntities.sample()
+
+            val entitiesInArea = this.world.entities.volatileContentView
+                .filter { it.isSelectableIn(selectionArea) }
+
+            if (entitiesInArea.isEmpty()) {
+                _selectedEntities.set(emptySet())
+            } else {
+                val entityToSelect = selectedEntities.singleOrNull()?.let { selectedEntity ->
+                    val selectedEntityIndex = entitiesInArea.indexOfOrNull(selectedEntity)
+                    selectedEntityIndex?.let { entitiesInArea[(it + 1) % entitiesInArea.size] }
+                } ?: entitiesInArea.first()
+
+                _selectedEntities.set(setOf(entityToSelect))
+            }
+        }
     }
 
     fun isEntitySelected(entity: Entity): Cell<Boolean> =

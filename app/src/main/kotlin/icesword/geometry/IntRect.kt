@@ -118,6 +118,9 @@ data class IntRect(
     val bottomLeft: IntVec2
         get() = IntVec2(this.xMin, this.yMax)
 
+    val area: Int
+        get() = width * height
+
     fun overlaps(b: IntRect): Boolean =
         this.xMin < b.xMax && b.xMin < this.xMax &&
                 this.yMin < b.yMax && b.yMin < this.yMax
