@@ -10,6 +10,8 @@ import icesword.editor.retails.Retail
 import icesword.editor.WapObjectPrototype
 import icesword.frp.Till
 import icesword.frp.map
+import icesword.html.HTMLWidget
+import icesword.html.HTMLWidgetB
 import icesword.ui.createImageSelectButton
 import icesword.ui.createSelectButton
 import org.w3c.dom.HTMLElement
@@ -103,3 +105,15 @@ fun createInsertEntityButton(
         selected = editor.insertionMode.map { it?.insertionPrototype },
         select = { editor.enterInsertionMode(it) },
     ).build(tillDetach = tillDetach).element
+
+fun createKnotPaintButton(
+    editor: Editor,
+    imagePath: String,
+    knotPrototype: KnotPrototype,
+): HTMLWidgetB<*> =
+    createImageSelectButton(
+        value = knotPrototype,
+        imagePath = imagePath,
+        selected = editor.selectedKnotPrototype,
+        select = { editor.enterKnotPaintMode(knotPrototype) },
+    )

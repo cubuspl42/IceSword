@@ -47,6 +47,11 @@ fun editorSideBar(
                 retailUiPrototype = retailUiPrototype,
                 tillDetach = tillDetach,
             ),
+            createBrushesSection(
+                editor = editor,
+                retailUiPrototype = retailUiPrototype,
+                tillDetach = tillDetach,
+            ),
         ).forEach(::appendChild)
     }
 }
@@ -136,6 +141,28 @@ private fun createInsertSection(
             columnCount = 2,
             gap = 4.px,
             children = children.map { HTMLWidget.of(it) },
+        ).build(tillDetach).resolve()
+    )
+}
+
+private fun createBrushesSection(
+    editor: Editor,
+    retailUiPrototype: RetailUiPrototype,
+    tillDetach: Till,
+): HTMLElement {
+    val children =  retailUiPrototype.buildBrushesButtons(
+        editor = editor,
+    )
+
+    return createTitledSection(
+        title = "Brushes",
+        child = createGrid(
+            style = DynamicStyleDeclaration(
+                justifyItems = constant(Align.center),
+            ),
+            columnCount = 2,
+            gap = 4.px,
+            children = children,
         ).build(tillDetach).resolve()
     )
 }

@@ -6,6 +6,7 @@ import icesword.editor.Editor
 import icesword.editor.PlatformPrototype
 import icesword.editor.retails.Retail2
 import icesword.frp.Till
+import icesword.html.HTMLWidgetB
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -31,4 +32,7 @@ object Retail2UiPrototype : RetailUiPrototype {
             tillDetach = tillDetach,
         ),
     )
+
+    override fun buildBrushesButtons(editor: Editor): List<HTMLWidgetB<*>> =
+        emptyList()
 }

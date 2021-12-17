@@ -6,6 +6,7 @@ import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
 import icesword.editor.InsertWapObjectCommand
 import icesword.editor.KnotBrushMode
+import icesword.editor.KnotPaintMode
 import icesword.editor.OffsetTilesView
 import icesword.editor.Tool
 import icesword.editor.WapObjectAlikeInsertionMode
@@ -114,6 +115,12 @@ fun worldView(
             is KnotBrushMode -> setupKnotBrushToolController(
                 editor = editor,
                 knotBrushMode = mode,
+                root = root,
+                tillDetach = tillNext,
+            )
+            is KnotPaintMode -> setupKnotPaintModeController(
+                editor = editor,
+                knotPaintMode = mode,
                 root = root,
                 tillDetach = tillNext,
             )
@@ -451,6 +458,27 @@ fun setupKnotBrushToolController(
             knotBrushMode.paintKnots(
                 knotCoord = knotCoord,
                 till = mouseDrag.tillEnd,
+            )
+        }
+}
+
+fun setupKnotPaintModeController(
+    editor: Editor,
+    knotPaintMode: KnotPaintMode,
+    root: HTMLElement,
+    tillDetach: Till,
+) {
+    root.onMouseDrag(button = MouseButton.Primary, till = tillDetach)
+        .reactTill(tillDetach) { mouseDrag ->
+            val viewportPosition =
+                mouseDrag.position.map(root::calculateRelativePosition)
+
+            val worldPosition: Cell<IntVec2> =
+                editor.camera.transformToWorld(viewportPosition)
+
+            knotPaintMode.paintKnots(
+                brushWorldPosition = worldPosition,
+                tillStop = mouseDrag.tillEnd,
             )
         }
 }

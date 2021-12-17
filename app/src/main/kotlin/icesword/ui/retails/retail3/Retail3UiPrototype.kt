@@ -5,6 +5,7 @@ import icesword.createInsertEnemyButton
 import icesword.createInsertEntityButton
 import icesword.createInsertKnotMeshButton
 import icesword.createInsertWapObjectButton
+import icesword.createKnotPaintButton
 import icesword.editor.CrateStackPrototype
 import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
@@ -17,6 +18,7 @@ import icesword.editor.TreeCrownPrototype
 import icesword.editor.WapObjectPrototype
 import icesword.editor.retails.Retail3
 import icesword.frp.Till
+import icesword.html.HTMLWidgetB
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -149,4 +151,18 @@ object Retail3UiPrototype : RetailUiPrototype {
             tillDetach = tillDetach,
         ),
     )
+
+    override fun buildBrushesButtons(editor: Editor): List<HTMLWidgetB<*>> =
+        listOf(
+            createKnotPaintButton(
+                editor = editor,
+                imagePath = "images/CLAW/LEVEL3/TILES/ACTION/621.png",
+                knotPrototype = KnotPrototype.Level3UndergroundRockPrototype,
+            ),
+            createKnotPaintButton(
+                editor = editor,
+                imagePath = "images/CLAW/LEVEL3/TILES/ACTION/604.png",
+                knotPrototype = KnotPrototype.Level3OvergroundRockPrototype,
+            ),
+        )
 }

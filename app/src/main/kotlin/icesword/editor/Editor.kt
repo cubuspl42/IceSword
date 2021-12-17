@@ -25,6 +25,7 @@ import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.contains
 import icesword.frp.map
+import icesword.frp.mapNested
 import icesword.frp.mapTillNext
 import icesword.frp.reactTill
 import icesword.frp.switchMap
@@ -168,6 +169,14 @@ class Editor(
         )
     }
 
+    private fun buildKnotPaintMode(knotPrototype: KnotPrototype) = object : Tilled<KnotPaintMode> {
+        override fun build(till: Till) = KnotPaintMode(
+            knotPrototype = knotPrototype,
+            knotMeshes = world.knotMeshes,
+            tillExit = till,
+        )
+    }
+
     private fun buildEditPathElevatorMode(
         pathElevator: PathElevator,
     ) = object : Tilled<EditPathElevatorMode> {
@@ -235,6 +244,12 @@ class Editor(
         enterModeTillExit { editorMode }
     }
 
+    fun enterKnotPaintMode(knotPrototype: KnotPrototype) {
+        enterModeTilled(
+            mode = buildKnotPaintMode(knotPrototype = knotPrototype),
+        )
+    }
+
     val editorMode: Cell<EditorMode> = _editorMode
         .mapTillNext(tillFreeze = tillDispose) { tilled, tillNext ->
             tilled.build(till = tillNext)
@@ -247,6 +262,12 @@ class Editor(
 
     val knotSelectMode: Cell<KnotSelectMode?> =
         editorMode.map { it as? KnotSelectMode }
+
+    val knotPaintMode: Cell<KnotPaintMode?> =
+        editorMode.map { it as? KnotPaintMode }
+
+    val selectedKnotPrototype =
+        knotPaintMode.mapNested { it.knotPrototype }
 
     private val entityAreaSelectingMode: Cell<EntityAreaSelectingMode?> =
         entitySelectMode.switchMapNotNull { it.entityAreaSelectingMode }
@@ -352,6 +373,7 @@ class Editor(
         }
 
     fun selectEntities(entities: Set<Entity>) {
+        println("Selecting entities: $entities")
         _selectedEntities.set(entities)
     }
 

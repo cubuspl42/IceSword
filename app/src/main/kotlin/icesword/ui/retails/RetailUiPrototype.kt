@@ -17,6 +17,8 @@ import icesword.editor.retails.Retail7
 import icesword.editor.retails.Retail8
 import icesword.editor.retails.Retail9
 import icesword.frp.Till
+import icesword.html.HTMLWidget
+import icesword.html.HTMLWidgetB
 import icesword.ui.retails.retail1.Retail1UiPrototype
 import icesword.ui.retails.retail10.Retail10UiPrototype
 import icesword.ui.retails.retail11.Retail11UiPrototype
@@ -59,4 +61,8 @@ interface RetailUiPrototype {
         editor: Editor,
         tillDetach: Till,
     ): List<HTMLElement>
+
+    fun buildBrushesButtons(
+        editor: Editor,
+    ): List<HTMLWidgetB<*>>
 }
