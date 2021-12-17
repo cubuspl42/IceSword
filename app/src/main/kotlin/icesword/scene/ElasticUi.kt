@@ -264,20 +264,16 @@ fun createEntityFrameElement(
     entity: Entity,
     boundingBox: Cell<IntRect>,
     tillDetach: Till,
-): SVGElement {
-    return createDraggableOverlayElement(
+): SVGElement =
+    createDraggableOverlayElement(
         editor = editor,
         entity = entity,
         outer = outer,
         till = tillDetach,
-    ) { cursor ->
+    ) { context ->
         val isAreaSelectionCovered = editor.isAreaSelectionCovered(entity)
 
         val isSelected = editor.isEntitySelected(entity)
-
-        val pointerEvents = isSelected.map {
-            if (it) null else PointerEvents.none
-        }
 
         val stroke = Cell.map2(
             isSelected,
@@ -296,8 +292,8 @@ fun createEntityFrameElement(
             translate = boundingBox.map { it.position },
             strokeString = stroke,
             style = DynamicStyleDeclaration(
-                pointerEvents = pointerEvents,
-                cursor = cursor,
+                pointerEvents = context.map { it.pointerEvents },
+                cursor = context.map { it.cursor },
             ),
             tillDetach = tillDetach,
         ).apply {
@@ -306,4 +302,3 @@ fun createEntityFrameElement(
 
         box
     }
-}

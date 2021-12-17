@@ -72,15 +72,12 @@ class DynamicWapSprite(
             imageSetId: ImageSetId,
             position: Cell<IntVec2>,
             i: Int = -1,
-        ): DynamicWapSprite {
-            println("fromImageSet: $imageSetId")
-            return fromImageSetDynamic(
+        ): DynamicWapSprite = fromImageSetDynamic(
                 rezIndex = rezIndex,
                 imageSetId = Cell.constant(imageSetId),
                 position = position,
                 i = i
             )
-        }
 
         fun fromImageSetDynamic(
             rezIndex: RezIndex,
