@@ -5,12 +5,12 @@ import icesword.createInsertEnemyButton
 import icesword.createInsertEntityButton
 import icesword.createInsertKnotMeshButton
 import icesword.createInsertWapObjectButton
-import icesword.editor.ColumnPrototype
+import icesword.editor.elastic.prototype.ColumnPrototype
 import icesword.editor.CrateStackPrototype
 import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
 import icesword.editor.KnotPrototype
-import icesword.editor.LadderPrototype
+import icesword.editor.elastic.prototype.LadderPrototype
 import icesword.editor.retails.Retail1
 import icesword.editor.wap_object.prototype.Level1CrumblingPegPrototype
 import icesword.editor.wap_object.prototype.Level1RatPrototype

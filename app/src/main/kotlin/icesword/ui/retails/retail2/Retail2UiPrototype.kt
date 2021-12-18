@@ -3,9 +3,9 @@ package icesword.ui.retails.retail2
 import icesword.createInsertElasticButton
 import icesword.createInsertEnemyButton
 import icesword.createInsertWapObjectButton
-import icesword.editor.DoublePilePrototype
+import icesword.editor.elastic.prototype.DoublePilePrototype
 import icesword.editor.Editor
-import icesword.editor.PlatformPrototype
+import icesword.editor.elastic.prototype.PlatformPrototype
 import icesword.editor.retails.Retail2
 import icesword.editor.wap_object.prototype.Retail2Health
 import icesword.editor.wap_object.prototype.LaRauxPrototype

@@ -1,7 +1,7 @@
 package icesword
 
 import icesword.editor.Editor
-import icesword.editor.ElasticPrototype
+import icesword.editor.elastic.prototype.ElasticPrototype
 import icesword.editor.InsertionPrototype
 import icesword.editor.KnotPrototype
 import icesword.editor.retails.Retail

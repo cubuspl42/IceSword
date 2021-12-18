@@ -12,6 +12,7 @@ import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.RopeInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
+import icesword.editor.elastic.prototype.ElasticPrototype
 import icesword.editor.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
 import icesword.editor.retails.Retail
 import icesword.editor.wap_object.prototype.WapObjectPrototype
