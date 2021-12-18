@@ -5,6 +5,9 @@ import icesword.editor.ElevatorPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
+import icesword.editor.elastic.ElasticStructurePattern
+import icesword.editor.elastic.ElasticStructurePatternOrientation
+import icesword.editor.elastic.RectangularMetaTilePattern
 import icesword.editor.encode
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.editor.retails.retail1.retail1KnotStructurePatterns
@@ -21,6 +24,29 @@ private val retailTileGenerator = object : TileGenerator {
         }
     }
 }
+
+val retail1PlatformPattern = ElasticStructurePattern(
+    startingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(
+            MetaTile(331),
+        ),
+        width = 1,
+    ),
+    repeatingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(
+            MetaTile(332),
+        ),
+        width = 1,
+    ),
+    endingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(
+            MetaTile(334),
+        ),
+        width = 1,
+    ),
+    orientation = ElasticStructurePatternOrientation.Horizontal,
+)
+
 
 object Retail1 : Retail(naturalIndex = 1), RetailLadderPrototype {
     object MetaTiles {

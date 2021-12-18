@@ -7,7 +7,6 @@ import icesword.editor.retails.Retail3
 import icesword.editor.retails.RetailLadderPrototype
 import icesword.editor.retails.doublePilePattern
 import icesword.editor.retails.retail1.retail1ColumnPattern
-import icesword.editor.retails.retail2PlatformPattern
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.serialization.SerialName
@@ -113,16 +112,6 @@ object SpikesPrototype : ElasticPrototype() {
         if (retail !is Retail3) throw UnsupportedOperationException()
         return Generator
     }
-}
-
-@Serializable
-@SerialName("Level2Platform")
-object PlatformPrototype : ElasticPrototype() {
-    override val defaultSize: IntSize = IntSize(5, 2)
-
-    private val generator = retail2PlatformPattern.toElasticGenerator()
-
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
 
 @Serializable
