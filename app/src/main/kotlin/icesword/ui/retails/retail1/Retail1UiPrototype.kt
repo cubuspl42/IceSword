@@ -12,7 +12,9 @@ import icesword.editor.InsertionPrototype
 import icesword.editor.KnotPrototype
 import icesword.editor.elastic.prototype.LadderPrototype
 import icesword.editor.elastic.prototype.Retail1PlatformPrototype
+import icesword.editor.elastic.prototype.Retail1SpikesPrototype
 import icesword.editor.elastic.prototype.Retail2PlatformPrototype
+import icesword.editor.elastic.prototype.Retail3SpikesPrototype
 import icesword.editor.retails.Retail1
 import icesword.editor.wap_object.prototype.Level1CrumblingPegPrototype
 import icesword.editor.wap_object.prototype.Level1RatPrototype
@@ -25,6 +27,7 @@ import icesword.frp.Till
 import icesword.html.HTMLWidgetB
 import icesword.ui.retails.RetailUiPrototype
 import icesword.ui.retails.retail2.Retail2UiPrototype
+import icesword.ui.retails.retail3.Retail3UiPrototype
 import org.w3c.dom.HTMLElement
 
 object Retail1UiPrototype : RetailUiPrototype {
@@ -116,6 +119,13 @@ object Retail1UiPrototype : RetailUiPrototype {
             prototype = Retail1PlatformPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL1/TILES/ACTION/331.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail1SpikesPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL1/TILES/ACTION/323.png",
             tillDetach = tillDetach,
         ),
 
