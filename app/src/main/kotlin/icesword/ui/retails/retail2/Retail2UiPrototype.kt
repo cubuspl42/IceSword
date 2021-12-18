@@ -3,9 +3,10 @@ package icesword.ui.retails.retail2
 import icesword.createInsertElasticButton
 import icesword.createInsertEnemyButton
 import icesword.createInsertWapObjectButton
-import icesword.editor.elastic.prototype.DoublePilePrototype
+import icesword.editor.elastic.prototype.Retail2DoublePilePrototype
 import icesword.editor.Editor
 import icesword.editor.elastic.prototype.Retail2PlatformPrototype
+import icesword.editor.elastic.prototype.Retail2TowerTopPrototype
 import icesword.editor.retails.Retail2
 import icesword.editor.wap_object.prototype.Retail2Health
 import icesword.editor.wap_object.prototype.LaRauxPrototype
@@ -48,9 +49,16 @@ object Retail2UiPrototype : RetailUiPrototype {
         ),
         createInsertElasticButton(
             editor = editor,
-            prototype = DoublePilePrototype,
+            prototype = Retail2DoublePilePrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL2/TILES/ACTION/113.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail2TowerTopPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL2/TILES/ACTION/071.png",
             tillDetach = tillDetach,
         ),
         createInsertEnemyButton(

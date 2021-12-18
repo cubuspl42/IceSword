@@ -18,8 +18,15 @@ data class RectangularMetaTilePattern(
 
     val length = metaTiles.size / width
 
-    fun getLayer(layerIndex: Int): List<MetaTile> =
-        metaTiles.subList(layerIndex * width, width)
+    fun getLayer(layerIndex: Int): List<MetaTile> {
+        val fromIndex = layerIndex * width
+        val toIndex = fromIndex + width
+
+        return metaTiles.subList(
+            fromIndex = fromIndex,
+            toIndex = toIndex,
+        )
+    }
 
     // -1 is the last one, -2 is one befoe last, etc.
     fun getLayerBackward(backwardLayerIndex: Int): List<MetaTile> {

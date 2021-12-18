@@ -5,7 +5,6 @@ import icesword.editor.MetaTile
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail3
 import icesword.editor.retails.RetailLadderPrototype
-import icesword.editor.retails.doublePilePattern
 import icesword.editor.retails.retail1.retail1ColumnPattern
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
@@ -89,16 +88,6 @@ object LadderPrototype : ElasticPrototype() {
         if (retail !is RetailLadderPrototype) throw UnsupportedOperationException()
         return retail.ladderGenerator
     }
-}
-
-@Serializable
-@SerialName("Level2DoublePile")
-object DoublePilePrototype : ElasticPrototype() {
-    override val defaultSize: IntSize = IntSize(1, 3)
-
-    private val generator = doublePilePattern.toElasticGenerator()
-
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
 
 @Serializable

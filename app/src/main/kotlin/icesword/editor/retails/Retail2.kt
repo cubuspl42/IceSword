@@ -52,6 +52,30 @@ val doublePilePattern = run {
     )
 }
 
+val retail2TowerTop = ElasticStructurePattern(
+    startingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(
+            MetaTile(68), MetaTile(70), MetaTile(75),
+            MetaTile(68), MetaTile(71), MetaTile(76),
+        ),
+        width = 3,
+    ),
+    repeatingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(
+            MetaTile(68), MetaTile(72), MetaTile(77),
+        ),
+        width = 3,
+    ),
+    endingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(
+            MetaTile(68), MetaTile(73), MetaTile(78),
+            MetaTile(68), MetaTile(74), MetaTile(79),
+        ),
+        width = 3,
+    ),
+    orientation = ElasticStructurePatternOrientation.Horizontal,
+)
+
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         val metaTiles = Retail2.MetaTiles
