@@ -15,30 +15,92 @@ import icesword.editor.retails.retail3.retail3KnotStructurePatterns
 import icesword.editor.retails.retail3.retail3LadderPattern
 import icesword.wwd.Wwd
 
-val retail3SpikesPattern = ElasticStructurePattern(
-    startingPattern = RectangularMetaTilePattern(
-        metaTiles = emptyList(),
-        width = 0,
-    ),
-    repeatingPattern = RectangularMetaTilePattern(
-        metaTiles = listOf(
-            Retail3.MetaTiles.Spikes.Top, Retail3.MetaTiles.Spikes.Bottom,
+private fun spikesPattern(spikes: Retail3.MetaTiles.Spikes): ElasticStructurePattern =
+    ElasticStructurePattern(
+        startingPattern = RectangularMetaTilePattern(
+            metaTiles = emptyList(),
+            width = 0,
         ),
-        width = 2,
-    ),
-    endingPattern = RectangularMetaTilePattern(
-        metaTiles = emptyList(),
-        width = 0,
-    ),
-    orientation = ElasticStructurePatternOrientation.Horizontal,
-)
+        repeatingPattern = RectangularMetaTilePattern(
+            metaTiles = listOf(spikes.top, spikes.bottom),
+            width = 2,
+        ),
+        endingPattern = RectangularMetaTilePattern(
+            metaTiles = emptyList(),
+            width = 0,
+        ),
+        orientation = ElasticStructurePatternOrientation.Horizontal,
+    )
+
+val retail3LightSpikesPattern = spikesPattern(spikes = Retail3.MetaTiles.LightSpikes)
+
+val retail3DarkSpikesPattern = spikesPattern(spikes = Retail3.MetaTiles.DarkSpikes)
+
+class SpikesTileGenerator(
+    private val spikes: Retail3.MetaTiles.Spikes,
+    private val tileset: SpikesTileset,
+) : TileGenerator {
+    data class SpikesTileset(
+        val topLeft: Int,
+        val bottomLeft: Int,
+        val top: Int,
+        val bottom: Int,
+        val topRightOuter: Int,
+        val topRightInner: Int,
+        val bottomRightInner: Int,
+    )
+
+    override fun buildTile(context: TileGeneratorContext): Int? = context.run {
+        when {
+            // Spikes
+
+            containsAll(spikes.top, Rock.RightSide) -> tileset.topLeft
+            containsAll(spikes.bottom, Rock.LowerLeftCorner) -> tileset.bottomLeft
+
+            containsAll(spikes.bottom, Rock.Top) -> tileset.bottom
+
+            containsAll(spikes.top, Rock.LeftSideOuter) -> tileset.topRightOuter
+            containsAll(spikes.top, Rock.LeftSideInner) -> tileset.topRightInner
+            containsAll(spikes.bottom, Rock.LowerRightCornerOuter) -> tileset.bottom
+            containsAll(spikes.bottom, Rock.LowerRightCornerInner) -> tileset.bottomRightInner
+
+            else -> null
+        }
+    }
+}
 
 private val retailTileGenerator = object : TileGenerator {
+    private val lightSpikesTileGenerator = SpikesTileGenerator(
+        spikes = Retail3.MetaTiles.LightSpikes,
+        tileset = SpikesTileGenerator.SpikesTileset(
+            topLeft = 685,
+            bottomLeft = 691,
+            top = 686,
+            bottom = 692,
+            topRightOuter = 689,
+            topRightInner = 690,
+            bottomRightInner = 696,
+        )
+    )
+
+    private val darkSpikesTileGenerator = SpikesTileGenerator(
+        spikes = Retail3.MetaTiles.DarkSpikes,
+        tileset = SpikesTileGenerator.SpikesTileset(
+            topLeft = 712,
+            bottomLeft = 713,
+            top = 698,
+            bottom = 704,
+            topRightOuter = 701,
+            topRightInner = 702,
+            bottomRightInner = 709,
+        )
+    )
+
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         val metaTiles = Retail3.MetaTiles
         val ladder = Retail3.MetaTiles.Ladder
 
-        when {
+        val tile = when {
             // Tree crown
             containsAll(MetaTile.Log, MetaTile.LeavesUpper) -> 647
             containsAll(MetaTile.Log, MetaTile.LeavesLower) -> 653
@@ -62,23 +124,30 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(ladder.core, MetaTile.LeavesLower) -> 667
 
             // Spikes
-            containsAll(Retail3.MetaTiles.Spikes.Top, Rock.RightSide) -> 712
-            containsAll(Retail3.MetaTiles.Spikes.Bottom, Rock.LowerLeftCorner) -> 713
+            containsAll(Retail3.MetaTiles.DarkSpikes.top, Rock.RightSide) -> 712
+            containsAll(Retail3.MetaTiles.DarkSpikes.bottom, Rock.LowerLeftCorner) -> 713
 
-            containsAll(Retail3.MetaTiles.Spikes.Bottom, Rock.Top) -> 704
+            containsAll(Retail3.MetaTiles.DarkSpikes.bottom, Rock.Top) -> 704
 
-            containsAll(Retail3.MetaTiles.Spikes.Top, Rock.LeftSideOuter) -> 701
-            containsAll(Retail3.MetaTiles.Spikes.Top, Rock.LeftSideInner) -> 702
-            containsAll(Retail3.MetaTiles.Spikes.Bottom, Rock.LowerRightCornerOuter) -> 704
-            containsAll(Retail3.MetaTiles.Spikes.Bottom, Rock.LowerRightCornerInner) -> 709 // 696
+            containsAll(Retail3.MetaTiles.DarkSpikes.top, Rock.LeftSideOuter) -> 701
+            containsAll(Retail3.MetaTiles.DarkSpikes.top, Rock.LeftSideInner) -> 702
+            containsAll(Retail3.MetaTiles.DarkSpikes.bottom, Rock.LowerRightCornerOuter) -> 704
+            containsAll(Retail3.MetaTiles.DarkSpikes.bottom, Rock.LowerRightCornerInner) -> 709 // 696
 
             else -> null
         }
+
+        tile ?: lightSpikesTileGenerator.buildTile(context) ?: darkSpikesTileGenerator.buildTile(context)
     }
 }
 
 object Retail3 : Retail(naturalIndex = 3), RetailLadderPrototype {
     object MetaTiles {
+        interface Spikes {
+            val top: MetaTile
+            val bottom: MetaTile
+        }
+
         object Ladder {
             val top = MetaTile(668)
 
@@ -95,9 +164,14 @@ object Retail3 : Retail(naturalIndex = 3), RetailLadderPrototype {
             object LowerRightCornerInner : MetaTile(643)
         }
 
-        object Spikes {
-            object Top : MetaTile(698)
-            object Bottom : MetaTile(704)
+        object LightSpikes : Spikes {
+            override val top = MetaTile(686)
+            override val bottom = MetaTile(692)
+        }
+
+        object DarkSpikes : Spikes {
+            override val top = MetaTile(698)
+            override val bottom = MetaTile(704)
         }
 
         val grass = MetaTile(604)

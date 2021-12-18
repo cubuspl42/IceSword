@@ -13,7 +13,8 @@ import icesword.editor.KnotPrototype
 import icesword.editor.RopePrototype
 import icesword.editor.elastic.prototype.LadderPrototype
 import icesword.editor.elastic.prototype.LogPrototype
-import icesword.editor.elastic.prototype.Retail3SpikesPrototype
+import icesword.editor.elastic.prototype.Retail3DarkSpikesPrototype
+import icesword.editor.elastic.prototype.Retail3LightSpikesPrototype
 import icesword.editor.elastic.prototype.TreeCrownPrototype
 import icesword.editor.retails.Retail3
 import icesword.editor.wap_object.prototype.Retail3Health
@@ -68,9 +69,16 @@ object Retail3UiPrototype : RetailUiPrototype {
         ),
         createInsertElasticButton(
             editor = editor,
-            prototype = Retail3SpikesPrototype,
+            prototype = Retail3LightSpikesPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL3/TILES/ACTION/686.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail3DarkSpikesPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL3/TILES/ACTION/698.png",
             tillDetach = tillDetach,
         ),
         createInsertKnotMeshButton(
