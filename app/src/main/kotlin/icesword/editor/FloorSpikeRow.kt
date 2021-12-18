@@ -3,7 +3,7 @@
 package icesword.editor
 
 import icesword.RezIndex
-import icesword.editor.WapObjectPrototype.FloorSpikePrototype
+import icesword.editor.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.dynamic_list.DynamicList

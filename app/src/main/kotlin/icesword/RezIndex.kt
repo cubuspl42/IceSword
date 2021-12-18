@@ -1,8 +1,6 @@
 package icesword
 
 import TextureBank
-import icesword.editor.WapObjectPrototype
-import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 

@@ -11,8 +11,14 @@ import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
 import icesword.editor.KnotPrototype
 import icesword.editor.LadderPrototype
-import icesword.editor.WapObjectPrototype
 import icesword.editor.retails.Retail1
+import icesword.editor.wap_object.prototype.Level1CrumblingPegPrototype
+import icesword.editor.wap_object.prototype.Level1RatPrototype
+import icesword.editor.wap_object.prototype.OfficerPrototype
+import icesword.editor.wap_object.prototype.Retail1Health
+import icesword.editor.wap_object.prototype.Retail1PowderKeg
+import icesword.editor.wap_object.prototype.SoldierPrototype
+import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
 import icesword.ui.retails.RetailUiPrototype
@@ -25,6 +31,20 @@ object Retail1UiPrototype : RetailUiPrototype {
         editor: Editor,
         tillDetach: Till,
     ): List<HTMLElement> = listOf(
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Health",
+            imagePath = "images/CLAW/LEVEL1/IMAGES/HEALTH/BREADWATER1.png",
+            wapObjectPrototype = Retail1Health,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "PowderKeg",
+            imagePath = "images/CLAW/LEVEL1/IMAGES/POWDERKEG/FRAME001.png",
+            wapObjectPrototype = Retail1PowderKeg,
+            tillDetach = tillDetach,
+        ),
         createInsertElasticButton(
             editor = editor,
             prototype = LadderPrototype,
@@ -52,7 +72,7 @@ object Retail1UiPrototype : RetailUiPrototype {
             editor = editor,
             text = "CrumblingPeg",
             imagePath = "images/CLAW/LEVEL1/IMAGES/CRUMBLINGPEG/FRAME001.png",
-            wapObjectPrototype = WapObjectPrototype.Level1CrumblingPegPrototype,
+            wapObjectPrototype = Level1CrumblingPegPrototype,
             tillDetach = tillDetach,
         ),
         createInsertEntityButton(
@@ -93,21 +113,28 @@ object Retail1UiPrototype : RetailUiPrototype {
             editor = editor,
             text = "Officer",
             imagePath = "images/CLAW/LEVEL1/IMAGES/OFFICER/FRAME001.png",
-            wapObjectPrototype = WapObjectPrototype.OfficerPrototype,
+            wapObjectPrototype = OfficerPrototype,
             tillDetach = tillDetach,
         ),
         createInsertEnemyButton(
             editor = editor,
             text = "Soldier",
             imagePath = "images/CLAW/LEVEL1/IMAGES/SOLDIER/FRAME001.png",
-            wapObjectPrototype = WapObjectPrototype.SoldierPrototype,
+            wapObjectPrototype = SoldierPrototype,
             tillDetach = tillDetach,
         ),
         createInsertEnemyButton(
             editor = editor,
             text = "Rat",
             imagePath = "images/CLAW/LEVEL1/IMAGES/RAT/FRAME001.png",
-            wapObjectPrototype = WapObjectPrototype.Level1RatPrototype,
+            wapObjectPrototype = Level1RatPrototype,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "MapPiece",
+            imagePath = "images/CLAW/GAME/IMAGES/MAPPIECE/MAPFRAG1.png",
+            wapObjectPrototype = WapObjectPrototype.MapPiece,
             tillDetach = tillDetach,
         ),
     )

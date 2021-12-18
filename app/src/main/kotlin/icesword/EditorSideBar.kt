@@ -2,8 +2,8 @@ package icesword
 
 import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
-import icesword.editor.KnotBrush
-import icesword.editor.WapObjectPrototype
+import icesword.editor.wap_object.prototype.Level1CrumblingPegPrototype
+import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.html.DynamicStyleDeclaration
@@ -14,6 +14,7 @@ import icesword.html.createHeading4
 import icesword.html.resolve
 import icesword.ui.retails.RetailUiPrototype
 import kotlinx.css.Align
+import kotlinx.css.Overflow
 import kotlinx.css.px
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node
@@ -30,6 +31,7 @@ fun editorSideBar(
         style.apply {
             display = "flex"
             flexDirection = "column"
+            overflowY = Overflow.scroll.toString()
 
             setProperty("gap", "16px")
 
@@ -125,6 +127,150 @@ private fun createInsertSection(
             wapObjectPrototype = WapObjectPrototype.SkullTreasurePrototype,
             tillDetach = tillDetach,
         ),
+
+
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "HealthPotion1",
+            imagePath = "images/CLAW/GAME/IMAGES/HEALTH/POTION1/HEALTH1.png",
+            wapObjectPrototype = WapObjectPrototype.HealthPotion1,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "HealthPotion2",
+            imagePath = "images/CLAW/GAME/IMAGES/HEALTH/POTION2/HEALTH2.png",
+            wapObjectPrototype = WapObjectPrototype.HealthPotion2,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "HealthPotion3",
+            imagePath = "images/CLAW/GAME/IMAGES/HEALTH/POTION3/HEALTH3.png",
+            wapObjectPrototype = WapObjectPrototype.HealthPotion3,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "AmmoShot",
+            imagePath = "images/CLAW/GAME/IMAGES/AMMO/SHOT/AMMO1.png",
+            wapObjectPrototype = WapObjectPrototype.AmmoShot,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "AmmoShotbag",
+            imagePath = "images/CLAW/GAME/IMAGES/AMMO/SHOTBAG/AMMO2.png",
+            wapObjectPrototype = WapObjectPrototype.AmmoShotbag,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "AmmoDeathbag",
+            imagePath = "images/CLAW/GAME/IMAGES/AMMO/DEATHBAG/AMMO3.png",
+            wapObjectPrototype = WapObjectPrototype.AmmoDeathbag,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Dynamite",
+            imagePath = "images/CLAW/GAME/IMAGES/DYNAMITE/FRAME001.png",
+            wapObjectPrototype = WapObjectPrototype.Dynamite,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "MagicGlow",
+            imagePath = "images/CLAW/GAME/IMAGES/MAGIC/GLOW/FRAME001.png",
+            wapObjectPrototype = WapObjectPrototype.MagicGlow,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "MagicStarGlow",
+            imagePath = "images/CLAW/GAME/IMAGES/MAGIC/STARGLOW/FRAME001.png",
+            wapObjectPrototype = WapObjectPrototype.MagicStarGlow,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "MagicClaw",
+            imagePath = "images/CLAW/GAME/IMAGES/MAGICCLAW/FRAME001.png",
+            wapObjectPrototype = WapObjectPrototype.MagicClaw,
+            tillDetach = tillDetach,
+        ),
+
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "ExtraLife",
+            imagePath = "images/CLAW/GAME/IMAGES/POWERUPS/EXTRALIFE/FRAME001.png",
+            wapObjectPrototype = WapObjectPrototype.ExtraLife,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "FireSword",
+            imagePath = "images/CLAW/GAME/IMAGES/POWERUPS/FIRESWORD/FRAME01.png",
+            wapObjectPrototype = WapObjectPrototype.FireSword,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Ghost",
+            imagePath = "images/CLAW/GAME/IMAGES/POWERUPS/GHOST/FRAME1.png",
+            wapObjectPrototype = WapObjectPrototype.Ghost,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "IceSword",
+            imagePath = "images/CLAW/GAME/IMAGES/POWERUPS/ICESWORD/FRAME001.png",
+            wapObjectPrototype = WapObjectPrototype.IceSword,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Invlulerable",
+            imagePath = "images/CLAW/GAME/IMAGES/POWERUPS/INVULNERABLE/FRAME01.png",
+            wapObjectPrototype = WapObjectPrototype.Invulnerable,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "LightningSword",
+            imagePath = "images/CLAW/GAME/IMAGES/POWERUPS/LIGHTNINGSWORD/FRAME001.png",
+            wapObjectPrototype = WapObjectPrototype.LightningSword,
+            tillDetach = tillDetach,
+        ),
+
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Catnip1",
+            imagePath = "images/CLAW/GAME/IMAGES/CATNIPS/NIP1/CATNIP1.png",
+            wapObjectPrototype = WapObjectPrototype.Catnip1,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Catnip2",
+            imagePath = "images/CLAW/GAME/IMAGES/CATNIPS/NIP2/CATNIP2.png",
+            wapObjectPrototype = WapObjectPrototype.Catnip2,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Checkpoint",
+            imagePath = "images/CLAW/GAME/IMAGES/CHECKPOINTFLAG/01.png",
+            wapObjectPrototype = WapObjectPrototype.Checkpoint,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "FirstSuperCheckpoint",
+            imagePath = "images/CLAW/GAME/IMAGES/SUPERCHECKPOINT/FRAME01.png",
+            wapObjectPrototype = WapObjectPrototype.FirstSuperCheckpoint,
+            tillDetach = tillDetach,
+        ),
     )
 
     val children = staticInsertionButtons + retailUiPrototype.buildInsertionButtons(
@@ -150,7 +296,7 @@ private fun createBrushesSection(
     retailUiPrototype: RetailUiPrototype,
     tillDetach: Till,
 ): HTMLElement {
-    val children =  retailUiPrototype.buildBrushesButtons(
+    val children = retailUiPrototype.buildBrushesButtons(
         editor = editor,
     )
 

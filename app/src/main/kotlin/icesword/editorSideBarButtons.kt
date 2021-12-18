@@ -3,17 +3,13 @@ package icesword
 import icesword.editor.Editor
 import icesword.editor.ElasticPrototype
 import icesword.editor.InsertionPrototype
-import icesword.editor.KnotBrush
-import icesword.editor.KnotBrushMode
 import icesword.editor.KnotPrototype
 import icesword.editor.retails.Retail
-import icesword.editor.WapObjectPrototype
+import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Till
 import icesword.frp.map
-import icesword.html.HTMLWidget
 import icesword.html.HTMLWidgetB
 import icesword.ui.createImageSelectButton
-import icesword.ui.createSelectButton
 import org.w3c.dom.HTMLElement
 
 fun createInsertElasticButton(

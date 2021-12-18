@@ -3,6 +3,7 @@
 package icesword.editor
 
 import icesword.RezIndex
+import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
 import icesword.frp.dynamic_list.sampleContent

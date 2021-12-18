@@ -12,8 +12,9 @@ import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.RopeInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
-import icesword.editor.WapObjectPrototype.FloorSpikePrototype
+import icesword.editor.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
 import icesword.editor.retails.Retail
+import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Cell
 import icesword.frp.CellSlot
 import icesword.frp.Stream

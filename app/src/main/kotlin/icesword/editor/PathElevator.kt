@@ -5,6 +5,7 @@ package icesword.editor
 import icesword.ImageMetadata
 import icesword.RezIndex
 import icesword.editor.retails.Retail
+import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Cell
 import icesword.frp.Loop.Companion.looped
 import icesword.frp.MutCell

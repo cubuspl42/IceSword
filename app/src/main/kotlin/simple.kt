@@ -81,7 +81,8 @@ private fun run() {
         width = "100vw"
         height = "100vh"
 
-//        overflow = "hidden"
+        overflowX = "hidden"
+        overflowY = "hidden"
 
         display = "grid"
         setProperty("grid-template-columns", "minmax(0, 1fr)")

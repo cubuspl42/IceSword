@@ -15,8 +15,12 @@ import icesword.editor.LogPrototype
 import icesword.editor.RopePrototype
 import icesword.editor.SpikesPrototype
 import icesword.editor.TreeCrownPrototype
-import icesword.editor.WapObjectPrototype
+import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.editor.retails.Retail3
+import icesword.editor.wap_object.prototype.Retail2Health
+import icesword.editor.wap_object.prototype.Retail2PowderKeg
+import icesword.editor.wap_object.prototype.Retail3Health
+import icesword.editor.wap_object.prototype.Retail3PowderKeg
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
 import icesword.ui.retails.RetailUiPrototype
@@ -29,6 +33,20 @@ object Retail3UiPrototype : RetailUiPrototype {
         editor: Editor,
         tillDetach: Till,
     ): List<HTMLElement> = listOf(
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "Health",
+            imagePath = "images/CLAW/LEVEL3/IMAGES/HEALTH/APPLGRAP1.png",
+            wapObjectPrototype = Retail3Health,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "PowderKeg",
+            imagePath = "images/CLAW/LEVEL3/IMAGES/POWDERKEG/FRAME001.png",
+            wapObjectPrototype = Retail3PowderKeg,
+            tillDetach = tillDetach,
+        ),
         createInsertElasticButton(
             editor = editor,
             prototype = LogPrototype,
@@ -148,6 +166,13 @@ object Retail3UiPrototype : RetailUiPrototype {
             text = "Rat",
             imagePath = "images/CLAW/LEVEL3/IMAGES/RAT/FRAME001.png",
             wapObjectPrototype = WapObjectPrototype.Level3RatPrototype,
+            tillDetach = tillDetach,
+        ),
+        createInsertWapObjectButton(
+            editor = editor,
+            text = "MapPiece",
+            imagePath = "images/CLAW/GAME/IMAGES/MAPPIECE/MAPFRAG1.png",
+            wapObjectPrototype = WapObjectPrototype.MapPiece,
             tillDetach = tillDetach,
         ),
     )
