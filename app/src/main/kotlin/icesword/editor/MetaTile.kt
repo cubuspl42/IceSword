@@ -16,7 +16,4 @@ open class MetaTile(
     object LeavesLowerLeft : MetaTile(650)
     object LeavesUpperRight : MetaTile(649)
     object LeavesLowerRight : MetaTile(656)
-
-    object SpikeTop : MetaTile(698)
-    object SpikeBottom : MetaTile(704)
 }

@@ -13,7 +13,7 @@ data class RectangularMetaTilePattern(
     val width: Int,
 ) {
     init {
-        if (metaTiles.size % width != 0) throw IllegalArgumentException()
+        if (metaTiles.isNotEmpty() && metaTiles.size % width != 0) throw IllegalArgumentException()
     }
 
     val length = metaTiles.size / width

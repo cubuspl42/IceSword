@@ -92,29 +92,6 @@ object LadderPrototype : ElasticPrototype() {
 }
 
 @Serializable
-@SerialName("Spikes")
-object SpikesPrototype : ElasticPrototype() {
-    private object Generator : ElasticGenerator {
-        override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
-            val n = size.width
-            return (0 until n).flatMap {
-                listOf(
-                    IntVec2(it, 0) to MetaTile.SpikeTop,
-                    IntVec2(it, 1) to MetaTile.SpikeBottom,
-                )
-            }.toMap()
-        }
-    }
-
-    override val defaultSize: IntSize = IntSize(4, 2)
-
-    override fun buildGenerator(retail: Retail): ElasticGenerator {
-        if (retail !is Retail3) throw UnsupportedOperationException()
-        return Generator
-    }
-}
-
-@Serializable
 @SerialName("Level2DoublePile")
 object DoublePilePrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(1, 3)
