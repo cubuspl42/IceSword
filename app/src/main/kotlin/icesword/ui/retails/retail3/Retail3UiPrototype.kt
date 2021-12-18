@@ -15,6 +15,7 @@ import icesword.editor.elastic.prototype.LadderPrototype
 import icesword.editor.elastic.prototype.LogPrototype
 import icesword.editor.elastic.prototype.Retail3DarkSpikesPrototype
 import icesword.editor.elastic.prototype.Retail3LightSpikesPrototype
+import icesword.editor.elastic.prototype.Retail3RockLightPrototype
 import icesword.editor.elastic.prototype.TreeCrownPrototype
 import icesword.editor.retails.Retail3
 import icesword.editor.wap_object.prototype.Retail3Health
@@ -91,6 +92,13 @@ object Retail3UiPrototype : RetailUiPrototype {
             editor = editor,
             knotPrototype = KnotPrototype.Level3OvergroundRockPrototype,
             imagePath = "images/CLAW/LEVEL3/TILES/ACTION/604.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail3RockLightPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL3/TILES/ACTION/640.png",
             tillDetach = tillDetach,
         ),
         createInsertEntityButton(

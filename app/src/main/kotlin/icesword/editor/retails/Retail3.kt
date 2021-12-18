@@ -36,6 +36,22 @@ val retail3LightSpikesPattern = spikesPattern(spikes = Retail3.MetaTiles.LightSp
 
 val retail3DarkSpikesPattern = spikesPattern(spikes = Retail3.MetaTiles.DarkSpikes)
 
+val retail3RockLightPattern = ElasticStructurePattern(
+    startingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(Retail3.MetaTiles.RockLight.left),
+        width = 1,
+    ),
+    repeatingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(Retail3.MetaTiles.RockLight.center),
+        width = 1,
+    ),
+    endingPattern = RectangularMetaTilePattern(
+        metaTiles = listOf(Retail3.MetaTiles.RockLight.right),
+        width = 1,
+    ),
+    orientation = ElasticStructurePatternOrientation.Horizontal,
+)
+
 class SpikesTileGenerator(
     private val spikes: Retail3.MetaTiles.Spikes,
     private val tileset: SpikesTileset,
@@ -123,16 +139,10 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(ladder.top, MetaTile.LeavesUpper) -> 660
             containsAll(ladder.core, MetaTile.LeavesLower) -> 667
 
-            // Spikes
-            containsAll(Retail3.MetaTiles.DarkSpikes.top, Rock.RightSide) -> 712
-            containsAll(Retail3.MetaTiles.DarkSpikes.bottom, Rock.LowerLeftCorner) -> 713
-
-            containsAll(Retail3.MetaTiles.DarkSpikes.bottom, Rock.Top) -> 704
-
-            containsAll(Retail3.MetaTiles.DarkSpikes.top, Rock.LeftSideOuter) -> 701
-            containsAll(Retail3.MetaTiles.DarkSpikes.top, Rock.LeftSideInner) -> 702
-            containsAll(Retail3.MetaTiles.DarkSpikes.bottom, Rock.LowerRightCornerOuter) -> 704
-            containsAll(Retail3.MetaTiles.DarkSpikes.bottom, Rock.LowerRightCornerInner) -> 709 // 696
+            // Rock / rock light
+            containsAll(Rock.Top, Retail3.MetaTiles.RockLight.left) -> 639
+            containsAll(Rock.Top, Retail3.MetaTiles.RockLight.center) -> 640
+            containsAll(Rock.Top, Retail3.MetaTiles.RockLight.right) -> 641
 
             else -> null
         }
@@ -162,6 +172,12 @@ object Retail3 : Retail(naturalIndex = 3), RetailLadderPrototype {
             object LowerLeftCorner : MetaTile(638)
             object LowerRightCornerOuter : MetaTile(642)
             object LowerRightCornerInner : MetaTile(643)
+        }
+
+        object RockLight {
+            val left = MetaTile(639)
+            val center = MetaTile(640)
+            val right = MetaTile(641)
         }
 
         object LightSpikes : Spikes {
