@@ -12,6 +12,13 @@ data class RectangularMetaTilePattern(
     val metaTiles: List<MetaTile>,
     val width: Int,
 ) {
+    companion object {
+        fun empty() = RectangularMetaTilePattern(
+            metaTiles = emptyList(),
+            width = 0,
+        )
+    }
+
     init {
         if (metaTiles.isNotEmpty() && metaTiles.size % width != 0) throw IllegalArgumentException()
     }

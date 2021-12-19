@@ -90,3 +90,24 @@ object Retail5HorizontalRoofPrototype : ElasticPrototype() {
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
+
+@Serializable
+@SerialName("Retail5Spikes")
+object Retail5SpikesPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(5, 2)
+
+    private val generator = ElasticStructurePattern(
+        startingPattern = RectangularMetaTilePattern.empty(),
+        repeatingPattern = RectangularMetaTilePattern(
+            metaTiles = listOf(
+                MetaTile(402),
+                MetaTile(405),
+            ),
+            width = 2,
+        ),
+        endingPattern = RectangularMetaTilePattern.empty(),
+        orientation = ElasticStructurePatternOrientation.Horizontal,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
