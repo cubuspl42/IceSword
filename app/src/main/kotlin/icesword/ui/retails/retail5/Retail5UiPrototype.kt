@@ -2,13 +2,13 @@ package icesword.ui.retails.retail5
 
 import icesword.createInsertElasticButton
 import icesword.editor.Editor
+import icesword.editor.elastic.prototype.Retail5HorizontalRoofPrototype
+import icesword.editor.elastic.prototype.Retail5LadderPrototype
 import icesword.editor.elastic.prototype.Retail5MetalPlatformPrototype
-import icesword.editor.retails.Retail4
 import icesword.editor.retails.Retail5
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
 import icesword.ui.retails.RetailUiPrototype
-import icesword.ui.retails.retail4.Retail4UiPrototype
 import org.w3c.dom.HTMLElement
 
 object Retail5UiPrototype : RetailUiPrototype {
@@ -21,8 +21,22 @@ object Retail5UiPrototype : RetailUiPrototype {
         createInsertElasticButton(
             editor = editor,
             prototype = Retail5MetalPlatformPrototype,
-            retail = Retail4UiPrototype.retail,
+            retail = retail,
             imagePath = "images/CLAW/LEVEL5/TILES/ACTION/202.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail5LadderPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL5/TILES/ACTION/516.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail5HorizontalRoofPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL5/TILES/ACTION/268.png",
             tillDetach = tillDetach,
         ),
     )
