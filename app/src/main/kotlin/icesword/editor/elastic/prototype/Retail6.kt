@@ -7,6 +7,7 @@ import icesword.editor.elastic.ElasticStructurePatternOrientation
 import icesword.editor.elastic.RectangularMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
+import icesword.editor.retails.Retail5
 import icesword.editor.retails.Retail6
 import icesword.geometry.IntSize
 import kotlinx.serialization.SerialName
@@ -78,6 +79,18 @@ object Retail6HorizontalRoofPrototype : ElasticPrototype() {
         ),
         orientation = ElasticStructurePatternOrientation.Horizontal,
     ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail6Ladder")
+object Retail6LadderPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(1, 3)
+
+    private val generator = LadderElasticGenerator.build(
+        ladder = Retail6.MetaTiles.Ladder,
+    )
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }

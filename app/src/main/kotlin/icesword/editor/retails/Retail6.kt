@@ -33,5 +33,13 @@ object Retail6 : Retail(naturalIndex = 6) {
 
             val bottomRightOuter = MetaTile(47)
         }
+
+        object Ladder : LadderPattern {
+            override val top = MetaTile(16)
+
+            override val center = MetaTile(18)
+
+            override val bottom = MetaTile(20)
+        }
     }
 }

@@ -5,6 +5,7 @@ import icesword.editor.Editor
 import icesword.editor.elastic.prototype.Retail5SpikesPrototype
 import icesword.editor.elastic.prototype.Retail6FencePrototype
 import icesword.editor.elastic.prototype.Retail6HorizontalRoofPrototype
+import icesword.editor.elastic.prototype.Retail6LadderPrototype
 import icesword.editor.retails.Retail6
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
@@ -30,6 +31,13 @@ object Retail6UiPrototype : RetailUiPrototype {
             prototype = Retail6HorizontalRoofPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL6/TILES/ACTION/039.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail6LadderPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL6/TILES/ACTION/016.png",
             tillDetach = tillDetach,
         ),
     )
