@@ -7,8 +7,30 @@ import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
+import icesword.editor.elastic.ElasticStructurePattern
+import icesword.editor.elastic.ElasticStructurePatternOrientation
+import icesword.editor.elastic.RectangularMetaTilePattern
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.geometry.IntVec2
+
+object LadderElasticGenerator{
+    fun build(ladder: Retail.LadderPattern): ElasticGenerator =
+        ElasticStructurePattern(
+            startingPattern = RectangularMetaTilePattern(
+                metaTiles = listOf(ladder.top),
+                width = 1,
+            ),
+            repeatingPattern = RectangularMetaTilePattern(
+                metaTiles = listOf(ladder.center),
+                width = 1,
+            ),
+            endingPattern = RectangularMetaTilePattern(
+                metaTiles = listOf(ladder.bottom),
+                width = 1,
+            ),
+            orientation = ElasticStructurePatternOrientation.Vertical,
+        ).toElasticGenerator()
+}
 
 interface RetailLadderPrototype {
     val ladderGenerator: ElasticGenerator
@@ -35,6 +57,12 @@ sealed class Retail(
             14 -> Retail14
             else -> throw IllegalArgumentException("No such retail: $retailNaturalIndex")
         }
+    }
+
+    interface LadderPattern {
+        val top: MetaTile
+        val center: MetaTile
+        val bottom: MetaTile
     }
 
     open val elevatorPrototype: ElevatorPrototype

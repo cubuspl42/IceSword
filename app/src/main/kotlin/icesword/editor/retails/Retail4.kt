@@ -21,7 +21,6 @@ val retail4TreeLog = ElasticStructurePattern(
     orientation = ElasticStructurePatternOrientation.Vertical,
 )
 
-
 object Retail4 : Retail(naturalIndex = 4) {
     object MetaTiles {
         object TreeLog {
@@ -34,6 +33,14 @@ object Retail4 : Retail(naturalIndex = 4) {
             val center = MetaTile(159)
 
             val right = MetaTile(160)
+        }
+
+        object Ladder : LadderPattern {
+            override val top = MetaTile(181)
+
+            override val center = MetaTile(182)
+
+            override val bottom = MetaTile(183)
         }
     }
 }
