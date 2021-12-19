@@ -46,3 +46,38 @@ object Retail6FencePrototype : ElasticPrototype() {
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
+
+@Serializable
+@SerialName("Retail6HorizontalRoof")
+object Retail6HorizontalRoofPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(4, 2)
+
+    private val generator = ElasticStructurePattern(
+        startingPattern = RectangularMetaTilePattern(
+            metaTiles = listOf(
+                Retail6.MetaTiles.HorizontalRoof.topLeft,
+                Retail6.MetaTiles.HorizontalRoof.bottomLeft,
+            ),
+            width = 2,
+        ),
+        repeatingPattern = RectangularMetaTilePattern(
+            metaTiles = listOf(
+                Retail6.MetaTiles.HorizontalRoof.topCenter,
+                Retail6.MetaTiles.HorizontalRoof.bottomCenter,
+            ),
+            width = 2,
+        ),
+        endingPattern = RectangularMetaTilePattern(
+            metaTiles = listOf(
+                Retail6.MetaTiles.HorizontalRoof.topRightInner,
+                Retail6.MetaTiles.HorizontalRoof.bottomRightInner,
+                Retail6.MetaTiles.HorizontalRoof.topRightOuter,
+                Retail6.MetaTiles.HorizontalRoof.bottomRightOuter,
+            ),
+            width = 2,
+        ),
+        orientation = ElasticStructurePatternOrientation.Horizontal,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}

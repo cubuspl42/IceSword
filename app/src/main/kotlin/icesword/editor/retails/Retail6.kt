@@ -15,5 +15,23 @@ object Retail6 : Retail(naturalIndex = 6) {
 
             val bottomRightOuter = MetaTile(100)
         }
+
+        object HorizontalRoof {
+            val topLeft = MetaTile(38)
+
+            val topCenter = MetaTile(39)
+
+            val topRightInner = MetaTile(40)
+
+            val topRightOuter = MetaTile(41)
+
+            val bottomLeft = MetaTile(44)
+
+            val bottomCenter = MetaTile(42)
+
+            val bottomRightInner = MetaTile(46)
+
+            val bottomRightOuter = MetaTile(47)
+        }
     }
 }
