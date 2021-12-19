@@ -40,6 +40,10 @@ sealed class KnotPrototype {
     @SerialName("Retail5Rock")
     object Retail5RockPrototype : KnotPrototype()
 
+    @Serializable
+    @SerialName("Retail6Bricks")
+    object Retail6BricksPrototype : KnotPrototype()
+
     override fun toString(): String =
         this::class.simpleName ?: "?"
 }
