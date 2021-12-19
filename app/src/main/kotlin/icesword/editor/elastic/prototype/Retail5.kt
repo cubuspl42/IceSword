@@ -100,8 +100,8 @@ object Retail5SpikesPrototype : ElasticPrototype() {
         startingPattern = RectangularMetaTilePattern.empty(),
         repeatingPattern = RectangularMetaTilePattern(
             metaTiles = listOf(
-                MetaTile(402),
-                MetaTile(405),
+                Retail5.MetaTiles.Spikes.top,
+                Retail5.MetaTiles.Spikes.bottom,
             ),
             width = 2,
         ),

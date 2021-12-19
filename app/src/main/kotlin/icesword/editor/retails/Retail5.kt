@@ -1,15 +1,55 @@
 package icesword.editor.retails
 
+import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
+import icesword.editor.knot_mesh.KnotStructurePattern
+import icesword.editor.knot_mesh.MetaTilePattern1x1
+import icesword.editor.knot_mesh.MetaTilePattern2x1
+import icesword.editor.knot_mesh.StructureConcavePattern
+import icesword.editor.knot_mesh.StructureConvexPattern
+import icesword.editor.retails.Retail5.MetaTiles.Ladder
+import icesword.editor.retails.Retail5.MetaTiles.Rock
+import icesword.editor.retails.Retail5.MetaTiles.Spikes
+
+private val rockPattern = object : KnotStructurePattern(
+    convexPattern = StructureConvexPattern(
+        topLeft = MetaTilePattern2x1(Rock.topLeftOuter, Rock.topLeftInner),
+        top = MetaTilePattern1x1(Rock.topCenter),
+        topRight = MetaTilePattern1x1(Rock.topRight),
+        left = MetaTilePattern2x1(Rock.leftOuter, Rock.leftInner),
+        right = MetaTilePattern1x1(Rock.right),
+        bottomLeft = MetaTilePattern2x1(Rock.bottomLeftOuter, Rock.bottomLeftInner),
+        bottom = MetaTilePattern1x1(Rock.bottomCenter),
+        bottomRight = MetaTilePattern1x1(Rock.bottomRight),
+    ),
+    concavePattern = StructureConcavePattern(
+        bottomLeft = MetaTilePattern1x1(Rock.concaveBottomLeft),
+        bottomRight = MetaTilePattern2x1(Rock.concaveBottomRightOuter, Rock.concaveBottomRightInner),
+    ),
+    fill = MetaTilePattern1x1(Rock.center),
+) {
+    override fun test(knotPrototype: KnotPrototype): Boolean =
+        knotPrototype is KnotPrototype.Retail5RockPrototype
+}
 
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         when {
             // Metal platform / ladder
-            containsAll(Retail5.MetaTiles.MetalPlatform.topCenter, Retail5.MetaTiles.Ladder.top) -> 204
-            containsAll(Retail5.MetaTiles.MetalPlatform.bottomCenter, Retail5.MetaTiles.Ladder.center) -> 221
+            containsAll(Retail5.MetaTiles.MetalPlatform.topCenter, Ladder.top) -> 204
+            containsAll(Retail5.MetaTiles.MetalPlatform.bottomCenter, Ladder.center) -> 221
+
+            // Rock / ladder
+            containsAll(Rock.topCenter, Ladder.bottom) -> 303
+
+            // Rock / spikes
+            containsAll(Rock.leftOuter, Spikes.top) -> 497
+            containsAll(Rock.concaveBottomLeft, Spikes.bottom) -> 404
+            containsAll(Rock.topCenter, Spikes.bottom) -> 405
+            containsAll(Rock.concaveBottomRightOuter, Spikes.bottom) -> 406
+            containsAll(Rock.concaveBottomRightInner, Spikes.bottom) -> 407
 
             else -> null
         }
@@ -18,6 +58,38 @@ private val retailTileGenerator = object : TileGenerator {
 
 object Retail5 : Retail(naturalIndex = 5) {
     object MetaTiles {
+        object Rock {
+            val topLeftOuter = MetaTile(299)
+
+            val topLeftInner = MetaTile(300)
+
+            val topCenter = MetaTile(309)
+
+            val topRight = MetaTile(311)
+
+            val leftOuter = MetaTile(312)
+
+            val leftInner = MetaTile(313)
+
+            val center = MetaTile(307)
+
+            val right = MetaTile(314)
+
+            val bottomLeftOuter = MetaTile(315)
+
+            val bottomLeftInner = MetaTile(316)
+
+            val bottomCenter = MetaTile(535)
+
+            val bottomRight = MetaTile(322)
+
+            val concaveBottomLeft = MetaTile(308)
+
+            val concaveBottomRightOuter = MetaTile(305)
+
+            val concaveBottomRightInner = MetaTile(306)
+        }
+
         object MetalPlatform {
             val topLeftOuter = MetaTile(201)
 
@@ -43,7 +115,16 @@ object Retail5 : Retail(naturalIndex = 5) {
 
             override val bottom = MetaTile(498)
         }
+
+        object Spikes {
+            val top = MetaTile(402)
+
+            val bottom = MetaTile(405)
+        }
     }
+
+    override val knotStructurePatterns: List<KnotStructurePattern> =
+        listOf(rockPattern)
 
     override val tileGenerator: TileGenerator =
         retailTileGenerator
