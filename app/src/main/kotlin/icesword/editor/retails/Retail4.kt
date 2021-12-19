@@ -27,5 +27,13 @@ object Retail4 : Retail(naturalIndex = 4) {
         object TreeLog {
             val center = MetaTile(184)
         }
+
+        object WoodenPlatform {
+            val left = MetaTile(155)
+
+            val center = MetaTile(159)
+
+            val right = MetaTile(160)
+        }
     }
 }
