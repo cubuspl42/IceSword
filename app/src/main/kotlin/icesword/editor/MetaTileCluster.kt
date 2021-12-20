@@ -83,16 +83,14 @@ class MetaTileLayer(
             .valuesSet
 
         return metaTiles.content.map { metaTilesContent ->
-            val context = object  : TileGeneratorContext {
+            val context = object : TileGeneratorContext {
                 override fun containsAll(vararg metaTiles: MetaTile): Boolean =
                     metaTiles.all { metaTilesContent.contains(it) }
             }
 
             val tileId = tileGenerator.buildTile(context)
 
-            // Note: This is not stable! While, for example, moving entities, meta tiles at the same coordinate can
-            // reorder.
-            tileId ?: metaTilesContent.firstNotNullOfOrNull { it?.tileId } ?: -1
+            tileId ?: metaTilesContent.mapNotNull { it?.tileId }.minOrNull() ?: -1
         }
     }
 
