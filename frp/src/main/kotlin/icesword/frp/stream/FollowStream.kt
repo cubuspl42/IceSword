@@ -19,12 +19,14 @@ class FollowTillNextCell<A>(
     override fun sample(): A = _currentValue
 
     private fun buildValueTillNext(tilled: Tilled<A>): A {
-        val marker = TillMarker()
-        val value = tilled.build(till = marker)
-        val nextTilled = extractNext(value)
+        val tillNext = TillMarker()
+        val till = tillNext.or(till)
 
-        subscribeTill(nextTilled, marker.or(till)) {
-            marker.markReached()
+        val value = tilled.build(till)
+        val nextTilled: Stream<Tilled<A>> = extractNext(value)
+
+        subscribeTill(nextTilled, till) {
+            tillNext.markReached()
 
             val nextValue = buildValueTillNext(it)
 
