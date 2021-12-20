@@ -435,7 +435,6 @@ class ProjectDynamicMapTest {
         )
     }
 
-
     @Test
     fun testSourceRemovedAllEntries() {
         // source removed all entries at once
@@ -484,7 +483,7 @@ class ProjectDynamicMapTest {
     }
 
     @Test
-    fun testSourceAddedRemoved() {
+    fun testSourceAddedRemoved1() {
         // source removed an entry and added a new one at adjacent key at once
 
         val source = MutableDynamicMap(
@@ -522,6 +521,72 @@ class ProjectDynamicMapTest {
                         K2(a = 5) to V2(a = 60),
                         K2(a = 6) to V2(a = 60),
                         K2(a = 7) to V2(a = 60)
+                    ),
+                    removedEntries = mapOf(
+                        K2(3) to V2(50),
+                    ),
+                )
+            ),
+            actual = changes,
+        )
+    }
+
+    @Test
+    fun testSourceAddedRemoved2() {
+        // source removed an entry on one "side" added a new one on another
+
+        val source = MutableDynamicMap(
+            mapOf(
+                K(5) to V(50),
+                K(6) to V(60),
+                K(7) to V(70),
+            )
+        )
+
+        val result = projectDynamicMap(source)
+
+        val changes = mutableListOf<MapChange<K2, V2>>()
+
+        result.changes.subscribe(changes::add)
+
+        assertEquals(
+            expected = mapOf(
+                K2(3) to V2(50),
+                K2(4) to V2(50 + 60),
+                K2(5) to V2(50 + 60 + 70),
+                K2(6) to V2(50 + 60 + 70),
+                K2(7) to V2(50 + 60 + 70),
+                K2(8) to V2(60 + 70),
+                K2(9) to V2(70),
+            ),
+            actual = result.volatileContentView,
+        )
+
+        source.applyChange(
+            MapChange(
+                added = mapOf(
+                    K(8) to V(80),
+                ),
+                updated = emptyMap(),
+                removedEntries = mapOf(
+                    K(5) to V(50),
+                ),
+            )
+        )
+
+        assertEquals(
+            expected = listOf(
+                MapChange(
+                    added = mapOf(
+                        K2(10) to V2(80),
+                    ),
+                    updated = mapOf(
+                        K2(a = 4) to V2(a = 60),
+                        K2(a = 5) to V2(a = 60 + 70),
+                        K2(a = 6) to V2(a = 60 + 70 + 80),
+                        K2(a = 7) to V2(a = 60 + 70 + 80),
+                        K2(a = 8) to V2(a = 60 + 70 + 80),
+                        K2(a = 9) to V2(a = 70 + 80),
                     ),
                     removedEntries = mapOf(
                         K2(3) to V2(50),
