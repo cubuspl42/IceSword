@@ -78,7 +78,7 @@ class NoopCanvasNode : CanvasNode {
     override val onDirty: Stream<Unit> = Stream.never()
 }
 
-interface HybridNode {
+abstract class HybridNode {
     data class OverlayBuildContext(
         val svg: SVGSVGElement,
         val viewport: HTMLElement,
@@ -86,17 +86,25 @@ interface HybridNode {
         val tillDetach: Till,
     )
 
-    fun buildCanvasNode(
+    open fun buildCanvasNode(
         textureBank: TextureBank,
     ): CanvasNode = NoopCanvasNode()
 
-    fun buildOverlayElement(
+    open fun buildOverlayElement(
         context: OverlayBuildContext,
     ): SVGElement = createSvgGroup(
         svg = context.svg,
         children = DynamicSet.empty(),
         tillDetach = context.tillDetach
     )
+
+    override fun equals(other: Any?): Boolean {
+        throw UnsupportedOperationException()
+    }
+
+    override fun hashCode(): Int {
+        throw UnsupportedOperationException()
+    }
 }
 
 typealias BuildOverlayElements = (SVGSVGElement) -> DynamicSet<SVGElement>

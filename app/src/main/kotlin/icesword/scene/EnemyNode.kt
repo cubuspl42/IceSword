@@ -31,7 +31,7 @@ class EnemyNode(
     private val textureBank: TextureBank,
     private val editor: Editor,
     private val enemy: Enemy,
-) : HybridNode {
+) : HybridNode() {
     override fun buildCanvasNode(
         textureBank: TextureBank,
     ): CanvasNode = WapSpriteNode(

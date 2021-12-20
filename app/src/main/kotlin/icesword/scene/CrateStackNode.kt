@@ -10,7 +10,7 @@ import org.w3c.dom.svg.SVGElement
 class CrateStackNode(
     private val editor: Editor,
     private val crateStack: CrateStack,
-) : HybridNode {
+) : HybridNode() {
     override fun buildCanvasNode(
         textureBank: TextureBank,
     ): CanvasNode = GroupCanvasNode(

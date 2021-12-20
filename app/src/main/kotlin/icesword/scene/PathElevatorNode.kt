@@ -138,7 +138,7 @@ class PathElevatorStepNode(
     private val editor: Editor,
     private val pathElevator: PathElevator,
     private val step: PathElevatorStep,
-) : HybridNode {
+) : HybridNode() {
     override fun buildCanvasNode(
         textureBank: TextureBank,
     ): CanvasNode = WapSpriteNode(

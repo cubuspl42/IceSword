@@ -103,7 +103,7 @@ class ElasticNode(
     private val editor: Editor,
     private val elastic: Elastic,
     private val viewTransform: DynamicTransform,
-) : HybridNode {
+) : HybridNode() {
     //    override fun buildCanvasNode(
 //        textureBank: TextureBank,
 //    ): CanvasNode = ElasticUi(

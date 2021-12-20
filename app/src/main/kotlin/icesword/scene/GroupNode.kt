@@ -11,7 +11,7 @@ import org.w3c.dom.svg.SVGElement
 
 open class GroupNode(
     private val children: DynamicList<HybridNode>,
-) : HybridNode {
+) : HybridNode() {
     override fun buildCanvasNode(
         textureBank: TextureBank,
     ): CanvasNode = GroupCanvasNode(

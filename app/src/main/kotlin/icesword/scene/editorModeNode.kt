@@ -17,7 +17,7 @@ fun createEditorModeModeNode(
 
 class EditPathElevatorModeNode(
     private val editMode: EditPathElevatorMode,
-) : HybridNode {
+) : HybridNode() {
     override fun buildOverlayElement(context: HybridNode.OverlayBuildContext): SVGElement = context.run {
         createSvgSwitch(
             child = editMode.state.map { editModeState ->
