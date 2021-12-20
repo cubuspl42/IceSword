@@ -1,5 +1,8 @@
 package icesword.frp.dynamic_set
 
+import icesword.base.mapSome
+import icesword.base.none
+import icesword.base.some
 import icesword.frp.*
 
 class MapDynamicSet<A, B>(
@@ -27,31 +30,32 @@ class MapDynamicSet<A, B>(
         subscription = source.changes.subscribe { change ->
             val mutableContent = this.mutableContent!!
 
-            val added: Set<B> = change.added.mapNotNull {
+            val added: Set<B> = change.added.mapSome {
                 val b = transform(it)
                 val oldCount = mutableContent[b]
 
                 if (oldCount == null) {
                     mutableContent[b] = 1
-                    b
+                    some(b)
                 } else {
                     mutableContent[b] = oldCount + 1
-                    null
+                    none()
                 }
             }.toSet()
 
-            val removed: Set<B> = change.removed.mapNotNull {
+            val removed: Set<B> = change.removed.mapSome {
                 val b = transform(it)
                 val oldCount = mutableContent[b]
 
-                if (oldCount == null || oldCount < 1) throw IllegalStateException()
+                if (oldCount == null || oldCount < 1)
+                    throw IllegalStateException("Attempted to remove $b, but it wasn't present? [oldCount = $oldCount] (id = $id)")
 
                 if (oldCount == 1) {
                     mutableContent.remove(b)
-                    b
+                    some(b)
                 } else {
                     mutableContent[b] = oldCount - 1
-                    null
+                    none()
                 }
             }.toSet()
 
