@@ -27,7 +27,6 @@ import icesword.frp.contains
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.mapTillNext
-import icesword.frp.reactTill
 import icesword.frp.switchMap
 import icesword.frp.switchMapNotNull
 import icesword.geometry.IntRect

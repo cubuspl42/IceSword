@@ -1,14 +1,11 @@
 package icesword.editor
 
 import icesword.frp.Cell
-import icesword.frp.Cell.Companion.constant
 import icesword.frp.MutCell
 import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.reactTill
-import icesword.frp.reactTillNext
 import icesword.frp.switchMap
-import icesword.frp.syncTill
 import icesword.frp.update
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2

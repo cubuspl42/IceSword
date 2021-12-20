@@ -3,7 +3,7 @@ package icesword.editor
 import icesword.frp.Cell
 import icesword.frp.DynamicMap
 import icesword.frp.DynamicSet
-import icesword.frp.map
+import icesword.frp.distinctMap
 import icesword.frp.project
 import icesword.geometry.IntVec2
 
@@ -20,7 +20,7 @@ class KnotMeshLayer(
 ) {
     private val globalKnots: DynamicMap<IntVec2, KnotPrototype> = DynamicMap.unionMerge(
         through = IntVec2.mapFactory(),
-        maps = knotMeshes.map(
+        maps = knotMeshes.distinctMap(
             tag = "KnotMeshLayer/globalKnots/_knotMeshes.map",
         ) { it.globalKnots },
         merge = { knots: Set<KnotPrototype> -> knots.first() },

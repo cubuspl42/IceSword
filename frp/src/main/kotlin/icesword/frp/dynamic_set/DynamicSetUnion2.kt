@@ -25,12 +25,6 @@ class DynamicSetUnion2_<A>(
 //            changes.map { mutableContent!!.toSet() },
 //        )
 
-    override val content: Cell<Set<A>>
-        get() = RawCell(
-            { mutableContent!! },
-            changes.map { mutableContent!! },
-        )
-
     override fun onStart() {
         subscription1 = source1.changes.subscribe { change ->
             val unionChange = SetChange(

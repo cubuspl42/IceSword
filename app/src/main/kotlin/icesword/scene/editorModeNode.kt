@@ -2,9 +2,7 @@ package icesword.scene
 
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.EditorMode
-import icesword.frp.Cell
 import icesword.frp.map
-import icesword.html.createSvgCircle
 import icesword.html.createSvgSwitch
 import org.w3c.dom.svg.SVGElement
 

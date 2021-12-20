@@ -10,8 +10,10 @@ import icesword.frp.DynamicSet
 import icesword.frp.MutCell
 import icesword.frp.Stream
 import icesword.frp.Till
-import icesword.frp.map
-import icesword.frp.mapTillRemoved
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.changesUnits
+import icesword.frp.dynamic_list.map
+import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.frp.reactTill
 import icesword.frp.units
 import icesword.frp.values
@@ -19,6 +21,7 @@ import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import icesword.html.createSvgGroupDl
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.css.BackgroundRepeat
@@ -114,11 +117,11 @@ class Layer(
     private val viewTransform: DynamicTransform,
     nodes: DynamicSet<CanvasNode>,
     private val buildOverlayElements: BuildOverlayElements? = null,
-    private val hybridNodes: DynamicSet<HybridNode> = DynamicSet.empty(),
+    private val hybridNodes: DynamicList<HybridNode> = DynamicList.empty(),
     tillDetach: Till,
 ) {
-    private val canvasNodes = DynamicSet.union2(
-        nodes,
+    private val canvasNodes = DynamicList.concat(
+        nodes.internalOrder,
         hybridNodes.mapTillRemoved(tillDetach) { hybridNode, _ ->
             hybridNode.buildCanvasNode(textureBank = textureBank)
         },
@@ -149,10 +152,8 @@ class Layer(
         Stream.merge(
             listOf(
                 viewTransform.transform.values().units(),
-                canvasNodes.changes.units(),
-                DynamicSet.merge(canvasNodes.map(
-                    tag = "Layer/onDirty/nodes.map"
-                ) { it.onDirty }),
+                canvasNodes.changesUnits(),
+                DynamicList.merge(canvasNodes.map { it.onDirty }),
             )
         )
 
@@ -229,7 +230,7 @@ class Layer(
                 )
             }
 
-            return createSvgGroup(
+            return createSvgGroupDl(
                 svg = svg,
                 children = overlayElements2,
                 tillDetach = tillDetach,

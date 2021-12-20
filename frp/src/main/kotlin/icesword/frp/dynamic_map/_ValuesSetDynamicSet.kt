@@ -17,12 +17,6 @@ class _ValuesSetDynamicSet<K, V>(
     override val changes: Stream<SetChange<V>>
         get() = Stream.source(this::subscribe, tag = "ValuesSetDynamicSet.changes")
 
-    override val content: Cell<Set<V>>
-        get() = RawCell(
-            { volatileContentView },
-            changes.map { volatileContentView },
-        )
-
     override fun onStart() {
         // Returns: true if value was actually added
         fun processAddedValue(key: K, addedValue: V): Boolean {

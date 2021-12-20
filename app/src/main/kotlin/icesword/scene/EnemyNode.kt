@@ -9,7 +9,6 @@ import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.Till
 import icesword.frp.dynamic_list.map
-import icesword.frp.dynamic_list.mapIndexed
 import icesword.frp.map
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
@@ -18,7 +17,6 @@ import icesword.html.HTMLWidget
 import icesword.html.createGridDl
 import icesword.html.createSvgForeignObject
 import icesword.html.createSvgGroup
-import icesword.html.createTableContainer
 import icesword.html.createWrapper
 import icesword.html.resolve
 import kotlinx.css.Align

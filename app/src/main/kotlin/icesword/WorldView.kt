@@ -14,12 +14,16 @@ import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
+import icesword.frp.associateWith
 import icesword.frp.contentDynamicView
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.map
+import icesword.frp.dynamic_list.mapNotNull
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNested
-import icesword.frp.mapNotNull
 import icesword.frp.mapTillRemoved
+import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
 import icesword.frp.switchMapNotNull
@@ -40,6 +44,7 @@ import icesword.html.onMouseUp
 import icesword.html.onWheel
 import icesword.html.trackMousePosition
 import icesword.scene.FloorSpikeRowNode
+import icesword.scene.HybridNode
 import icesword.scene.KnotMeshUi
 import icesword.scene.Layer
 import icesword.scene.Scene
@@ -257,8 +262,8 @@ fun worldView(
                     )
                 }
             },
-            hybridNodes = DynamicSet.union2(
-                world.entities.mapNotNull {
+            hybridNodes = DynamicList.concat(
+                world.entities.internalOrder.mapNotNull {
                     createEntityNode(
                         rezIndex = rezIndex,
                         textureBank = textureBank,
@@ -267,13 +272,13 @@ fun worldView(
                         entity = it
                     )
                 },
-                DynamicSet.ofSingle(
+
+                DynamicList.ofSingle(
                     editor.editorMode.map {
                         createEditorModeModeNode(editorMode = it)
                     }
                 )
             ),
-//            createEditorModeModeNode
             tillDetach = tillDetach,
         )
 

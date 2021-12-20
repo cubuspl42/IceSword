@@ -3,6 +3,8 @@ package icesword.frp
 import frpjs.Hash
 import icesword.collections.DefaultSetFactory
 import icesword.collections.FastSetFactory
+import icesword.frp.dynamic_list.ContentDynamicList
+import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_map.DynamicSetAssociateWith
 import icesword.frp.dynamic_set.*
 
@@ -44,7 +46,7 @@ interface DynamicSet<out A> {
         // Probably, like `fuse`, it's semantically meaningless, because `DynamicView` isn't comparable
         fun <A> blend(dynamicViews: DynamicSet<DynamicView<A>>): DynamicView<Set<A>> =
             DynamicView(
-                updates = merge(dynamicViews.map(tag = "blend") { it.updates }),
+                updates = merge(dynamicViews.distinctMap(tag = "blend") { it.updates }),
                 view = DynamicSetBlendView(dynamicViews),
             )
 
@@ -57,6 +59,14 @@ interface DynamicSet<out A> {
     val volatileContentView: Set<A>
 
     val changes: Stream<SetChange<A>>
+
+    // Elements of this set in order that is used by the underlying data structure. It is not meaningful and can be
+    // considered arbitrary. This is appropriate when one wants to convert a set to a list and doesn't care about the
+    // actual order.
+    val internalOrder: DynamicList<A>
+        get() = ContentDynamicList(
+            content = this.content.map { it.toList() },
+        )
 
     fun containsNow(a: @UnsafeVariance A): Boolean {
         return volatileContentView.contains(a)
@@ -73,7 +83,7 @@ fun <A, B> DynamicSet<A>.unionMapDynamic(
     tag: String,
     transform: (A) -> DynamicSet<B>,
 ): DynamicSet<B> =
-    DynamicSet.union(map(tag = "$tag/map", transform))
+    DynamicSet.union(distinctMap(tag = "$tag/map", transform))
 
 fun <A> DynamicSet<A>.unionWith(other: DynamicSet<A>): DynamicSet<A> =
     DynamicSet.union(
@@ -84,11 +94,11 @@ fun <A> DynamicSet<A>.unionWith(other: DynamicSet<A>): DynamicSet<A> =
 
 fun <A> DynamicSet<A>.trackContent(till: Till): Cell<Set<A>> = content
 
-fun <A, R> DynamicSet<A>.map(
+fun <A, R> DynamicSet<A>.distinctMap(
     tag: String = "map",
     transform: (A) -> R,
 ): DynamicSet<R> =
-    MapDynamicSet(
+    DistinctMapDynamicSet(
         // TODO: This validation shouldn't be needed, source should validate itself
         source = this.validated("$tag-this"),
         transform = transform,
@@ -96,13 +106,13 @@ fun <A, R> DynamicSet<A>.map(
     ).validated(tag)
 
 fun <A : Any> DynamicSet<A?>.filterNotNull(): DynamicSet<A> =
-    this.filter { it != null }.map(tag = "filterNotNull") { it!! }
+    this.filter { it != null }.distinctMap(tag = "filterNotNull") { it!! }
 
 fun <A, R : Any> DynamicSet<A>.mapNotNull(
     tag: String = "mapNotNull",
     transform: (A) -> R?,
 ): DynamicSet<R> =
-    this.map(tag = "mapNotNull") { transform(it) }.filterNotNull()
+    this.distinctMap(tag = "mapNotNull") { transform(it) }.filterNotNull()
 
 fun <A, R> DynamicSet<A>.mapTillRemoved(
     tillAbort: Till,
@@ -123,7 +133,6 @@ fun <A> DynamicSet<A>.pin(
 
 fun <A> DynamicSet<A>.sample(): Set<A> = volatileContentView.toSet()
 
-
 fun <K, B> DynamicSet<K>.fuseMap(transform: (K) -> Cell<B>): DynamicSet<B> =
     FuseMapDynamicSet(this, transform)
 
@@ -136,7 +145,7 @@ fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) ->
         .fuseValues(tag = "$tag/associateWithDynamic/fuseValues")
 
 fun <A, R> DynamicSet<A>.blendMap(transform: (A) -> DynamicView<R>): DynamicView<Set<R>> =
-    DynamicSet.blend(this.map(tag = "blendMap/map", transform))
+    DynamicSet.blend(this.distinctMap(tag = "blendMap/map", transform))
 
 fun <A, B> DynamicSet<A>.adjust(
     hash: Hash<A>? = null,
@@ -168,7 +177,7 @@ fun <A> DynamicSet<A>.filter(tag: String = "filter", test: (A) -> Boolean): Dyna
 fun <A> DynamicSet<A>.filterDynamic(test: (A) -> Cell<Boolean>): DynamicSet<A> =
     this.fuseMap { test(it).map { t -> Pair(it, t) } }
         .filter { it.second }
-        .map(tag = "") { it.first }
+        .distinctMap(tag = "") { it.first }
 
 inline fun <A, reified B : A> DynamicSet<A>.filterType(): DynamicSet<B> =
     this.mapNotNull { it as? B }

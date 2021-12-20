@@ -85,31 +85,6 @@ fun linkNodeChildrenDl(
     children.volatileContentView.forEach(element::appendChild)
 }
 
-
-fun linkChildren(
-    element: HTMLElement,
-    children: DynamicSet<HTMLElement>,
-    till: Till,
-) {
-    linkNodeChildren(
-        element = element,
-        children = children,
-        till = till,
-    )
-}
-
-fun linkHtmlChildrenDl(
-    element: HTMLElement,
-    children: DynamicList<HTMLElement>,
-    till: Till,
-) {
-    linkNodeChildrenDl(
-        element = element,
-        children = children,
-        till = till,
-    )
-}
-
 fun linkChild(
     element: HTMLElement,
     child: Cell<Node?>,
@@ -134,6 +109,19 @@ fun linkSvgChildren(
     till: Till,
 ) {
     linkNodeChildren(
+        element = element,
+        children = children,
+        till = till,
+    )
+}
+
+
+fun linkSvgChildrenDl(
+    element: SVGElement,
+    children: DynamicList<SVGElement>,
+    till: Till,
+) {
+    linkNodeChildrenDl(
         element = element,
         children = children,
         till = till,

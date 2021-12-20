@@ -9,6 +9,7 @@ import icesword.frp.associateWithDynamic
 import icesword.frp.fuseValues
 import icesword.frp.getKeys
 import icesword.frp.map
+import icesword.frp.distinctMap
 import icesword.frp.switchMap
 import icesword.frp.unionMapDynamic
 import icesword.frp.unionWith
@@ -49,7 +50,7 @@ class MetaTileLayer(
     knotMeshLayer: KnotMeshLayer,
     elastics: DynamicSet<Elastic>,
 ) {
-    private val metaTileClusters = elastics.map(
+    private val metaTileClusters = elastics.distinctMap(
         tag = "MetaTileLayer/elastics.map"
     ) { it.metaTileCluster }
         .unionWith(DynamicSet.of(setOf(knotMeshLayer.metaTileCluster)))

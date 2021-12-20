@@ -18,12 +18,6 @@ class DynamicDiffDynamicSet<A>(
     override val changes: Stream<SetChange<A>>
         get() = Stream.source(this::subscribe, tag = "DiffDynamicSet.changes")
 
-    override val content: Cell<Set<A>>
-        get() = RawCell(
-            { mutableContent!!.toSet() },
-            changes.map { mutableContent!!.toSet() },
-        )
-
     override fun onStart() {
         subscription = inputContent.values().subscribe { newInner ->
             innerSubscription!!.unsubscribe()

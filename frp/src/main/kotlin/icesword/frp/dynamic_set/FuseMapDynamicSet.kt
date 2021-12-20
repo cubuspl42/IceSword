@@ -20,12 +20,6 @@ class FuseMapDynamicSet<A, B>(
     override val changes: Stream<SetChange<B>>
         get() = Stream.source(this::subscribe, tag = "MapDynamicSet.changes")
 
-    override val content: Cell<Set<B>>
-        get() = RawCell(
-            { volatileContentView.toSet() },
-            changes.map { volatileContentView.toSet() },
-        )
-
     override fun onStart() {
         subscription = source.changes.subscribe { change ->
             val added: Set<B> = change.added.mapNotNull { a: A ->

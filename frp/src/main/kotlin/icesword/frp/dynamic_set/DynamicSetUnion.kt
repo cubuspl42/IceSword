@@ -5,9 +5,7 @@ import icesword.frp.*
 class DynamicSetUnion<A>(
     private val sets: DynamicSet<DynamicSet<A>>,
 ) : SimpleDynamicSet<A>(tag = "DynamicSetUnion") {
-
 //    private var mutableContent: MutableSet<A>? = null
-
 
     private var linksMap: MutableMap<A, MutableSet<DynamicSet<A>>>? = null
 
@@ -29,12 +27,6 @@ class DynamicSetUnion<A>(
 //            { mutableContent!!.toSet() },
 //            changes.map { mutableContent!!.toSet() },
 //        )
-
-    override val content: Cell<Set<A>>
-        get() = RawCell(
-            { volatileContentView },
-            changes.map { volatileContentView },
-        )
 
     override fun onStart() {
         // Returns: true if value was actually added

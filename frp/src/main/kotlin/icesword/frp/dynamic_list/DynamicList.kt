@@ -19,8 +19,10 @@ interface DynamicList<out E> {
         fun <E> of(list: List<E>): DynamicList<E> =
             ContentDynamicList(content = constant(list))
 
-        fun <E> ofSingle(element: Cell<E>): DynamicList<E> =
-            ContentDynamicList(content = element.map(::listOf))
+        fun <E : Any> ofSingle(element: Cell<E?>): DynamicList<E> =
+            ContentDynamicList(
+                content = element.map { it?.let(::listOf) ?: emptyList() },
+            )
 
         fun <E> merge(list: DynamicList<Stream<E>>): Stream<E> =
             list.content.divertMap { Stream.merge(it) }
@@ -42,6 +44,15 @@ interface DynamicList<out E> {
             ContentDynamicList(
                 content = Cell.traverse(content) { it },
             )
+
+        fun <E> concat(lists: Iterable<DynamicList<E>>): DynamicList<E> =
+            ContentDynamicList(
+                content = Cell.traverse(lists) { dl -> dl.content }
+                    .map { ls: List<List<E>> -> ls.flatten() },
+            )
+
+        fun <E> concat(vararg lists: DynamicList<E>): DynamicList<E> =
+            concat(lists.toList())
 
         fun <E> empty(): DynamicList<E> =
             ContentDynamicList(constant(emptyList()))

@@ -1,9 +1,5 @@
 package icesword.editor
 
-import icesword.TILE_SIZE
-import icesword.frp.Cell
-import icesword.frp.MutCell
-import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 

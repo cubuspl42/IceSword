@@ -5,7 +5,7 @@ import icesword.base.none
 import icesword.base.some
 import icesword.frp.*
 
-class MapDynamicSet<A, B>(
+class DistinctMapDynamicSet<A, B>(
     private val source: DynamicSet<A>,
     private val transform: (A) -> B,
     tag: String,
@@ -19,12 +19,6 @@ class MapDynamicSet<A, B>(
 
     override val changes: Stream<SetChange<B>>
         get() = Stream.source(this::subscribe, tag = "MapDynamicSet.changes")
-
-    override val content: Cell<Set<B>>
-        get() = RawCell(
-            { mutableContent!!.keys.toSet() },
-            changes.map { mutableContent!!.keys.toSet() },
-        )
 
     override fun onStart() {
         subscription = source.changes.subscribe { change ->

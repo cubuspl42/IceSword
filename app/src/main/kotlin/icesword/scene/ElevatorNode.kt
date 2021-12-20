@@ -1,6 +1,5 @@
 package icesword.scene
 
-import icesword.editor.AxisRange
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
@@ -14,9 +13,7 @@ import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.map
-import icesword.frp.switchMap
 import icesword.geometry.DynamicTransform
-import icesword.geometry.IntLineSeg
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.geometry.Transform

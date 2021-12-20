@@ -1,13 +1,8 @@
 package icesword.scene
 
-import icesword.html.createSvgRect
-import icesword.editor.EntitySelectMode
 import icesword.editor.SelectMode
-import icesword.frp.Cell
 import icesword.frp.Till
-import icesword.frp.map
 import icesword.geometry.DynamicTransform
-import icesword.geometry.IntVec2
 import icesword.html.createSvgRectR
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement

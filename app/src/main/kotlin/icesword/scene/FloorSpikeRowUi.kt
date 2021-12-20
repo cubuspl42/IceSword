@@ -3,16 +3,12 @@ package icesword.scene
 import TextureBank
 import icesword.editor.Editor
 import icesword.editor.FloorSpikeRow
-import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
-import icesword.frp.map
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
-import icesword.geometry.IntVec2
-import icesword.geometry.Transform
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement

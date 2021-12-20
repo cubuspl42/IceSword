@@ -16,12 +16,6 @@ class KeysDynamicSet<K, V>(
     override val changes: Stream<SetChange<K>>
         get() = Stream.source(this::subscribe, tag = "MapDynamicSet.changes")
 
-    override val content: Cell<Set<K>>
-        get() = RawCell(
-            { mutableContent!!.toSet() },
-            changes.map { mutableContent!!.toSet() },
-        )
-
     override fun onStart() {
         subscription = source.changes.subscribe { change ->
             val outChange = SetChange(

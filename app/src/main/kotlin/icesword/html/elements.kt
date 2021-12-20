@@ -270,6 +270,31 @@ fun createSvgGroup(
     return group
 }
 
+fun createSvgGroupDl(
+    svg: SVGSVGElement,
+    transform: DynamicTransform? = null,
+    children: DynamicList<SVGElement>,
+    tillDetach: Till,
+): SVGElement {
+    val group = document.createElementNS("http://www.w3.org/2000/svg", "g") as SVGGElement
+
+    if (transform != null) {
+        linkSvgTransform(
+            svg = svg,
+            element = group,
+            transform = transform,
+            tillDetach = tillDetach,
+        )
+    }
+
+    linkSvgChildrenDl(
+        element = group,
+        children = children,
+        till = tillDetach,
+    )
+
+    return group
+}
 
 fun createSvgRect(
     svg: SVGSVGElement,

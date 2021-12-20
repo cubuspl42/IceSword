@@ -2,16 +2,13 @@ package frp.dynamic_set
 
 import icesword.frp.MutableDynamicSet
 import icesword.frp.SetChange
-import icesword.frp.Till
-import icesword.frp.map
-import icesword.frp.mapTillRemoved
-import kotlin.math.ceil
+import icesword.frp.distinctMap
 import kotlin.math.floor
 import kotlin.math.roundToInt
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class MapTest {
+class DistinctMapTest {
     @Test
     fun testInitialContent() {
         // Given
@@ -20,7 +17,7 @@ class MapTest {
 
         // When
 
-        val result = source.map { it * 2 }
+        val result = source.distinctMap { it * 2 }
 
         result.changes.subscribe { }
 
@@ -42,7 +39,7 @@ class MapTest {
 
         // When
 
-        val result = source.map { floor(it) }
+        val result = source.distinctMap { floor(it) }
 
         result.changes.subscribe { }
 
@@ -64,7 +61,7 @@ class MapTest {
 
         // When
 
-        val result = source.map { it * 3 }
+        val result = source.distinctMap { it * 3 }
 
         val changes = mutableListOf<SetChange<Int>>()
 
@@ -100,7 +97,7 @@ class MapTest {
 
         // When
 
-        val result = source.map { it * 2 }
+        val result = source.distinctMap { it * 2 }
 
         val changes = mutableListOf<SetChange<Int>>()
 
@@ -137,7 +134,7 @@ class MapTest {
 
         // When
 
-        val result = source.map { it.roundToInt() }
+        val result = source.distinctMap { it.roundToInt() }
 
         val changes = mutableListOf<SetChange<Int>>()
 
