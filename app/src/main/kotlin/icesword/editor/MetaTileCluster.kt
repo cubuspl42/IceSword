@@ -90,6 +90,8 @@ class MetaTileLayer(
 
             val tileId = tileGenerator.buildTile(context)
 
+            // Note: This is not stable! While, for example, moving entities, meta tiles at the same coordinate can
+            // reorder.
             tileId ?: metaTilesContent.firstNotNullOfOrNull { it?.tileId } ?: -1
         }
     }

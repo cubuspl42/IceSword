@@ -16,4 +16,6 @@ open class MetaTile(
     object LeavesLowerLeft : MetaTile(650)
     object LeavesUpperRight : MetaTile(649)
     object LeavesLowerRight : MetaTile(656)
+
+    override fun toString(): String = "MetaTile($tileId)"
 }

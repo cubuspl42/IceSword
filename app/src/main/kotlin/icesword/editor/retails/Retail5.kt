@@ -45,6 +45,7 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(Rock.topCenter, Ladder.bottom) -> 303
 
             // Rock / spikes
+            containsAll(Rock.right, Spikes.top) -> 314
             containsAll(Rock.leftOuter, Spikes.top) -> 497
             containsAll(Rock.concaveBottomLeft, Spikes.bottom) -> 404
             containsAll(Rock.topCenter, Spikes.bottom) -> 405
