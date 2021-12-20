@@ -163,7 +163,7 @@ class Elastic(
     override fun isSelectableIn(area: IntRect): Boolean =
         (tileBounds.sample() * TILE_SIZE).overlaps(area)
 
-    override fun toString(): String = "MetaTileCluster(boundsTopLeft=${boundsTopLeft.sample()})"
+    override fun toString(): String = "Elastic(boundsTopLeft=${boundsTopLeft.sample()})"
 
     override fun exportWapObjects(): List<Wwd.Object_> {
         val position = this.position.sample()
