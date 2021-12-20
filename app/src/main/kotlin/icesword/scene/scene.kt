@@ -102,11 +102,15 @@ abstract class HybridNode {
     )
 
     override fun equals(other: Any?): Boolean {
-        throw UnsupportedOperationException()
+        println("HybridNode.equals")
+//        throw UnsupportedOperationException()
+        return false
     }
 
     override fun hashCode(): Int {
-        throw UnsupportedOperationException()
+        println("HybridNode.hashCode")
+        //        throw UnsupportedOperationException()
+        return 0
     }
 }
 
