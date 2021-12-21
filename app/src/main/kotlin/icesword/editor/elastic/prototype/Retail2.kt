@@ -30,7 +30,7 @@ object Retail2DoublePilePrototype : ElasticPrototype() {
 }
 
 @Serializable
-@SerialName("Level2DoublePile")
+@SerialName("Retail2TowerTop")
 object Retail2TowerTopPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(5, 3)
 
