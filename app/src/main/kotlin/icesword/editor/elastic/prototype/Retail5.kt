@@ -1,13 +1,20 @@
 package icesword.editor.elastic.prototype
 
+import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticGeneratorOutput
 import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
+import icesword.editor.WapObjectPropsData
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.ElasticRectangularFragment
+import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
+import icesword.editor.retails.Retail2
 import icesword.editor.retails.Retail5
+import icesword.editor.retails.Retail5.MetaTiles.Bridge
 import icesword.geometry.IntSize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -110,4 +117,83 @@ object Retail5SpikesPrototype : ElasticPrototype() {
     ).toElasticGenerator()
 
     override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail5BridgeLeft")
+object Retail5BridgeLeftPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(3, 1)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment.ofSingle(
+            Bridge.left,
+        ),
+        topCenter = ElasticRectangularFragment.ofSingle(
+            Bridge.core,
+        ),
+        topRight = ElasticRectangularFragment(
+            metaTiles = listOf(Bridge.core),
+            wapObject = WapObjectPropsData(
+                x = 70,
+                y = 32,
+                i = -1,
+                logic = "AniCycle",
+                imageSet = "LEVEL_WALKENDCAP",
+            ),
+            width = 1,
+            height = 1,
+        ),
+        leftStaticWidth = 1,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 1,
+        topStaticHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail5BridgeRight")
+object Retail5BridgeRightPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(3, 1)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment.ofSingle(
+            Bridge.brokenEdge,
+        ),
+        topCenter = ElasticRectangularFragment.ofSingle(
+            Bridge.core,
+        ),
+        topRight = ElasticRectangularFragment.ofSingle(
+            Bridge.right,
+        ),
+        leftStaticWidth = 1,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 1,
+        topStaticHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail5BreakPlank")
+object Retail5BreakPlankPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(3, 1)
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = object : ElasticGenerator {
+        override fun buildOutput(size: IntSize) = ElasticGeneratorOutput(
+            localMetaTiles = emptyMap(),
+            localWapObjects = listOf(
+                WapObjectPropsData(
+                    x = 40,
+                    y = 88,
+                    i = -1,
+                    logic = "BreakPlank",
+                    imageSet = "LEVEL_BREAKPLANK",
+                    width = size.width,
+                ),
+            )
+        )
+    }
 }

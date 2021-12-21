@@ -9,6 +9,7 @@ import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.MetaTilePattern2x1
 import icesword.editor.knot_mesh.StructureConcavePattern
 import icesword.editor.knot_mesh.StructureConvexPattern
+import icesword.editor.retails.Retail5.MetaTiles.Bridge
 import icesword.editor.retails.Retail5.MetaTiles.Ladder
 import icesword.editor.retails.Retail5.MetaTiles.Rock
 import icesword.editor.retails.Retail5.MetaTiles.Spikes
@@ -51,6 +52,17 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(Rock.topCenter, Spikes.bottom) -> 405
             containsAll(Rock.concaveBottomRightOuter, Spikes.bottom) -> 406
             containsAll(Rock.concaveBottomRightInner, Spikes.bottom) -> 407
+
+            // Rock / bridge
+
+            containsAll(Rock.topRight, Bridge.left) -> 503
+            containsAll(Rock.topLeftOuter, Bridge.core) -> 507
+            containsAll(Rock.topLeftInner, Bridge.right) -> 508
+
+            containsAll(Rock.right, Bridge.left) -> 518
+            containsAll(Rock.leftOuter, Bridge.right) -> 519
+            containsAll(Rock.leftOuter, Bridge.core) -> 519
+            containsAll(Rock.leftInner, Bridge.right) -> 313
 
             else -> null
         }
@@ -121,6 +133,16 @@ object Retail5 : Retail(naturalIndex = 5) {
             val top = MetaTile(402)
 
             val bottom = MetaTile(405)
+        }
+
+        object Bridge {
+            val left = MetaTile(506)
+
+            val core = MetaTile(500)
+
+            val brokenEdge = MetaTile(502)
+
+            val right = MetaTile(505)
         }
     }
 

@@ -4,6 +4,9 @@ import icesword.createInsertElasticButton
 import icesword.createInsertKnotMeshButton
 import icesword.editor.Editor
 import icesword.editor.KnotPrototype
+import icesword.editor.elastic.prototype.Retail5BreakPlankPrototype
+import icesword.editor.elastic.prototype.Retail5BridgeLeftPrototype
+import icesword.editor.elastic.prototype.Retail5BridgeRightPrototype
 import icesword.editor.elastic.prototype.Retail5HorizontalRoofPrototype
 import icesword.editor.elastic.prototype.Retail5LadderPrototype
 import icesword.editor.elastic.prototype.Retail5MetalPlatformPrototype
@@ -47,6 +50,27 @@ object Retail5UiPrototype : RetailUiPrototype {
             prototype = Retail5SpikesPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL5/TILES/ACTION/405.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail5BridgeLeftPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL5/TILES/ACTION/506.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail5BreakPlankPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL5/IMAGES/BREAKPLANK/FRAME001.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail5BridgeRightPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL5/TILES/ACTION/502.png",
             tillDetach = tillDetach,
         ),
         createInsertKnotMeshButton(

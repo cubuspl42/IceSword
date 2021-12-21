@@ -4,7 +4,6 @@ import icesword.createInsertElasticButton
 import icesword.createInsertKnotMeshButton
 import icesword.editor.Editor
 import icesword.editor.KnotPrototype
-import icesword.editor.elastic.prototype.Retail5SpikesPrototype
 import icesword.editor.elastic.prototype.Retail6FencePrototype
 import icesword.editor.elastic.prototype.Retail6HorizontalRoofPrototype
 import icesword.editor.elastic.prototype.Retail6LadderPrototype
