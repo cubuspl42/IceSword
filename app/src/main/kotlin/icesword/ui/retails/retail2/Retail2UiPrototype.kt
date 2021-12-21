@@ -5,6 +5,7 @@ import icesword.createInsertEnemyButton
 import icesword.createInsertWapObjectButton
 import icesword.editor.elastic.prototype.Retail2DoublePilePrototype
 import icesword.editor.Editor
+import icesword.editor.elastic.prototype.Retail2GooPrototype
 import icesword.editor.elastic.prototype.Retail2PlatformPrototype
 import icesword.editor.elastic.prototype.Retail2SinglePilePrototype
 import icesword.editor.elastic.prototype.Retail2TowerPrototype
@@ -75,6 +76,13 @@ object Retail2UiPrototype : RetailUiPrototype {
             prototype = Retail2TowerPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL2/TILES/ACTION/080.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail2GooPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL2/TILES/ACTION/313.png",
             tillDetach = tillDetach,
         ),
         createInsertEnemyButton(

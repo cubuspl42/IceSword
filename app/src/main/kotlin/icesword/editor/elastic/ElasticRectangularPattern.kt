@@ -49,7 +49,7 @@ data class ElasticRectangularPattern(
     val rightStaticWidth: Int = 0,
 
     val topStaticHeight: Int = 0,
-    val centerVerticalRepeatingHeight: Int,
+    val centerVerticalRepeatingHeight: Int = 0,
     val bottomStaticHeight: Int = 0,
 ) {
     enum class Column {

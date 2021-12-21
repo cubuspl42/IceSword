@@ -84,6 +84,12 @@ private val retailTileGenerator = object : TileGenerator {
         // What's the difference between 38/39?
 
         when {
+            // Platform / goo
+
+            containsAll(metaTiles.platformTop, MetaTiles.Goo.left) -> 313
+            containsAll(metaTiles.platformTop, MetaTiles.Goo.center) -> 314
+            containsAll(metaTiles.platformTop, MetaTiles.Goo.right) -> 315
+
             // Platform overlapping with double pile
 
             containsAll(metaTiles.platformTopLeft, doublePile.top) -> 28
@@ -136,6 +142,8 @@ object Retail2 : Retail(naturalIndex = 2) {
 
         val battlement = MetaTile(67)
 
+        val death = MetaTile(107)
+
         object DoublePile {
             val top = MetaTile(113)
 
@@ -180,6 +188,14 @@ object Retail2 : Retail(naturalIndex = 2) {
                 val left = MetaTile(96, z = MetaTileZOder.TowerSide.ordinal)
                 val right = MetaTile(97, z = MetaTileZOder.TowerSide.ordinal)
             }
+        }
+
+        object Goo {
+            val left = MetaTile(313)
+
+            val center = MetaTile(314)
+
+            val right = MetaTile(315)
         }
     }
 

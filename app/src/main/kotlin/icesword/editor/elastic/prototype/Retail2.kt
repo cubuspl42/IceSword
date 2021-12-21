@@ -6,6 +6,7 @@ import icesword.editor.elastic.ElasticRectangularFragment
 import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail2
+import icesword.editor.retails.Retail2.MetaTiles
 import icesword.editor.retails.Retail2.MetaTiles.DoublePile
 import icesword.editor.retails.Retail2.MetaTiles.SinglePile
 import icesword.editor.retails.Retail2.MetaTiles.Tower
@@ -95,7 +96,7 @@ object Retail2TowerPrototype : ElasticPrototype() {
     private val generator = ElasticRectangularPattern(
         topLeft = ElasticRectangularFragment(
             metaTiles = listOf(
-                Retail2.MetaTiles.battlement, Retail2.MetaTiles.battlement,
+                MetaTiles.battlement, MetaTiles.battlement,
                 Tower.Platform.topLeftOuter, Tower.Platform.topLeftInner,
                 Tower.Platform.bottomLeftOuter, Tower.Platform.bottomLeftInner,
                 MetaTile.None, Tower.Column.topLeft,
@@ -105,7 +106,7 @@ object Retail2TowerPrototype : ElasticPrototype() {
         ),
         topCenter = ElasticRectangularFragment(
             metaTiles = listOf(
-                Retail2.MetaTiles.battlement,
+                MetaTiles.battlement,
                 Tower.Platform.topCenter,
                 Tower.core,
                 Tower.Column.topCenter,
@@ -115,7 +116,7 @@ object Retail2TowerPrototype : ElasticPrototype() {
         ),
         topRight = ElasticRectangularFragment(
             metaTiles = listOf(
-                Retail2.MetaTiles.battlement, Retail2.MetaTiles.battlement,
+                MetaTiles.battlement, MetaTiles.battlement,
                 Tower.Platform.topRightInner, Tower.Platform.topRightOuter,
                 Tower.Platform.bottomRightInner, Tower.Platform.bottomRightOuter,
                 Tower.Column.topRight, MetaTile.None,
@@ -143,6 +144,51 @@ object Retail2TowerPrototype : ElasticPrototype() {
         rightStaticWidth = 2,
         topStaticHeight = 4,
         centerVerticalRepeatingHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail2Goo")
+object Retail2GooPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(3, 4)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTiles.Goo.left,
+                DoublePile.core,
+                MetaTiles.death,
+                SinglePile.center,
+            ),
+            width = 1,
+            height = 4,
+        ),
+        topCenter = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTiles.Goo.center,
+                DoublePile.core,
+                MetaTiles.death,
+                SinglePile.center,
+            ),
+            width = 1,
+            height = 4,
+        ),
+        topRight = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTiles.Goo.right,
+                DoublePile.core,
+                MetaTiles.death,
+                SinglePile.center,
+            ),
+            width = 1,
+            height = 4,
+        ),
+        leftStaticWidth = 1,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 1,
+        topStaticHeight = 4,
     ).toElasticGenerator()
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator
