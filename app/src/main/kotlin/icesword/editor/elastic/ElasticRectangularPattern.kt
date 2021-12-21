@@ -1,11 +1,10 @@
 package icesword.editor.elastic
 
-import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
 import icesword.editor.WapObjectPropsData
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
-import icesword.utils.filterValuesNotNull
 import icesword.utils.mapValuesNotNull
 
 
@@ -111,7 +110,7 @@ data class ElasticRectangularPattern(
         else -> throw UnsupportedOperationException()
     }
 
-    fun toElasticGenerator(): ElasticGenerator = object : ElasticGenerator {
+    fun toElasticGenerator(): ElasticMetaTilesGenerator = object : ElasticMetaTilesGenerator {
         override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
             val heightOut = size.height
             val widthOut = size.width

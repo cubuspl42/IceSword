@@ -1,6 +1,6 @@
 package icesword.editor.elastic
 
-import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
 import icesword.editor.WapObjectPropsData
 import icesword.geometry.IntSize
@@ -56,7 +56,7 @@ data class ElasticLinearPattern(
     val wapObject: WapObjectPropsData? = null,
     val orientation: ElasticLinearPatternOrientation,
 ) {
-    fun toElasticGenerator(): ElasticGenerator = object : ElasticGenerator {
+    fun toElasticGenerator(): ElasticMetaTilesGenerator = object : ElasticMetaTilesGenerator {
         private fun buildLayer(
             // Layer index in the length axis
             layerIndex: Int,

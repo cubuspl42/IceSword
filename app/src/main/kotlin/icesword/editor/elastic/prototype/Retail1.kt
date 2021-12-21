@@ -1,6 +1,6 @@
 package icesword.editor.elastic.prototype
 
-import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.retail1PlatformPattern
 import icesword.editor.retails.retail1SpikesPattern
@@ -15,7 +15,7 @@ object Retail1PlatformPrototype : ElasticPrototype() {
 
     private val generator = retail1PlatformPattern.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
 
 @Serializable
@@ -25,5 +25,5 @@ object Retail1SpikesPrototype : ElasticPrototype() {
 
     private val generator = retail1SpikesPattern.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }

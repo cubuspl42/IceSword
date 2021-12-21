@@ -34,7 +34,7 @@ data class ElasticWapObjectBuildContext(
         get() = tileBounds.size
 }
 
-interface ElasticGenerator {
+interface ElasticMetaTilesGenerator {
     fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile>
 
     fun buildWapObjects(size: IntSize): List<WapObjectPropsData> = emptyList()
@@ -49,7 +49,7 @@ class Elastic(
     rezIndex: RezIndex,
     retail: Retail,
     private val prototype: ElasticPrototype,
-    private val generator: ElasticGenerator,
+    private val generator: ElasticMetaTilesGenerator,
     initialBounds: IntRect,
 ) :
     Entity(),

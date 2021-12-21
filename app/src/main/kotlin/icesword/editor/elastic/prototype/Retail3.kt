@@ -1,6 +1,6 @@
 package icesword.editor.elastic.prototype
 
-import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail3
 import icesword.editor.retails.retail3DarkSpikesPattern
@@ -17,7 +17,7 @@ object Retail3DarkSpikesPrototype : ElasticPrototype() {
 
     private val generator = retail3DarkSpikesPattern.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator {
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator {
         if (retail !is Retail3) throw UnsupportedOperationException()
         return generator
     }
@@ -30,7 +30,7 @@ object Retail3LightSpikesPrototype : ElasticPrototype() {
 
     private val generator = retail3LightSpikesPattern.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator {
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator {
         if (retail !is Retail3) throw UnsupportedOperationException()
         return generator
     }
@@ -43,7 +43,7 @@ object Retail3RockLightPrototype : ElasticPrototype() {
 
     private val generator = retail3RockLightPattern.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator {
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator {
         if (retail !is Retail3) throw UnsupportedOperationException()
         return generator
     }

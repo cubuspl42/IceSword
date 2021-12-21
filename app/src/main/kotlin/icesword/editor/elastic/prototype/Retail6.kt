@@ -1,6 +1,6 @@
 package icesword.editor.elastic.prototype
 
-import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
@@ -44,7 +44,7 @@ object Retail6FencePrototype : ElasticPrototype() {
         orientation = ElasticLinearPatternOrientation.Horizontal,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
 
 @Serializable
@@ -79,7 +79,7 @@ object Retail6HorizontalRoofPrototype : ElasticPrototype() {
         orientation = ElasticLinearPatternOrientation.Horizontal,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
 
 @Serializable
@@ -91,5 +91,5 @@ object Retail6LadderPrototype : ElasticPrototype() {
         ladder = Retail6.MetaTiles.Ladder,
     )
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }

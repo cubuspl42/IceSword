@@ -1,11 +1,10 @@
 package icesword.editor.elastic.prototype
 
-import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
 import icesword.editor.elastic.ElasticRectangularFragment
 import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.retails.Retail
-import icesword.editor.retails.Retail2
 import icesword.editor.retails.Retail2.MetaTiles
 import icesword.editor.retails.Retail2.MetaTiles.DoublePile
 import icesword.editor.retails.Retail2.MetaTiles.SinglePile
@@ -23,7 +22,7 @@ object Retail2PlatformPrototype : ElasticPrototype() {
 
     private val generator = retail2PlatformPattern.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
 
 @Serializable
@@ -41,7 +40,7 @@ object Retail2DoublePilePrototype : ElasticPrototype() {
         bottomStaticHeight = 1,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
 
 @Serializable
@@ -75,7 +74,7 @@ object Retail2SinglePilePrototype : ElasticPrototype() {
         bottomStaticHeight = 2,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
 
 @Serializable
@@ -85,7 +84,7 @@ object Retail2TowerTopPrototype : ElasticPrototype() {
 
     private val generator = retail2TowerTop.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
 
 @Serializable
@@ -146,7 +145,7 @@ object Retail2TowerPrototype : ElasticPrototype() {
         centerVerticalRepeatingHeight = 1,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
 
 @Serializable
@@ -191,5 +190,5 @@ object Retail2GooPrototype : ElasticPrototype() {
         topStaticHeight = 4,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }

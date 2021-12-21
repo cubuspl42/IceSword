@@ -1,6 +1,6 @@
 package icesword.editor.elastic.prototype
 
-import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.LinearMetaTilePattern
@@ -19,7 +19,7 @@ object Retail4TreeLogPrototype : ElasticPrototype() {
 
     private val generator = retail4TreeLog.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
 
 @Serializable
@@ -49,7 +49,7 @@ object Retail4WoodenPlatformPrototype : ElasticPrototype() {
         orientation = ElasticLinearPatternOrientation.Horizontal,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
 
 @Serializable
@@ -61,5 +61,5 @@ object Retail4LadderPrototype : ElasticPrototype() {
         ladder = Retail4.MetaTiles.Ladder,
     )
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }

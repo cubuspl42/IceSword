@@ -1,6 +1,6 @@
 package icesword.editor.elastic.prototype
 
-import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail3
@@ -16,13 +16,13 @@ import kotlinx.serialization.Serializable
 sealed class ElasticPrototype {
     abstract val defaultSize: IntSize
 
-    abstract fun buildGenerator(retail: Retail): ElasticGenerator
+    abstract fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator
 }
 
 @Serializable
 @SerialName("Log")
 object LogPrototype : ElasticPrototype() {
-    private object Generator : ElasticGenerator {
+    private object Generator : ElasticMetaTilesGenerator {
         override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> =
             (0 until size.height).flatMap(::logLevel).toMap()
     }
@@ -35,7 +35,7 @@ object LogPrototype : ElasticPrototype() {
 
     override val defaultSize: IntSize = IntSize(1, 4)
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator {
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator {
         if (retail !is Retail3) throw UnsupportedOperationException()
         return Generator
     }
@@ -44,7 +44,7 @@ object LogPrototype : ElasticPrototype() {
 @Serializable
 @SerialName("TreeCrown")
 object TreeCrownPrototype : ElasticPrototype() {
-    private object Generator : ElasticGenerator {
+    private object Generator : ElasticMetaTilesGenerator {
         override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
             val columns =
                 listOf(
@@ -73,7 +73,7 @@ object TreeCrownPrototype : ElasticPrototype() {
 
     override val defaultSize: IntSize = IntSize(5, 2)
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator {
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator {
         if (retail !is Retail3) throw UnsupportedOperationException()
         return Generator
     }
@@ -84,7 +84,7 @@ object TreeCrownPrototype : ElasticPrototype() {
 object LadderPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(1, 4)
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator {
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator {
         if (retail !is RetailLadderPrototype) throw UnsupportedOperationException()
         return retail.ladderGenerator
     }
@@ -97,5 +97,5 @@ object ColumnPrototype : ElasticPrototype() {
 
     private val generator = retail1ColumnPattern.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }
