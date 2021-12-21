@@ -2,6 +2,7 @@ package icesword.editor
 
 import icesword.frp.MutCell
 import icesword.geometry.IntRect
+import icesword.geometry.IntVec2
 import icesword.wwd.DataStreamObj.ByteString
 import icesword.wwd.Wwd
 import kotlinx.serialization.Serializable
@@ -221,6 +222,9 @@ data class WapObjectPropsData(
             yMoveRes = wwdObject.yMoveRes,
         )
     }
+
+    val position: IntVec2
+        get() = IntVec2(x, y)
 
     fun toWwdObject(): Wwd.Object_ = Wwd.Object_(
         id = this.id,

@@ -10,6 +10,9 @@ import icesword.frp.Cell
 import icesword.frp.DynamicMap
 import icesword.frp.MutCell
 import icesword.frp.Till
+import icesword.frp.diffMap
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.map
 import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.frp.update
@@ -34,9 +37,13 @@ data class ElasticWapObjectBuildContext(
 interface ElasticGenerator {
     fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile>
 
-    fun buildWapObject(): WapObjectPropsData? = null
+    fun buildWapObjects(size: IntSize): List<WapObjectPropsData> = emptyList()
 }
 
+private data class ElasticGeneratorOutput(
+    val localMetaTiles: Map<IntVec2, MetaTile>,
+    val localWapObjects: List<WapObjectPropsData>,
+)
 
 class Elastic(
     rezIndex: RezIndex,
@@ -136,27 +143,33 @@ class Elastic(
 
     private val boundsTopLeft = tileBounds.map { it.topLeft }
 
+    private val generatorOutput = size.map {
+        ElasticGeneratorOutput(
+            localMetaTiles = generator.buildMetaTiles(size = it),
+            localWapObjects = generator.buildWapObjects(size = it),
+        )
+    }
+
+    private val localWapObjects: DynamicList<WapObjectPropsData> =
+        generatorOutput.diffMap { it.localWapObjects }
+
     val metaTileCluster = MetaTileCluster(
         tileOffset = boundsTopLeft,
         localMetaTiles = DynamicMap.diff(
-            size.map { generator.buildMetaTiles(it) },
+            generatorOutput.map { it.localMetaTiles },
             tag = "metaTileCluster.localMetaTilesDynamic",
         )
     )
 
-    val wapObjectProps = generator.buildWapObject()
-
-    val wapObjectSprite = wapObjectProps?.let { props ->
+    val wapObjectSprites = this.localWapObjects.map { localWapObject ->
         DynamicWapSprite.fromImageSet(
             rezIndex = rezIndex,
             imageSetId = expandImageSetId(
                 retail = retail,
-                shortImageSetId = props.imageSet,
+                shortImageSetId = localWapObject.imageSet,
             ),
-            position = position.map {
-                it + IntVec2(props.x, props.y)
-            },
-            i = props.i,
+            position = position.map { it + localWapObject.position },
+            i = localWapObject.i,
         )
     }
 
@@ -168,13 +181,12 @@ class Elastic(
     override fun exportWapObjects(): List<Wwd.Object_> {
         val position = this.position.sample()
 
-        return if (wapObjectProps != null) listOf(
+        return localWapObjects.volatileContentView.map { wapObjectProps ->
             wapObjectProps.copy(
                 x = position.x + wapObjectProps.x,
                 y = position.y + wapObjectProps.y,
-            ).toWwdObject(),
-        )
-        else emptyList()
+            ).toWwdObject()
+        }
     }
 
     fun toData(): ElasticData =

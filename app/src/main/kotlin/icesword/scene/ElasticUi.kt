@@ -11,6 +11,7 @@ import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.changesUnits
+import icesword.frp.dynamic_list.map
 import icesword.frp.getKeys
 import icesword.frp.map
 import icesword.frp.mergeWith
@@ -104,22 +105,16 @@ class ElasticNode(
     private val elastic: Elastic,
     private val viewTransform: DynamicTransform,
 ) : HybridNode() {
-    //    override fun buildCanvasNode(
-//        textureBank: TextureBank,
-//    ): CanvasNode = ElasticUi(
-//        editor = editor,
-//        viewTransform = viewTransform,
-//        elastic = elastic,
-//    )
-
     override fun buildCanvasNode(
         textureBank: TextureBank,
-    ): CanvasNode = elastic.wapObjectSprite?.let {
-        WapSpriteNode(
-            textureBank = textureBank,
-            wapSprite = it,
-        )
-    } ?: NoopCanvasNode()
+    ): CanvasNode = GroupCanvasNode(
+        children = elastic.wapObjectSprites.map {
+            WapSpriteNode(
+                textureBank = textureBank,
+                wapSprite = it,
+            )
+        }
+    )
 
     override fun buildOverlayElement(
         context: HybridNode.OverlayBuildContext,

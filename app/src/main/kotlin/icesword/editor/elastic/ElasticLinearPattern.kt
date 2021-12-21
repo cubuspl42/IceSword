@@ -84,6 +84,7 @@ data class ElasticLinearPattern(
             return buildLayers(length = length)
         }
 
-        override fun buildWapObject(): WapObjectPropsData? = wapObject
+        override fun buildWapObjects(size: IntSize): List<WapObjectPropsData> =
+            listOfNotNull(wapObject)
     }
 }
