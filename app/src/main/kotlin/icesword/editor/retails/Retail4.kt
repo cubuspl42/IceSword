@@ -1,24 +1,24 @@
 package icesword.editor.retails
 
 import icesword.editor.MetaTile
-import icesword.editor.elastic.ElasticStructurePattern
-import icesword.editor.elastic.ElasticStructurePatternOrientation
-import icesword.editor.elastic.RectangularMetaTilePattern
+import icesword.editor.elastic.ElasticLinearPattern
+import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.LinearMetaTilePattern
 
-val retail4TreeLog = ElasticStructurePattern(
-    startingPattern = RectangularMetaTilePattern(
+val retail4TreeLog = ElasticLinearPattern(
+    startingPattern = LinearMetaTilePattern(
         metaTiles = emptyList(),
         width = 0,
     ),
-    repeatingPattern = RectangularMetaTilePattern(
+    repeatingPattern = LinearMetaTilePattern(
         metaTiles = listOf(Retail4.MetaTiles.TreeLog.center),
         width = 1,
     ),
-    endingPattern = RectangularMetaTilePattern(
+    endingPattern = LinearMetaTilePattern(
         metaTiles = emptyList(),
         width = 0,
     ),
-    orientation = ElasticStructurePatternOrientation.Vertical,
+    orientation = ElasticLinearPatternOrientation.Vertical,
 )
 
 object Retail4 : Retail(naturalIndex = 4) {

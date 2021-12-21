@@ -3,77 +3,74 @@ package icesword.editor.retails
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
-import icesword.editor.elastic.ElasticStructurePattern
-import icesword.editor.elastic.ElasticStructurePatternOrientation
-import icesword.editor.elastic.RectangularMetaTilePattern
-import icesword.geometry.IntSize
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import icesword.editor.elastic.ElasticLinearPattern
+import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.LinearMetaTilePattern
 
-val retail2PlatformPattern = ElasticStructurePattern(
-    startingPattern = RectangularMetaTilePattern(
+val retail2PlatformPattern = ElasticLinearPattern(
+    startingPattern = LinearMetaTilePattern(
         metaTiles = listOf(
             Retail2.MetaTiles.platformTopLeft, Retail2.MetaTiles.platformBottomLeft,
         ),
         width = 2,
     ),
-    repeatingPattern = RectangularMetaTilePattern(
+    repeatingPattern = LinearMetaTilePattern(
         metaTiles = listOf(
             Retail2.MetaTiles.platformTop, Retail2.MetaTiles.platformBottom,
         ),
         width = 2,
     ),
-    endingPattern = RectangularMetaTilePattern(
+    endingPattern = LinearMetaTilePattern(
         metaTiles = listOf(
             Retail2.MetaTiles.platformTopRight, Retail2.MetaTiles.platformBottomRight,
         ),
         width = 2,
     ),
-    orientation = ElasticStructurePatternOrientation.Horizontal,
+    orientation = ElasticLinearPatternOrientation.Horizontal,
 )
 
 val doublePilePattern = run {
     val doublePile = Retail2.MetaTiles.DoublePile
 
-    ElasticStructurePattern(
-        startingPattern = RectangularMetaTilePattern(
+    ElasticLinearPattern(
+        startingPattern = LinearMetaTilePattern(
             metaTiles = listOf(doublePile.top),
             width = 1,
         ),
-        repeatingPattern = RectangularMetaTilePattern(
+        repeatingPattern = LinearMetaTilePattern(
             metaTiles = listOf(doublePile.core),
             width = 1,
         ),
-        endingPattern = RectangularMetaTilePattern(
+        endingPattern = LinearMetaTilePattern(
             metaTiles = listOf(doublePile.bottom),
             width = 1,
         ),
-        orientation = ElasticStructurePatternOrientation.Vertical,
+        orientation = ElasticLinearPatternOrientation.Vertical,
     )
 }
 
-val retail2TowerTop = ElasticStructurePattern(
-    startingPattern = RectangularMetaTilePattern(
+val retail2TowerTop = ElasticLinearPattern(
+    startingPattern = LinearMetaTilePattern(
         metaTiles = listOf(
             MetaTile(68), MetaTile(70), MetaTile(75),
             MetaTile(68), MetaTile(71), MetaTile(76),
         ),
         width = 3,
     ),
-    repeatingPattern = RectangularMetaTilePattern(
+    repeatingPattern = LinearMetaTilePattern(
         metaTiles = listOf(
             MetaTile(68), MetaTile(72), MetaTile(77),
         ),
         width = 3,
     ),
-    endingPattern = RectangularMetaTilePattern(
+    endingPattern = LinearMetaTilePattern(
         metaTiles = listOf(
             MetaTile(68), MetaTile(73), MetaTile(78),
             MetaTile(68), MetaTile(74), MetaTile(79),
         ),
         width = 3,
     ),
-    orientation = ElasticStructurePatternOrientation.Horizontal,
+    orientation = ElasticLinearPatternOrientation.Horizontal,
 )
 
 private val retailTileGenerator = object : TileGenerator {

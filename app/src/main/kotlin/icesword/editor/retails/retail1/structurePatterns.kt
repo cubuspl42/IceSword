@@ -3,9 +3,9 @@ package icesword.editor.retails.retail1
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.WapObjectPropsData
-import icesword.editor.elastic.ElasticStructurePattern
-import icesword.editor.elastic.ElasticStructurePatternOrientation
-import icesword.editor.elastic.RectangularMetaTilePattern
+import icesword.editor.elastic.ElasticLinearPattern
+import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.MetaTilePattern2x1
 import icesword.editor.knot_mesh.StructureConcavePattern
@@ -36,32 +36,32 @@ private val foundation = object : KnotStructurePattern(
         knotPrototype is KnotPrototype.Level1Foundation
 }
 
-val retail1LadderPattern = ElasticStructurePattern(
-    startingPattern = RectangularMetaTilePattern(
+val retail1LadderPattern = ElasticLinearPattern(
+    startingPattern = LinearMetaTilePattern(
         metaTiles = listOf(MetaTile(310)),
         width = 1,
     ),
-    repeatingPattern = RectangularMetaTilePattern(
+    repeatingPattern = LinearMetaTilePattern(
         metaTiles = listOf(MetaTile(311)),
         width = 1,
     ),
-    endingPattern = RectangularMetaTilePattern(
+    endingPattern = LinearMetaTilePattern(
         metaTiles = listOf(MetaTile(312)),
         width = 1,
     ),
-    orientation = ElasticStructurePatternOrientation.Vertical,
+    orientation = ElasticLinearPatternOrientation.Vertical,
 )
 
-val retail1ColumnPattern = ElasticStructurePattern(
-    startingPattern = RectangularMetaTilePattern(
+val retail1ColumnPattern = ElasticLinearPattern(
+    startingPattern = LinearMetaTilePattern(
         metaTiles = listOf(MetaTile(933)),
         width = 1,
     ),
-    repeatingPattern = RectangularMetaTilePattern(
+    repeatingPattern = LinearMetaTilePattern(
         metaTiles = listOf(MetaTile(934)),
         width = 1,
     ),
-    endingPattern = RectangularMetaTilePattern(
+    endingPattern = LinearMetaTilePattern(
         metaTiles = listOf(Retail1.MetaTiles.Column.bottom),
         width = 1,
     ),
@@ -72,7 +72,7 @@ val retail1ColumnPattern = ElasticStructurePattern(
         logic = "DoNothing",
         imageSet = "LEVEL_ARCHESFRONT",
     ),
-    orientation = ElasticStructurePatternOrientation.Vertical,
+    orientation = ElasticLinearPatternOrientation.Vertical,
 )
 
 val retail1KnotStructurePatterns: List<KnotStructurePattern> = listOf(

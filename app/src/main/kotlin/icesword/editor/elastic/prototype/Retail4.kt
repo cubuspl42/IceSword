@@ -1,9 +1,9 @@
 package icesword.editor.elastic.prototype
 
 import icesword.editor.ElasticGenerator
-import icesword.editor.elastic.ElasticStructurePattern
-import icesword.editor.elastic.ElasticStructurePatternOrientation
-import icesword.editor.elastic.RectangularMetaTilePattern
+import icesword.editor.elastic.ElasticLinearPattern
+import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail4
@@ -27,26 +27,26 @@ object Retail4TreeLogPrototype : ElasticPrototype() {
 object Retail4WoodenPlatformPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(3, 1)
 
-    private val generator = ElasticStructurePattern(
-        startingPattern = RectangularMetaTilePattern(
+    private val generator = ElasticLinearPattern(
+        startingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 Retail4.MetaTiles.WoodenPlatform.left,
             ),
             width = 1,
         ),
-        repeatingPattern = RectangularMetaTilePattern(
+        repeatingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 Retail4.MetaTiles.WoodenPlatform.center,
             ),
             width = 1,
         ),
-        endingPattern = RectangularMetaTilePattern(
+        endingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 Retail4.MetaTiles.WoodenPlatform.right,
             ),
             width = 1,
         ),
-        orientation = ElasticStructurePatternOrientation.Horizontal,
+        orientation = ElasticLinearPatternOrientation.Horizontal,
     ).toElasticGenerator()
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator

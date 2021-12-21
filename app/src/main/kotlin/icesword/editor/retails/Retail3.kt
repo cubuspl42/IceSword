@@ -5,9 +5,9 @@ import icesword.editor.ElevatorPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
-import icesword.editor.elastic.ElasticStructurePattern
-import icesword.editor.elastic.ElasticStructurePatternOrientation
-import icesword.editor.elastic.RectangularMetaTilePattern
+import icesword.editor.elastic.ElasticLinearPattern
+import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.encode
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.editor.retails.Retail3.MetaTiles.Rock
@@ -15,41 +15,41 @@ import icesword.editor.retails.retail3.retail3KnotStructurePatterns
 import icesword.editor.retails.retail3.retail3LadderPattern
 import icesword.wwd.Wwd
 
-private fun spikesPattern(spikes: Retail3.MetaTiles.Spikes): ElasticStructurePattern =
-    ElasticStructurePattern(
-        startingPattern = RectangularMetaTilePattern(
+private fun spikesPattern(spikes: Retail3.MetaTiles.Spikes): ElasticLinearPattern =
+    ElasticLinearPattern(
+        startingPattern = LinearMetaTilePattern(
             metaTiles = emptyList(),
             width = 0,
         ),
-        repeatingPattern = RectangularMetaTilePattern(
+        repeatingPattern = LinearMetaTilePattern(
             metaTiles = listOf(spikes.top, spikes.bottom),
             width = 2,
         ),
-        endingPattern = RectangularMetaTilePattern(
+        endingPattern = LinearMetaTilePattern(
             metaTiles = emptyList(),
             width = 0,
         ),
-        orientation = ElasticStructurePatternOrientation.Horizontal,
+        orientation = ElasticLinearPatternOrientation.Horizontal,
     )
 
 val retail3LightSpikesPattern = spikesPattern(spikes = Retail3.MetaTiles.LightSpikes)
 
 val retail3DarkSpikesPattern = spikesPattern(spikes = Retail3.MetaTiles.DarkSpikes)
 
-val retail3RockLightPattern = ElasticStructurePattern(
-    startingPattern = RectangularMetaTilePattern(
+val retail3RockLightPattern = ElasticLinearPattern(
+    startingPattern = LinearMetaTilePattern(
         metaTiles = listOf(Retail3.MetaTiles.RockLight.left),
         width = 1,
     ),
-    repeatingPattern = RectangularMetaTilePattern(
+    repeatingPattern = LinearMetaTilePattern(
         metaTiles = listOf(Retail3.MetaTiles.RockLight.center),
         width = 1,
     ),
-    endingPattern = RectangularMetaTilePattern(
+    endingPattern = LinearMetaTilePattern(
         metaTiles = listOf(Retail3.MetaTiles.RockLight.right),
         width = 1,
     ),
-    orientation = ElasticStructurePatternOrientation.Horizontal,
+    orientation = ElasticLinearPatternOrientation.Horizontal,
 )
 
 class SpikesTileGenerator(

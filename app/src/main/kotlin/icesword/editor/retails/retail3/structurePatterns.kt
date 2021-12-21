@@ -2,9 +2,9 @@ package icesword.editor.retails.retail3
 
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
-import icesword.editor.elastic.ElasticStructurePattern
-import icesword.editor.elastic.ElasticStructurePatternOrientation
-import icesword.editor.elastic.RectangularMetaTilePattern
+import icesword.editor.elastic.ElasticLinearPattern
+import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.MetaTilePattern2x1
@@ -55,20 +55,20 @@ private val rock = object : KnotStructurePattern(
 
 val retail3LadderPattern = run {
     val ladder = Retail3.MetaTiles.Ladder
-    ElasticStructurePattern(
-        startingPattern = RectangularMetaTilePattern(
+    ElasticLinearPattern(
+        startingPattern = LinearMetaTilePattern(
             metaTiles = listOf(ladder.top),
             width = 1,
         ),
-        repeatingPattern = RectangularMetaTilePattern(
+        repeatingPattern = LinearMetaTilePattern(
             metaTiles = listOf(ladder.core),
             width = 1,
         ),
-        endingPattern = RectangularMetaTilePattern(
+        endingPattern = LinearMetaTilePattern(
             metaTiles = listOf(MetaTile(670)),
             width = 1,
         ),
-        orientation = ElasticStructurePatternOrientation.Vertical,
+        orientation = ElasticLinearPatternOrientation.Vertical,
     )
 }
 

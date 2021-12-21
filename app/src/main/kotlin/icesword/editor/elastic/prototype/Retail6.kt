@@ -2,12 +2,11 @@ package icesword.editor.elastic.prototype
 
 import icesword.editor.ElasticGenerator
 import icesword.editor.MetaTile
-import icesword.editor.elastic.ElasticStructurePattern
-import icesword.editor.elastic.ElasticStructurePatternOrientation
-import icesword.editor.elastic.RectangularMetaTilePattern
+import icesword.editor.elastic.ElasticLinearPattern
+import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
-import icesword.editor.retails.Retail5
 import icesword.editor.retails.Retail6
 import icesword.geometry.IntSize
 import kotlinx.serialization.SerialName
@@ -18,22 +17,22 @@ import kotlinx.serialization.Serializable
 object Retail6FencePrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(4, 2)
 
-    private val generator = ElasticStructurePattern(
-        startingPattern = RectangularMetaTilePattern(
+    private val generator = ElasticLinearPattern(
+        startingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 MetaTile.None,
                 Retail6.MetaTiles.Fence.bottomLeft,
             ),
             width = 2,
         ),
-        repeatingPattern = RectangularMetaTilePattern(
+        repeatingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 Retail6.MetaTiles.Fence.top,
                 Retail6.MetaTiles.Fence.bottomCenter,
             ),
             width = 2,
         ),
-        endingPattern = RectangularMetaTilePattern(
+        endingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 MetaTile.None,
                 Retail6.MetaTiles.Fence.bottomRightInner,
@@ -42,7 +41,7 @@ object Retail6FencePrototype : ElasticPrototype() {
             ),
             width = 2,
         ),
-        orientation = ElasticStructurePatternOrientation.Horizontal,
+        orientation = ElasticLinearPatternOrientation.Horizontal,
     ).toElasticGenerator()
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator
@@ -53,22 +52,22 @@ object Retail6FencePrototype : ElasticPrototype() {
 object Retail6HorizontalRoofPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(4, 2)
 
-    private val generator = ElasticStructurePattern(
-        startingPattern = RectangularMetaTilePattern(
+    private val generator = ElasticLinearPattern(
+        startingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 Retail6.MetaTiles.HorizontalRoof.topLeft,
                 Retail6.MetaTiles.HorizontalRoof.bottomLeft,
             ),
             width = 2,
         ),
-        repeatingPattern = RectangularMetaTilePattern(
+        repeatingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 Retail6.MetaTiles.HorizontalRoof.topCenter,
                 Retail6.MetaTiles.HorizontalRoof.bottomCenter,
             ),
             width = 2,
         ),
-        endingPattern = RectangularMetaTilePattern(
+        endingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 Retail6.MetaTiles.HorizontalRoof.topRightInner,
                 Retail6.MetaTiles.HorizontalRoof.bottomRightInner,
@@ -77,7 +76,7 @@ object Retail6HorizontalRoofPrototype : ElasticPrototype() {
             ),
             width = 2,
         ),
-        orientation = ElasticStructurePatternOrientation.Horizontal,
+        orientation = ElasticLinearPatternOrientation.Horizontal,
     ).toElasticGenerator()
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator

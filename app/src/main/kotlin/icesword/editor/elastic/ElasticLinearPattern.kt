@@ -1,19 +1,18 @@
 package icesword.editor.elastic
 
 import icesword.editor.ElasticGenerator
-import icesword.editor.ElasticWapObjectBuildContext
 import icesword.editor.MetaTile
 import icesword.editor.WapObjectPropsData
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 
 
-data class RectangularMetaTilePattern(
+data class LinearMetaTilePattern(
     val metaTiles: List<MetaTile>,
     val width: Int,
 ) {
     companion object {
-        fun empty() = RectangularMetaTilePattern(
+        fun empty() = LinearMetaTilePattern(
             metaTiles = emptyList(),
             width = 0,
         )
@@ -45,17 +44,17 @@ data class RectangularMetaTilePattern(
         getLayer(layerIndex % length)
 }
 
-enum class ElasticStructurePatternOrientation {
+enum class ElasticLinearPatternOrientation {
     Horizontal,
     Vertical,
 }
 
-data class ElasticStructurePattern(
-    val startingPattern: RectangularMetaTilePattern,
-    val repeatingPattern: RectangularMetaTilePattern,
-    val endingPattern: RectangularMetaTilePattern,
+data class ElasticLinearPattern(
+    val startingPattern: LinearMetaTilePattern,
+    val repeatingPattern: LinearMetaTilePattern,
+    val endingPattern: LinearMetaTilePattern,
     val wapObject: WapObjectPropsData? = null,
-    val orientation: ElasticStructurePatternOrientation,
+    val orientation: ElasticLinearPatternOrientation,
 ) {
     fun toElasticGenerator(): ElasticGenerator = object : ElasticGenerator {
         private fun buildLayer(
@@ -68,8 +67,8 @@ data class ElasticStructurePattern(
             else -> repeatingPattern.getLayerModulo(layerIndex - startingPattern.length)
         }.mapIndexed { i, metaTile ->
             when (orientation) {
-                ElasticStructurePatternOrientation.Horizontal -> IntVec2(layerIndex, i) to metaTile
-                ElasticStructurePatternOrientation.Vertical -> IntVec2(i, layerIndex) to metaTile
+                ElasticLinearPatternOrientation.Horizontal -> IntVec2(layerIndex, i) to metaTile
+                ElasticLinearPatternOrientation.Vertical -> IntVec2(i, layerIndex) to metaTile
             }
         }
 
@@ -78,8 +77,8 @@ data class ElasticStructurePattern(
 
         override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
             val length = when (orientation) {
-                ElasticStructurePatternOrientation.Horizontal -> size.width
-                ElasticStructurePatternOrientation.Vertical -> size.height
+                ElasticLinearPatternOrientation.Horizontal -> size.width
+                ElasticLinearPatternOrientation.Vertical -> size.height
             }
 
             return buildLayers(length = length)

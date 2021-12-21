@@ -7,28 +7,28 @@ import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
-import icesword.editor.elastic.ElasticStructurePattern
-import icesword.editor.elastic.ElasticStructurePatternOrientation
-import icesword.editor.elastic.RectangularMetaTilePattern
+import icesword.editor.elastic.ElasticLinearPattern
+import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.geometry.IntVec2
 
 object LadderElasticGenerator{
     fun build(ladder: Retail.LadderPattern): ElasticGenerator =
-        ElasticStructurePattern(
-            startingPattern = RectangularMetaTilePattern(
+        ElasticLinearPattern(
+            startingPattern = LinearMetaTilePattern(
                 metaTiles = listOf(ladder.top),
                 width = 1,
             ),
-            repeatingPattern = RectangularMetaTilePattern(
+            repeatingPattern = LinearMetaTilePattern(
                 metaTiles = listOf(ladder.center),
                 width = 1,
             ),
-            endingPattern = RectangularMetaTilePattern(
+            endingPattern = LinearMetaTilePattern(
                 metaTiles = listOf(ladder.bottom),
                 width = 1,
             ),
-            orientation = ElasticStructurePatternOrientation.Vertical,
+            orientation = ElasticLinearPatternOrientation.Vertical,
         ).toElasticGenerator()
 }
 
