@@ -5,6 +5,7 @@ import icesword.editor.MetaTile
 import icesword.editor.WapObjectPropsData
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.MetaTilePattern2x1
@@ -48,29 +49,6 @@ val retail1LadderPattern = ElasticLinearPattern(
     endingPattern = LinearMetaTilePattern(
         metaTiles = listOf(MetaTile(312)),
         width = 1,
-    ),
-    orientation = ElasticLinearPatternOrientation.Vertical,
-)
-
-val retail1ColumnPattern = ElasticLinearPattern(
-    startingPattern = LinearMetaTilePattern(
-        metaTiles = listOf(MetaTile(933)),
-        width = 1,
-    ),
-    repeatingPattern = LinearMetaTilePattern(
-        metaTiles = listOf(MetaTile(934)),
-        width = 1,
-    ),
-    endingPattern = LinearMetaTilePattern(
-        metaTiles = listOf(Retail1.MetaTiles.Column.bottom),
-        width = 1,
-    ),
-    wapObject = WapObjectPropsData(
-        x = 28,
-        y = 32,
-        i = 2,
-        logic = "DoNothing",
-        imageSet = "LEVEL_ARCHESFRONT",
     ),
     orientation = ElasticLinearPatternOrientation.Vertical,
 )

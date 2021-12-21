@@ -53,10 +53,9 @@ data class ElasticLinearPattern(
     val startingPattern: LinearMetaTilePattern,
     val repeatingPattern: LinearMetaTilePattern,
     val endingPattern: LinearMetaTilePattern,
-    val wapObject: WapObjectPropsData? = null,
     val orientation: ElasticLinearPatternOrientation,
 ) {
-    fun toElasticGenerator(): ElasticMetaTilesGenerator = object : ElasticMetaTilesGenerator {
+    fun toElasticGenerator(): ElasticMetaTilesGenerator = object : ElasticMetaTilesGenerator() {
         private fun buildLayer(
             // Layer index in the length axis
             layerIndex: Int,
@@ -83,8 +82,5 @@ data class ElasticLinearPattern(
 
             return buildLayers(length = length)
         }
-
-        override fun buildWapObjects(size: IntSize): List<WapObjectPropsData> =
-            listOfNotNull(wapObject)
     }
 }

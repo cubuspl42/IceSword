@@ -34,13 +34,21 @@ data class ElasticWapObjectBuildContext(
         get() = tileBounds.size
 }
 
-interface ElasticMetaTilesGenerator {
-    fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile>
-
-    fun buildWapObjects(size: IntSize): List<WapObjectPropsData> = emptyList()
+interface ElasticGenerator {
+    fun buildOutput(size: IntSize): ElasticGeneratorOutput
 }
 
-private data class ElasticGeneratorOutput(
+abstract class ElasticMetaTilesGenerator : ElasticGenerator {
+    override fun buildOutput(size: IntSize): ElasticGeneratorOutput =
+        ElasticGeneratorOutput(
+            localMetaTiles = buildMetaTiles(size = size),
+            localWapObjects = emptyList(),
+        )
+
+    abstract fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile>
+}
+
+data class ElasticGeneratorOutput(
     val localMetaTiles: Map<IntVec2, MetaTile>,
     val localWapObjects: List<WapObjectPropsData>,
 )
@@ -49,7 +57,7 @@ class Elastic(
     rezIndex: RezIndex,
     retail: Retail,
     private val prototype: ElasticPrototype,
-    private val generator: ElasticMetaTilesGenerator,
+    private val generator: ElasticGenerator,
     initialBounds: IntRect,
 ) :
     Entity(),
@@ -144,10 +152,7 @@ class Elastic(
     private val boundsTopLeft = tileBounds.map { it.topLeft }
 
     private val generatorOutput = size.map {
-        ElasticGeneratorOutput(
-            localMetaTiles = generator.buildMetaTiles(size = it),
-            localWapObjects = generator.buildWapObjects(size = it),
-        )
+        generator.buildOutput(size = it)
     }
 
     private val localWapObjects: DynamicList<WapObjectPropsData> =

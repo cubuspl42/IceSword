@@ -1,10 +1,12 @@
 package icesword.editor.elastic
 
-import icesword.editor.ElasticMetaTilesGenerator
+import icesword.editor.ElasticGenerator
+import icesword.editor.ElasticGeneratorOutput
 import icesword.editor.MetaTile
 import icesword.editor.WapObjectPropsData
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import icesword.tileTopLeftCorner
 import icesword.utils.mapValuesNotNull
 
 
@@ -110,8 +112,8 @@ data class ElasticRectangularPattern(
         else -> throw UnsupportedOperationException()
     }
 
-    fun toElasticGenerator(): ElasticMetaTilesGenerator = object : ElasticMetaTilesGenerator {
-        override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
+    fun toElasticGenerator() = object : ElasticGenerator {
+        override fun buildOutput(size: IntSize): ElasticGeneratorOutput {
             val heightOut = size.height
             val widthOut = size.width
 
@@ -139,7 +141,17 @@ data class ElasticRectangularPattern(
 
                     getFragment(yCoord.row, xCoord.column)?.let { fragment ->
                         val metaTileOrNull = fragment.get(xCoord.x, yCoord.y)
-                        val wapObject = fragment.wapObject
+
+                        val pxOut = tileTopLeftCorner(IntVec2(xOut, yOut))
+
+                        val wapObject = if (xCoord.x == 0 && yCoord.y == 0) {
+                            fragment.wapObject?.let { wapObjectTemplate ->
+                                wapObjectTemplate.copy(
+                                    x = pxOut.x + wapObjectTemplate.x,
+                                    y = pxOut.y + wapObjectTemplate.y,
+                                )
+                            }
+                        } else null
 
                         IntVec2(xOut, yOut) to MetaTileOutput(
                             metaTile = metaTileOrNull,
@@ -152,11 +164,13 @@ data class ElasticRectangularPattern(
             val metaTiles: Map<IntVec2, MetaTile> = metaTileOutputs
                 .mapValuesNotNull { (_, out) -> out.metaTile }
 
-            @Suppress("UNUSED_VARIABLE")
             val wapObjects: List<WapObjectPropsData> = metaTileOutputs.values
                 .mapNotNull { out -> out.wapObject }
 
-            return metaTiles
+            return ElasticGeneratorOutput(
+                localMetaTiles = metaTiles,
+                localWapObjects = wapObjects,
+            )
         }
     }
 }

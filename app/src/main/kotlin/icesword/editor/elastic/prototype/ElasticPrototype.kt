@@ -1,11 +1,15 @@
 package icesword.editor.elastic.prototype
 
+import icesword.editor.ElasticGenerator
 import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
+import icesword.editor.WapObjectPropsData
+import icesword.editor.elastic.ElasticRectangularFragment
+import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.retails.Retail
+import icesword.editor.retails.Retail1.MetaTiles.Column
 import icesword.editor.retails.Retail3
 import icesword.editor.retails.RetailLadderPrototype
-import icesword.editor.retails.retail1.retail1ColumnPattern
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.serialization.SerialName
@@ -16,13 +20,13 @@ import kotlinx.serialization.Serializable
 sealed class ElasticPrototype {
     abstract val defaultSize: IntSize
 
-    abstract fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator
+    abstract fun buildGenerator(retail: Retail): ElasticGenerator
 }
 
 @Serializable
 @SerialName("Log")
 object LogPrototype : ElasticPrototype() {
-    private object Generator : ElasticMetaTilesGenerator {
+    private object Generator : ElasticMetaTilesGenerator() {
         override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> =
             (0 until size.height).flatMap(::logLevel).toMap()
     }
@@ -44,7 +48,7 @@ object LogPrototype : ElasticPrototype() {
 @Serializable
 @SerialName("TreeCrown")
 object TreeCrownPrototype : ElasticPrototype() {
-    private object Generator : ElasticMetaTilesGenerator {
+    private object Generator : ElasticMetaTilesGenerator() {
         override fun buildMetaTiles(size: IntSize): Map<IntVec2, MetaTile> {
             val columns =
                 listOf(
@@ -88,14 +92,4 @@ object LadderPrototype : ElasticPrototype() {
         if (retail !is RetailLadderPrototype) throw UnsupportedOperationException()
         return retail.ladderGenerator
     }
-}
-
-@Serializable
-@SerialName("Level1Column")
-object ColumnPrototype : ElasticPrototype() {
-    override val defaultSize: IntSize = IntSize(1, 4)
-
-    private val generator = retail1ColumnPattern.toElasticGenerator()
-
-    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
 }

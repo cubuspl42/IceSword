@@ -1,7 +1,9 @@
 package icesword.editor.elastic.prototype
 
+import icesword.editor.ElasticGenerator
 import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
+import icesword.editor.WapObjectPropsData
 import icesword.editor.elastic.ElasticRectangularFragment
 import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.retails.Retail
@@ -40,7 +42,7 @@ object Retail2DoublePilePrototype : ElasticPrototype() {
         bottomStaticHeight = 1,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
 
 @Serializable
@@ -74,7 +76,7 @@ object Retail2SinglePilePrototype : ElasticPrototype() {
         bottomStaticHeight = 2,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
 
 @Serializable
@@ -84,7 +86,7 @@ object Retail2TowerTopPrototype : ElasticPrototype() {
 
     private val generator = retail2TowerTop.toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
 
 @Serializable
@@ -145,13 +147,20 @@ object Retail2TowerPrototype : ElasticPrototype() {
         centerVerticalRepeatingHeight = 1,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
 
 @Serializable
 @SerialName("Retail2Goo")
 object Retail2GooPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(3, 4)
+
+    private val gooCoverupObject = WapObjectPropsData(
+        x = 32,
+        y = 154,
+        i = -1,
+        logic = "GooCoverup",
+    )
 
     private val generator = ElasticRectangularPattern(
         topLeft = ElasticRectangularFragment(
@@ -160,6 +169,9 @@ object Retail2GooPrototype : ElasticPrototype() {
                 DoublePile.core,
                 MetaTiles.death,
                 SinglePile.center,
+            ),
+            wapObject = gooCoverupObject.copy(
+                imageSet = "LEVEL_GOOLEFT",
             ),
             width = 1,
             height = 4,
@@ -171,6 +183,9 @@ object Retail2GooPrototype : ElasticPrototype() {
                 MetaTiles.death,
                 SinglePile.center,
             ),
+            wapObject = gooCoverupObject.copy(
+                imageSet = "LEVEL_GOOCOVERUP",
+            ),
             width = 1,
             height = 4,
         ),
@@ -181,6 +196,9 @@ object Retail2GooPrototype : ElasticPrototype() {
                 MetaTiles.death,
                 SinglePile.center,
             ),
+            wapObject = gooCoverupObject.copy(
+                imageSet = "LEVEL_GOORIGHT",
+            ),
             width = 1,
             height = 4,
         ),
@@ -190,5 +208,5 @@ object Retail2GooPrototype : ElasticPrototype() {
         topStaticHeight = 4,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
