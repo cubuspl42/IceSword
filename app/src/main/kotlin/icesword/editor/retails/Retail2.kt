@@ -6,23 +6,25 @@ import icesword.editor.TileGeneratorContext
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.LinearMetaTilePattern
+import icesword.editor.retails.Retail2.MetaTiles
+import icesword.editor.retails.Retail2.MetaTiles.Tower
 
 val retail2PlatformPattern = ElasticLinearPattern(
     startingPattern = LinearMetaTilePattern(
         metaTiles = listOf(
-            Retail2.MetaTiles.platformTopLeft, Retail2.MetaTiles.platformBottomLeft,
+            MetaTiles.platformTopLeft, MetaTiles.platformBottomLeft,
         ),
         width = 2,
     ),
     repeatingPattern = LinearMetaTilePattern(
         metaTiles = listOf(
-            Retail2.MetaTiles.platformTop, Retail2.MetaTiles.platformBottom,
+            MetaTiles.platformTop, MetaTiles.platformBottom,
         ),
         width = 2,
     ),
     endingPattern = LinearMetaTilePattern(
         metaTiles = listOf(
-            Retail2.MetaTiles.platformTopRight, Retail2.MetaTiles.platformBottomRight,
+            MetaTiles.platformTopRight, MetaTiles.platformBottomRight,
         ),
         width = 2,
     ),
@@ -30,7 +32,7 @@ val retail2PlatformPattern = ElasticLinearPattern(
 )
 
 val doublePilePattern = run {
-    val doublePile = Retail2.MetaTiles.DoublePile
+    val doublePile = MetaTiles.DoublePile
 
     ElasticLinearPattern(
         startingPattern = LinearMetaTilePattern(
@@ -75,8 +77,8 @@ val retail2TowerTop = ElasticLinearPattern(
 
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
-        val metaTiles = Retail2.MetaTiles
-        val doublePile = Retail2.MetaTiles.DoublePile
+        val metaTiles = MetaTiles
+        val doublePile = MetaTiles.DoublePile
 
         // What's the difference between 38/39?
 
@@ -97,12 +99,22 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(metaTiles.platformBottomRight, doublePile.core) -> 311
             containsAll(metaTiles.platformBottomRight, doublePile.bottom) -> 312
 
+            // Tower / tower
+
+            containsAll(Tower.Platform.topCenter, Tower.Column.left) -> 508
+
             else -> null
         }
     }
 }
 
 object Retail2 : Retail(naturalIndex = 2) {
+    enum class MetaTileZOder {
+        Tower,
+        TowerCore,
+        TowerSide,
+    }
+
     object MetaTiles {
         val platformTopLeft = MetaTile(28)
 
@@ -124,6 +136,30 @@ object Retail2 : Retail(naturalIndex = 2) {
             val core = MetaTile(48)
 
             val bottom = MetaTile(52)
+        }
+
+        object Tower {
+            val core = MetaTile(77, z = MetaTileZOder.TowerCore.ordinal)
+
+            object Platform {
+                val topLeftOuter = MetaTile(70, z = MetaTileZOder.Tower.ordinal)
+                val topLeftInner = MetaTile(71, z = MetaTileZOder.Tower.ordinal)
+                val topCenter = MetaTile(72, z = MetaTileZOder.Tower.ordinal)
+                val topRightInner = MetaTile(73, z = MetaTileZOder.Tower.ordinal)
+                val topRightOuter = MetaTile(74, z = MetaTileZOder.Tower.ordinal)
+                val bottomLeftOuter = MetaTile(75, z = MetaTileZOder.Tower.ordinal)
+                val bottomLeftInner = MetaTile(76, z = MetaTileZOder.Tower.ordinal)
+                val bottomRightInner = MetaTile(78, z = MetaTileZOder.Tower.ordinal)
+                val bottomRightOuter = MetaTile(79, z = MetaTileZOder.Tower.ordinal)
+            }
+
+            object Column {
+                val topLeft = MetaTile(80, z = MetaTileZOder.TowerSide.ordinal)
+                val topCenter = MetaTile(81, z = MetaTileZOder.Tower.ordinal)
+                val topRight = MetaTile(82, z = MetaTileZOder.TowerSide.ordinal)
+                val left = MetaTile(96, z = MetaTileZOder.TowerSide.ordinal)
+                val right = MetaTile(97, z = MetaTileZOder.TowerSide.ordinal)
+            }
         }
     }
 

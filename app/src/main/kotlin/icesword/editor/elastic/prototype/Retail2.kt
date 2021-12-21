@@ -7,6 +7,7 @@ import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail2
 import icesword.editor.retails.Retail2.MetaTiles.DoublePile
+import icesword.editor.retails.Retail2.MetaTiles.Tower
 import icesword.editor.retails.retail2PlatformPattern
 import icesword.editor.retails.retail2TowerTop
 import icesword.geometry.IntSize
@@ -60,9 +61,9 @@ object Retail2TowerPrototype : ElasticPrototype() {
         topLeft = ElasticRectangularFragment(
             metaTiles = listOf(
                 Retail2.MetaTiles.battlement, Retail2.MetaTiles.battlement,
-                MetaTile(70), MetaTile(71),
-                MetaTile(75), MetaTile(76),
-                MetaTile.None, MetaTile(80),
+                Tower.Platform.topLeftOuter, Tower.Platform.topLeftInner,
+                Tower.Platform.bottomLeftOuter, Tower.Platform.bottomLeftInner,
+                MetaTile.None, Tower.Column.topLeft,
             ),
             width = 2,
             height = 4,
@@ -70,9 +71,9 @@ object Retail2TowerPrototype : ElasticPrototype() {
         topCenter = ElasticRectangularFragment(
             metaTiles = listOf(
                 Retail2.MetaTiles.battlement,
-                MetaTile(72),
-                MetaTile(77),
-                MetaTile(81),
+                Tower.Platform.topCenter,
+                Tower.core,
+                Tower.Column.topCenter,
             ),
             width = 1,
             height = 4,
@@ -80,24 +81,24 @@ object Retail2TowerPrototype : ElasticPrototype() {
         topRight = ElasticRectangularFragment(
             metaTiles = listOf(
                 Retail2.MetaTiles.battlement, Retail2.MetaTiles.battlement,
-                MetaTile(73), MetaTile(74),
-                MetaTile(78), MetaTile(79),
-                MetaTile(82), MetaTile.None,
+                Tower.Platform.topRightInner, Tower.Platform.topRightOuter,
+                Tower.Platform.bottomRightInner, Tower.Platform.bottomRightOuter,
+                Tower.Column.topRight, MetaTile.None,
             ),
             width = 2,
             height = 4,
         ),
         centerLeft = ElasticRectangularFragment(
             metaTiles = listOf(
-                MetaTile.None, MetaTile(96)
+                MetaTile.None, Tower.Column.left
             ),
             width = 2,
             height = 1,
         ),
-        center = ElasticRectangularFragment.ofSingle(MetaTile(77)),
+        center = ElasticRectangularFragment.ofSingle(Tower.core),
         centerRight = ElasticRectangularFragment(
             metaTiles = listOf(
-                MetaTile(97), MetaTile.None,
+                Tower.Column.right, MetaTile.None,
             ),
             width = 2,
             height = 1,

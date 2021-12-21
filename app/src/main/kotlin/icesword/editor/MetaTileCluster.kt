@@ -88,10 +88,14 @@ class MetaTileLayer(
                     metaTiles.all { metaTilesContent.contains(it) }
             }
 
-            val tileId = tileGenerator.buildTile(context)
+            val builtTileId = tileGenerator.buildTile(context)
 
-            tileId ?: metaTilesContent.mapNotNull { it?.tileId }.minOrNull() ?: -1
+            builtTileId ?: pickFallbackMetaTile(metaTilesContent)?.tileId ?: -1
         }
     }
 
+    private fun pickFallbackMetaTile(metaTilesContent: Set<MetaTile?>): MetaTile? =
+        metaTilesContent.filterNotNull().maxWithOrNull(
+            compareBy({ it.z }, { it.tileId }),
+        )
 }

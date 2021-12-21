@@ -2,6 +2,7 @@ package icesword.editor
 
 open class MetaTile(
     val tileId: Int?,
+    val z: Int = -1,
 ) {
     object None : MetaTile(null)
 
