@@ -2,12 +2,16 @@ package icesword.editor.elastic
 
 import icesword.editor.ElasticGenerator
 import icesword.editor.MetaTile
+import icesword.editor.WapObjectPropsData
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import icesword.utils.filterValuesNotNull
+import icesword.utils.mapValuesNotNull
 
 
 data class ElasticRectangularFragment(
     val metaTiles: List<MetaTile>,
+    val wapObject: WapObjectPropsData? = null,
     val width: Int,
     val height: Int,
 ) {
@@ -29,8 +33,8 @@ data class ElasticRectangularFragment(
         if (metaTiles.size != width * height) throw IllegalArgumentException()
     }
 
-    fun get(coord: IntVec2): MetaTile? =
-        metaTiles.getOrNull(coord.y * width + coord.x)
+    fun get(x: Int, y: Int): MetaTile? =
+        metaTiles.getOrNull(y * width + x)
 }
 
 data class ElasticRectangularPattern(
@@ -74,6 +78,11 @@ data class ElasticRectangularPattern(
         val y: Int,
     )
 
+    data class MetaTileOutput(
+        val metaTile: MetaTile?,
+        val wapObject: WapObjectPropsData?,
+    )
+
     val leftStaticIndices: IntRange
         get() = 0 until leftStaticWidth
 
@@ -86,18 +95,18 @@ data class ElasticRectangularPattern(
     val bottomStaticIndices: IntRange
         get() = 0 until bottomStaticHeight
 
-    fun get(x: XCoord, y: YCoord): MetaTile? = when {
-        y.row == Row.Top && x.column == Column.Left -> topLeft?.get(IntVec2(x.x, y.y))
-        y.row == Row.Top && x.column == Column.Center -> topCenter?.get(IntVec2(x.x, y.y))
-        y.row == Row.Top && x.column == Column.Right -> topRight?.get(IntVec2(x.x, y.y))
+    fun getFragment(row: Row, column: Column): ElasticRectangularFragment? = when {
+        row == Row.Top && column == Column.Left -> topLeft
+        row == Row.Top && column == Column.Center -> topCenter
+        row == Row.Top && column == Column.Right -> topRight
 
-        y.row == Row.Center && x.column == Column.Left -> centerLeft?.get(IntVec2(x.x, y.y))
-        y.row == Row.Center && x.column == Column.Center -> center?.get(IntVec2(x.x, y.y))
-        y.row == Row.Center && x.column == Column.Right -> centerRight?.get(IntVec2(x.x, y.y))
+        row == Row.Center && column == Column.Left -> centerLeft
+        row == Row.Center && column == Column.Center -> center
+        row == Row.Center && column == Column.Right -> centerRight
 
-        y.row == Row.Bottom && x.column == Column.Left -> bottomLeft?.get(IntVec2(x.x, y.y))
-        y.row == Row.Bottom && x.column == Column.Center -> bottomCenter?.get(IntVec2(x.x, y.y))
-        y.row == Row.Bottom && x.column == Column.Right -> bottomRight?.get(IntVec2(x.x, y.y))
+        row == Row.Bottom && column == Column.Left -> bottomLeft
+        row == Row.Bottom && column == Column.Center -> bottomCenter
+        row == Row.Bottom && column == Column.Right -> bottomRight
 
         else -> throw UnsupportedOperationException()
     }
@@ -107,7 +116,7 @@ data class ElasticRectangularPattern(
             val heightOut = size.height
             val widthOut = size.width
 
-            return (0 until heightOut).flatMap { yOut ->
+            val metaTileOutputs: Map<IntVec2, MetaTileOutput> = (0 until heightOut).flatMap { yOut ->
                 (0 until widthOut).mapNotNull { xOut ->
                     val xPatLeft = xOut
                     val xPatCenter = xOut - leftStaticWidth
@@ -129,11 +138,26 @@ data class ElasticRectangularPattern(
                         else -> YCoord(row = Row.Center, y = yPatCenter % centerHorizontalRepeatingWidth)
                     }
 
-                    get(xCoord, yCoord)?.let { metaTile ->
-                        IntVec2(xOut, yOut) to metaTile
+                    getFragment(yCoord.row, xCoord.column)?.let { fragment ->
+                        val metaTileOrNull = fragment.get(xCoord.x, yCoord.y)
+                        val wapObject = fragment.wapObject
+
+                        IntVec2(xOut, yOut) to MetaTileOutput(
+                            metaTile = metaTileOrNull,
+                            wapObject = wapObject,
+                        )
                     }
                 }
             }.toMap()
+
+            val metaTiles: Map<IntVec2, MetaTile> = metaTileOutputs
+                .mapValuesNotNull { (_, out) -> out.metaTile }
+
+            @Suppress("UNUSED_VARIABLE")
+            val wapObjects: List<WapObjectPropsData> = metaTileOutputs.values
+                .mapNotNull { out -> out.wapObject }
+
+            return metaTiles
         }
     }
 }
