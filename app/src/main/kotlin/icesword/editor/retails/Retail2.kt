@@ -116,6 +116,8 @@ object Retail2 : Retail(naturalIndex = 2) {
 
         val platformBottomRight = MetaTile(312)
 
+        val battlement = MetaTile(67)
+
         object DoublePile {
             val top = MetaTile(113)
 
