@@ -7,6 +7,7 @@ import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail2
 import icesword.editor.retails.Retail2.MetaTiles.DoublePile
+import icesword.editor.retails.Retail2.MetaTiles.SinglePile
 import icesword.editor.retails.Retail2.MetaTiles.Tower
 import icesword.editor.retails.retail2PlatformPattern
 import icesword.editor.retails.retail2TowerTop
@@ -37,6 +38,40 @@ object Retail2DoublePilePrototype : ElasticPrototype() {
         topStaticHeight = 1,
         centerVerticalRepeatingHeight = 1,
         bottomStaticHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail2SinglePile")
+object Retail2SinglePilePrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(2, 4)
+
+    private val generator = ElasticRectangularPattern(
+        topCenter = ElasticRectangularFragment(
+            metaTiles = listOf(
+                SinglePile.topOuter,
+                SinglePile.topInner,
+            ),
+            width = 1,
+            height = 2,
+        ),
+        center = ElasticRectangularFragment.ofSingle(
+            SinglePile.center,
+        ),
+        bottomCenter = ElasticRectangularFragment(
+            metaTiles = listOf(
+                SinglePile.bottomInner,
+                SinglePile.bottomOuter,
+            ),
+            width = 1,
+            height = 2,
+        ),
+        centerHorizontalRepeatingWidth = 1,
+        topStaticHeight = 2,
+        centerVerticalRepeatingHeight = 1,
+        bottomStaticHeight = 2,
     ).toElasticGenerator()
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator

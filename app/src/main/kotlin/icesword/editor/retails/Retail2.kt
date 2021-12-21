@@ -7,6 +7,7 @@ import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.Retail2.MetaTiles
+import icesword.editor.retails.Retail2.MetaTiles.SinglePile
 import icesword.editor.retails.Retail2.MetaTiles.Tower
 
 val retail2PlatformPattern = ElasticLinearPattern(
@@ -99,6 +100,11 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(metaTiles.platformBottomRight, doublePile.core) -> 311
             containsAll(metaTiles.platformBottomRight, doublePile.bottom) -> 312
 
+            // Platform / single pile
+
+            containsAll(metaTiles.platformTop, SinglePile.topInner) -> 3
+            containsAll(metaTiles.platformBottom, SinglePile.center) -> 9
+
             // Tower / tower
 
             containsAll(Tower.Platform.topCenter, Tower.Column.left) -> 508
@@ -136,6 +142,20 @@ object Retail2 : Retail(naturalIndex = 2) {
             val core = MetaTile(48)
 
             val bottom = MetaTile(52)
+        }
+
+        object SinglePile {
+            val topOuter = MetaTile(1)
+
+            val topInner = MetaTile(18)
+
+            val center = MetaTile(14)
+
+            val bottom = MetaTile(52)
+
+            val bottomInner = MetaTile(20)
+
+            val bottomOuter = MetaTile(23)
         }
 
         object Tower {
