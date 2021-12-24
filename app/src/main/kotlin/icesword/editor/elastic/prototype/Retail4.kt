@@ -1,12 +1,17 @@
 package icesword.editor.elastic.prototype
 
+import icesword.editor.ElasticGenerator
 import icesword.editor.ElasticMetaTilesGenerator
+import icesword.editor.MetaTile
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
+import icesword.editor.elastic.ElasticRectangularFragment
+import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail4
+import icesword.editor.retails.Retail4.MetaTiles.NaturalPlatform
 import icesword.editor.retails.retail4TreeLog
 import icesword.geometry.IntSize
 import kotlinx.serialization.SerialName
@@ -62,4 +67,88 @@ object Retail4LadderPrototype : ElasticPrototype() {
     )
 
     override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail4NarrowNaturalPlatform")
+object Retail4NarrowNaturalPlatformPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(5, 3)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment(
+            metaTiles = listOf(
+                NaturalPlatform.topLeftOuterNarrow, NaturalPlatform.topLeftInnerNarrow,
+                NaturalPlatform.leftOuter, NaturalPlatform.leftInner,
+                MetaTile.None, NaturalPlatform.bottomLeft,
+            ),
+            width = 2,
+            height = 3,
+        ),
+        topCenter = ElasticRectangularFragment(
+            metaTiles = listOf(
+                NaturalPlatform.topCenter,
+                NaturalPlatform.center,
+                NaturalPlatform.bottomCenter,
+            ),
+            width = 1,
+            height = 3,
+        ),
+        topRight = ElasticRectangularFragment(
+            metaTiles = listOf(
+                NaturalPlatform.topRightInnerNarrow, NaturalPlatform.topRightOuterNarrow,
+                NaturalPlatform.rightInner, NaturalPlatform.rightOuter,
+                NaturalPlatform.bottomRight, MetaTile.None,
+            ),
+            width = 2,
+            height = 3,
+        ),
+        leftStaticWidth = 2,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 2,
+        topStaticHeight = 3,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail4WideNaturalPlatform")
+object Retail4WideNaturalPlatformPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(5, 3)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment(
+            metaTiles = listOf(
+                NaturalPlatform.topLeftOuterWide, NaturalPlatform.topCenter,
+                NaturalPlatform.leftOuter, NaturalPlatform.leftInner,
+                MetaTile.None, NaturalPlatform.bottomLeft,
+            ),
+            width = 2,
+            height = 3,
+        ),
+        topCenter = ElasticRectangularFragment(
+            metaTiles = listOf(
+                NaturalPlatform.topCenter,
+                NaturalPlatform.center,
+                NaturalPlatform.bottomCenter,
+            ),
+            width = 1,
+            height = 3,
+        ),
+        topRight = ElasticRectangularFragment(
+            metaTiles = listOf(
+                NaturalPlatform.topCenter, NaturalPlatform.topRightOuterWide,
+                NaturalPlatform.rightInner, NaturalPlatform.rightOuter,
+                NaturalPlatform.bottomRight, MetaTile.None,
+            ),
+            width = 2,
+            height = 3,
+        ),
+        leftStaticWidth = 2,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 2,
+        topStaticHeight = 3,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }

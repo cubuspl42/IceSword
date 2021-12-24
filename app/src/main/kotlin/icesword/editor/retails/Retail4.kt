@@ -42,5 +42,37 @@ object Retail4 : Retail(naturalIndex = 4) {
 
             override val bottom = MetaTile(183)
         }
+
+        object NaturalPlatform {
+            val topLeftOuterWide = MetaTile(101)
+
+            val topLeftOuterNarrow = MetaTile(133)
+
+            val topLeftInnerNarrow = MetaTile(601)
+
+            val topCenter = MetaTile(104)
+
+            val topRightInnerNarrow = MetaTile(137)
+
+            val topRightOuterWide = MetaTile(600)
+
+            val topRightOuterNarrow = MetaTile(138)
+
+            val leftOuter = MetaTile(139)
+
+            val leftInner = MetaTile(108)
+
+            val center = MetaTile(227)
+
+            val rightInner = MetaTile(111)
+
+            val rightOuter = MetaTile(144)
+
+            val bottomLeft = MetaTile(123)
+
+            val bottomCenter = MetaTile(141)
+
+            val bottomRight = MetaTile(128)
+        }
     }
 }
