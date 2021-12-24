@@ -9,8 +9,6 @@ import icesword.editor.retails.Retail
 import icesword.frp.DynamicSet
 import icesword.frp.MutableDynamicSet
 import icesword.frp.filterType
-import icesword.geometry.IntRect
-import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.wwd.Wwd
@@ -18,6 +16,7 @@ import kotlinx.browser.window
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import org.khronos.webgl.Int32Array
+import org.khronos.webgl.get
 import org.khronos.webgl.set
 
 interface WorldImporter {
@@ -49,6 +48,7 @@ class World(
     initialVerticalElevators: Set<VerticalElevator>,
     initialFloorSpikeRows: Set<FloorSpikeRow>,
     initialEntities: Set<Entity>,
+    tiles: Map<IntVec2, Int>,
 ) {
     companion object {
         private const val wwdPlaneIndex = 1
@@ -68,6 +68,7 @@ class World(
             initialVerticalElevators = emptySet(),
             initialFloorSpikeRows = emptySet(),
             initialEntities = emptySet(),
+            tiles = emptyMap(),
         )
 
         fun importWwd(
@@ -80,6 +81,18 @@ class World(
 
                 override fun import(rezIndex: RezIndex): World {
                     val startPoint = IntVec2(wwdWorld.startX, wwdWorld.startY)
+
+                    val actionPlane = wwdWorld.planes.getOrNull(1)
+
+                    val tiles: Map<IntVec2, Int> = actionPlane?.let { plane ->
+                        (0 until plane.tilesHigh).flatMap { i ->
+                            (0 until plane.tilesWide).map { j ->
+                                val coord = IntVec2(j, i)
+                                val tile = plane.tiles[i * plane.tilesWide + j]
+                                coord to tile
+                            }
+                        }.toMap()
+                    } ?: emptyMap()
 
                     val initialKnotMeshes = setOf(
                         KnotMesh.createSquare(
@@ -112,6 +125,7 @@ class World(
                         initialWapObjects = emptySet(),
                         initialFloorSpikeRows = emptySet(),
                         initialEntities = emptySet(),
+                        tiles = tiles,
                     )
                 }
             }
@@ -184,6 +198,7 @@ class World(
                     initialWapObjects = initialWapObjects,
                     initialFloorSpikeRows = initialFloorSpikeRows,
                     initialEntities = initialEntities,
+                    tiles = emptyMap(),
                 )
             }
         }
@@ -261,6 +276,10 @@ class World(
     fun insertEntity(entity: Entity) {
         _entities.add(entity)
     }
+
+    val tileLayer = TileLayer(
+        tiles = tiles,
+    )
 
     val knotMeshLayer = KnotMeshLayer(
         knotMeshes = knotMeshes,
@@ -374,7 +393,7 @@ class World(
     }
 
     init {
-        tiles.changes.subscribe { change ->
+        this.tiles.changes.subscribe { change ->
 //            println("World.tiles change: $change")
         } // FIXME
     }

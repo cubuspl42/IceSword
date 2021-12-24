@@ -12,6 +12,7 @@ import icesword.editor.Tool
 import icesword.editor.WapObjectAlikeInsertionMode
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
+import icesword.frp.DynamicView
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.associateWith
@@ -212,6 +213,12 @@ fun worldView(
                     setOf(
                         DynamicSet.of(
                             setOf(
+                                TileLayer(
+                                    tileset = textureBank.tileset,
+                                    tiles = DynamicView.static(
+                                        OffsetTilesView(IntVec2.ZERO, world.tileLayer.tiles),
+                                    ),
+                                ),
                                 TileLayer(
                                     tileset = textureBank.tileset,
                                     tiles = world.tiles.contentDynamicView.map {

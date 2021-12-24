@@ -9,6 +9,13 @@ class DynamicView<A>(
     val view: A,
 ) {
     companion object {
+        fun <A> static(
+            view: A,
+        ): DynamicView<A> = DynamicView(
+            updates = Stream.never(),
+            view = view,
+        )
+
         fun <A, B, C> map2(
             da: DynamicView<A>,
             db: DynamicView<B>,

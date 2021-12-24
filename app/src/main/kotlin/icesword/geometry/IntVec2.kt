@@ -69,5 +69,7 @@ data class IntVec2(
 
         fun <V> mapFactory(): MapFactory<IntVec2, V> =
             HybridMapFactory(HASH)
+
+        fun both(s: Int): IntVec2 = IntVec2(s, s)
     }
 }
