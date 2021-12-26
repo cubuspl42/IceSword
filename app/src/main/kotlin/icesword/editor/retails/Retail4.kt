@@ -94,7 +94,15 @@ object Retail4 : Retail(naturalIndex = 4) {
             val trunk = MetaTile(184)
         }
 
+        object Goo {
+            val left = MetaTile(228)
 
+            val center = MetaTile(229)
+
+            val right = MetaTile(230)
+        }
+
+        val death = MetaTile(175)
     }
 
     override val tileGenerator = retailTileGenerator

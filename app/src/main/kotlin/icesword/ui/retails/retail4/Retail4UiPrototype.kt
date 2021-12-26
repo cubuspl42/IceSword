@@ -2,6 +2,7 @@ package icesword.ui.retails.retail4
 
 import icesword.createInsertElasticButton
 import icesword.editor.Editor
+import icesword.editor.elastic.prototype.Retail4GooPrototype
 import icesword.editor.elastic.prototype.Retail4LadderPrototype
 import icesword.editor.elastic.prototype.Retail4NarrowNaturalPlatformPrototype
 import icesword.editor.elastic.prototype.Retail4TreeLogPrototype
@@ -61,6 +62,13 @@ object Retail4UiPrototype : RetailUiPrototype {
             prototype = Retail4TreePrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL4/TILES/ACTION/184.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail4GooPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL4/TILES/ACTION/228.png",
             tillDetach = tillDetach,
         ),
     )

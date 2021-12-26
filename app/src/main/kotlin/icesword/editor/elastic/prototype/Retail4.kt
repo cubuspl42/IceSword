@@ -12,7 +12,10 @@ import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
+import icesword.editor.retails.Retail2
 import icesword.editor.retails.Retail4
+import icesword.editor.retails.Retail4.MetaTiles
+import icesword.editor.retails.Retail4.MetaTiles.Goo
 import icesword.editor.retails.Retail4.MetaTiles.NaturalPlatform
 import icesword.editor.retails.Retail4.MetaTiles.Tree
 import icesword.editor.retails.retail4TreeLog
@@ -38,19 +41,19 @@ object Retail4WoodenPlatformPrototype : ElasticPrototype() {
     private val generator = ElasticLinearPattern(
         startingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
-                Retail4.MetaTiles.WoodenPlatform.left,
+                MetaTiles.WoodenPlatform.left,
             ),
             width = 1,
         ),
         repeatingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
-                Retail4.MetaTiles.WoodenPlatform.center,
+                MetaTiles.WoodenPlatform.center,
             ),
             width = 1,
         ),
         endingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
-                Retail4.MetaTiles.WoodenPlatform.right,
+                MetaTiles.WoodenPlatform.right,
             ),
             width = 1,
         ),
@@ -66,7 +69,7 @@ object Retail4LadderPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(1, 3)
 
     private val generator = LadderElasticGenerator.build(
-        ladder = Retail4.MetaTiles.Ladder,
+        ladder = MetaTiles.Ladder,
     )
 
     override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
@@ -210,6 +213,62 @@ object Retail4TreePrototype : ElasticPrototype() {
         leftStaticWidth = 1,
         topStaticHeight = 1,
         centerVerticalRepeatingHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail4Goo")
+object Retail4GooPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(5, 2)
+
+    private val gooCoverupObject = WapObjectPropsData(
+        x = 32,
+        y = 82,
+        z = 8000,
+        i = -1,
+        logic = "GooCoverup",
+    )
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment(
+            metaTiles = listOf(
+                Goo.left,
+                MetaTiles.death,
+            ),
+            wapObject = gooCoverupObject.copy(
+                imageSet = "LEVEL_GOOLEFT",
+            ),
+            width = 1,
+            height = 2,
+        ),
+        topCenter = ElasticRectangularFragment(
+            metaTiles = listOf(
+                Goo.center,
+                MetaTiles.death,
+            ),
+            wapObject = gooCoverupObject.copy(
+                imageSet = "LEVEL_GOOMIDDLE",
+            ),
+            width = 1,
+            height = 2,
+        ),
+        topRight = ElasticRectangularFragment(
+            metaTiles = listOf(
+                Goo.right,
+                MetaTiles.death,
+            ),
+            wapObject = gooCoverupObject.copy(
+                imageSet = "LEVEL_GOORIGHT",
+            ),
+            width = 1,
+            height = 2,
+        ),
+        leftStaticWidth = 1,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 1,
+        topStaticHeight = 2,
     ).toElasticGenerator()
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator
