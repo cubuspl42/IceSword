@@ -273,3 +273,49 @@ object Retail4GooPrototype : ElasticPrototype() {
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
+
+@Serializable
+@SerialName("Retail4Cave")
+object Retail4CavePrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(6, 5)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTile.None,
+                MetaTile.None,
+                MetaTile(117),
+                MetaTile(123),
+            ),
+            width = 1,
+            height = 4,
+        ),
+        topCenter = ElasticRectangularFragment(
+            metaTiles = listOf(
+                NaturalPlatform.leftInner, NaturalPlatform.center, NaturalPlatform.center, NaturalPlatform.rightInner,
+                MetaTile(113), MetaTile(114), MetaTile(115), MetaTile(116),
+                MetaTile(118), MetaTile(119), MetaTile(120), MetaTile(121),
+                MetaTile(124), MetaTile(125), MetaTile(126), MetaTile(127),
+                MetaTile(129), MetaTile(143), MetaTile(143), MetaTile(132),
+            ),
+            width = 4,
+            height = 5,
+        ),
+        topRight = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTile.None,
+                MetaTile.None,
+                MetaTile(122),
+                MetaTile(128),
+            ),
+            width = 1,
+            height = 4,
+        ),
+        leftStaticWidth = 1,
+        centerHorizontalRepeatingWidth = 4,
+        rightStaticWidth = 1,
+        topStaticHeight = 5,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}

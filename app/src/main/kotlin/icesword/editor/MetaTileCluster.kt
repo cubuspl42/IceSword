@@ -24,6 +24,21 @@ interface TileGenerator {
     fun buildTile(context: TileGeneratorContext): Int?
 }
 
+class ChainedTileGenerator(
+    private val generators: List<TileGenerator>,
+) : TileGenerator {
+    override fun buildTile(context: TileGeneratorContext): Int? =
+        generators.firstNotNullOfOrNull { it.buildTile(context) }
+}
+
+class ForwardTileGenerator(
+    private val metaTile: MetaTile,
+) : TileGenerator {
+    override fun buildTile(context: TileGeneratorContext): Int? =
+        if (context.containsAll(metaTile)) metaTile.tileId
+        else null
+}
+
 class MetaTileCluster(
     private val tileOffset: Cell<IntVec2>,
     val localMetaTiles: DynamicMap<IntVec2, MetaTile>,

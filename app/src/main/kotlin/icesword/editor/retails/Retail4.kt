@@ -1,5 +1,7 @@
 package icesword.editor.retails
 
+import icesword.editor.ChainedTileGenerator
+import icesword.editor.ForwardTileGenerator
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
@@ -23,6 +25,14 @@ val retail4TreeLog = ElasticLinearPattern(
         width = 0,
     ),
     orientation = ElasticLinearPatternOrientation.Vertical,
+)
+
+private val naturalPlatformTileGenerator = ChainedTileGenerator(
+    listOf(
+        ForwardTileGenerator(NaturalPlatform.center),
+        ForwardTileGenerator(NaturalPlatform.leftInner),
+        ForwardTileGenerator(NaturalPlatform.rightInner),
+    )
 )
 
 private val retailTileGenerator = object : TileGenerator {
@@ -105,5 +115,10 @@ object Retail4 : Retail(naturalIndex = 4) {
         val death = MetaTile(175)
     }
 
-    override val tileGenerator = retailTileGenerator
+    override val tileGenerator = ChainedTileGenerator(
+        listOf(
+            naturalPlatformTileGenerator,
+            retailTileGenerator,
+        )
+    )
 }
