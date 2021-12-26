@@ -5,6 +5,7 @@ import icesword.editor.Editor
 import icesword.editor.elastic.prototype.Retail4LadderPrototype
 import icesword.editor.elastic.prototype.Retail4NarrowNaturalPlatformPrototype
 import icesword.editor.elastic.prototype.Retail4TreeLogPrototype
+import icesword.editor.elastic.prototype.Retail4TreePrototype
 import icesword.editor.elastic.prototype.Retail4WideNaturalPlatformPrototype
 import icesword.editor.elastic.prototype.Retail4WoodenPlatformPrototype
 import icesword.editor.retails.Retail4
@@ -53,6 +54,13 @@ object Retail4UiPrototype : RetailUiPrototype {
             prototype = Retail4WideNaturalPlatformPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL4/TILES/ACTION/101.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail4TreePrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL4/TILES/ACTION/184.png",
             tillDetach = tillDetach,
         ),
     )

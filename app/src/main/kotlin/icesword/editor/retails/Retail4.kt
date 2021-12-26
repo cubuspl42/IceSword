@@ -1,9 +1,13 @@
 package icesword.editor.retails
 
 import icesword.editor.MetaTile
+import icesword.editor.TileGenerator
+import icesword.editor.TileGeneratorContext
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.LinearMetaTilePattern
+import icesword.editor.retails.Retail4.MetaTiles.NaturalPlatform
+import icesword.editor.retails.Retail4.MetaTiles.Tree
 
 val retail4TreeLog = ElasticLinearPattern(
     startingPattern = LinearMetaTilePattern(
@@ -20,6 +24,17 @@ val retail4TreeLog = ElasticLinearPattern(
     ),
     orientation = ElasticLinearPatternOrientation.Vertical,
 )
+
+private val retailTileGenerator = object : TileGenerator {
+    override fun buildTile(context: TileGeneratorContext): Int? = context.run {
+        when {
+            // Natural platform / tree
+            containsAll(NaturalPlatform.topCenter, Tree.trunk) -> 185
+
+            else -> null
+        }
+    }
+}
 
 object Retail4 : Retail(naturalIndex = 4) {
     object MetaTiles {
@@ -74,5 +89,13 @@ object Retail4 : Retail(naturalIndex = 4) {
 
             val bottomRight = MetaTile(128)
         }
+
+        object Tree {
+            val trunk = MetaTile(184)
+        }
+
+
     }
+
+    override val tileGenerator = retailTileGenerator
 }

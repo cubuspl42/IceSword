@@ -50,7 +50,7 @@ data class ElasticRectangularPattern(
     val bottomRight: ElasticRectangularFragment? = null,
 
     val leftStaticWidth: Int = 0,
-    val centerHorizontalRepeatingWidth: Int,
+    val centerHorizontalRepeatingWidth: Int = 0,
     val rightStaticWidth: Int = 0,
 
     val topStaticHeight: Int = 0,

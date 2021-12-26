@@ -4,6 +4,7 @@ import icesword.editor.ElasticGenerator
 import icesword.editor.ElasticGeneratorOutput
 import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
+import icesword.editor.WapObjectPropsData
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.ElasticRectangularFragment
@@ -13,6 +14,7 @@ import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail4
 import icesword.editor.retails.Retail4.MetaTiles.NaturalPlatform
+import icesword.editor.retails.Retail4.MetaTiles.Tree
 import icesword.editor.retails.retail4TreeLog
 import icesword.geometry.IntSize
 import kotlinx.serialization.SerialName
@@ -179,6 +181,36 @@ object Retail4WideNaturalPlatformPrototype : ElasticPrototype() {
         topRightInner = NaturalPlatform.topCenter,
         topRightOuter = NaturalPlatform.topRightOuterWide,
     )
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail4Tree")
+object Retail4TreePrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(1, 3)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment(
+            metaTiles = listOf(Tree.trunk),
+            width = 1,
+            height = 1,
+            wapObject = WapObjectPropsData(
+                x = 33,
+                y = -24,
+                z = 1000,
+                i = -1,
+                logic = "DoNothingNormal",
+                imageSet = "LEVEL_BUSH",
+            ),
+        ),
+        centerLeft = ElasticRectangularFragment.ofSingle(
+            Tree.trunk,
+        ),
+        leftStaticWidth = 1,
+        topStaticHeight = 1,
+        centerVerticalRepeatingHeight = 1,
+    ).toElasticGenerator()
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }
