@@ -29,9 +29,11 @@ val retail4TreeLog = ElasticLinearPattern(
 
 private val naturalPlatformTileGenerator = ChainedTileGenerator(
     listOf(
+        ForwardTileGenerator(NaturalPlatform.topCenter),
         ForwardTileGenerator(NaturalPlatform.center),
         ForwardTileGenerator(NaturalPlatform.leftInner),
         ForwardTileGenerator(NaturalPlatform.rightInner),
+        ForwardTileGenerator(NaturalPlatform.bottomCenter),
     )
 )
 
