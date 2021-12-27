@@ -103,6 +103,30 @@ object Retail6 : Retail(naturalIndex = 6) {
 
             val concaveBottomRight = MetaTile(115)
         }
+
+        object House {
+            val topLeft = MetaTile(32)
+
+            val topCenter = MetaTile(33)
+
+            val topRight = MetaTile(36)
+
+            val leftOuter = MetaTile(37)
+
+            val leftInner = MetaTile(55)
+
+            val center = MetaTile(49)
+
+            val right = MetaTile(57)
+
+            val bottomLeftOuter = MetaTile(43)
+
+            val bottomLeftInner = MetaTile(60)
+
+            val bottomCenter = MetaTile(61)
+
+            val bottomRight = MetaTile(62)
+        }
     }
 
     override val knotStructurePatterns: List<KnotStructurePattern> =
