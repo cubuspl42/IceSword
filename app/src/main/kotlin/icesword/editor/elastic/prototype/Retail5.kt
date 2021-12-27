@@ -72,31 +72,40 @@ object Retail5LadderPrototype : ElasticPrototype() {
 @Serializable
 @SerialName("Retail5HorizontalRoof")
 object Retail5HorizontalRoofPrototype : ElasticPrototype() {
-    override val defaultSize: IntSize = IntSize(3, 1)
+    override val defaultSize: IntSize = IntSize(4, 2)
 
-    private val generator = ElasticLinearPattern(
-        startingPattern = LinearMetaTilePattern(
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment(
             metaTiles = listOf(
-                MetaTile(267),
+                House.HorizontalRoof.left,
+                House.shadow,
             ),
             width = 1,
+            height = 2,
         ),
-        repeatingPattern = LinearMetaTilePattern(
+        topCenter = ElasticRectangularFragment(
             metaTiles = listOf(
-                MetaTile(268),
+                House.HorizontalRoof.center,
+                House.shadow,
             ),
             width = 1,
+            height = 2,
         ),
-        endingPattern = LinearMetaTilePattern(
+        topRight = ElasticRectangularFragment(
             metaTiles = listOf(
-                MetaTile(269), MetaTile(270),
+                House.HorizontalRoof.rightInner, House.HorizontalRoof.rightOuter,
+                House.shadow, MetaTile.None,
             ),
-            width = 1,
+            width = 2,
+            height = 2,
         ),
-        orientation = ElasticLinearPatternOrientation.Horizontal,
+        leftStaticWidth = 1,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 2,
+        topStaticHeight = 2,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
+    override fun buildGenerator(retail: Retail) = generator
 }
 
 @Serializable
@@ -277,6 +286,6 @@ object Retail5HousePrototype : ElasticPrototype() {
             )
         }
     }
-    
+
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }

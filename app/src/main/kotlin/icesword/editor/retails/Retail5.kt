@@ -1,5 +1,7 @@
 package icesword.editor.retails
 
+import icesword.editor.ChainedTileGenerator
+import icesword.editor.ForwardTileGenerator
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
@@ -10,6 +12,7 @@ import icesword.editor.knot_mesh.MetaTilePattern2x1
 import icesword.editor.knot_mesh.StructureConcavePattern
 import icesword.editor.knot_mesh.StructureConvexPattern
 import icesword.editor.retails.Retail5.MetaTiles.Bridge
+import icesword.editor.retails.Retail5.MetaTiles.House
 import icesword.editor.retails.Retail5.MetaTiles.Ladder
 import icesword.editor.retails.Retail5.MetaTiles.Rock
 import icesword.editor.retails.Retail5.MetaTiles.Spikes
@@ -35,17 +38,29 @@ private val rockPattern = object : KnotStructurePattern(
         knotPrototype is KnotPrototype.Retail5RockPrototype
 }
 
+private val houseTileGenerator = ChainedTileGenerator(
+    listOf(
+        ForwardTileGenerator(House.HorizontalRoof.left),
+        ForwardTileGenerator(House.HorizontalRoof.center),
+        ForwardTileGenerator(House.HorizontalRoof.rightInner),
+        ForwardTileGenerator(House.HorizontalRoof.rightOuter),
+    )
+)
+
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         when {
             // Metal platform / ladder
+
             containsAll(Retail5.MetaTiles.MetalPlatform.topCenter, Ladder.top) -> 204
             containsAll(Retail5.MetaTiles.MetalPlatform.bottomCenter, Ladder.center) -> 221
 
             // Rock / ladder
+
             containsAll(Rock.topCenter, Ladder.bottom) -> 303
 
             // Rock / spikes
+
             containsAll(Rock.right, Spikes.top) -> 314
             containsAll(Rock.leftOuter, Spikes.top) -> 497
             containsAll(Rock.concaveBottomLeft, Spikes.bottom) -> 404
@@ -63,6 +78,12 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(Rock.leftOuter, Bridge.right) -> 519
             containsAll(Rock.leftOuter, Bridge.core) -> 519
             containsAll(Rock.leftInner, Bridge.right) -> 313
+
+            // House / shadow
+
+            containsAll(House.Block.leftInner, House.shadow) -> 400
+            containsAll(House.core, House.shadow) -> 275
+            containsAll(House.Block.right, House.shadow) -> 276
 
             else -> null
         }
@@ -148,6 +169,18 @@ object Retail5 : Retail(naturalIndex = 5) {
         object House {
             val core = MetaTile(266)
 
+            val shadow = MetaTile(null)
+
+            object HorizontalRoof {
+                val left = MetaTile(267)
+
+                val center = MetaTile(268)
+
+                val rightInner = MetaTile(269)
+
+                val rightOuter = MetaTile(270)
+            }
+
             object Block {
                 val leftOuter = MetaTile(264)
 
@@ -161,6 +194,10 @@ object Retail5 : Retail(naturalIndex = 5) {
     override val knotStructurePatterns: List<KnotStructurePattern> =
         listOf(rockPattern)
 
-    override val tileGenerator: TileGenerator =
-        retailTileGenerator
+    override val tileGenerator: TileGenerator = ChainedTileGenerator(
+        listOf(
+            houseTileGenerator,
+            retailTileGenerator,
+        )
+    )
 }
