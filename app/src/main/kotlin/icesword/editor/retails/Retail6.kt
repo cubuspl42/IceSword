@@ -10,6 +10,7 @@ import icesword.editor.knot_mesh.StructureConcavePattern
 import icesword.editor.knot_mesh.StructureConvexPattern
 import icesword.editor.retails.Retail6.MetaTiles.Bricks
 import icesword.editor.retails.Retail6.MetaTiles.Fence
+import icesword.editor.retails.Retail6.MetaTiles.House
 
 private val bricksPattern = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
@@ -38,8 +39,19 @@ private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         when {
             // Bricks / fence
+
             containsAll(Bricks.center, Fence.bottomLeft) -> 110
             containsAll(Bricks.left, Fence.bottomRightOuter) -> 203
+
+            // House / house
+
+            containsAll(House.topLeft, House.bottomLeftOuter) -> 43
+            containsAll(House.topCenter, House.bottomLeftInner) -> 60
+            containsAll(House.topCenter, House.bottomCenter) -> 61
+            containsAll(House.topRight, House.bottomRight) -> 62
+
+            containsAll(House.topCenter, House.bottomLeftOuter) -> 186
+            containsAll(House.topCenter, House.bottomRight) -> 188
 
             else -> null
         }
