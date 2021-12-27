@@ -13,9 +13,11 @@ import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail5
+import icesword.editor.retails.Retail5.MetaTiles.Arch
 import icesword.editor.retails.Retail5.MetaTiles.Bridge
 import icesword.editor.retails.Retail5.MetaTiles.House
 import icesword.editor.retails.Retail5.MetaTiles.Spikes
+import icesword.editor.retails.Retail5.MetaTiles.Wall
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.serialization.SerialName
@@ -298,4 +300,56 @@ object Retail5HousePrototype : ElasticPrototype() {
     }
 
     override fun buildGenerator(retail: Retail): ElasticGenerator = generator
+}
+
+@Serializable
+@SerialName("Retail5ArchSpan")
+object Retail5ArchSpanPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(5, 1)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment(
+            metaTiles = listOf(
+                Wall.topLeft, Arch.Span.left,
+            ),
+            width = 2,
+            height = 1,
+        ),
+        topCenter = ElasticRectangularFragment.ofSingle(
+            Arch.Span.center,
+        ),
+        topRight = ElasticRectangularFragment(
+            metaTiles = listOf(
+                Arch.Span.right, Wall.topRight,
+            ),
+            width = 2,
+            height = 1,
+        ),
+        leftStaticWidth = 2,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 2,
+        topStaticHeight = 1
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail) = generator
+}
+
+@Serializable
+@SerialName("Retail5ArchLeg")
+object Retail5ArchLegPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(3, 3)
+
+    private val generator = ElasticRectangularPattern(
+        centerLeft = ElasticRectangularFragment(
+            metaTiles = listOf(
+                Arch.Leg.left, Arch.Leg.core, Arch.Leg.right,
+            ),
+            width = 3,
+            height = 1,
+        ),
+        leftStaticWidth = 3,
+        centerVerticalRepeatingHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail) = generator
 }
