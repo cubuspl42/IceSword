@@ -1,5 +1,6 @@
 package icesword.editor.elastic.prototype
 
+import icesword.editor.ElasticGenerator
 import icesword.editor.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
 import icesword.editor.elastic.ElasticLinearPattern
@@ -49,36 +50,21 @@ object Retail6PavementPrototype : ElasticPrototype() {
 @Serializable
 @SerialName("Retail6Fence")
 object Retail6FencePrototype : ElasticPrototype() {
-    override val defaultSize: IntSize = IntSize(4, 2)
+    override val defaultSize: IntSize = IntSize(2, 2)
 
-    private val generator = ElasticLinearPattern(
-        startingPattern = LinearMetaTilePattern(
-            metaTiles = listOf(
-                MetaTile.None,
-                Pavement.left,
-            ),
-            width = 2,
-        ),
-        repeatingPattern = LinearMetaTilePattern(
+    private val generator = ElasticGenerator.fromHorizontalPattern(
+        center = ElasticRectangularFragment(
             metaTiles = listOf(
                 Fence.top,
-                Fence.bottom,
+                Fence.bottom
             ),
-            width = 2,
+            width = 1,
+            height = 2,
         ),
-        endingPattern = LinearMetaTilePattern(
-            metaTiles = listOf(
-                MetaTile.None,
-                Pavement.rightInner,
-                MetaTile.None,
-                Pavement.rightOuter,
-            ),
-            width = 2,
-        ),
-        orientation = ElasticLinearPatternOrientation.Horizontal,
-    ).toElasticGenerator()
+        staticHeight = 2,
+    )
 
-    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
+    override fun buildGenerator(retail: Retail) = generator
 }
 
 @Serializable

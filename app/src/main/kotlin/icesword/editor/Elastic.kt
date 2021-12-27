@@ -4,6 +4,8 @@ package icesword.editor
 
 import icesword.RezIndex
 import icesword.TILE_SIZE
+import icesword.editor.elastic.ElasticRectangularFragment
+import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.elastic.prototype.ElasticPrototype
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
@@ -35,6 +37,38 @@ data class ElasticWapObjectBuildContext(
 }
 
 interface ElasticGenerator {
+    companion object {
+        fun fromHorizontalPattern(
+            left: ElasticRectangularFragment? = null,
+            center: ElasticRectangularFragment? = null,
+            right: ElasticRectangularFragment? = null,
+            staticHeight: Int,
+        ): ElasticGenerator = ElasticRectangularPattern(
+            topLeft = left,
+            topCenter = center,
+            topRight = right,
+            leftStaticWidth = left?.width ?: 0,
+            centerHorizontalRepeatingWidth = center?.width ?: 0,
+            rightStaticWidth = right?.width ?: 0,
+            topStaticHeight = staticHeight,
+        ).toElasticGenerator()
+
+        fun fromVerticalPattern(
+            top: ElasticRectangularFragment? = null,
+            center: ElasticRectangularFragment? = null,
+            bottom: ElasticRectangularFragment? = null,
+            staticWidth: Int,
+        ): ElasticGenerator = ElasticRectangularPattern(
+            topLeft = top,
+            centerLeft = center,
+            bottomLeft = bottom,
+            topStaticHeight = top?.height ?: 0,
+            centerVerticalRepeatingHeight = center?.height ?: 0,
+            bottomStaticHeight = bottom?.height ?: 0,
+            leftStaticWidth = staticWidth,
+        ).toElasticGenerator()
+    }
+
     fun buildOutput(size: IntSize): ElasticGeneratorOutput
 }
 
