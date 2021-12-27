@@ -68,6 +68,15 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(House.topCenter, House.bottomLeftOuter) -> 186
             containsAll(House.topCenter, House.bottomRight) -> 188
 
+            // TODO: House / pavement / fence
+
+            // House / pavement
+
+            containsAll(House.bottomLeftOuter, Pavement.center) -> 64
+            containsAll(House.bottomLeftInner, Pavement.center) -> 66
+            containsAll(House.bottomCenter, Pavement.center) -> 67
+            containsAll(House.bottomRight, Pavement.center) -> 68
+
             else -> null
         }
     }
