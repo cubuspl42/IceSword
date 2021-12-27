@@ -15,6 +15,7 @@ import icesword.editor.retails.Retail5.MetaTiles.Arch
 import icesword.editor.retails.Retail5.MetaTiles.Bridge
 import icesword.editor.retails.Retail5.MetaTiles.House
 import icesword.editor.retails.Retail5.MetaTiles.Ladder
+import icesword.editor.retails.Retail5.MetaTiles.MetalPlatform
 import icesword.editor.retails.Retail5.MetaTiles.Rock
 import icesword.editor.retails.Retail5.MetaTiles.Spikes
 import icesword.editor.retails.Retail5.MetaTiles.Wall
@@ -52,11 +53,6 @@ private val houseTileGenerator = ChainedTileGenerator(
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         when {
-            // Metal platform / ladder
-
-            containsAll(Retail5.MetaTiles.MetalPlatform.topCenter, Ladder.top) -> 204
-            containsAll(Retail5.MetaTiles.MetalPlatform.bottomCenter, Ladder.center) -> 221
-
             // Rock / ladder
 
             containsAll(Rock.topCenter, Ladder.bottom) -> 303
@@ -104,12 +100,36 @@ private val retailTileGenerator = object : TileGenerator {
 
             containsAll(Arch.Leg.core, Spikes.top) -> 529
 
+            // Dirty wall / ladder
+
+            containsAll(Wall.Dirty.topCenter, Ladder.center) -> 241
+
+            // Clean wall / ladder
+
+            containsAll(Wall.Clean.core, Ladder.center) -> 229
+
             // Dirty wall / clean wall
 
             // What's the difference between 237 and 252?
 
             containsAll(Wall.Dirty.topCenter, Wall.Clean.left) -> 236
             containsAll(Wall.Dirty.topCenter, Wall.Clean.core) -> 237
+
+            // Wall / metal platform / ladder
+
+            containsAll(Wall.Clean.topCenter, MetalPlatform.bottomCenter, Ladder.center) -> 215
+            containsAll(Wall.Clean.topRight, MetalPlatform.bottomCenter, Ladder.center) -> 215
+
+            // Metal platform / ladder
+
+            containsAll(MetalPlatform.topCenter, Ladder.top) -> 204
+            containsAll(MetalPlatform.bottomCenter, Ladder.center) -> 221
+
+            // Wall / metal platform
+
+            containsAll(Wall.Clean.topLeft, MetalPlatform.bottomLeft) -> 208
+            containsAll(Wall.Clean.topCenter, MetalPlatform.bottomCenter) -> 209
+            containsAll(Wall.Clean.topRight, MetalPlatform.bottomCenter) -> 209
 
             else -> null
         }
