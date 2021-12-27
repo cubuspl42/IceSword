@@ -13,6 +13,7 @@ import icesword.utils.mapValuesNotNull
 data class ElasticRectangularFragment(
     val metaTiles: List<MetaTile>,
     val wapObject: WapObjectPropsData? = null,
+    val extraWapObject: WapObjectPropsData? = null,
     val width: Int,
     val height: Int,
 ) {
@@ -81,7 +82,7 @@ data class ElasticRectangularPattern(
 
     data class MetaTileOutput(
         val metaTile: MetaTile?,
-        val wapObject: WapObjectPropsData?,
+        val wapObjects: List<WapObjectPropsData>,
     )
 
     val leftStaticIndices: IntRange
@@ -139,23 +140,29 @@ data class ElasticRectangularPattern(
                         else -> YCoord(row = Row.Center, y = yPatCenter % centerVerticalRepeatingHeight)
                     }
 
+                    fun buildWapObject(
+                        wapObjectTemplateOrNull: WapObjectPropsData?,
+                        pxOut: IntVec2,
+                    ): WapObjectPropsData? = if (xCoord.x == 0 && yCoord.y == 0) {
+                        wapObjectTemplateOrNull?.let { wapObjectTemplate ->
+                            wapObjectTemplate.copy(
+                                x = pxOut.x + wapObjectTemplate.x,
+                                y = pxOut.y + wapObjectTemplate.y,
+                            )
+                        }
+                    } else null
+
                     getFragment(yCoord.row, xCoord.column)?.let { fragment ->
                         val metaTileOrNull = fragment.get(xCoord.x, yCoord.y)
 
                         val pxOut = tileTopLeftCorner(IntVec2(xOut, yOut))
 
-                        val wapObject = if (xCoord.x == 0 && yCoord.y == 0) {
-                            fragment.wapObject?.let { wapObjectTemplate ->
-                                wapObjectTemplate.copy(
-                                    x = pxOut.x + wapObjectTemplate.x,
-                                    y = pxOut.y + wapObjectTemplate.y,
-                                )
-                            }
-                        } else null
+                        val wapObject1 = buildWapObject(fragment.wapObject, pxOut = pxOut)
+                        val wapObject2 = buildWapObject(fragment.extraWapObject, pxOut = pxOut)
 
                         IntVec2(xOut, yOut) to MetaTileOutput(
                             metaTile = metaTileOrNull,
-                            wapObject = wapObject,
+                            wapObjects = listOfNotNull(wapObject1, wapObject2),
                         )
                     }
                 }
@@ -165,7 +172,7 @@ data class ElasticRectangularPattern(
                 .mapValuesNotNull { (_, out) -> out.metaTile }
 
             val wapObjects: List<WapObjectPropsData> = metaTileOutputs.values
-                .mapNotNull { out -> out.wapObject }
+                .flatMap { out -> out.wapObjects }
 
             return ElasticGeneratorOutput(
                 localMetaTiles = metaTiles,

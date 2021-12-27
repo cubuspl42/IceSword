@@ -464,6 +464,12 @@ sealed class PostPrototype : ElasticPrototype() {
                     y = bottomPostY1,
                     imageSet = postBottomImageSet,
                 ),
+                extraWapObject = bottomPostY2?.let { y ->
+                    post.copy(
+                        y = y,
+                        imageSet = postBottomImageSet,
+                    )
+                },
                 width = 1,
                 height = 1,
             ),
@@ -473,6 +479,20 @@ sealed class PostPrototype : ElasticPrototype() {
             bottomStaticHeight = 1,
         ).toElasticGenerator()
     }
+}
+
+@Serializable
+@SerialName("Retail5Post1")
+object Retail5Post1Prototype : PostPrototype() {
+    override val x: Int = 65
+
+    override val topPostY: Int = 27
+
+    override val topPostImageSet: String = "LEVEL_POSTTOP1"
+
+    override val bottomPostY1: Int = 28
+
+    override val bottomPostY2: Int = 32
 }
 
 @Serializable
@@ -487,6 +507,20 @@ object Retail5Post1PaddedPrototype : PostPrototype() {
     override val bottomPostY1: Int = 4
 
     override val bottomPostY2: Int? = null
+}
+
+@Serializable
+@SerialName("Retail5Post2")
+object Retail5Post2Prototype : PostPrototype() {
+    override val x: Int = 46
+
+    override val topPostY: Int = 39
+
+    override val topPostImageSet: String = "LEVEL_POSTTOP2"
+
+    override val bottomPostY1: Int = 28
+
+    override val bottomPostY2: Int = 32
 }
 
 @Serializable
