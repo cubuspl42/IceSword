@@ -15,6 +15,7 @@ import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail5
 import icesword.editor.retails.Retail5.MetaTiles.Bridge
 import icesword.editor.retails.Retail5.MetaTiles.House
+import icesword.editor.retails.Retail5.MetaTiles.Spikes
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.serialization.SerialName
@@ -113,20 +114,29 @@ object Retail5HorizontalRoofPrototype : ElasticPrototype() {
 object Retail5SpikesPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(5, 2)
 
-    private val generator = ElasticLinearPattern(
-        startingPattern = LinearMetaTilePattern.empty(),
-        repeatingPattern = LinearMetaTilePattern(
+    private val generator = ElasticRectangularPattern(
+        topCenter = ElasticRectangularFragment(
             metaTiles = listOf(
-                Retail5.MetaTiles.Spikes.top,
-                Retail5.MetaTiles.Spikes.bottom,
+                Spikes.top,
+                Spikes.bottom,
             ),
-            width = 2,
+            width = 1,
+            height = 2,
         ),
-        endingPattern = LinearMetaTilePattern.empty(),
-        orientation = ElasticLinearPatternOrientation.Horizontal,
+        topRight = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTile.None,
+                Spikes.bottom,
+            ),
+            width = 1,
+            height = 2,
+        ),
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 1,
+        topStaticHeight = 2,
     ).toElasticGenerator()
 
-    override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
+    override fun buildGenerator(retail: Retail) = generator
 }
 
 @Serializable

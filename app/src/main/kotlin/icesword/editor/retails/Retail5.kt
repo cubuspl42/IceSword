@@ -85,6 +85,13 @@ private val retailTileGenerator = object : TileGenerator {
             containsAll(House.core, House.shadow) -> 275
             containsAll(House.Block.right, House.shadow) -> 276
 
+            // House / spikes
+
+            containsAll(House.Block.leftOuter, Spikes.top) -> 520
+            containsAll(House.Block.leftInner, Spikes.top) -> 521
+            containsAll(House.core, Spikes.top) -> 522
+            containsAll(House.Block.right, Spikes.top) -> 523
+
             else -> null
         }
     }
