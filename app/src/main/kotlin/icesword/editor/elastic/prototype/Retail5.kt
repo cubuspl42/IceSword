@@ -412,3 +412,102 @@ object Retail5CleanWallPrototype : ElasticPrototype() {
     override fun buildGenerator(retail: Retail) = generator
 }
 
+@Serializable
+@SerialName("Retail5Post1")
+object Retail5Post1Prototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(1, 3)
+
+    private val post = WapObjectPropsData(
+        x = 65,
+        z = 1000,
+        i = -1,
+        logic = "BehindCandy",
+    )
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment(
+            metaTiles = listOf(MetaTile.None),
+            wapObject = post.copy(
+                y = 27,
+                imageSet = "LEVEL_POSTTOP1",
+            ),
+            width = 1,
+            height = 1,
+        ),
+        centerLeft = ElasticRectangularFragment(
+            metaTiles = listOf(MetaTile.None),
+            wapObject = post.copy(
+                y = 28,
+                imageSet = "LEVEL_POSTBOTTOM",
+            ),
+            width = 1,
+            height = 1,
+        ),
+        bottomLeft = ElasticRectangularFragment(
+            metaTiles = listOf(MetaTile.None),
+            wapObject = post.copy(
+                y = 4,
+                imageSet = "LEVEL_POSTBOTTOM",
+            ),
+            width = 1,
+            height = 1,
+        ),
+        leftStaticWidth = 1,
+        topStaticHeight = 1,
+        centerVerticalRepeatingHeight = 1,
+        bottomStaticHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail) = generator
+}
+
+@Serializable
+@SerialName("Retail5Post2")
+object Retail5Post2Prototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(1, 3)
+
+    private val post = WapObjectPropsData(
+        x = 46,
+        z = 1000,
+        i = -1,
+        logic = "BehindCandy",
+    )
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment(
+            metaTiles = listOf(MetaTile.None),
+            wapObject = post.copy(
+                y = 39,
+                imageSet = "LEVEL_POSTTOP2",
+            ),
+            width = 1,
+            height = 1,
+        ),
+        centerLeft = ElasticRectangularFragment(
+            metaTiles = listOf(MetaTile.None),
+            wapObject = post.copy(
+                y = 28,
+                imageSet = "LEVEL_POSTBOTTOM",
+            ),
+            width = 1,
+            height = 1,
+        ),
+        bottomLeft = ElasticRectangularFragment(
+            metaTiles = listOf(MetaTile.None),
+            wapObject = post.copy(
+                y = 4,
+                imageSet = "LEVEL_POSTBOTTOM",
+            ),
+            width = 1,
+            height = 1,
+        ),
+        leftStaticWidth = 1,
+        topStaticHeight = 1,
+        centerVerticalRepeatingHeight = 1,
+        bottomStaticHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail) = generator
+}
+
+

@@ -136,7 +136,7 @@ data class ElasticRectangularPattern(
                     val yCoord = when {
                         yPatTop in topStaticIndices -> YCoord(row = Row.Top, y = yPatTop)
                         yPatBottom in bottomStaticIndices -> YCoord(row = Row.Bottom, y = yPatBottom)
-                        else -> YCoord(row = Row.Center, y = yPatCenter % centerHorizontalRepeatingWidth)
+                        else -> YCoord(row = Row.Center, y = yPatCenter % centerVerticalRepeatingHeight)
                     }
 
                     getFragment(yCoord.row, xCoord.column)?.let { fragment ->
