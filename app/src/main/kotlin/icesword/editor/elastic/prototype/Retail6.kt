@@ -11,10 +11,12 @@ import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail6
+import icesword.editor.retails.Retail6.MetaTiles.BrownHouse
 import icesword.editor.retails.Retail6.MetaTiles.Fence
 import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
 import icesword.editor.retails.Retail6.MetaTiles.Pavement
+import icesword.editor.retails.Retail6.MetaTiles.WhiteHouse
 import icesword.geometry.IntSize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -115,49 +117,50 @@ object Retail6LadderPrototype : ElasticPrototype() {
 }
 
 @Serializable
-@SerialName("Retail6WhiteHouse")
-object Retail6WhiteHousePrototype : ElasticPrototype() {
-    override val defaultSize: IntSize = IntSize(5, 4)
+sealed class Retail6HousePrototype : ElasticPrototype() {
+    final override val defaultSize: IntSize = IntSize(5, 4)
 
-    private val generator = ElasticRectangularPattern(
+    abstract val house: House
+
+    override fun buildGenerator(retail: Retail) = ElasticRectangularPattern(
         topLeft = ElasticRectangularFragment(
             metaTiles = listOf(
-                House.topLeft, House.topCenter,
+                house.topLeft, house.topCenter,
             ),
             width = 2,
             height = 1,
         ),
         topCenter = ElasticRectangularFragment.ofSingle(
-            House.topCenter,
+            house.topCenter,
         ),
         topRight = ElasticRectangularFragment.ofSingle(
-            House.topRight,
+            house.topRight,
         ),
         centerLeft = ElasticRectangularFragment(
             metaTiles = listOf(
-                House.leftOuter, House.leftInner,
+                house.leftOuter, house.leftInner,
             ),
             width = 2,
             height = 1,
         ),
         center = ElasticRectangularFragment.ofSingle(
-            House.center,
+            house.center,
         ),
         centerRight = ElasticRectangularFragment.ofSingle(
-            House.right,
+            house.right,
         ),
         bottomLeft = ElasticRectangularFragment(
             metaTiles = listOf(
-                House.bottomLeftOuter, House.bottomLeftInner,
+                house.bottomLeftOuter, house.bottomLeftInner,
             ),
             width = 2,
             height = 1,
         ),
         bottomCenter = ElasticRectangularFragment.ofSingle(
-            House.bottomCenter,
+            house.bottomCenter,
         ),
         bottomRight = ElasticRectangularFragment.ofSingle(
-            House.bottomRight,
+            house.bottomRight,
         ),
         leftStaticWidth = 2,
         centerHorizontalRepeatingWidth = 1,
@@ -166,6 +169,16 @@ object Retail6WhiteHousePrototype : ElasticPrototype() {
         centerVerticalRepeatingHeight = 1,
         bottomStaticHeight = 1,
     ).toElasticGenerator()
+}
 
-    override fun buildGenerator(retail: Retail) = generator
+@Serializable
+@SerialName("Retail6WhiteHouse")
+object Retail6WhiteHousePrototype : Retail6HousePrototype() {
+    override val house: House = WhiteHouse
+}
+
+@Serializable
+@SerialName("Retail6BrownHouse")
+object Retail6BrownHousePrototype : Retail6HousePrototype() {
+    override val house: House = BrownHouse
 }

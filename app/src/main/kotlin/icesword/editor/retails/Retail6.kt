@@ -1,7 +1,5 @@
 package icesword.editor.retails
 
-import icesword.editor.ChainedTileGenerator
-import icesword.editor.ForwardTileGenerator
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
@@ -11,10 +9,12 @@ import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.StructureConcavePattern
 import icesword.editor.knot_mesh.StructureConvexPattern
 import icesword.editor.retails.Retail6.MetaTiles.Bricks
+import icesword.editor.retails.Retail6.MetaTiles.BrownHouse
 import icesword.editor.retails.Retail6.MetaTiles.Fence
 import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
 import icesword.editor.retails.Retail6.MetaTiles.Pavement
+import icesword.editor.retails.Retail6.MetaTiles.WhiteHouse
 
 private val bricksPattern = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
@@ -50,6 +50,148 @@ private val horizontalRoofTileGenerator = TileGenerator.forwardAll(
     HorizontalRoof.bottomRightOuter,
 )
 
+interface HouseTiles {
+    companion object {
+        const val topCenter: Int = 33
+
+        const val topRight: Int = 36
+    }
+
+    val bottomLeftOuterWall: Int
+
+    val bottomLeftInner: Int
+
+    val bottomCenter: Int
+
+    val bottomRight: Int
+
+    val bottomLeftOuterRooftop: Int
+
+    val bottomRightRooftop: Int
+
+    val leftFence: Int
+
+    val bottomLeftFence: Int
+
+    val rightFence: Int
+
+    val bottomRightFence: Int
+
+    val bottomLeftOuterPavement: Int
+
+    val bottomLeftInnerPavement: Int
+
+    val bottomCenterPavement: Int
+
+    val bottomRightPavement: Int
+}
+
+private val whiteHouseTiles = object : HouseTiles {
+    override val bottomLeftOuterWall: Int = 43
+
+    override val bottomLeftInner: Int = 60
+
+    override val bottomCenter: Int = 61
+
+    override val bottomRight: Int = 62
+
+    override val bottomLeftOuterRooftop: Int = 186
+
+    override val bottomRightRooftop: Int = 188
+
+    override val leftFence: Int = 24
+
+    override val bottomLeftFence: Int = 29
+
+    override val rightFence: Int = 169
+
+    override val bottomRightFence: Int = 171
+
+    override val bottomLeftOuterPavement: Int = 64
+
+    override val bottomLeftInnerPavement: Int = 66
+
+    override val bottomCenterPavement: Int = 67
+
+    override val bottomRightPavement: Int = 68
+}
+
+private val brownHouseTiles = object : HouseTiles {
+    override val bottomLeftOuterWall: Int = 84
+
+    override val bottomLeftInner: Int = 85
+
+    override val bottomCenter: Int = 86
+
+    override val bottomRight: Int = 78
+
+    override val bottomLeftOuterRooftop: Int = 185
+
+    override val bottomRightRooftop: Int = 187
+
+    override val leftFence: Int = 23
+
+    override val bottomLeftFence: Int = 28
+
+    override val rightFence: Int = 170
+
+    override val bottomRightFence: Int = 172
+
+    override val bottomLeftOuterPavement: Int = 91
+
+    override val bottomLeftInnerPavement: Int = 94
+
+    override val bottomCenterPavement: Int = 95
+
+    override val bottomRightPavement: Int = 98
+}
+
+class HouseTileGenerator(
+    private val house: House,
+    private val houseTiles: HouseTiles,
+) : TileGenerator {
+    override fun buildTile(context: TileGeneratorContext): Int? = context.run {
+        when {
+            // House / house
+
+            containsAll(house.topLeft, house.bottomLeftOuter) -> houseTiles.bottomLeftOuterWall
+            containsAll(house.topCenter, house.bottomLeftInner) -> houseTiles.bottomLeftInner
+            containsAll(house.topCenter, house.bottomCenter) -> houseTiles.bottomCenter
+            containsAll(house.topRight, house.bottomRight) -> houseTiles.bottomRight
+
+            containsAll(house.topCenter, house.bottomLeftOuter) -> houseTiles.bottomLeftOuterRooftop
+            containsAll(house.topCenter, house.bottomRight) -> houseTiles.bottomRightRooftop
+
+            // House / fence
+
+            containsAll(house.leftOuter, Fence.top) -> houseTiles.leftFence
+            containsAll(house.bottomLeftOuter, Fence.bottom) -> houseTiles.bottomLeftFence
+
+            containsAll(house.right, Fence.top) -> houseTiles.rightFence
+            containsAll(house.bottomRight, Fence.bottom) -> houseTiles.bottomRightFence
+
+            // House / pavement
+
+            containsAll(house.bottomLeftOuter, Pavement.center) -> houseTiles.bottomLeftOuterPavement
+            containsAll(house.bottomLeftInner, Pavement.center) -> houseTiles.bottomLeftInnerPavement
+            containsAll(house.bottomCenter, Pavement.center) -> houseTiles.bottomCenterPavement
+            containsAll(house.bottomRight, Pavement.center) -> houseTiles.bottomRightPavement
+
+            else -> null
+        }
+    }
+}
+
+private val whiteHouseTileGenerator = HouseTileGenerator(
+    house = WhiteHouse,
+    houseTiles = whiteHouseTiles,
+)
+
+private val brownHouseTileGenerator = HouseTileGenerator(
+    house = BrownHouse,
+    houseTiles = brownHouseTiles,
+)
+
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         when {
@@ -57,31 +199,6 @@ private val retailTileGenerator = object : TileGenerator {
 
             containsAll(Bricks.center, Pavement.left) -> 110
             containsAll(Bricks.left, Pavement.rightOuter) -> 203
-
-            // House / house
-
-            containsAll(House.topLeft, House.bottomLeftOuter) -> 43
-            containsAll(House.topCenter, House.bottomLeftInner) -> 60
-            containsAll(House.topCenter, House.bottomCenter) -> 61
-            containsAll(House.topRight, House.bottomRight) -> 62
-
-            containsAll(House.topCenter, House.bottomLeftOuter) -> 186
-            containsAll(House.topCenter, House.bottomRight) -> 188
-
-            // House  / fence
-
-            containsAll(House.leftOuter, Fence.top) -> 24
-            containsAll(House.bottomLeftOuter, Fence.bottom) -> 29
-
-            containsAll(House.right, Fence.top) -> 169
-            containsAll(House.bottomRight, Fence.bottom) -> 171
-
-            // House / pavement
-
-            containsAll(House.bottomLeftOuter, Pavement.center) -> 64
-            containsAll(House.bottomLeftInner, Pavement.center) -> 66
-            containsAll(House.bottomCenter, Pavement.center) -> 67
-            containsAll(House.bottomRight, Pavement.center) -> 68
 
             // Pavement / fence
 
@@ -154,28 +271,76 @@ object Retail6 : Retail(naturalIndex = 6) {
             val concaveBottomRight = MetaTile(115)
         }
 
-        object House {
-            val topLeft = MetaTile(32)
+        interface House {
+            val topLeft: MetaTile
 
-            val topCenter = MetaTile(33)
+            val topCenter: MetaTile
 
-            val topRight = MetaTile(36)
+            val topRight: MetaTile
 
-            val leftOuter = MetaTile(37)
+            val leftOuter: MetaTile
 
-            val leftInner = MetaTile(55)
+            val leftInner: MetaTile
 
-            val center = MetaTile(49)
+            val center: MetaTile
 
-            val right = MetaTile(57)
+            val right: MetaTile
 
-            val bottomLeftOuter = MetaTile(43)
+            val bottomLeftOuter: MetaTile
 
-            val bottomLeftInner = MetaTile(60)
+            val bottomLeftInner: MetaTile
 
-            val bottomCenter = MetaTile(61)
+            val bottomCenter: MetaTile
 
-            val bottomRight = MetaTile(62)
+            val bottomRight: MetaTile
+        }
+
+        object WhiteHouse : House {
+            override val topLeft: MetaTile = MetaTile(32)
+
+            override val topCenter: MetaTile = MetaTile(HouseTiles.topCenter)
+
+            override val topRight: MetaTile = MetaTile(HouseTiles.topRight)
+
+            override val leftOuter: MetaTile = MetaTile(37)
+
+            override val leftInner: MetaTile = MetaTile(55)
+
+            override val center: MetaTile = MetaTile(49)
+
+            override val right: MetaTile = MetaTile(57)
+
+            override val bottomLeftOuter: MetaTile = MetaTile(whiteHouseTiles.bottomLeftOuterWall)
+
+            override val bottomLeftInner: MetaTile = MetaTile(whiteHouseTiles.bottomLeftInner)
+
+            override val bottomCenter: MetaTile = MetaTile(whiteHouseTiles.bottomCenter)
+
+            override val bottomRight: MetaTile = MetaTile(whiteHouseTiles.bottomRight)
+        }
+
+        object BrownHouse : House {
+            override val topLeft: MetaTile = MetaTile(69)
+
+            override val topCenter: MetaTile = MetaTile(HouseTiles.topCenter)
+
+            override val topRight: MetaTile = MetaTile(HouseTiles.topRight)
+
+            override val leftOuter: MetaTile = MetaTile(74)
+
+            override val leftInner: MetaTile = MetaTile(70)
+
+            override val center: MetaTile = MetaTile(72)
+
+            override val right: MetaTile = MetaTile(88)
+
+            override val bottomLeftOuter: MetaTile = MetaTile(brownHouseTiles.bottomLeftOuterWall)
+
+            override val bottomLeftInner: MetaTile = MetaTile(brownHouseTiles.bottomLeftInner)
+
+            override val bottomCenter: MetaTile = MetaTile(brownHouseTiles.bottomCenter)
+
+            override val bottomRight: MetaTile = MetaTile(brownHouseTiles.bottomRight)
         }
     }
 
@@ -184,6 +349,8 @@ object Retail6 : Retail(naturalIndex = 6) {
 
     override val tileGenerator: TileGenerator = TileGenerator.chained(
         horizontalRoofTileGenerator,
+        whiteHouseTileGenerator,
+        brownHouseTileGenerator,
         retailTileGenerator,
     )
 }
