@@ -10,6 +10,7 @@ import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail6
+import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
 import icesword.geometry.IntSize
 import kotlinx.serialization.SerialName
@@ -58,24 +59,24 @@ object Retail6HorizontalRoofPrototype : ElasticPrototype() {
     private val generator = ElasticLinearPattern(
         startingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
-                Retail6.MetaTiles.HorizontalRoof.topLeft,
-                Retail6.MetaTiles.HorizontalRoof.bottomLeft,
+                HorizontalRoof.topLeft,
+                HorizontalRoof.bottomLeft,
             ),
             width = 2,
         ),
         repeatingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
-                Retail6.MetaTiles.HorizontalRoof.topCenter,
-                Retail6.MetaTiles.HorizontalRoof.bottomCenter,
+                HorizontalRoof.topCenter,
+                HorizontalRoof.bottomCenter,
             ),
             width = 2,
         ),
         endingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
-                Retail6.MetaTiles.HorizontalRoof.topRightInner,
-                Retail6.MetaTiles.HorizontalRoof.bottomRightInner,
-                Retail6.MetaTiles.HorizontalRoof.topRightOuter,
-                Retail6.MetaTiles.HorizontalRoof.bottomRightOuter,
+                HorizontalRoof.topRightInner,
+                HorizontalRoof.bottomRightInner,
+                HorizontalRoof.topRightOuter,
+                HorizontalRoof.bottomRightOuter,
             ),
             width = 2,
         ),

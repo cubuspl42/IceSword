@@ -1,5 +1,7 @@
 package icesword.editor.retails
 
+import icesword.editor.ChainedTileGenerator
+import icesword.editor.ForwardTileGenerator
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
@@ -10,6 +12,7 @@ import icesword.editor.knot_mesh.StructureConcavePattern
 import icesword.editor.knot_mesh.StructureConvexPattern
 import icesword.editor.retails.Retail6.MetaTiles.Bricks
 import icesword.editor.retails.Retail6.MetaTiles.Fence
+import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
 
 private val bricksPattern = object : KnotStructurePattern(
@@ -34,6 +37,17 @@ private val bricksPattern = object : KnotStructurePattern(
     override fun test(knotPrototype: KnotPrototype): Boolean =
         knotPrototype is KnotPrototype.Retail6BricksPrototype
 }
+
+private val horizontalRoofTileGenerator = TileGenerator.forwardAll(
+    HorizontalRoof.topLeft,
+    HorizontalRoof.topCenter,
+    HorizontalRoof.topRightInner,
+    HorizontalRoof.topRightOuter,
+    HorizontalRoof.bottomLeft,
+    HorizontalRoof.bottomCenter,
+    HorizontalRoof.bottomRightInner,
+    HorizontalRoof.bottomRightOuter,
+)
 
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
@@ -144,6 +158,8 @@ object Retail6 : Retail(naturalIndex = 6) {
     override val knotStructurePatterns: List<KnotStructurePattern> =
         listOf(bricksPattern)
 
-    override val tileGenerator: TileGenerator =
-        retailTileGenerator
+    override val tileGenerator: TileGenerator = TileGenerator.chained(
+        horizontalRoofTileGenerator,
+        retailTileGenerator,
+    )
 }

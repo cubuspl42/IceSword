@@ -21,6 +21,15 @@ interface TileGeneratorContext {
 }
 
 interface TileGenerator {
+    companion object {
+        fun chained(vararg generators: TileGenerator): TileGenerator =
+            ChainedTileGenerator(generators.toList())
+
+        fun forwardAll(vararg metaTiles: MetaTile): TileGenerator = ChainedTileGenerator(
+            metaTiles.map { ForwardTileGenerator(it) },
+        )
+    }
+
     fun buildTile(context: TileGeneratorContext): Int?
 }
 
