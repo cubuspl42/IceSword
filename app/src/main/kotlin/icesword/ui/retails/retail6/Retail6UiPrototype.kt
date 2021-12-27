@@ -7,6 +7,7 @@ import icesword.editor.KnotPrototype
 import icesword.editor.elastic.prototype.Retail6FencePrototype
 import icesword.editor.elastic.prototype.Retail6HorizontalRoofPrototype
 import icesword.editor.elastic.prototype.Retail6LadderPrototype
+import icesword.editor.elastic.prototype.Retail6PavementPrototype
 import icesword.editor.elastic.prototype.Retail6WhiteHousePrototype
 import icesword.editor.retails.Retail6
 import icesword.frp.Till
@@ -21,6 +22,13 @@ object Retail6UiPrototype : RetailUiPrototype {
         editor: Editor,
         tillDetach: Till,
     ): List<HTMLElement> = listOf(
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail6PavementPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL6/TILES/ACTION/101.png",
+            tillDetach = tillDetach,
+        ),
         createInsertElasticButton(
             editor = editor,
             prototype = Retail6FencePrototype,

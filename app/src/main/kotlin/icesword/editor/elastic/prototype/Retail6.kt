@@ -19,6 +19,34 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+@SerialName("Retail6Pavement")
+object Retail6PavementPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(4, 1)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment.ofSingle(
+            Pavement.left,
+        ),
+        topCenter = ElasticRectangularFragment.ofSingle(
+            Pavement.center,
+        ),
+        topRight = ElasticRectangularFragment(
+            metaTiles = listOf(
+                Pavement.rightInner, Pavement.rightOuter,
+            ),
+            width = 2,
+            height = 1,
+        ),
+        leftStaticWidth = 1,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 2,
+        topStaticHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail) = generator
+}
+
+@Serializable
 @SerialName("Retail6Fence")
 object Retail6FencePrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(4, 2)
