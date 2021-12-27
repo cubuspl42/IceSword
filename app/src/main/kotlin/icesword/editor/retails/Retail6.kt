@@ -44,10 +44,6 @@ private val horizontalRoofTileGenerator = TileGenerator.forwardAll(
     HorizontalRoof.topCenter,
     HorizontalRoof.topRightInner,
     HorizontalRoof.topRightOuter,
-    HorizontalRoof.bottomLeft,
-    HorizontalRoof.bottomCenter,
-    HorizontalRoof.bottomRightInner,
-    HorizontalRoof.bottomRightOuter,
 )
 
 interface HouseTiles {
@@ -84,6 +80,14 @@ interface HouseTiles {
     val bottomCenterPavement: Int
 
     val bottomRightPavement: Int
+
+    val supportLeft: Int
+
+    val support: Int
+
+    val shadow: Int
+
+    val supportRightInner: Int
 }
 
 private val whiteHouseTiles = object : HouseTiles {
@@ -114,6 +118,14 @@ private val whiteHouseTiles = object : HouseTiles {
     override val bottomCenterPavement: Int = 67
 
     override val bottomRightPavement: Int = 68
+
+    override val supportLeft: Int = 44
+
+    override val support: Int = 45
+
+    override val shadow: Int = 42
+
+    override val supportRightInner: Int = 46
 }
 
 private val brownHouseTiles = object : HouseTiles {
@@ -144,6 +156,14 @@ private val brownHouseTiles = object : HouseTiles {
     override val bottomCenterPavement: Int = 95
 
     override val bottomRightPavement: Int = 98
+
+    override val supportLeft: Int = 75
+
+    override val support: Int = 77
+
+    override val shadow: Int = 76
+
+    override val supportRightInner: Int = 73
 }
 
 class HouseTileGenerator(
@@ -176,6 +196,12 @@ class HouseTileGenerator(
             containsAll(house.bottomLeftInner, Pavement.center) -> houseTiles.bottomLeftInnerPavement
             containsAll(house.bottomCenter, Pavement.center) -> houseTiles.bottomCenterPavement
             containsAll(house.bottomRight, Pavement.center) -> houseTiles.bottomRightPavement
+
+            // House / horizontal roof
+
+            containsAll(house.leftInner, HorizontalRoof.supportLeft) -> houseTiles.supportLeft
+            containsAll(house.center, HorizontalRoof.shadow) -> houseTiles.shadow
+            containsAll(house.right, HorizontalRoof.supportRightInner) -> houseTiles.supportRightInner
 
             else -> null
         }
@@ -236,13 +262,13 @@ object Retail6 : Retail(naturalIndex = 6) {
 
             val topRightOuter = MetaTile(41)
 
-            val bottomLeft = MetaTile(44)
+            val supportLeft = MetaTile(44)
 
-            val bottomCenter = MetaTile(42)
+            val shadow = MetaTile(42)
 
-            val bottomRightInner = MetaTile(46)
+            val supportRightInner = MetaTile(46)
 
-            val bottomRightOuter = MetaTile(47)
+            val supportRightOuter = MetaTile(47)
         }
 
         object Ladder : LadderPattern {

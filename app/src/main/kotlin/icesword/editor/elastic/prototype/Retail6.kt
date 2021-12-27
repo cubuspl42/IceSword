@@ -2,7 +2,6 @@ package icesword.editor.elastic.prototype
 
 import icesword.editor.ElasticGenerator
 import icesword.editor.ElasticMetaTilesGenerator
-import icesword.editor.MetaTile
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.ElasticRectangularFragment
@@ -78,23 +77,23 @@ object Retail6HorizontalRoofPrototype : ElasticPrototype() {
         startingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 HorizontalRoof.topLeft,
-                HorizontalRoof.bottomLeft,
+                HorizontalRoof.supportLeft,
             ),
             width = 2,
         ),
         repeatingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 HorizontalRoof.topCenter,
-                HorizontalRoof.bottomCenter,
+                HorizontalRoof.shadow,
             ),
             width = 2,
         ),
         endingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 HorizontalRoof.topRightInner,
-                HorizontalRoof.bottomRightInner,
+                HorizontalRoof.supportRightInner,
                 HorizontalRoof.topRightOuter,
-                HorizontalRoof.bottomRightOuter,
+                HorizontalRoof.supportRightOuter,
             ),
             width = 2,
         ),
