@@ -8,6 +8,7 @@ import icesword.editor.elastic.prototype.Retail5BreakPlankPrototype
 import icesword.editor.elastic.prototype.Retail5BridgeLeftPrototype
 import icesword.editor.elastic.prototype.Retail5BridgeRightPrototype
 import icesword.editor.elastic.prototype.Retail5HorizontalRoofPrototype
+import icesword.editor.elastic.prototype.Retail5HousePrototype
 import icesword.editor.elastic.prototype.Retail5LadderPrototype
 import icesword.editor.elastic.prototype.Retail5MetalPlatformPrototype
 import icesword.editor.elastic.prototype.Retail5SpikesPrototype
@@ -71,6 +72,13 @@ object Retail5UiPrototype : RetailUiPrototype {
             prototype = Retail5BridgeRightPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL5/TILES/ACTION/502.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail5HousePrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL5/TILES/ACTION/259.png",
             tillDetach = tillDetach,
         ),
         createInsertKnotMeshButton(

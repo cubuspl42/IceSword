@@ -144,6 +144,18 @@ object Retail5 : Retail(naturalIndex = 5) {
 
             val right = MetaTile(505)
         }
+
+        object House {
+            val core = MetaTile(266)
+
+            object Block {
+                val leftOuter = MetaTile(264)
+
+                val leftInner = MetaTile(265)
+
+                val right = MetaTile(281)
+            }
+        }
     }
 
     override val knotStructurePatterns: List<KnotStructurePattern> =

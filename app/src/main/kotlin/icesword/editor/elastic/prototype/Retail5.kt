@@ -12,10 +12,11 @@ import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
-import icesword.editor.retails.Retail2
 import icesword.editor.retails.Retail5
 import icesword.editor.retails.Retail5.MetaTiles.Bridge
+import icesword.editor.retails.Retail5.MetaTiles.House
 import icesword.geometry.IntSize
+import icesword.geometry.IntVec2
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -196,4 +197,86 @@ object Retail5BreakPlankPrototype : ElasticPrototype() {
             )
         )
     }
+}
+
+@Serializable
+@SerialName("Retail5House")
+object Retail5HousePrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(7, 5)
+
+    private fun buildRoofMetaTiles(a: Int, w: Int): Map<IntVec2, MetaTile> {
+        val roofTop = listOf(
+            IntVec2(a - 1, 0) to MetaTile(255),
+            IntVec2(a, 0) to MetaTile(256),
+            IntVec2(a + 1, 0) to MetaTile(257),
+        ).toMap()
+
+        val roofCenter = (0 until a - 2).flatMap {
+            val i = it + 1
+            listOf(
+                IntVec2(a - 2 - it, i) to MetaTile(255),
+                IntVec2(a - 1 - it, i) to MetaTile(401),
+                IntVec2(a + 1 + it, i) to MetaTile(258),
+                IntVec2(a + 2 + it, i) to MetaTile(257),
+            ) + ((a - it)..(a + it)).map { j ->
+                IntVec2(j, i) to House.core
+            }
+        }.toMap()
+
+        val roofBottom = (listOf(
+            IntVec2(0, a - 1) to MetaTile(259),
+            IntVec2(1, a - 1) to MetaTile(260),
+            IntVec2(w - 2, a - 1) to MetaTile(262),
+            IntVec2(w - 1, a - 1) to MetaTile(263),
+        ) + (2..(w - 3)).map { j ->
+            IntVec2(j, a - 1) to House.core
+        }).toMap()
+
+        return roofTop + roofCenter + roofBottom
+    }
+
+    private val blockGenerator = ElasticRectangularPattern(
+        centerLeft = ElasticRectangularFragment(
+            metaTiles = listOf(
+                House.Block.leftOuter, House.Block.leftInner,
+            ),
+            width = 2,
+            height = 1,
+        ),
+        center = ElasticRectangularFragment.ofSingle(
+            House.core,
+        ),
+        centerRight = ElasticRectangularFragment.ofSingle(
+            House.Block.right,
+        ),
+        leftStaticWidth = 2,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 1,
+    ).toElasticGenerator()
+
+    private val generator = object : ElasticGenerator {
+        override fun buildOutput(size: IntSize): ElasticGeneratorOutput {
+            val a: Int = size.width / 2
+            val w = 2 * a + 1
+
+            val roofMetaTiles = buildRoofMetaTiles(a = a, w = w)
+
+            val blockWidth = (w - 1).coerceAtLeast(0)
+            val blockHeight = (size.height - a).coerceAtLeast(0)
+
+            val blockMetaTiles = blockGenerator
+                .buildOutput(IntSize(width = blockWidth, height = blockHeight))
+                .localMetaTiles
+                .mapKeys { (coord, _) -> coord + IntVec2(0, a) }
+
+            val metaTiles = roofMetaTiles + blockMetaTiles
+
+            return ElasticGeneratorOutput(
+                localMetaTiles = metaTiles,
+                localWapObjects = emptyList(),
+            )
+        }
+    }
+    
+    override fun buildGenerator(retail: Retail): ElasticGenerator = generator
 }

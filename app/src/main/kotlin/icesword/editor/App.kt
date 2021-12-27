@@ -4,6 +4,7 @@ import fetchWorld
 import icesword.JsonRezIndex
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail4
+import icesword.editor.retails.Retail5
 import icesword.frp.Cell
 import icesword.frp.DynamicLock
 import icesword.frp.MutCell
@@ -44,7 +45,7 @@ class App(
             val jsonRezIndex = JsonRezIndex.load()
 
             val wwdWorld: Wwd.World = fetchWorld(
-                retail = Retail4,
+                retail = Retail5,
             )
 
             val editor = Editor.importWwd(
