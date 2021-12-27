@@ -10,8 +10,10 @@ import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail6
+import icesword.editor.retails.Retail6.MetaTiles.Fence
 import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
+import icesword.editor.retails.Retail6.MetaTiles.Pavement
 import icesword.geometry.IntSize
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -25,23 +27,23 @@ object Retail6FencePrototype : ElasticPrototype() {
         startingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 MetaTile.None,
-                Retail6.MetaTiles.Fence.bottomLeft,
+                Pavement.left,
             ),
             width = 2,
         ),
         repeatingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
-                Retail6.MetaTiles.Fence.top,
-                Retail6.MetaTiles.Fence.bottomCenter,
+                Fence.top,
+                Fence.bottom,
             ),
             width = 2,
         ),
         endingPattern = LinearMetaTilePattern(
             metaTiles = listOf(
                 MetaTile.None,
-                Retail6.MetaTiles.Fence.bottomRightInner,
+                Pavement.rightInner,
                 MetaTile.None,
-                Retail6.MetaTiles.Fence.bottomRightOuter,
+                Pavement.rightOuter,
             ),
             width = 2,
         ),

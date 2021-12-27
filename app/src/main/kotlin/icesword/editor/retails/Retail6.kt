@@ -14,6 +14,7 @@ import icesword.editor.retails.Retail6.MetaTiles.Bricks
 import icesword.editor.retails.Retail6.MetaTiles.Fence
 import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
+import icesword.editor.retails.Retail6.MetaTiles.Pavement
 
 private val bricksPattern = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
@@ -52,10 +53,10 @@ private val horizontalRoofTileGenerator = TileGenerator.forwardAll(
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         when {
-            // Bricks / fence
+            // Bricks / pavement
 
-            containsAll(Bricks.center, Fence.bottomLeft) -> 110
-            containsAll(Bricks.left, Fence.bottomRightOuter) -> 203
+            containsAll(Bricks.center, Pavement.left) -> 110
+            containsAll(Bricks.left, Pavement.rightOuter) -> 203
 
             // House / house
 
@@ -77,13 +78,17 @@ object Retail6 : Retail(naturalIndex = 6) {
         object Fence {
             val top = MetaTile(22)
 
-            val bottomLeft = MetaTile(89)
+            val bottom = MetaTile(27)
+        }
 
-            val bottomCenter = MetaTile(27)
+        object Pavement {
+            val left = MetaTile(89)
 
-            val bottomRightInner = MetaTile(99)
+            val center = MetaTile(101)
 
-            val bottomRightOuter = MetaTile(100)
+            val rightInner = MetaTile(99)
+
+            val rightOuter = MetaTile(100)
         }
 
         object HorizontalRoof {
