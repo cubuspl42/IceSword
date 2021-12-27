@@ -22,6 +22,7 @@ import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 @SerialName("Retail5MetalPlatform")
@@ -413,101 +414,91 @@ object Retail5CleanWallPrototype : ElasticPrototype() {
 }
 
 @Serializable
-@SerialName("Retail5Post1")
-object Retail5Post1Prototype : ElasticPrototype() {
-    override val defaultSize: IntSize = IntSize(1, 3)
+sealed class PostPrototype : ElasticPrototype() {
+    companion object {
+        const val postBottomImageSet = "LEVEL_POSTBOTTOM"
+    }
 
-    private val post = WapObjectPropsData(
-        x = 65,
-        z = 1000,
-        i = -1,
-        logic = "BehindCandy",
-    )
+    abstract val x: Int
 
-    private val generator = ElasticRectangularPattern(
-        topLeft = ElasticRectangularFragment(
-            metaTiles = listOf(MetaTile.None),
-            wapObject = post.copy(
-                y = 27,
-                imageSet = "LEVEL_POSTTOP1",
-            ),
-            width = 1,
-            height = 1,
-        ),
-        centerLeft = ElasticRectangularFragment(
-            metaTiles = listOf(MetaTile.None),
-            wapObject = post.copy(
-                y = 28,
-                imageSet = "LEVEL_POSTBOTTOM",
-            ),
-            width = 1,
-            height = 1,
-        ),
-        bottomLeft = ElasticRectangularFragment(
-            metaTiles = listOf(MetaTile.None),
-            wapObject = post.copy(
-                y = 4,
-                imageSet = "LEVEL_POSTBOTTOM",
-            ),
-            width = 1,
-            height = 1,
-        ),
-        leftStaticWidth = 1,
-        topStaticHeight = 1,
-        centerVerticalRepeatingHeight = 1,
-        bottomStaticHeight = 1,
-    ).toElasticGenerator()
+    abstract val topPostY: Int
 
-    override fun buildGenerator(retail: Retail) = generator
+    abstract val topPostImageSet: String
+
+    abstract val bottomPostY1: Int
+
+    abstract val bottomPostY2: Int?
+
+    final override val defaultSize: IntSize = IntSize(1, 3)
+
+    override fun buildGenerator(retail: Retail): ElasticGenerator {
+        val post = WapObjectPropsData(
+            x = x,
+            z = 1000,
+            i = -1,
+            logic = "BehindCandy",
+        )
+
+        return ElasticRectangularPattern(
+            topLeft = ElasticRectangularFragment(
+                metaTiles = listOf(MetaTile.None),
+                wapObject = post.copy(
+                    y = topPostY,
+                    imageSet = topPostImageSet,
+                ),
+                width = 1,
+                height = 1,
+            ),
+            centerLeft = ElasticRectangularFragment(
+                metaTiles = listOf(MetaTile.None),
+                wapObject = post.copy(
+                    y = 28,
+                    imageSet = postBottomImageSet,
+                ),
+                width = 1,
+                height = 1,
+            ),
+            bottomLeft = ElasticRectangularFragment(
+                metaTiles = listOf(MetaTile.None),
+                wapObject = post.copy(
+                    y = bottomPostY1,
+                    imageSet = postBottomImageSet,
+                ),
+                width = 1,
+                height = 1,
+            ),
+            leftStaticWidth = 1,
+            topStaticHeight = 1,
+            centerVerticalRepeatingHeight = 1,
+            bottomStaticHeight = 1,
+        ).toElasticGenerator()
+    }
 }
 
 @Serializable
-@SerialName("Retail5Post2")
-object Retail5Post2Prototype : ElasticPrototype() {
-    override val defaultSize: IntSize = IntSize(1, 3)
+@SerialName("Retail5Post1Padded")
+object Retail5Post1PaddedPrototype : PostPrototype() {
+    override val x: Int = 65
 
-    private val post = WapObjectPropsData(
-        x = 46,
-        z = 1000,
-        i = -1,
-        logic = "BehindCandy",
-    )
+    override val topPostY: Int = 27
 
-    private val generator = ElasticRectangularPattern(
-        topLeft = ElasticRectangularFragment(
-            metaTiles = listOf(MetaTile.None),
-            wapObject = post.copy(
-                y = 39,
-                imageSet = "LEVEL_POSTTOP2",
-            ),
-            width = 1,
-            height = 1,
-        ),
-        centerLeft = ElasticRectangularFragment(
-            metaTiles = listOf(MetaTile.None),
-            wapObject = post.copy(
-                y = 28,
-                imageSet = "LEVEL_POSTBOTTOM",
-            ),
-            width = 1,
-            height = 1,
-        ),
-        bottomLeft = ElasticRectangularFragment(
-            metaTiles = listOf(MetaTile.None),
-            wapObject = post.copy(
-                y = 4,
-                imageSet = "LEVEL_POSTBOTTOM",
-            ),
-            width = 1,
-            height = 1,
-        ),
-        leftStaticWidth = 1,
-        topStaticHeight = 1,
-        centerVerticalRepeatingHeight = 1,
-        bottomStaticHeight = 1,
-    ).toElasticGenerator()
+    override val topPostImageSet: String = "LEVEL_POSTTOP1"
 
-    override fun buildGenerator(retail: Retail) = generator
+    override val bottomPostY1: Int = 4
+
+    override val bottomPostY2: Int? = null
 }
 
+@Serializable
+@SerialName("Retail5Post2Padded")
+object Retail5Post2PaddedPrototype : PostPrototype() {
+    override val x: Int = 46
 
+    override val topPostY: Int = 39
+
+    override val topPostImageSet: String = "LEVEL_POSTTOP2"
+
+    override val bottomPostY1: Int = 4
+
+    override val bottomPostY2: Int? = null
+}
