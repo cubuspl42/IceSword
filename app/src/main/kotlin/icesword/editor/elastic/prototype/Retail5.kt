@@ -310,7 +310,7 @@ object Retail5ArchSpanPrototype : ElasticPrototype() {
     private val generator = ElasticRectangularPattern(
         topLeft = ElasticRectangularFragment(
             metaTiles = listOf(
-                Wall.topLeft, Arch.Span.left,
+                Wall.Dirty.topLeft, Arch.Span.left,
             ),
             width = 2,
             height = 1,
@@ -320,7 +320,7 @@ object Retail5ArchSpanPrototype : ElasticPrototype() {
         ),
         topRight = ElasticRectangularFragment(
             metaTiles = listOf(
-                Arch.Span.right, Wall.topRight,
+                Arch.Span.right, Wall.Dirty.topRight,
             ),
             width = 2,
             height = 1,
@@ -353,3 +353,62 @@ object Retail5ArchLegPrototype : ElasticPrototype() {
 
     override fun buildGenerator(retail: Retail) = generator
 }
+
+@Serializable
+@SerialName("Retail5DirtyWall")
+object Retail5DirtyWallPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(3, 1)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment.ofSingle(
+            Wall.Dirty.topLeft,
+        ),
+        topCenter = ElasticRectangularFragment.ofSingle(
+            Wall.Dirty.topCenter,
+        ),
+        topRight = ElasticRectangularFragment.ofSingle(
+            Wall.Dirty.topRight,
+        ),
+        leftStaticWidth = 1,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 1,
+        topStaticHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail) = generator
+}
+
+@Serializable
+@SerialName("Retail5CleanWall")
+object Retail5CleanWallPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(3, 2)
+
+    private val generator = ElasticRectangularPattern(
+        topLeft = ElasticRectangularFragment.ofSingle(
+            Wall.Clean.topLeft,
+        ),
+        topCenter = ElasticRectangularFragment.ofSingle(
+            Wall.Clean.topCenter,
+        ),
+        topRight = ElasticRectangularFragment.ofSingle(
+            Wall.Clean.topRight,
+        ),
+        centerLeft = ElasticRectangularFragment.ofSingle(
+            Wall.Clean.left,
+        ),
+        center = ElasticRectangularFragment.ofSingle(
+            Wall.Clean.core,
+        ),
+        centerRight = ElasticRectangularFragment.ofSingle(
+            Wall.Clean.core,
+        ),
+        leftStaticWidth = 1,
+        centerHorizontalRepeatingWidth = 1,
+        rightStaticWidth = 1,
+        topStaticHeight = 1,
+        centerVerticalRepeatingHeight = 1,
+    ).toElasticGenerator()
+
+    override fun buildGenerator(retail: Retail) = generator
+}
+

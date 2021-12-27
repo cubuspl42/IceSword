@@ -17,6 +17,7 @@ import icesword.editor.retails.Retail5.MetaTiles.House
 import icesword.editor.retails.Retail5.MetaTiles.Ladder
 import icesword.editor.retails.Retail5.MetaTiles.Rock
 import icesword.editor.retails.Retail5.MetaTiles.Spikes
+import icesword.editor.retails.Retail5.MetaTiles.Wall
 
 private val rockPattern = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
@@ -102,6 +103,13 @@ private val retailTileGenerator = object : TileGenerator {
             // Arch leg / spikes
 
             containsAll(Arch.Leg.core, Spikes.top) -> 529
+
+            // Dirty wall / clean wall
+
+            // What's the difference between 237 and 252?
+
+            containsAll(Wall.Dirty.topCenter, Wall.Clean.left) -> 236
+            containsAll(Wall.Dirty.topCenter, Wall.Clean.core) -> 237
 
             else -> null
         }
@@ -209,9 +217,25 @@ object Retail5 : Retail(naturalIndex = 5) {
         }
 
         object Wall {
-            val topLeft = MetaTile(233)
+            object Dirty {
+                val topLeft = MetaTile(233)
 
-            val topRight = MetaTile(244)
+                val topCenter = MetaTile(235)
+
+                val topRight = MetaTile(244)
+            }
+
+            object Clean {
+                val topLeft = MetaTile(217)
+
+                val topCenter = MetaTile(218)
+
+                val topRight = MetaTile(220)
+
+                val left = MetaTile(224)
+
+                val core = MetaTile(245)
+            }
         }
 
         object Arch {
