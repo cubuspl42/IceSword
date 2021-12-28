@@ -12,6 +12,7 @@ import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail6
+import icesword.editor.retails.Retail6.MetaTiles
 import icesword.editor.retails.Retail6.MetaTiles.BrownHouse
 import icesword.editor.retails.Retail6.MetaTiles.Fence
 import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
@@ -114,7 +115,7 @@ object Retail6LadderPrototype : ElasticPrototype() {
     override val defaultSize: IntSize = IntSize(1, 3)
 
     private val generator = LadderElasticGenerator.build(
-        ladder = Retail6.MetaTiles.Ladder,
+        ladder = MetaTiles.Ladder,
     )
 
     override fun buildGenerator(retail: Retail): ElasticMetaTilesGenerator = generator
@@ -311,7 +312,7 @@ object Retail6GooPrototype : ElasticPrototype() {
             metaTiles = listOf(
                 MetaTile(138),
                 MetaTile(148),
-                MetaTile(145),
+                MetaTiles.death,
             ),
             width = 1,
             height = 3,
@@ -324,7 +325,7 @@ object Retail6GooPrototype : ElasticPrototype() {
             metaTiles = listOf(
                 MetaTile(163),
                 MetaTile(149),
-                MetaTile(145),
+                MetaTiles.death,
             ),
             width = 1,
             height = 3,
@@ -337,7 +338,7 @@ object Retail6GooPrototype : ElasticPrototype() {
             metaTiles = listOf(
                 MetaTile(140), TunnelPlateFloor.right,
                 MetaTile(150), MetaTile.None,
-                MetaTile(145), MetaTile.None,
+                MetaTiles.death, MetaTile.None,
             ),
             width = 2,
             height = 3,
@@ -347,6 +348,61 @@ object Retail6GooPrototype : ElasticPrototype() {
             ),
         ),
         staticHeight = 3,
+    )
+
+    override fun buildGenerator(retail: Retail) = generator
+}
+
+@Serializable
+@SerialName("Retail6Sewer")
+object Retail6SewerPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(4, 2)
+
+    private val gooCoverupObject = WapObjectPropsData(
+        y = 64,
+        z = 8000,
+        i = -1,
+        logic = "GooCoverup",
+    )
+
+    private val generator = ElasticGenerator.fromHorizontalPattern(
+        left = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTile(197),
+                MetaTiles.death,
+            ),
+            width = 1,
+            height = 2,
+            wapObject = gooCoverupObject.copy(
+                x = 16,
+                imageSet = "LEVEL_SEWERCOVERUP1",
+            ),
+        ),
+        center = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTile(198),
+                MetaTiles.death,
+            ),
+            width = 1,
+            height = 2,
+            wapObject = gooCoverupObject.copy(
+                x = 32,
+                imageSet = "LEVEL_SEWERCOVERUP2",
+            ),
+        ),
+        right = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTile(199),
+                MetaTiles.death,
+            ),
+            width = 1,
+            height = 2,
+            wapObject = gooCoverupObject.copy(
+                x = 48,
+                imageSet = "LEVEL_SEWERCOVERUP3",
+            ),
+        ),
+        staticHeight = 2,
     )
 
     override fun buildGenerator(retail: Retail) = generator

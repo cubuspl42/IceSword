@@ -434,6 +434,8 @@ object Retail6 : Retail(naturalIndex = 6) {
 
             val right = MetaTile(137)
         }
+
+        val death = MetaTile(145)
     }
 
     override val knotStructurePatterns: List<KnotStructurePattern> =
