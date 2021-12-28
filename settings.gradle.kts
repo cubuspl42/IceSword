@@ -1,3 +1,3 @@
 rootProject.name = "IceSword"
 
-include("app", "frp")
+include("app", "frp", "tools")
