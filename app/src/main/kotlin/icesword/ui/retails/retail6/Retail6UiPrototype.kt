@@ -6,6 +6,7 @@ import icesword.editor.Editor
 import icesword.editor.KnotPrototype
 import icesword.editor.elastic.prototype.Retail6BrownHousePrototype
 import icesword.editor.elastic.prototype.Retail6FencePrototype
+import icesword.editor.elastic.prototype.Retail6GooPrototype
 import icesword.editor.elastic.prototype.Retail6HorizontalRoofPrototype
 import icesword.editor.elastic.prototype.Retail6LadderPrototype
 import icesword.editor.elastic.prototype.Retail6PavementPrototype
@@ -103,6 +104,13 @@ object Retail6UiPrototype : RetailUiPrototype {
             prototype = Retail6TunnelPlateFloorPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL6/TILES/ACTION/137.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertElasticButton(
+            editor = editor,
+            prototype = Retail6GooPrototype,
+            retail = retail,
+            imagePath = "images/CLAW/LEVEL6/TILES/ACTION/148.png",
             tillDetach = tillDetach,
         ),
         createInsertKnotMeshButton(

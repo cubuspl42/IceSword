@@ -293,3 +293,61 @@ object Retail6TunnelPlateFloorPrototype : ElasticPrototype() {
 
     override fun buildGenerator(retail: Retail) = generator
 }
+
+@Serializable
+@SerialName("Retail6Goo")
+object Retail6GooPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(4, 3)
+
+    private val gooCoverupObject = WapObjectPropsData(
+        y = 160,
+        z = 8000,
+        i = -1,
+        logic = "GooCoverup",
+    )
+
+    private val generator = ElasticGenerator.fromHorizontalPattern(
+        left = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTile(138),
+                MetaTile(148),
+                MetaTile(145),
+            ),
+            width = 1,
+            height = 3,
+            wapObject = gooCoverupObject.copy(
+                x = 17,
+                imageSet = "LEVEL_GOOCOVERLEFT",
+            ),
+        ),
+        center = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTile(163),
+                MetaTile(149),
+                MetaTile(145),
+            ),
+            width = 1,
+            height = 3,
+            wapObject = gooCoverupObject.copy(
+                x = 33,
+                imageSet = "LEVEL_GOOCOVERCENTER",
+            ),
+        ),
+        right = ElasticRectangularFragment(
+            metaTiles = listOf(
+                MetaTile(140), TunnelPlateFloor.right,
+                MetaTile(150), MetaTile.None,
+                MetaTile(145), MetaTile.None,
+            ),
+            width = 2,
+            height = 3,
+            wapObject = gooCoverupObject.copy(
+                x = 65,
+                imageSet = "LEVEL_GOOCOVERRIGHT",
+            ),
+        ),
+        staticHeight = 3,
+    )
+
+    override fun buildGenerator(retail: Retail) = generator
+}

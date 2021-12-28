@@ -242,7 +242,9 @@ private val tunnelFloorTileGenerator = TileGenerator.chained(
                 // Bricks / tunnel floor
 
                 containsAll(Bricks.left, TunnelBricksFloor.right) -> 132
+                containsAll(Bricks.concaveBottomRight, TunnelBricksFloor.right) -> 132
                 containsAll(Bricks.left, TunnelPlateFloor.right) -> 141
+                containsAll(Bricks.concaveBottomRight, TunnelPlateFloor.right) -> 141
 
                 else -> null
             }
