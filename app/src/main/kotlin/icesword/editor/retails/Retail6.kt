@@ -14,6 +14,8 @@ import icesword.editor.retails.Retail6.MetaTiles.Fence
 import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
 import icesword.editor.retails.Retail6.MetaTiles.Pavement
+import icesword.editor.retails.Retail6.MetaTiles.TunnelBricksFloor
+import icesword.editor.retails.Retail6.MetaTiles.TunnelPlateFloor
 import icesword.editor.retails.Retail6.MetaTiles.TunnelTube
 import icesword.editor.retails.Retail6.MetaTiles.WhiteHouse
 
@@ -228,6 +230,32 @@ private val tunnelTubeTileGenerator = TileGenerator.forwardAll(
     TunnelTube.right,
 )
 
+private val tunnelFloorTileGenerator = TileGenerator.chained(
+    object : TileGenerator {
+        override fun buildTile(context: TileGeneratorContext): Int? = context.run {
+            when {
+                // Tunnel floor / tunnel floor
+
+                containsAll(TunnelBricksFloor.core, TunnelPlateFloor.right) -> 129
+                containsAll(TunnelPlateFloor.core, TunnelBricksFloor.right) -> 134
+
+                // Bricks / tunnel floor
+
+                containsAll(Bricks.left, TunnelBricksFloor.right) -> 132
+                containsAll(Bricks.left, TunnelPlateFloor.right) -> 141
+
+                else -> null
+            }
+        }
+    },
+    TileGenerator.forwardAll(
+        TunnelBricksFloor.core,
+        TunnelBricksFloor.right,
+        TunnelPlateFloor.core,
+        TunnelPlateFloor.right,
+    ),
+)
+
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         when {
@@ -392,6 +420,18 @@ object Retail6 : Retail(naturalIndex = 6) {
 
             val right = MetaTile(144)
         }
+
+        object TunnelBricksFloor {
+            val core = MetaTile(133)
+
+            val right = MetaTile(133)
+        }
+
+        object TunnelPlateFloor {
+            val core = MetaTile(137)
+
+            val right = MetaTile(137)
+        }
     }
 
     override val knotStructurePatterns: List<KnotStructurePattern> =
@@ -401,6 +441,7 @@ object Retail6 : Retail(naturalIndex = 6) {
         horizontalRoofTileGenerator,
         whiteHouseTileGenerator,
         tunnelTubeTileGenerator,
+        tunnelFloorTileGenerator,
         brownHouseTileGenerator,
         retailTileGenerator,
     )
