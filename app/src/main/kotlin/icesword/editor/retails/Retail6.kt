@@ -8,11 +8,13 @@ import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.StructureConcavePattern
 import icesword.editor.knot_mesh.StructureConvexPattern
+import icesword.editor.retails.Retail6.MetaTiles.BackWall
 import icesword.editor.retails.Retail6.MetaTiles.Bricks
 import icesword.editor.retails.Retail6.MetaTiles.BrownHouse
 import icesword.editor.retails.Retail6.MetaTiles.Fence
 import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
+import icesword.editor.retails.Retail6.MetaTiles.Ladder
 import icesword.editor.retails.Retail6.MetaTiles.Pavement
 import icesword.editor.retails.Retail6.MetaTiles.TunnelBricksFloor
 import icesword.editor.retails.Retail6.MetaTiles.TunnelPlateFloor
@@ -169,54 +171,96 @@ private val brownHouseTiles = object : HouseTiles {
     override val supportRightInner: Int = 73
 }
 
-class HouseTileGenerator(
-    private val house: House,
-    private val houseTiles: HouseTiles,
-) : TileGenerator {
-    override fun buildTile(context: TileGeneratorContext): Int? = context.run {
-        when {
-            // House / house
+val bricksTileGenerator = TileGenerator.chained(
+    object : TileGenerator {
+        override fun buildTile(context: TileGeneratorContext): Int? = context.run {
+            when {
+                // Bricks / pavement
 
-            containsAll(house.topLeft, house.bottomLeftOuter) -> houseTiles.bottomLeftOuterWall
-            containsAll(house.topCenter, house.bottomLeftInner) -> houseTiles.bottomLeftInner
-            containsAll(house.topCenter, house.bottomCenter) -> houseTiles.bottomCenter
-            containsAll(house.topRight, house.bottomRight) -> houseTiles.bottomRight
+                containsAll(Bricks.center, Pavement.left) -> 110
+                containsAll(Bricks.left, Pavement.rightOuter) -> 203
 
-            containsAll(house.topCenter, house.bottomLeftOuter) -> houseTiles.bottomLeftOuterRooftop
-            containsAll(house.topCenter, house.bottomRight) -> houseTiles.bottomRightRooftop
+                // Bricks / plate
 
-            // House / fence
+                containsAll(Bricks.topLeft, BackWall.plate) -> 106
+                containsAll(Bricks.topRight, BackWall.plate) -> 105
+                containsAll(Bricks.left, BackWall.plate) -> 114
+                containsAll(Bricks.bottomLeft, BackWall.plate) -> 116
 
-            containsAll(house.leftOuter, Fence.top) -> houseTiles.leftFence
-            containsAll(house.bottomLeftOuter, Fence.bottom) -> houseTiles.bottomLeftFence
-
-            containsAll(house.right, Fence.top) -> houseTiles.rightFence
-            containsAll(house.bottomRight, Fence.bottom) -> houseTiles.bottomRightFence
-
-            // House / pavement
-
-            containsAll(house.bottomLeftOuter, Pavement.center) -> houseTiles.bottomLeftOuterPavement
-            containsAll(house.bottomLeftInner, Pavement.center) -> houseTiles.bottomLeftInnerPavement
-            containsAll(house.bottomCenter, Pavement.center) -> houseTiles.bottomCenterPavement
-            containsAll(house.bottomRight, Pavement.center) -> houseTiles.bottomRightPavement
-
-            // House / horizontal roof
-
-            containsAll(house.leftInner, HorizontalRoof.supportLeft) -> houseTiles.supportLeft
-            containsAll(house.center, HorizontalRoof.shadow) -> houseTiles.shadow
-            containsAll(house.right, HorizontalRoof.supportRightInner) -> houseTiles.supportRightInner
-
-            else -> null
+                else -> null
+            }
         }
-    }
-}
+    },
+    TileGenerator.forwardAll(
+        Bricks.topCenter,
+        Bricks.center,
+        Bricks.concaveBottomRight,
+    )
+)
 
-private val whiteHouseTileGenerator = HouseTileGenerator(
+fun buildHouseTileGenerator(
+    house: House,
+    houseTiles: HouseTiles,
+): TileGenerator = TileGenerator.chained(
+    object : TileGenerator {
+        override fun buildTile(context: TileGeneratorContext): Int? = context.run {
+            when {
+                // House / house
+
+                containsAll(house.topLeft, house.bottomLeftOuter) -> houseTiles.bottomLeftOuterWall
+                containsAll(house.topCenter, house.bottomLeftInner) -> houseTiles.bottomLeftInner
+                containsAll(house.topCenter, house.bottomCenter) -> houseTiles.bottomCenter
+                containsAll(house.topRight, house.bottomRight) -> houseTiles.bottomRight
+
+                containsAll(house.topCenter, house.bottomLeftOuter) -> houseTiles.bottomLeftOuterRooftop
+                containsAll(house.topCenter, house.bottomRight) -> houseTiles.bottomRightRooftop
+
+                // House / fence
+
+                containsAll(house.leftOuter, Fence.top) -> houseTiles.leftFence
+                containsAll(house.bottomLeftOuter, Fence.bottom) -> houseTiles.bottomLeftFence
+
+                containsAll(house.right, Fence.top) -> houseTiles.rightFence
+                containsAll(house.bottomRight, Fence.bottom) -> houseTiles.bottomRightFence
+
+                // House / pavement
+
+                containsAll(house.bottomLeftOuter, Pavement.center) -> houseTiles.bottomLeftOuterPavement
+                containsAll(house.bottomLeftInner, Pavement.center) -> houseTiles.bottomLeftInnerPavement
+                containsAll(house.bottomCenter, Pavement.center) -> houseTiles.bottomCenterPavement
+                containsAll(house.bottomRight, Pavement.center) -> houseTiles.bottomRightPavement
+
+                // House / horizontal roof
+
+                containsAll(house.leftInner, HorizontalRoof.supportLeft) -> houseTiles.supportLeft
+                containsAll(house.center, HorizontalRoof.shadow) -> houseTiles.shadow
+                containsAll(house.right, HorizontalRoof.supportRightInner) -> houseTiles.supportRightInner
+
+                else -> null
+            }
+        }
+    },
+    TileGenerator.forwardAll(
+        house.topLeft,
+        house.topCenter,
+        house.topRight,
+        house.leftOuter,
+        house.leftInner,
+        house.center,
+        house.right,
+        house.bottomLeftOuter,
+        house.bottomLeftInner,
+        house.bottomCenter,
+        house.bottomRight,
+    ),
+)
+
+private val whiteHouseTileGenerator = buildHouseTileGenerator(
     house = WhiteHouse,
     houseTiles = whiteHouseTiles,
 )
 
-private val brownHouseTileGenerator = HouseTileGenerator(
+private val brownHouseTileGenerator = buildHouseTileGenerator(
     house = BrownHouse,
     houseTiles = brownHouseTiles,
 )
@@ -228,6 +272,51 @@ private val tunnelTubeTileGenerator = TileGenerator.forwardAll(
     TunnelTube.left,
     TunnelTube.center,
     TunnelTube.right,
+)
+
+private val ladderTileGenerator = TileGenerator.chained(
+    object : TileGenerator {
+        override fun buildTile(context: TileGeneratorContext): Int? = context.run {
+            when {
+                // Plate / ladder
+
+                containsAll(BackWall.plate, Ladder.center) -> 165
+                containsAll(BackWall.plate, Ladder.bottom) -> 166
+
+                // Tunnel tube / ladder
+
+                containsAll(TunnelTube.topCenter, Ladder.top) -> 139
+                containsAll(TunnelTube.center, Ladder.center) -> 143
+
+                else -> null
+            }
+        }
+    },
+    TileGenerator.forwardAll(
+        Ladder.top,
+        Ladder.center,
+        Ladder.bottom,
+    ),
+)
+
+private val pavementTileGenerator = TileGenerator.chained(
+    object : TileGenerator {
+        override fun buildTile(context: TileGeneratorContext): Int? = context.run {
+            when {
+                // Pavement / fence
+
+                containsAll(Pavement.center, Fence.bottom) -> 27
+
+                else -> null
+            }
+        }
+    },
+    TileGenerator.forwardAll(
+        Pavement.left,
+        Pavement.center,
+        Pavement.rightInner,
+        Pavement.rightOuter,
+    ),
 )
 
 private val tunnelFloorTileGenerator = TileGenerator.chained(
@@ -259,20 +348,7 @@ private val tunnelFloorTileGenerator = TileGenerator.chained(
 )
 
 private val retailTileGenerator = object : TileGenerator {
-    override fun buildTile(context: TileGeneratorContext): Int? = context.run {
-        when {
-            // Bricks / pavement
-
-            containsAll(Bricks.center, Pavement.left) -> 110
-            containsAll(Bricks.left, Pavement.rightOuter) -> 203
-
-            // Pavement / fence
-
-            containsAll(Pavement.center, Fence.bottom) -> 27
-
-            else -> null
-        }
-    }
+    override fun buildTile(context: TileGeneratorContext): Int? = null
 }
 
 object Retail6 : Retail(naturalIndex = 6) {
@@ -331,8 +407,6 @@ object Retail6 : Retail(naturalIndex = 6) {
             val center = MetaTile(110)
 
             val bottomLeft = MetaTile(116)
-
-            val concaveTopRight = MetaTile(200)
 
             val concaveBottomRight = MetaTile(115)
         }
@@ -435,6 +509,10 @@ object Retail6 : Retail(naturalIndex = 6) {
             val right = MetaTile(137)
         }
 
+        object BackWall {
+            val plate = MetaTile(128)
+        }
+
         val death = MetaTile(145)
     }
 
@@ -442,11 +520,14 @@ object Retail6 : Retail(naturalIndex = 6) {
         listOf(bricksPattern)
 
     override val tileGenerator: TileGenerator = TileGenerator.chained(
+        ladderTileGenerator,
         horizontalRoofTileGenerator,
         whiteHouseTileGenerator,
+        brownHouseTileGenerator,
         tunnelTubeTileGenerator,
         tunnelFloorTileGenerator,
-        brownHouseTileGenerator,
+        bricksTileGenerator,
+        pavementTileGenerator,
         retailTileGenerator,
     )
 }

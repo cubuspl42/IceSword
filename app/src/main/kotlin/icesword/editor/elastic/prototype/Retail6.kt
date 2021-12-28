@@ -13,6 +13,7 @@ import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail6
 import icesword.editor.retails.Retail6.MetaTiles
+import icesword.editor.retails.Retail6.MetaTiles.BackWall
 import icesword.editor.retails.Retail6.MetaTiles.BrownHouse
 import icesword.editor.retails.Retail6.MetaTiles.Fence
 import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
@@ -404,6 +405,22 @@ object Retail6SewerPrototype : ElasticPrototype() {
         ),
         staticHeight = 2,
     )
+
+    override fun buildGenerator(retail: Retail) = generator
+}
+
+@Serializable
+@SerialName("Retail6Plate")
+object Retail6PlatePrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(2, 2)
+
+    private val generator = ElasticRectangularPattern(
+        center = ElasticRectangularFragment.ofSingle(
+            BackWall.plate,
+        ),
+        centerHorizontalRepeatingWidth = 1,
+        centerVerticalRepeatingHeight = 1,
+    ).toElasticGenerator()
 
     override fun buildGenerator(retail: Retail) = generator
 }
