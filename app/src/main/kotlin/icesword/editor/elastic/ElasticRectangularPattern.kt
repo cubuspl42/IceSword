@@ -18,10 +18,13 @@ data class ElasticRectangularFragment(
     val height: Int,
 ) {
     companion object {
-        fun empty() = ElasticRectangularFragment(
+        fun empty(
+            wapObject: WapObjectPropsData? = null,
+        ) = ElasticRectangularFragment(
             metaTiles = emptyList(),
             width = 0,
             height = 0,
+            wapObject = wapObject,
         )
 
         fun ofSingle(metaTile: MetaTile) = ElasticRectangularFragment(

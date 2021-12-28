@@ -14,6 +14,7 @@ import icesword.editor.retails.Retail6.MetaTiles.Fence
 import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
 import icesword.editor.retails.Retail6.MetaTiles.Pavement
+import icesword.editor.retails.Retail6.MetaTiles.TunnelTube
 import icesword.editor.retails.Retail6.MetaTiles.WhiteHouse
 
 private val bricksPattern = object : KnotStructurePattern(
@@ -218,6 +219,15 @@ private val brownHouseTileGenerator = HouseTileGenerator(
     houseTiles = brownHouseTiles,
 )
 
+private val tunnelTubeTileGenerator = TileGenerator.forwardAll(
+    TunnelTube.topLeft,
+    TunnelTube.topCenter,
+    TunnelTube.topRight,
+    TunnelTube.left,
+    TunnelTube.center,
+    TunnelTube.right,
+)
+
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         when {
@@ -368,6 +378,20 @@ object Retail6 : Retail(naturalIndex = 6) {
 
             override val bottomRight: MetaTile = MetaTile(brownHouseTiles.bottomRight)
         }
+
+        object TunnelTube {
+            val topLeft = MetaTile(138)
+
+            val topCenter = MetaTile(163)
+
+            val topRight = MetaTile(140)
+
+            val left = MetaTile(142)
+
+            val center = MetaTile(147)
+
+            val right = MetaTile(144)
+        }
     }
 
     override val knotStructurePatterns: List<KnotStructurePattern> =
@@ -376,6 +400,7 @@ object Retail6 : Retail(naturalIndex = 6) {
     override val tileGenerator: TileGenerator = TileGenerator.chained(
         horizontalRoofTileGenerator,
         whiteHouseTileGenerator,
+        tunnelTubeTileGenerator,
         brownHouseTileGenerator,
         retailTileGenerator,
     )

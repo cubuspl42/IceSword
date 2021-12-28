@@ -2,6 +2,8 @@ package icesword.editor.elastic.prototype
 
 import icesword.editor.ElasticGenerator
 import icesword.editor.ElasticMetaTilesGenerator
+import icesword.editor.MetaTile
+import icesword.editor.WapObjectPropsData
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.ElasticRectangularFragment
@@ -15,6 +17,7 @@ import icesword.editor.retails.Retail6.MetaTiles.Fence
 import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
 import icesword.editor.retails.Retail6.MetaTiles.Pavement
+import icesword.editor.retails.Retail6.MetaTiles.TunnelTube
 import icesword.editor.retails.Retail6.MetaTiles.WhiteHouse
 import icesword.geometry.IntSize
 import kotlinx.serialization.SerialName
@@ -180,4 +183,77 @@ object Retail6WhiteHousePrototype : Retail6HousePrototype() {
 @SerialName("Retail6BrownHouse")
 object Retail6BrownHousePrototype : Retail6HousePrototype() {
     override val house: House = BrownHouse
+}
+
+@Serializable
+@SerialName("Retail6TunnelTube")
+object Retail6TunnelTubePrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(3, 2)
+
+    private val generator = ElasticGenerator.fromVerticalPattern(
+        top = ElasticRectangularFragment(
+            metaTiles = listOf(
+                TunnelTube.topLeft, TunnelTube.topCenter, TunnelTube.topRight,
+            ),
+            width = 3,
+            height = 1,
+        ),
+        center = ElasticRectangularFragment(
+            metaTiles = listOf(
+                TunnelTube.left, TunnelTube.center, TunnelTube.right,
+            ),
+            width = 3,
+            height = 1,
+        ),
+        staticWidth = 3,
+    )
+
+    override fun buildGenerator(retail: Retail) = generator
+}
+
+
+@Serializable
+@SerialName("Retail6TunnelTubeCover")
+object Retail6TunnelTubeCoverPrototype : ElasticPrototype() {
+    val tubeCover = WapObjectPropsData(
+        x = 96,
+        y = 53,
+        z = 8000,
+        i = -1,
+        logic = "DoNothingNormal",
+        imageSet = "LEVEL_HORIZONTALTUBEALL",
+    )
+
+    override val defaultSize: IntSize = IntSize(3, 2)
+
+    private val generator = ElasticGenerator.fromVerticalPattern(
+        center = ElasticRectangularFragment(
+            metaTiles = List(3) { MetaTile.None },
+            width = 3,
+            height = 1,
+            wapObject = tubeCover,
+        ),
+        staticWidth = 3,
+    )
+
+    override fun buildGenerator(retail: Retail) = generator
+}
+
+
+@Serializable
+@SerialName("Retail6TunnelTubeCoverGap")
+object Retail6TunnelTubeCoverGapPrototype : ElasticPrototype() {
+    override val defaultSize: IntSize = IntSize(3, 2)
+
+    private val generator = ElasticGenerator.fromVerticalPattern(
+        center = ElasticRectangularFragment(
+            metaTiles = List(6) { MetaTile.None },
+            width = 3,
+            height = 2,
+            wapObject = Retail6TunnelTubeCoverPrototype.tubeCover,
+        ),
+        staticWidth = 3,
+    )
+
+    override fun buildGenerator(retail: Retail) = generator
 }
