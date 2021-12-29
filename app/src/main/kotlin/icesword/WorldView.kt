@@ -1,7 +1,6 @@
 package icesword
 
 
-import TextureBank
 import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
 import icesword.editor.InsertWapObjectCommand
@@ -15,16 +14,13 @@ import icesword.frp.DynamicSet
 import icesword.frp.DynamicView
 import icesword.frp.Stream
 import icesword.frp.Till
-import icesword.frp.associateWith
 import icesword.frp.contentDynamicView
 import icesword.frp.dynamic_list.DynamicList
-import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.mapNotNull
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.mapTillRemoved
-import icesword.frp.reactIndefinitely
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
 import icesword.frp.switchMapNotNull
@@ -45,7 +41,6 @@ import icesword.html.onMouseUp
 import icesword.html.onWheel
 import icesword.html.trackMousePosition
 import icesword.scene.FloorSpikeRowNode
-import icesword.scene.HybridNode
 import icesword.scene.KnotMeshUi
 import icesword.scene.Layer
 import icesword.scene.Scene
@@ -71,11 +66,13 @@ import kotlin.math.roundToInt
 
 fun worldView(
     rezIndex: RezIndex,
-    textureBank: TextureBank,
+    textureBank: RezTextureBank,
     dialogOverlay: DialogOverlay,
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
+    val editorTextureBank = editor.editorTextureBank
+
     val world = editor.world
 
     val root = createHTMLElementRaw("div").apply {
@@ -180,6 +177,7 @@ fun worldView(
             editor.wapObjectAlikeInsertionMode.switchMapNotNull { insertionMode ->
                 insertionMode.wapObjectPreview.mapNested {
                     WapSpriteNode(
+                        editorTextureBank = editorTextureBank,
                         textureBank = textureBank,
                         wapSprite = it,
                         alpha = 0.4,
@@ -205,6 +203,11 @@ fun worldView(
             tillDetach = tillDetach,
         )
 
+        val tileset = textureBank.buildTileset(
+            rezIndex = editor.rezIndex,
+            retail = editor.retail,
+        )
+
         val planeLayer = Layer(
             textureBank = textureBank,
             viewTransform = dynamicViewTransform,
@@ -214,13 +217,13 @@ fun worldView(
                         DynamicSet.of(
                             setOf(
                                 TileLayer(
-                                    tileset = textureBank.tileset,
+                                    tileset = tileset,
                                     tiles = DynamicView.static(
                                         OffsetTilesView(IntVec2.ZERO, world.tileLayer.tiles),
                                     ),
                                 ),
                                 TileLayer(
-                                    tileset = textureBank.tileset,
+                                    tileset = tileset,
                                     tiles = world.tiles.contentDynamicView.map {
                                         OffsetTilesView(IntVec2.ZERO, it)
                                     },
@@ -229,18 +232,21 @@ fun worldView(
                         ),
                         world.wapObjects.mapTillRemoved(tillAbort = tillDetach) { wapObject, _ ->
                             WapSpriteNode(
+                                editorTextureBank = editorTextureBank,
                                 textureBank = textureBank,
                                 wapSprite = wapObject.sprite,
                             )
                         },
                         world.horizontalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
                             WapSpriteNode(
+                                editorTextureBank = editorTextureBank,
                                 textureBank = textureBank,
                                 wapSprite = elevator.wapSprite,
                             )
                         },
                         world.verticalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
                             WapSpriteNode(
+                                editorTextureBank = editorTextureBank,
                                 textureBank = textureBank,
                                 wapSprite = elevator.wapSprite,
                             )

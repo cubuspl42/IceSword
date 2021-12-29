@@ -1,6 +1,5 @@
 package icesword
 
-import TextureBank
 import icesword.editor.Enemy
 import icesword.editor.PickupKind
 import icesword.frp.Cell
@@ -35,7 +34,7 @@ import kotlinx.css.px
 
 fun createEditEnemyDialog(
     rezIndex: RezIndex,
-    textureBank: TextureBank,
+    textureBank: RezTextureBank,
     enemy: Enemy,
 ): HTMLWidgetB<Dialog> {
     fun createPickupImage(pickupKind: PickupKind): HTMLWidget {
@@ -46,7 +45,7 @@ fun createEditEnemyDialog(
             i = -1,
         )!!
 
-        val texture = textureBank.getImageTexture(imageMetadata)!!
+        val texture = textureBank.getImageTexture(imageMetadata.pidPath)!!
 
         return HTMLWidget.of(
             createWrapper(

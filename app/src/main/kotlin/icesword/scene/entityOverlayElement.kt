@@ -1,6 +1,6 @@
 package icesword.scene
 
-import TextureBank
+import icesword.RezTextureBank
 import icesword.RezIndex
 import icesword.editor.CrateStack
 import icesword.editor.Editor
@@ -20,7 +20,7 @@ import icesword.geometry.DynamicTransform
 
 fun createEntityNode(
     rezIndex: RezIndex,
-    textureBank: TextureBank,
+    textureBank: RezTextureBank,
     editor: Editor,
     viewTransform: DynamicTransform,
     entity: Entity,

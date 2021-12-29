@@ -1,6 +1,6 @@
 package icesword.scene
 
-import TextureBank
+import icesword.RezTextureBank
 import icesword.editor.Editor
 import icesword.editor.Rope
 import org.w3c.dom.svg.SVGElement
@@ -10,8 +10,9 @@ class RopeNode(
     private val rope: Rope,
 ) : HybridNode() {
     override fun buildCanvasNode(
-        textureBank: TextureBank,
+        textureBank: RezTextureBank,
     ): CanvasNode = WapSpriteNode(
+        editorTextureBank = editor.editorTextureBank,
         textureBank = textureBank,
         wapSprite = rope.wapSprite,
     )

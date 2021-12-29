@@ -1,6 +1,6 @@
 package icesword.scene
 
-import TextureBank
+import icesword.RezTextureBank
 import icesword.RezIndex
 import icesword.editor.Editor
 import icesword.editor.Enemy
@@ -26,13 +26,14 @@ import org.w3c.dom.svg.SVGElement
 
 class EnemyNode(
     private val rezIndex: RezIndex,
-    private val textureBank: TextureBank,
+    private val textureBank: RezTextureBank,
     private val editor: Editor,
     private val enemy: Enemy,
 ) : HybridNode() {
     override fun buildCanvasNode(
-        textureBank: TextureBank,
+        textureBank: RezTextureBank,
     ): CanvasNode = WapSpriteNode(
+        editorTextureBank = editor.editorTextureBank,
         textureBank = textureBank,
         wapSprite = enemy.wapSprite,
     )
@@ -73,7 +74,7 @@ class EnemyNode(
                 i = -1,
             )!!
 
-            val texture = textureBank.getImageTexture(imageMetadata)!!
+            val texture = textureBank.getImageTexture(imageMetadata.pidPath)!!
 
             return HTMLWidget.of(
                 createWrapper(

@@ -1,6 +1,6 @@
 package icesword.ui
 
-import TextureBank
+import icesword.RezTextureBank
 import icesword.RezIndex
 import icesword.editor.PickupKind
 import icesword.frp.Cell
@@ -10,7 +10,7 @@ import icesword.html.createWrapper
 
 fun createPickupImage(
     rezIndex: RezIndex,
-    textureBank: TextureBank,
+    textureBank: RezTextureBank,
     pickupKind: PickupKind,
 ): HTMLWidget {
     val imageSetId = pickupKind.imageSetId
@@ -20,7 +20,7 @@ fun createPickupImage(
         i = -1,
     )!!
 
-    val texture = textureBank.getImageTexture(imageMetadata)!!
+    val texture = textureBank.getImageTexture(imageMetadata.pidPath)!!
 
     return HTMLWidget.of(
         createWrapper(

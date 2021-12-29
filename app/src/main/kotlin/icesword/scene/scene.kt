@@ -1,6 +1,6 @@
 package icesword.scene
 
-import TextureBank
+import icesword.RezTextureBank
 import icesword.html.createHTMLElementRaw
 import icesword.html.createSvgGroup
 import icesword.html.createSvgRoot
@@ -22,6 +22,7 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.html.createSvgGroupDl
+import icesword.loadImageBitmap
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.css.BackgroundRepeat
@@ -42,6 +43,26 @@ data class Texture(
     val imageBitmap: ImageBitmap,
     val sourceRect: IntRect,
 ) {
+    companion object {
+         suspend fun load(imagePath: String): Texture {
+            val imageBitmap = loadImageBitmap(imagePath = imagePath)!!
+
+            val texture = Texture(
+                path = imagePath,
+                imageBitmap = imageBitmap,
+                sourceRect = IntRect(
+                    position = IntVec2.ZERO,
+                    size = IntSize(
+                        width = imageBitmap.width,
+                        height = imageBitmap.height,
+                    ),
+                )
+            )
+
+            return texture
+        }
+    }
+
     fun createImage(
         width: Int? = null,
         height: Int? = null,
@@ -90,7 +111,7 @@ abstract class HybridNode {
     )
 
     open fun buildCanvasNode(
-        textureBank: TextureBank,
+        textureBank: RezTextureBank,
     ): CanvasNode = NoopCanvasNode()
 
     open fun buildOverlayElement(
@@ -117,7 +138,7 @@ abstract class HybridNode {
 typealias BuildOverlayElements = (SVGSVGElement) -> DynamicSet<SVGElement>
 
 class Layer(
-    textureBank: TextureBank,
+    textureBank: RezTextureBank,
     private val viewTransform: DynamicTransform,
     nodes: DynamicSet<CanvasNode>,
     private val buildOverlayElements: BuildOverlayElements? = null,

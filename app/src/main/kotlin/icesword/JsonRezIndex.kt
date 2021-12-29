@@ -26,7 +26,7 @@ class JsonRezIndex(
         private fun buildImageMetadata(data: ImageMetadataData): ImageMetadata {
             val offset = IntVec2(data.offset[0], data.offset[1])
             return ImageMetadata(
-                pidImagePath = data.path,
+                pidPath = RezPath(data.path),
                 offset = offset,
                 size = IntSize.ZERO,
             )

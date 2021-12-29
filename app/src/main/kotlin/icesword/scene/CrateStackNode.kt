@@ -1,6 +1,6 @@
 package icesword.scene
 
-import TextureBank
+import icesword.RezTextureBank
 import icesword.editor.CrateStack
 import icesword.editor.Editor
 import icesword.frp.dynamic_list.DynamicList
@@ -12,12 +12,13 @@ class CrateStackNode(
     private val crateStack: CrateStack,
 ) : HybridNode() {
     override fun buildCanvasNode(
-        textureBank: TextureBank,
+        textureBank: RezTextureBank,
     ): CanvasNode = GroupCanvasNode(
         children = DynamicList.diff(
             crateStack.outputStack.map { outputStack ->
                 outputStack.crates.map { crate ->
                     WapSpriteNode(
+                        editorTextureBank = editor.editorTextureBank,
                         textureBank = textureBank,
                         wapSprite = crate.wapSprite,
                     )

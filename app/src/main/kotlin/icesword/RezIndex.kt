@@ -1,6 +1,5 @@
 package icesword
 
-import TextureBank
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 
@@ -13,7 +12,7 @@ value class ImageSetId(
 }
 
 data class ImageMetadata(
-    val pidImagePath: String,
+    val pidPath: RezPath,
     val offset: IntVec2,
     val size: IntSize,
 )
@@ -28,7 +27,7 @@ interface RezIndex {
 /// REZ index combining information from `rezIndex.json` and textures' metadata
 class CombinedRezIndex(
     private val delegate: JsonRezIndex,
-    private val textureBank: TextureBank,
+    private val textureBank: RezTextureBank,
 ) : RezIndex {
     override fun getImageMetadata(
         imageSetId: ImageSetId,
@@ -39,7 +38,7 @@ class CombinedRezIndex(
             i = i,
         )?.let { metadata ->
             val textureOrNull = textureBank.getImageTexture(
-                pidImagePath = metadata.pidImagePath,
+                pidPath = metadata.pidPath,
             )
 
             val size = textureOrNull?.sourceRect?.size ?: IntSize.ZERO

@@ -11,19 +11,6 @@ import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 
-sealed interface Foo<T> {
-    class Bar<T> : Foo<T>
-    class Baz<T> : Foo<T>
-}
-
-fun <T> f(foo: Foo<T>) {
-    when (foo) {
-        is Foo.Bar -> TODO()
-        is Foo.Baz -> TODO()
-    }
-
-}
-
 interface SelectModeFactory<
         SubAreaSelectingMode,
         > {

@@ -1,7 +1,9 @@
 package icesword.editor
 
 import fetchWorld
+import icesword.EditorTextureBank
 import icesword.JsonRezIndex
+import icesword.RezTextureBank
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail6
 import icesword.frp.Cell
@@ -10,6 +12,7 @@ import icesword.frp.MutCell
 import icesword.frp.Stream
 import icesword.frp.StreamSink
 import icesword.frp.map
+import icesword.loadGameTextureBank
 import icesword.wwd.Wwd
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -37,11 +40,18 @@ interface NewProjectContext {
 
 class App(
     private val jsonRezIndex: JsonRezIndex,
+    private val editorTextureBank: EditorTextureBank,
     initialEditor: Editor,
 ) : CoroutineScope by MainScope() {
     companion object {
         suspend fun load(): App {
             val jsonRezIndex = JsonRezIndex.load()
+
+            val gameTextureBank = loadGameTextureBank()
+
+            val editorTextureBank = EditorTextureBank.load(
+                gameTextureBank = gameTextureBank,
+            )
 
             val wwdWorld: Wwd.World = fetchWorld(
                 retail = Retail6,
@@ -49,11 +59,13 @@ class App(
 
             val editor = Editor.importWwd(
                 jsonRezIndex = jsonRezIndex,
+                editorTextureBank = editorTextureBank,
                 wwdWorld = wwdWorld,
             )
 
             return App(
                 jsonRezIndex = jsonRezIndex,
+                editorTextureBank = editorTextureBank,
                 initialEditor = editor,
             )
         }
@@ -90,6 +102,7 @@ class App(
                             setUpEditor {
                                 Editor.createProject(
                                     jsonRezIndex = jsonRezIndex,
+                                    editorTextureBank = editorTextureBank,
                                     retail = retail,
                                 )
                             }
@@ -129,6 +142,7 @@ class App(
 
         val editor = Editor.importWwd(
             jsonRezIndex = jsonRezIndex,
+            editorTextureBank = editorTextureBank,
             wwdWorld = world,
         )
 
@@ -142,6 +156,7 @@ class App(
 
         val editor = Editor.loadProject(
             jsonRezIndex = jsonRezIndex,
+            editorTextureBank = editorTextureBank,
             projectData = projectData,
         )
 

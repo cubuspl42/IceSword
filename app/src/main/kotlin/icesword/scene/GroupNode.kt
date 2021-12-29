@@ -1,6 +1,6 @@
 package icesword.scene
 
-import TextureBank
+import icesword.RezTextureBank
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.mapNotNull
 import icesword.frp.dynamic_list.toDynamicSet
@@ -12,7 +12,7 @@ open class GroupNode(
     private val children: DynamicList<HybridNode>,
 ) : HybridNode() {
     override fun buildCanvasNode(
-        textureBank: TextureBank,
+        textureBank: RezTextureBank,
     ): CanvasNode = GroupCanvasNode(
         // Should these children be pinned? (mapTillRemoved or something)
         children = children.mapNotNull {

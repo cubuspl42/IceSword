@@ -1,6 +1,6 @@
 package icesword.scene
 
-import TextureBank
+import icesword.RezTextureBank
 import icesword.RezIndex
 import icesword.TILE_SIZE
 import icesword.editor.Editor
@@ -106,10 +106,11 @@ class ElasticNode(
     private val viewTransform: DynamicTransform,
 ) : HybridNode() {
     override fun buildCanvasNode(
-        textureBank: TextureBank,
+        textureBank: RezTextureBank,
     ): CanvasNode = GroupCanvasNode(
         children = elastic.wapObjectSprites.map {
             WapSpriteNode(
+                editorTextureBank = editor.editorTextureBank,
                 textureBank = textureBank,
                 wapSprite = it,
             )

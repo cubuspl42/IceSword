@@ -1,6 +1,5 @@
 package icesword
 
-import TextureBank
 import icesword.editor.App
 import icesword.html.createHTMLElementRaw
 import icesword.editor.Editor
@@ -12,7 +11,7 @@ import org.w3c.dom.HTMLElement
 
 fun editorView(
     rezIndex: RezIndex,
-    textureBank: TextureBank,
+    textureBank: RezTextureBank,
     dialogOverlay: DialogOverlay,
     app: App,
     editor: Editor,
@@ -88,7 +87,7 @@ fun editorView(
 
 private fun setupEditDialogController(
     rezIndex: RezIndex,
-    textureBank: TextureBank,
+    textureBank: RezTextureBank,
     editor: Editor,
     dialogOverlay: DialogOverlay,
     tillDetach: Till,

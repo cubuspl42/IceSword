@@ -1,10 +1,11 @@
 package icesword.editor
 
-import TextureBank
 import fetchWorld
 import icesword.CombinedRezIndex
+import icesword.EditorTextureBank
 import icesword.JsonRezIndex
 import icesword.RezIndex
+import icesword.RezTextureBank
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
@@ -31,6 +32,7 @@ import icesword.frp.switchMap
 import icesword.frp.switchMapNotNull
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
+import icesword.loadRetailTextureBank
 import icesword.wwd.DumpWwd.dumpWwd
 import icesword.wwd.OutputDataStream.OutputStream
 import icesword.wwd.Wwd
@@ -51,7 +53,8 @@ enum class Tool : EditorMode {
 
 class Editor(
     val rezIndex: RezIndex,
-    val textureBank: TextureBank,
+    val editorTextureBank: EditorTextureBank,
+    val textureBank: RezTextureBank,
     val world: World,
     // FIXME: Manage Editor's lifetime
     tillDispose: Till = Till.never,
@@ -59,11 +62,16 @@ class Editor(
     companion object {
         suspend fun createProject(
             jsonRezIndex: JsonRezIndex,
+            editorTextureBank: EditorTextureBank,
             retail: Retail,
         ): Editor {
-            val textureBank = TextureBank.load(
-                rezIndex = jsonRezIndex,
+            val retailTextureBank = loadRetailTextureBank(
                 retail = retail,
+            )
+
+            val textureBank = RezTextureBank.chained(
+                textureBank1 = retailTextureBank,
+                textureBank2 = editorTextureBank.gameTextureBank,
             )
 
             val combinedRezIndex = CombinedRezIndex(
@@ -83,6 +91,7 @@ class Editor(
 
             return Editor(
                 rezIndex = combinedRezIndex,
+                editorTextureBank = editorTextureBank,
                 textureBank = textureBank,
                 world = world,
             )
@@ -90,15 +99,20 @@ class Editor(
 
         suspend fun importWwd(
             jsonRezIndex: JsonRezIndex,
+            editorTextureBank: EditorTextureBank,
             wwdWorld: Wwd.World,
         ): Editor {
             val worldImporter = World.importWwd(
                 wwdWorld = wwdWorld,
             )
 
-            val textureBank = TextureBank.load(
-                rezIndex = jsonRezIndex,
+            val retailTextureBank = loadRetailTextureBank(
                 retail = worldImporter.retail,
+            )
+
+            val textureBank = RezTextureBank.chained(
+                textureBank1 = retailTextureBank,
+                textureBank2 = editorTextureBank.gameTextureBank,
             )
 
             val combinedRezIndex = CombinedRezIndex(
@@ -112,6 +126,7 @@ class Editor(
 
             return Editor(
                 rezIndex = combinedRezIndex,
+                editorTextureBank = editorTextureBank,
                 textureBank = textureBank,
                 world = world,
             )
@@ -119,6 +134,7 @@ class Editor(
 
         suspend fun loadProject(
             jsonRezIndex: JsonRezIndex,
+            editorTextureBank: EditorTextureBank,
             projectData: ProjectData,
         ): Editor {
             val worldLoader = World.load(
@@ -127,9 +143,13 @@ class Editor(
 
             val retail = worldLoader.retail
 
-            val textureBank = TextureBank.load(
-                rezIndex = jsonRezIndex,
+            val retailTextureBank = loadRetailTextureBank(
                 retail = retail,
+            )
+
+            val textureBank = RezTextureBank.chained(
+                textureBank1 = retailTextureBank,
+                textureBank2 = editorTextureBank.gameTextureBank,
             )
 
             val combinedRezIndex = CombinedRezIndex(
@@ -148,6 +168,7 @@ class Editor(
 
             return Editor(
                 rezIndex = combinedRezIndex,
+                editorTextureBank = editorTextureBank,
                 textureBank = textureBank,
                 world = world,
             )

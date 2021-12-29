@@ -1,6 +1,7 @@
 package icesword.scene
 
-import TextureBank
+import icesword.EditorTextureBank
+import icesword.RezTextureBank
 import icesword.editor.Editor
 import icesword.editor.Entity
 import icesword.editor.WapObject
@@ -19,14 +20,15 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
 class WapSpriteNode(
-    textureBank: TextureBank,
+    editorTextureBank: EditorTextureBank,
+    textureBank: RezTextureBank,
     private val wapSprite: DynamicWapSprite,
     private val alpha: Double = 1.0,
 ) : CanvasNode {
-    private val dynamicTexture = wapSprite.imageMetadata.map { imageMetadata ->
-        imageMetadata?.let { imageMetadata ->
-            textureBank.getImageTexture(pidImagePath = imageMetadata.pidImagePath)
-        } ?: textureBank.wapObject
+    private val dynamicTexture = wapSprite.imageMetadata.map { imageMetadataOrNull ->
+        imageMetadataOrNull?.let { imageMetadata ->
+            textureBank.getImageTexture(imageMetadata.pidPath)
+        } ?: editorTextureBank.wapObjectPlaceholder
     }
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {

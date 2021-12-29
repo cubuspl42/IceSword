@@ -1,6 +1,6 @@
 package icesword.scene
 
-import TextureBank
+import icesword.RezTextureBank
 import icesword.editor.Editor
 import icesword.editor.FloorSpikeRow
 import icesword.frp.Stream
@@ -15,11 +15,11 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
 class FloorSpikeRowNode(
-    textureBank: TextureBank,
+    textureBank: RezTextureBank,
     private val floorSpikeRow: FloorSpikeRow,
 ) : CanvasNode {
     private val spikeTexture = textureBank.getImageTexture(
-        imageMetadata = floorSpikeRow.spikeImageMetadata,
+        floorSpikeRow.spikeImageMetadata.pidPath,
     )!!
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {

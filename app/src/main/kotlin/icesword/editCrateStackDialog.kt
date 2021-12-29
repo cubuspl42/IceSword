@@ -1,6 +1,5 @@
 package icesword
 
-import TextureBank
 import icesword.editor.CrateStack
 import icesword.editor.PickupKind
 import icesword.frp.Cell
@@ -128,7 +127,7 @@ private sealed interface CrateStackSectionState {
 
 fun createEditCrateStackDialog(
     rezIndex: RezIndex,
-    textureBank: TextureBank,
+    textureBank: RezTextureBank,
     crateStack: CrateStack,
 ): HTMLWidgetB<Dialog> = EditCrateStackDialogObject(
     crateStack = crateStack,
@@ -139,7 +138,7 @@ fun createEditCrateStackDialog(
 class EditCrateStackDialogObject(
     private val crateStack: CrateStack,
     private val rezIndex: RezIndex,
-    private val textureBank: TextureBank,
+    private val textureBank: RezTextureBank,
 ) {
     private fun createPickupDraggable(pickupKind: PickupKind) =
         createWrapperWb(
