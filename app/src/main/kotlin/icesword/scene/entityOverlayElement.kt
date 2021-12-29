@@ -15,6 +15,7 @@ import icesword.editor.PathElevator
 import icesword.editor.Rope
 import icesword.editor.StartPoint
 import icesword.editor.TileEntity
+import icesword.editor.TogglePeg
 import icesword.editor.VerticalElevator
 import icesword.editor.WapObject
 import icesword.geometry.DynamicTransform
@@ -60,5 +61,9 @@ fun createEntityNode(
     is CrumblingPeg -> CrumblingPegNode(
         editor = editor,
         crumblingPeg = entity,
+    )
+    is TogglePeg -> TogglePegNode(
+        editor = editor,
+        togglePeg = entity,
     )
 }

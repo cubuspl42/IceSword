@@ -17,6 +17,7 @@ import icesword.editor.PathElevatorPath
 import icesword.editor.PathElevatorSelectionMode
 import icesword.editor.RopeSelectionMode
 import icesword.editor.SelectionMode
+import icesword.editor.TogglePegSelectionMode
 import icesword.editor.Tool
 import icesword.editor.WapObjectSelectionMode
 import icesword.frp.Cell.Companion.constant
@@ -168,6 +169,7 @@ fun createSelectionModeButtonsRow(
     tillDetach: Till,
 ): HTMLElement? {
     val htmlWidgetB = when (selectionMode) {
+        null -> null
         is KnotMeshSelectionMode -> HTMLWidget.of(
             createKnotMeshSelectionModeButtonsRow(
                 editor = editor,
@@ -200,7 +202,9 @@ fun createSelectionModeButtonsRow(
         is CrumblingPegSelectionMode -> createCrumblingPegSelectionModeButtonsRow(
             selectionMode = selectionMode,
         )
-        null -> null
+        is TogglePegSelectionMode -> createTogglePegSelectionModeButtonsRow(
+            selectionMode = selectionMode,
+        )
     }
 
     return htmlWidgetB?.buildElement(tillDetach = tillDetach)
@@ -452,6 +456,24 @@ fun createCrumblingPegSelectionModeButtonsRow(
     return createRow(
         children = listOf(
             canRespawnButton,
+        ),
+    )
+}
+
+
+fun createTogglePegSelectionModeButtonsRow(
+    selectionMode: TogglePegSelectionMode,
+): HTMLWidgetB<*> {
+    val editTimingButton = createTextButtonWb(
+        text = "Edit timing",
+        onPressed = {
+            selectionMode.editTiming()
+        },
+    )
+
+    return createRow(
+        children = listOf(
+            editTimingButton,
         ),
     )
 }

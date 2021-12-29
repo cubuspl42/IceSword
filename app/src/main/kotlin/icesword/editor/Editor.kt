@@ -14,11 +14,8 @@ import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.EntitySelectMode.EntityAreaSelectingMode
-import icesword.editor.InsertionPrototype.CrateStackInsertionPrototype
-import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
 import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
-import icesword.editor.InsertionPrototype.RopeInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectAlikeInsertionPrototype
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
@@ -342,9 +339,15 @@ class Editor(
     val editWapObjectProperties: Stream<WapObject>
         get() = _editWapObjectProperties
 
+    private val _editTogglePegTiming = StreamSink<TogglePeg>()
+
+    val editTogglePegTiming: Stream<TogglePeg>
+        get() = _editTogglePegTiming
+
     val selectionMode: Cell<SelectionMode?> =
         selectedEntity.map { selectedEntity ->
             when (selectedEntity) {
+                null -> null
                 is PathElevator -> object : PathElevatorSelectionMode {
                     override fun enterEditPathElevatorMode() {
                         this@Editor.enterEditPathElevatorMode()
@@ -394,7 +397,11 @@ class Editor(
                 is CrumblingPeg -> CrumblingPegSelectionMode(
                     crumblingPeg = selectedEntity,
                 )
-                null -> null
+                is TogglePeg -> object : TogglePegSelectionMode {
+                    override fun editTiming() {
+                        _editTogglePegTiming.send(selectedEntity)
+                    }
+                }
             }
         }
 

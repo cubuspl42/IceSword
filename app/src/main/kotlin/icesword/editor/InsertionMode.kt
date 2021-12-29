@@ -113,6 +113,24 @@ sealed interface InsertionPrototype {
         )
     }
 
+    data class TogglePegInsertionPrototype(
+        private val togglePegPrototype: TogglePegPrototype,
+    ) : WapObjectAlikeInsertionPrototype {
+        override val imageSetId: ImageSetId = togglePegPrototype.imageSetId
+
+        override fun buildInserted(
+            context: WapObjectAlikeInsertionPrototype.BuildContext,
+        ): Entity = TogglePeg(
+            rezIndex = context.rezIndex,
+            retail = context.retail,
+            prototype = togglePegPrototype,
+            initialPosition = context.insertionWorldPoint,
+            initialTimeOnMs = 1500,
+            initialTimeOffMs = 1500,
+            initialDelayMs = 0,
+        )
+    }
+
     value class EnemyInsertionPrototype(
         val wapObjectPrototype: WapObjectPrototype,
     ) : InsertionPrototype

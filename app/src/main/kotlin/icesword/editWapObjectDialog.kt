@@ -2,21 +2,11 @@ package icesword
 
 import icesword.editor.WapObject
 import icesword.frp.Cell.Companion.constant
-import icesword.frp.MutCell
 import icesword.frp.Till
-import icesword.frp.update
-import icesword.geometry.IntRect
-import icesword.html.GridStyleDeclaration
-import icesword.html.HTMLWidget
 import icesword.html.HTMLWidgetB
 import icesword.html.createColumnWb
-import icesword.html.createGrid
 import icesword.html.createHeading4Wb
-import icesword.html.createLabel
-import icesword.html.createNumberInput
 import icesword.html.createRow
-import icesword.html.createTextInput
-import kotlinx.css.Align
 import kotlinx.css.px
 
 fun createWapObjectDialog(
@@ -248,128 +238,4 @@ fun createWapObjectDialog(
             ),
         )
     ).build(tillDetach)
-}
-
-data class InputColumnItem(
-    val label: HTMLWidgetB<*>,
-    val input: HTMLWidgetB<*>,
-)
-
-private fun createInputColumn(
-    inputs: List<InputColumnItem>,
-): HTMLWidgetB<HTMLWidget> = createGrid(
-    columnCount = 2,
-    gridStyle = GridStyleDeclaration(
-        alignContent = constant(Align.start),
-        gap = constant(4.px),
-    ),
-    children = inputs.flatMap {
-        listOf(
-            it.label,
-            it.input,
-        )
-    }
-)
-
-private fun createRectangleInputs(
-    labelText: String,
-    property: MutCell<IntRect>,
-): List<InputColumnItem> =
-    listOf(
-        createIntegerInput(
-            labelText = "$labelText / left",
-            initialValue = property.sample().left,
-            onValueChanged = { left ->
-                property.update {
-                    IntRect.fromLtrb(
-                        left = left,
-                        top = it.top,
-                        right = it.right,
-                        bottom = it.bottom,
-                    )
-                }
-            },
-        ),
-        createIntegerInput(
-            labelText = "$labelText / top",
-            initialValue = property.sample().top,
-            onValueChanged = { top ->
-                property.update {
-                    IntRect.fromLtrb(
-                        left = it.left,
-                        top = top,
-                        right = it.right,
-                        bottom = it.bottom,
-                    )
-                }
-            },
-        ),
-        createIntegerInput(
-            labelText = "$labelText / right",
-            initialValue = property.sample().right,
-            onValueChanged = { right ->
-                property.update {
-                    IntRect.fromLtrb(
-                        left = it.left,
-                        top = it.top,
-                        right = right,
-                        bottom = it.bottom,
-                    )
-                }
-            },
-        ),
-        createIntegerInput(
-            labelText = "$labelText / bottom",
-            initialValue = property.sample().bottom,
-            onValueChanged = { bottom ->
-                property.update {
-                    IntRect.fromLtrb(
-                        left = it.left,
-                        top = it.top,
-                        right = it.right,
-                        bottom = bottom,
-                    )
-                }
-            },
-        ),
-    )
-
-private fun createSimpleIntegerInput(
-    labelText: String,
-    property: MutCell<Int>,
-): InputColumnItem = createIntegerInput(
-    labelText = labelText,
-    initialValue = property.sample(),
-    onValueChanged = property::set,
-)
-
-private fun createIntegerInput(
-    labelText: String,
-    initialValue: Int,
-    onValueChanged: (newValue: Int) -> Unit,
-): InputColumnItem {
-    val numberInput = createNumberInput(
-        initialValue = initialValue,
-        onValueChanged = onValueChanged,
-    )
-
-    return InputColumnItem(
-        label = createLabel(labelText),
-        input = numberInput
-    )
-}
-
-private fun createStringInput(
-    labelText: String,
-    property: MutCell<String>,
-): InputColumnItem {
-    val numberInput = createTextInput(
-        initialText = property.sample(),
-        onTextChanged = property::set,
-    )
-
-    return InputColumnItem(
-        label = createLabel(labelText),
-        input = numberInput
-    )
 }

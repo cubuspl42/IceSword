@@ -1,32 +1,32 @@
 package icesword.scene
 
 import icesword.RezTextureBank
-import icesword.editor.CrumblingPeg
 import icesword.editor.Editor
+import icesword.editor.TogglePeg
 import org.w3c.dom.svg.SVGElement
 
-class CrumblingPegNode(
+class TogglePegNode(
     private val editor: Editor,
-    private val crumblingPeg: CrumblingPeg,
+    private val togglePeg: TogglePeg,
 ) : HybridNode() {
     override fun buildCanvasNode(
         textureBank: RezTextureBank,
     ): CanvasNode = WapSpriteNode(
         editorTextureBank = editor.editorTextureBank,
         textureBank = textureBank,
-        wapSprite = crumblingPeg.wapSprite,
+        wapSprite = togglePeg.wapSprite,
     )
 
     override fun buildOverlayElement(
         context: OverlayBuildContext,
     ): SVGElement = context.run {
-        val boundingBox = crumblingPeg.wapSprite.boundingBox
+        val boundingBox = togglePeg.wapSprite.boundingBox
 
         createEntityFrameElement(
             editor = editor,
             svg = svg,
             outer = viewport,
-            entity = crumblingPeg,
+            entity = togglePeg,
             boundingBox = viewTransform.transform(boundingBox),
             tillDetach = tillDetach,
         )

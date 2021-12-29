@@ -82,6 +82,15 @@ object Retail1UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
+            text = "",
+            imagePath = "images/CLAW/LEVEL1/IMAGES/PEG/FRAME001.png",
+            insertionPrototype = InsertionPrototype.TogglePegInsertionPrototype(
+                togglePegPrototype = Retail1.togglePegPrototype,
+            ),
+            tillDetach = tillDetach,
+        ),
+        createInsertEntityButton(
+            editor = editor,
             text = "Elevator (horizontal)",
             imagePath = "images/CLAW/LEVEL1/IMAGES/ELEVATORS/1.png",
             insertionPrototype = InsertionPrototype.HorizontalElevatorInsertionPrototype(

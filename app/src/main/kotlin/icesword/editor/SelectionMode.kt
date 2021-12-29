@@ -35,3 +35,7 @@ interface WapObjectSelectionMode : SelectionMode {
 data class CrumblingPegSelectionMode(
     val crumblingPeg: CrumblingPeg,
 ) : SelectionMode
+
+interface TogglePegSelectionMode : SelectionMode {
+    fun editTiming()
+}

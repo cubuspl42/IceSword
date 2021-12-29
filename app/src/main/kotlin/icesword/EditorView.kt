@@ -135,4 +135,12 @@ private fun setupEditDialogController(
             )
         )
     }
+
+    editor.editTogglePegTiming.reactTill(tillDetach) { togglePeg ->
+        dialogOverlay.showDialog(
+            dialog = createTogglePegDialog(
+                togglePeg = togglePeg,
+            )
+        )
+    }
 }
