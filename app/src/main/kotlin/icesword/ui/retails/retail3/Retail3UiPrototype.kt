@@ -17,6 +17,7 @@ import icesword.editor.elastic.prototype.Retail3DarkSpikesPrototype
 import icesword.editor.elastic.prototype.Retail3LightSpikesPrototype
 import icesword.editor.elastic.prototype.Retail3RockLightPrototype
 import icesword.editor.elastic.prototype.TreeCrownPrototype
+import icesword.editor.retails.Retail1
 import icesword.editor.retails.Retail3
 import icesword.editor.wap_object.prototype.Retail3Health
 import icesword.editor.wap_object.prototype.Retail3PowderKeg
@@ -119,11 +120,22 @@ object Retail3UiPrototype : RetailUiPrototype {
             ),
             tillDetach = tillDetach,
         ),
-        createInsertWapObjectButton(
+        createInsertEntityButton(
             editor = editor,
-            text = "CrumblingPeg",
+            text = "",
             imagePath = "images/CLAW/LEVEL3/IMAGES/CRUMBLINPEG1/FRAME001.png",
-            wapObjectPrototype = WapObjectPrototype.Level3CrumblingPegPrototype,
+            insertionPrototype = InsertionPrototype.CrumblingPegInsertionPrototype(
+                crumblingPegPrototype = Retail3.lightCrumblingPegPrototype,
+            ),
+            tillDetach = tillDetach,
+        ),
+        createInsertEntityButton(
+            editor = editor,
+            text = "",
+            imagePath = "images/CLAW/LEVEL3/IMAGES/CRUMBLINPEG2/FRAME001.png",
+            insertionPrototype = InsertionPrototype.CrumblingPegInsertionPrototype(
+                crumblingPegPrototype = Retail3.darkCrumblingPegPrototype,
+            ),
             tillDetach = tillDetach,
         ),
         createInsertEntityButton(

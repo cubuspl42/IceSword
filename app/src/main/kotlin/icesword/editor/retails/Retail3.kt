@@ -1,6 +1,7 @@
 package icesword.editor.retails
 
 import icesword.ImageSetId
+import icesword.editor.CrumblingPegPrototype
 import icesword.editor.ElevatorPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
@@ -209,4 +210,14 @@ object Retail3 : Retail(naturalIndex = 3), RetailLadderPrototype {
         retail3KnotStructurePatterns
 
     override val tileGenerator: TileGenerator = retailTileGenerator
+
+    val lightCrumblingPegPrototype = CrumblingPegPrototype(
+        imageSetId = ImageSetId(fullyQualifiedId = "LEVEL3_IMAGES_CRUMBLINPEG1"),
+        shortImageSetId = "LEVEL_CRUMBLINPEG1",
+    )
+
+    val darkCrumblingPegPrototype = CrumblingPegPrototype(
+        imageSetId = ImageSetId(fullyQualifiedId = "LEVEL3_IMAGES_CRUMBLINPEG2"),
+        shortImageSetId = "LEVEL_CRUMBLINPEG2",
+    )
 }
