@@ -1,7 +1,10 @@
 package icesword.ui.retails.retail4
 
 import icesword.createInsertElasticButton
+import icesword.createInsertEntityButton
 import icesword.editor.Editor
+import icesword.editor.InsertionPrototype
+import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.elastic.prototype.Retail4CavePrototype
 import icesword.editor.elastic.prototype.Retail4GooPrototype
 import icesword.editor.elastic.prototype.Retail4LadderPrototype
@@ -11,6 +14,7 @@ import icesword.editor.elastic.prototype.Retail4TreePrototype
 import icesword.editor.elastic.prototype.Retail4WideNaturalPlatformPrototype
 import icesword.editor.elastic.prototype.Retail4WoodenPlatformPrototype
 import icesword.editor.retails.Retail4
+import icesword.editor.retails.Retail5
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
 import icesword.ui.retails.RetailUiPrototype
@@ -23,6 +27,15 @@ object Retail4UiPrototype : RetailUiPrototype {
         editor: Editor,
         tillDetach: Till,
     ): List<HTMLElement> = listOf(
+        createInsertEntityButton(
+            editor = editor,
+            text = "",
+            imagePath = "images/CLAW/LEVEL4/IMAGES/CRUMBLINGBUSH/FRAME001.png",
+            insertionPrototype = CrumblingPegInsertionPrototype(
+                crumblingPegPrototype = Retail4.crumblingPegPrototype,
+            ),
+            tillDetach = tillDetach,
+        ),
         createInsertElasticButton(
             editor = editor,
             prototype = Retail4TreeLogPrototype,

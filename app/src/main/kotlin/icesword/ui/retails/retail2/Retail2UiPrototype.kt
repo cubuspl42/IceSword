@@ -2,14 +2,17 @@ package icesword.ui.retails.retail2
 
 import icesword.createInsertElasticButton
 import icesword.createInsertEnemyButton
+import icesword.createInsertEntityButton
 import icesword.createInsertWapObjectButton
 import icesword.editor.elastic.prototype.Retail2DoublePilePrototype
 import icesword.editor.Editor
+import icesword.editor.InsertionPrototype
 import icesword.editor.elastic.prototype.Retail2GooPrototype
 import icesword.editor.elastic.prototype.Retail2PlatformPrototype
 import icesword.editor.elastic.prototype.Retail2SinglePilePrototype
 import icesword.editor.elastic.prototype.Retail2TowerPrototype
 import icesword.editor.elastic.prototype.Retail2TowerTopPrototype
+import icesword.editor.retails.Retail1
 import icesword.editor.retails.Retail2
 import icesword.editor.wap_object.prototype.Retail2Health
 import icesword.editor.wap_object.prototype.LaRauxPrototype
@@ -41,6 +44,15 @@ object Retail2UiPrototype : RetailUiPrototype {
             text = "PowderKeg",
             imagePath = "images/CLAW/LEVEL2/IMAGES/POWDERKEG/FRAME001.png",
             wapObjectPrototype = Retail2PowderKeg,
+            tillDetach = tillDetach,
+        ),
+        createInsertEntityButton(
+            editor = editor,
+            text = "",
+            imagePath = "images/CLAW/LEVEL2/IMAGES/PEGSLIDER/FRAME001.png",
+            insertionPrototype = InsertionPrototype.TogglePegInsertionPrototype(
+                togglePegPrototype = Retail2.togglePegPrototype,
+            ),
             tillDetach = tillDetach,
         ),
         createInsertElasticButton(

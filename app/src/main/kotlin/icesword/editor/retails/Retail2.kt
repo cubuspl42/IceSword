@@ -1,8 +1,10 @@
 package icesword.editor.retails
 
+import icesword.ImageSetId
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
+import icesword.editor.TogglePegPrototype
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.LinearMetaTilePattern
@@ -200,4 +202,9 @@ object Retail2 : Retail(naturalIndex = 2) {
     }
 
     override val tileGenerator: TileGenerator = retailTileGenerator
+
+    val togglePegPrototype = TogglePegPrototype(
+        imageSetId = ImageSetId(fullyQualifiedId = "LEVEL2_IMAGES_PEGSLIDER"),
+        shortImageSetId = "LEVEL_PEGSLIDER",
+    )
 }

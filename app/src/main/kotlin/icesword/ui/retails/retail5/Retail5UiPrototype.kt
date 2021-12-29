@@ -1,8 +1,13 @@
 package icesword.ui.retails.retail5
 
 import icesword.createInsertElasticButton
+import icesword.createInsertEntityButton
 import icesword.createInsertKnotMeshButton
+import icesword.editor.CrumblingPegPrototype
 import icesword.editor.Editor
+import icesword.editor.InsertionPrototype
+import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
+import icesword.editor.InsertionPrototype.TogglePegInsertionPrototype
 import icesword.editor.KnotPrototype
 import icesword.editor.elastic.prototype.Retail5ArchLegPrototype
 import icesword.editor.elastic.prototype.Retail5ArchSpanPrototype
@@ -20,6 +25,7 @@ import icesword.editor.elastic.prototype.Retail5Post1Prototype
 import icesword.editor.elastic.prototype.Retail5Post2PaddedPrototype
 import icesword.editor.elastic.prototype.Retail5Post2Prototype
 import icesword.editor.elastic.prototype.Retail5SpikesPrototype
+import icesword.editor.retails.Retail3
 import icesword.editor.retails.Retail5
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
@@ -33,6 +39,15 @@ object Retail5UiPrototype : RetailUiPrototype {
         editor: Editor,
         tillDetach: Till,
     ): List<HTMLElement> = listOf(
+        createInsertEntityButton(
+            editor = editor,
+            text = "",
+            imagePath = "images/CLAW/LEVEL5/IMAGES/SLIDAWAYPLANK/FRAME001.png",
+            insertionPrototype = TogglePegInsertionPrototype(
+                togglePegPrototype = Retail5.togglePegPrototype,
+            ),
+            tillDetach = tillDetach,
+        ),
         createInsertElasticButton(
             editor = editor,
             prototype = Retail5MetalPlatformPrototype,

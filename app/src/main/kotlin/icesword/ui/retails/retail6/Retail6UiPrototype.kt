@@ -1,8 +1,10 @@
 package icesword.ui.retails.retail6
 
 import icesword.createInsertElasticButton
+import icesword.createInsertEntityButton
 import icesword.createInsertKnotMeshButton
 import icesword.editor.Editor
+import icesword.editor.InsertionPrototype
 import icesword.editor.KnotPrototype
 import icesword.editor.elastic.prototype.Retail6BrownHousePrototype
 import icesword.editor.elastic.prototype.Retail6FencePrototype
@@ -18,6 +20,7 @@ import icesword.editor.elastic.prototype.Retail6TunnelTubeCoverGapPrototype
 import icesword.editor.elastic.prototype.Retail6TunnelTubeCoverPrototype
 import icesword.editor.elastic.prototype.Retail6TunnelTubePrototype
 import icesword.editor.elastic.prototype.Retail6WhiteHousePrototype
+import icesword.editor.retails.Retail4
 import icesword.editor.retails.Retail6
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
@@ -31,6 +34,15 @@ object Retail6UiPrototype : RetailUiPrototype {
         editor: Editor,
         tillDetach: Till,
     ): List<HTMLElement> = listOf(
+        createInsertEntityButton(
+            editor = editor,
+            text = "",
+            imagePath = "images/CLAW/LEVEL6/IMAGES/BREAKINGLEDGE/FRAME001.png",
+            insertionPrototype = InsertionPrototype.CrumblingPegInsertionPrototype(
+                crumblingPegPrototype = Retail6.crumblingPegPrototype,
+            ),
+            tillDetach = tillDetach,
+        ),
         createInsertElasticButton(
             editor = editor,
             prototype = Retail6PavementPrototype,

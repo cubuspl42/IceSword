@@ -1,6 +1,8 @@
 package icesword.editor.retails
 
+import icesword.ImageSetId
 import icesword.editor.ChainedTileGenerator
+import icesword.editor.CrumblingPegPrototype
 import icesword.editor.ForwardTileGenerator
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
@@ -122,5 +124,10 @@ object Retail4 : Retail(naturalIndex = 4) {
             naturalPlatformTileGenerator,
             retailTileGenerator,
         )
+    )
+
+    val crumblingPegPrototype = CrumblingPegPrototype(
+        imageSetId = ImageSetId(fullyQualifiedId = "LEVEL4_IMAGES_CRUMBLINGBUSH"),
+        shortImageSetId = "LEVEL_CRUMBLINGBUSH",
     )
 }

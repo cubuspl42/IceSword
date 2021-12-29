@@ -1,11 +1,14 @@
 package icesword.editor.retails
 
+import icesword.ImageSetId
 import icesword.editor.ChainedTileGenerator
+import icesword.editor.CrumblingPegPrototype
 import icesword.editor.ForwardTileGenerator
 import icesword.editor.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
+import icesword.editor.TogglePegPrototype
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.MetaTilePattern2x1
@@ -286,5 +289,10 @@ object Retail5 : Retail(naturalIndex = 5) {
             houseTileGenerator,
             retailTileGenerator,
         )
+    )
+
+    val togglePegPrototype = TogglePegPrototype(
+        imageSetId = ImageSetId(fullyQualifiedId = "LEVEL5_IMAGES_SLIDAWAYPLANK"),
+        shortImageSetId = "LEVEL_SLIDAWAYPLANK",
     )
 }
