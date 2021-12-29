@@ -131,13 +131,16 @@ sealed interface InsertionPrototype {
         )
     }
 
-    object WarpInsertionPrototype : WapObjectAlikeInsertionPrototype {
-        override val imageSetId: ImageSetId = Warp.imageSetId
+    data class WarpInsertionPrototype(
+        private val warpPrototype: WarpPrototype,
+    ) : WapObjectAlikeInsertionPrototype {
+        override val imageSetId: ImageSetId = warpPrototype.imageSetId
 
         override fun buildInserted(
             context: WapObjectAlikeInsertionPrototype.BuildContext,
         ): Entity = Warp(
             rezIndex = context.rezIndex,
+            prototype = warpPrototype,
             initialPosition = context.insertionWorldPoint,
             initialTargetPosition = context.insertionWorldPoint,
         )

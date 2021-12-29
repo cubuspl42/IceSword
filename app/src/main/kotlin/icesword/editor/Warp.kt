@@ -14,22 +14,61 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
+@Serializable
+sealed class WarpPrototype {
+    abstract val logic: String
+
+    abstract val imageSetId: ImageSetId
+
+    abstract val shortImageSetId: String
+}
+
 class Warp(
     rezIndex: RezIndex,
+    private val prototype: WarpPrototype,
     initialPosition: IntVec2,
     initialTargetPosition: IntVec2,
 ) : Entity(),
     WapObjectExportable {
 
-    companion object {
-        val imageSetId = ImageSetId("GAME_IMAGES_WARP")
+    @Serializable
+    @SerialName("HorizontalWarp")
+    object HorizontalWarpPrototype : WarpPrototype() {
+        override val logic: String = "SpecialPowerup"
 
+        override val imageSetId = ImageSetId("GAME_IMAGES_WARP")
+
+        override val shortImageSetId: String = "GAME_WARP"
+    }
+
+    @Serializable
+    @SerialName("VerticalWarp")
+    object VerticalWarpPrototype : WarpPrototype() {
+        override val logic: String = "SpecialPowerup"
+
+        override val imageSetId = ImageSetId("GAME_IMAGES_VERTWARP")
+
+        override val shortImageSetId: String = "GAME_VERTWARP"
+    }
+
+    @Serializable
+    @SerialName("BossWarp")
+    object BossWarpPrototype : WarpPrototype() {
+        override val logic: String = "BossWarp"
+
+        override val imageSetId = ImageSetId("GAME_IMAGES_BOSSWARP")
+
+        override val shortImageSetId: String = "GAME_BOSSWARP"
+    }
+
+    companion object {
         fun load(
             rezIndex: RezIndex,
             retail: Retail,
             data: WarpData,
         ): Warp = Warp(
             rezIndex = rezIndex,
+            prototype = data.prototype,
             initialPosition = data.position,
             initialTargetPosition = data.targetPosition,
         )
@@ -52,7 +91,7 @@ class Warp(
 
     val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
-        imageSetId = imageSetId,
+        imageSetId = prototype.imageSetId,
         position = position,
     )
 
@@ -60,6 +99,7 @@ class Warp(
         wapSprite.isSelectableIn(area)
 
     override fun toEntityData() = WarpData(
+        prototype = prototype,
         position = position.sample(),
         targetPosition = targetPosition.sample(),
     )
@@ -83,6 +123,7 @@ class Warp(
 @Serializable
 @SerialName("Warp")
 data class WarpData(
+    val prototype: WarpPrototype,
     val position: IntVec2,
     val targetPosition: IntVec2,
 ) : EntityData()

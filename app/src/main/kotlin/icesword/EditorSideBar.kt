@@ -3,6 +3,7 @@ package icesword
 import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
 import icesword.editor.InsertionPrototype.WarpInsertionPrototype
+import icesword.editor.Warp
 import icesword.editor.wap_object.prototype.Level1CrumblingPegPrototype
 import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Cell.Companion.constant
@@ -276,7 +277,27 @@ private fun createInsertSection(
             editor = editor,
             text = "",
             imagePath = "images/CLAW/GAME/IMAGES/WARP/FRAME001.png",
-            insertionPrototype = WarpInsertionPrototype,
+            insertionPrototype = WarpInsertionPrototype(
+                warpPrototype = Warp.HorizontalWarpPrototype,
+            ),
+            tillDetach = tillDetach,
+        ),
+        createInsertEntityButton(
+            editor = editor,
+            text = "",
+            imagePath = "images/CLAW/GAME/IMAGES/VERTWARP/FRAME001.png",
+            insertionPrototype = WarpInsertionPrototype(
+                warpPrototype = Warp.VerticalWarpPrototype,
+            ),
+            tillDetach = tillDetach,
+        ),
+        createInsertEntityButton(
+            editor = editor,
+            text = "",
+            imagePath = "images/CLAW/GAME/IMAGES/BOSSWARP/BOSSWARP1.png",
+            insertionPrototype = WarpInsertionPrototype(
+                warpPrototype = Warp.BossWarpPrototype,
+            ),
             tillDetach = tillDetach,
         ),
     )
