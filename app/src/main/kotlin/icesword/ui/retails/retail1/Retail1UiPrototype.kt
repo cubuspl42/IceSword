@@ -9,6 +9,7 @@ import icesword.editor.elastic.prototype.Retail1ColumnPrototype
 import icesword.editor.CrateStackPrototype
 import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
+import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.KnotPrototype
 import icesword.editor.elastic.prototype.LadderPrototype
 import icesword.editor.elastic.prototype.Retail1PlatformPrototype
@@ -70,11 +71,13 @@ object Retail1UiPrototype : RetailUiPrototype {
             ),
             tillDetach = tillDetach,
         ),
-        createInsertWapObjectButton(
+        createInsertEntityButton(
             editor = editor,
-            text = "CrumblingPeg",
+            text = "",
             imagePath = "images/CLAW/LEVEL1/IMAGES/CRUMBLINGPEG/FRAME001.png",
-            wapObjectPrototype = Level1CrumblingPegPrototype,
+            insertionPrototype = CrumblingPegInsertionPrototype(
+                crumblingPegPrototype = Retail1.crumblingPegPrototype,
+            ),
             tillDetach = tillDetach,
         ),
         createInsertEntityButton(

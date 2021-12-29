@@ -2,6 +2,7 @@ package icesword
 
 import icesword.editor.App
 import icesword.editor.CrateStackSelectionMode
+import icesword.editor.CrumblingPegSelectionMode
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.EditorMode
@@ -30,12 +31,14 @@ import icesword.html.HTMLWidgetB
 import icesword.html.RowStyleDeclaration
 import icesword.html.buildElement
 import icesword.html.createButton
+import icesword.html.createButtonWb
 import icesword.html.createContainer
 import icesword.html.createHTMLElementRaw
 import icesword.html.createRow
 import icesword.html.createRowElement
 import icesword.html.createStyledText
 import icesword.html.createTextButtonWb
+import icesword.html.createTextWb
 import icesword.html.resolve
 import icesword.ui.createSelectButton
 import kotlinx.css.Color
@@ -163,33 +166,44 @@ fun createSelectionModeButtonsRow(
     editor: Editor,
     selectionMode: SelectionMode?,
     tillDetach: Till,
-): HTMLElement? = when (selectionMode) {
-    is KnotMeshSelectionMode -> createKnotMeshSelectionModeButtonsRow(
-        editor = editor,
-        knotMeshSelectionMode = selectionMode,
-        tillDetach = tillDetach,
-    )
-    is PathElevatorSelectionMode -> createPathElevatorSelectionModeButtonsRow(
-        editor = editor,
-        pathElevatorSelectionMode = selectionMode,
-        tillDetach = tillDetach,
-    )
-    is EnemySelectionMode -> createEnemySelectionModeButtonsRow(
-        selectionMode = selectionMode,
-    ).buildElement(tillDetach = tillDetach)
-    is FloorSpikeRowSelectionMode -> createFloorSpikeRowSelectionModeButtonsRow(
-        selectionMode = selectionMode,
-    ).buildElement(tillDetach = tillDetach)
-    is RopeSelectionMode -> createRopeSelectionModeButtonsRow(
-        selectionMode = selectionMode,
-    ).buildElement(tillDetach = tillDetach)
-    is CrateStackSelectionMode -> createCrateStackSelectionModeButtonsRow(
-        selectionMode = selectionMode,
-    ).buildElement(tillDetach = tillDetach)
-    is WapObjectSelectionMode -> createWapObjectSelectionModeButtonsRow(
-        selectionMode = selectionMode,
-    ).buildElement(tillDetach = tillDetach)
-    null -> null
+): HTMLElement? {
+    val htmlWidgetB = when (selectionMode) {
+        is KnotMeshSelectionMode -> HTMLWidget.of(
+            createKnotMeshSelectionModeButtonsRow(
+                editor = editor,
+                knotMeshSelectionMode = selectionMode,
+                tillDetach = tillDetach,
+            ),
+        )
+        is PathElevatorSelectionMode -> HTMLWidget.of(
+            createPathElevatorSelectionModeButtonsRow(
+                editor = editor,
+                pathElevatorSelectionMode = selectionMode,
+                tillDetach = tillDetach,
+            ),
+        )
+        is EnemySelectionMode -> createEnemySelectionModeButtonsRow(
+            selectionMode = selectionMode,
+        )
+        is FloorSpikeRowSelectionMode -> createFloorSpikeRowSelectionModeButtonsRow(
+            selectionMode = selectionMode,
+        )
+        is RopeSelectionMode -> createRopeSelectionModeButtonsRow(
+            selectionMode = selectionMode,
+        )
+        is CrateStackSelectionMode -> createCrateStackSelectionModeButtonsRow(
+            selectionMode = selectionMode,
+        )
+        is WapObjectSelectionMode -> createWapObjectSelectionModeButtonsRow(
+            selectionMode = selectionMode,
+        )
+        is CrumblingPegSelectionMode -> createCrumblingPegSelectionModeButtonsRow(
+            selectionMode = selectionMode,
+        )
+        null -> null
+    }
+
+    return htmlWidgetB?.buildElement(tillDetach = tillDetach)
 }
 
 fun createEditorModeButtonsRow(
@@ -353,7 +367,6 @@ fun createEditPathElevatorModeButtonsRow(
     )
 }
 
-
 fun createEnemySelectionModeButtonsRow(
     selectionMode: EnemySelectionMode,
 ): HTMLWidgetB<*> {
@@ -422,6 +435,27 @@ fun createCrateStackSelectionModeButtonsRow(
     )
 }
 
+fun createCrumblingPegSelectionModeButtonsRow(
+    selectionMode: CrumblingPegSelectionMode,
+): HTMLWidgetB<*> {
+    val crumblingPeg = selectionMode.crumblingPeg
+
+    val canRespawnButton = createButtonWb(
+        child = createTextWb(
+            crumblingPeg.canRespawn.map { "Can respawn: $it" }
+        ),
+        onPressed = {
+            crumblingPeg.setCanRespawn(!crumblingPeg.canRespawn.sample())
+        },
+    )
+
+    return createRow(
+        children = listOf(
+            canRespawnButton,
+        ),
+    )
+}
+
 fun createWapObjectSelectionModeButtonsRow(
     selectionMode: WapObjectSelectionMode,
 ): HTMLWidgetB<*> {
@@ -438,6 +472,7 @@ fun createWapObjectSelectionModeButtonsRow(
         ),
     )
 }
+
 
 private inline fun <reified Mode : EditorMode> createModeButton(
     editor: Editor,

@@ -1,6 +1,7 @@
 package icesword.editor.retails
 
 import icesword.ImageSetId
+import icesword.editor.CrumblingPegPrototype
 import icesword.editor.ElevatorPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
@@ -95,6 +96,11 @@ object Retail1 : Retail(naturalIndex = 1), RetailLadderPrototype {
             object Bottom : MetaTile(327)
         }
     }
+
+    val crumblingPegPrototype = CrumblingPegPrototype(
+        imageSetId = ImageSetId(fullyQualifiedId = "LEVEL1_IMAGES_CRUMBLINGPEG"),
+        shortImageSetId = "LEVEL_CRUMBLINGPEG",
+    )
 
     override val ladderGenerator = retail1LadderPattern.toElasticGenerator()
 

@@ -3,6 +3,7 @@ package icesword.scene
 import icesword.RezTextureBank
 import icesword.RezIndex
 import icesword.editor.CrateStack
+import icesword.editor.CrumblingPeg
 import icesword.editor.Editor
 import icesword.editor.Elastic
 import icesword.editor.Enemy
@@ -55,5 +56,9 @@ fun createEntityNode(
     is CrateStack -> CrateStackNode(
         editor = editor,
         crateStack = entity,
+    )
+    is CrumblingPeg -> CrumblingPegNode(
+        editor = editor,
+        crumblingPeg = entity,
     )
 }

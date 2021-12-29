@@ -15,6 +15,7 @@ import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.EntitySelectMode.EntityAreaSelectingMode
 import icesword.editor.InsertionPrototype.CrateStackInsertionPrototype
+import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
 import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.RopeInsertionPrototype
@@ -389,6 +390,9 @@ class Editor(
                         _editCrateStackPickups.send(selectedEntity)
                     }
                 }
+                is CrumblingPeg -> CrumblingPegSelectionMode(
+                    crumblingPeg = selectedEntity,
+                )
                 null -> null
             }
         }
@@ -511,6 +515,12 @@ class Editor(
             is CrateStackInsertionPrototype -> CrateStackInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
+                insertionPrototype = insertionPrototype,
+            )
+            is CrumblingPegInsertionPrototype -> CrumblingPegInsertionMode(
+                rezIndex = rezIndex,
+                retail = retail,
+                world = world,
                 insertionPrototype = insertionPrototype,
             )
         }

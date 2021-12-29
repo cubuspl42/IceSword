@@ -184,6 +184,7 @@ class World(
                         is PathElevatorData -> PathElevator.load(rezIndex = rezIndex, retail = retail, data = it)
                         is RopeData -> Rope.load(rezIndex = rezIndex, retail = retail, data = it)
                         is CrateStackData -> CrateStack.load(rezIndex = rezIndex, retail = retail, data = it)
+                        is CrumblingPegData -> CrumblingPeg.load(rezIndex = rezIndex, retail = retail, data = it)
                     }
                 }.toSet()
 

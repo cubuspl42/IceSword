@@ -4,6 +4,7 @@ import icesword.ImageSetId
 import icesword.RezIndex
 import icesword.editor.FloorSpikeRow.FloorSpikeConfig
 import icesword.editor.InsertionPrototype.CrateStackInsertionPrototype
+import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
 import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
@@ -57,6 +58,8 @@ sealed interface InsertionPrototype {
     value class RopeInsertionPrototype(val ropePrototype: RopePrototype) : InsertionPrototype
 
     value class CrateStackInsertionPrototype(val crateStackPrototype: CrateStackPrototype) : InsertionPrototype
+
+    value class CrumblingPegInsertionPrototype(val crumblingPegPrototype: CrumblingPegPrototype) : InsertionPrototype
 
     value class EnemyInsertionPrototype(
         val wapObjectPrototype: WapObjectPrototype,
@@ -368,5 +371,27 @@ class CrateStackInsertionMode(
                 initialPickups = listOf(PickupKind.TreasureCoins),
             )
         )
+    }
+}
+
+class CrumblingPegInsertionMode(
+    private val rezIndex: RezIndex,
+    private val retail: Retail,
+    private val world: World,
+    override val insertionPrototype: CrumblingPegInsertionPrototype,
+) : WapObjectAlikeInsertionMode(
+    rezIndex = rezIndex,
+    imageSetId = insertionPrototype.crumblingPegPrototype.imageSetId,
+) {
+    override fun insert(insertionWorldPoint: IntVec2) {
+        val crumblingPeg = CrumblingPeg(
+            rezIndex = rezIndex,
+            retail = retail,
+            prototype = insertionPrototype.crumblingPegPrototype,
+            initialPosition = insertionWorldPoint,
+            initialCanRespawn = true,
+        )
+
+        world.insertEntity(crumblingPeg)
     }
 }

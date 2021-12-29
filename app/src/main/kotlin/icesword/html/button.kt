@@ -1,8 +1,11 @@
 package icesword.html
 
 import icesword.frp.Cell
+import icesword.frp.DynamicLock
 import icesword.frp.Stream
 import icesword.frp.Till
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.html.HTMLWidget.HTMLElementWidget
 import org.w3c.dom.HTMLButtonElement
@@ -54,17 +57,27 @@ fun createButtonWb(
     style: DynamicStyleDeclaration? = null,
     child: HTMLWidgetB<*>,
     onPressed: (() -> Unit)? = null,
+) = createButtonDynamicWb(
+    style = style,
+    child = Cell.constant(child),
+    onPressed = onPressed,
+)
+
+fun createButtonDynamicWb(
+    style: DynamicStyleDeclaration? = null,
+    child: Cell<HTMLWidgetB<*>>,
+    onPressed: (() -> Unit)? = null,
 ) = object : HTMLWidgetB<HTMLButton> {
     override fun build(tillDetach: Till): HTMLButton {
-        val childElement = HTMLWidget.resolve(child.build(tillDetach))
+        val childElement = HTMLWidgetB.build(child, tillDetach)
+            .map { HTMLWidget.resolve(it) }
 
-        val element = createStyledHtmlElement(
+        val element = createHTMLElement(
             tagName = "button",
             style = style,
+            children = DynamicList.ofSingle(childElement),
             tillDetach = tillDetach,
-        ).apply {
-            appendChild(childElement)
-        }
+        ) as HTMLButtonElement
 
         if (onPressed != null) {
             element.onClick().reactTill(tillDetach) {
@@ -73,7 +86,7 @@ fun createButtonWb(
         }
 
         return HTMLButton(
-            element = element as HTMLButtonElement,
+            element = element,
         )
     }
 }

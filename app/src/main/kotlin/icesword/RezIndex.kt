@@ -2,7 +2,9 @@ package icesword
 
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import kotlinx.serialization.Serializable
 
+@Serializable
 value class ImageSetId(
     val fullyQualifiedId: String,
 ) {

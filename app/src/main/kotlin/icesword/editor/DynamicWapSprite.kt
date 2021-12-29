@@ -72,11 +72,11 @@ class DynamicWapSprite(
             position: Cell<IntVec2>,
             i: Int = -1,
         ): DynamicWapSprite = fromImageSetDynamic(
-                rezIndex = rezIndex,
-                imageSetId = Cell.constant(imageSetId),
-                position = position,
-                i = i
-            )
+            rezIndex = rezIndex,
+            imageSetId = Cell.constant(imageSetId),
+            position = position,
+            i = i
+        )
 
         fun fromImageSetDynamic(
             rezIndex: RezIndex,
@@ -125,6 +125,11 @@ class DynamicWapSprite(
     val imageMetadata: Cell<ImageMetadata?> = wapSprite.map { it.imageMetadata }
 
     val center = boundingBox.map { it.center }
+
+    fun isSelectableIn(area: IntRect): Boolean {
+        val hitBox = boundingBox.sample()
+        return hitBox.overlaps(area)
+    }
 
     override fun toString(): String = "DynamicWapSprite()"
 }

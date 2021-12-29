@@ -31,3 +31,7 @@ interface CrateStackSelectionMode : SelectionMode {
 interface WapObjectSelectionMode : SelectionMode {
     fun editProperties()
 }
+
+data class CrumblingPegSelectionMode(
+    val crumblingPeg: CrumblingPeg,
+) : SelectionMode
