@@ -4,7 +4,9 @@ import icesword.editor.retails.Retail
 import icesword.scene.Texture
 import icesword.scene.Tileset
 import kotlinx.browser.window
+import kotlinx.coroutines.async
 import kotlinx.coroutines.await
+import kotlinx.coroutines.coroutineScope
 import org.w3c.fetch.Response
 
 value class RezPath(
@@ -78,20 +80,28 @@ suspend fun loadGameTextureBank(): RezTextureBank =
 suspend fun loadRetailTextureBank(retail: Retail): RezTextureBank {
     val prefix = "LEVEL${retail.naturalIndex}/"
 
-    val imagesBank = TextureAtlasTextureBank.load(
-        path = "images/spritesheets/LEVEL${retail.naturalIndex}_IMAGES",
-        prefix = prefix,
-    )
+    return coroutineScope {
+        val imagesBank = async {
+            TextureAtlasTextureBank.load(
+                path = "images/spritesheets/LEVEL${retail.naturalIndex}_IMAGES",
+                prefix = prefix,
+            )
+        }
 
-    val tilesBank = TextureAtlasTextureBank.load(
-        path = "images/spritesheets/LEVEL${retail.naturalIndex}_TILES",
-        prefix = prefix,
-    )
+        val tilesBank = async {
+            TextureAtlasTextureBank.load(
+                path = "images/spritesheets/LEVEL${retail.naturalIndex}_TILES",
+                prefix = prefix,
+            )
+        }
 
-    return ChainedRezTextureBank(
-        textureBank1 = imagesBank,
-        textureBank2 = tilesBank,
-    )
+        ChainedRezTextureBank(
+            textureBank1 = imagesBank.await(),
+            textureBank2 = tilesBank.await(),
+        )
+    }
+
+
 }
 
 class ChainedRezTextureBank(

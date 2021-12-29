@@ -6,7 +6,10 @@ import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.scene.Texture
 import kotlinx.browser.window
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.await
+import kotlinx.coroutines.coroutineScope
 import mapOfObject
 import org.w3c.dom.ImageBitmap
 
@@ -55,7 +58,7 @@ class TextureAtlasIndex(
                     )
                 }
             } catch (e: Throwable) {
-                console.error("Error while loading texture atlas bucket:", e)
+                console.error("Error while loading texture atlas index [$indexPath]:", e)
 
                 null
             }
@@ -86,14 +89,20 @@ data class TextureAtlas(
                     val indexPath = "$path/texture-$bucketIndex.json"
                     val bitmapPath = "$path/texture-$bucketIndex.png"
 
-                    return TextureAtlasIndex.load(indexPath = indexPath)?.let { index ->
-                        loadImageBitmap(imagePath = bitmapPath)?.let { bitmap ->
-                            TextureAtlasBucket(
-                                index = index,
-                                bitmap = bitmap,
-                            )
+                    return coroutineScope {
+                        val indexOrNull = async { TextureAtlasIndex.load(indexPath = indexPath) }
+                        val bitmapOrNull = async { loadImageBitmap(imagePath = bitmapPath) }
+
+                        indexOrNull.await()?.let { index ->
+                            bitmapOrNull.await()?.let { bitmap ->
+                                TextureAtlasBucket(
+                                    index = index,
+                                    bitmap = bitmap,
+                                )
+                            }
                         }
                     }
+
                 }
 
                 suspend fun loadBuckets(fromIndex: Int): List<TextureAtlasBucket> =
@@ -116,7 +125,7 @@ suspend fun loadImageBitmap(imagePath: String): ImageBitmap? = try {
         window.createImageBitmap(blob).await()
     }
 } catch (e: Throwable) {
-    console.error("Error while loading texture atlas bucket:", e)
+    console.error("Error while loading image bitmap [$imagePath]:", e)
 
     null
 }
