@@ -19,6 +19,7 @@ import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
 import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.RopeInsertionPrototype
+import icesword.editor.InsertionPrototype.WapObjectAlikeInsertionPrototype
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.MutCell
@@ -467,6 +468,12 @@ class Editor(
         insertionPrototype: InsertionPrototype,
     ) {
         val insertionMode = when (insertionPrototype) {
+            is WapObjectAlikeInsertionPrototype -> SimpleWapObjectAlikeInsertionMode(
+                rezIndex = rezIndex,
+                retail = retail,
+                world = world,
+                insertionPrototype = insertionPrototype,
+            )
             is ElasticInsertionPrototype -> ElasticInsertionMode(
                 rezIndex = rezIndex,
                 retail = retail,
@@ -505,22 +512,6 @@ class Editor(
             is EnemyInsertionPrototype -> EnemyInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
-                insertionPrototype = insertionPrototype,
-            )
-            is RopeInsertionPrototype -> RopeInsertionMode(
-                world = world,
-                rezIndex = rezIndex,
-                insertionPrototype = insertionPrototype,
-            )
-            is CrateStackInsertionPrototype -> CrateStackInsertionMode(
-                world = world,
-                rezIndex = rezIndex,
-                insertionPrototype = insertionPrototype,
-            )
-            is CrumblingPegInsertionPrototype -> CrumblingPegInsertionMode(
-                rezIndex = rezIndex,
-                retail = retail,
-                world = world,
                 insertionPrototype = insertionPrototype,
             )
         }

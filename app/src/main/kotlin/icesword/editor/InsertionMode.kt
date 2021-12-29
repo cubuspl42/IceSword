@@ -3,20 +3,18 @@ package icesword.editor
 import icesword.ImageSetId
 import icesword.RezIndex
 import icesword.editor.FloorSpikeRow.FloorSpikeConfig
-import icesword.editor.InsertionPrototype.CrateStackInsertionPrototype
-import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
 import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
-import icesword.editor.InsertionPrototype.RopeInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
+import icesword.editor.InsertionPrototype.WapObjectAlikeInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.elastic.prototype.ElasticPrototype
-import icesword.editor.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
 import icesword.editor.retails.Retail
 import icesword.editor.wap_object.prototype.WapObjectPrototype
+import icesword.editor.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
 import icesword.frp.Cell
 import icesword.frp.CellSlot
 import icesword.frp.Stream
@@ -47,6 +45,20 @@ sealed interface InsertionPrototype {
         }
     }
 
+    sealed interface WapObjectAlikeInsertionPrototype : InsertionPrototype {
+        data class BuildContext(
+            val rezIndex: RezIndex,
+            val retail: Retail,
+            val insertionWorldPoint: IntVec2,
+        )
+
+        val imageSetId: ImageSetId
+
+        fun buildInserted(
+            context: BuildContext,
+        ): Entity
+    }
+
     value class HorizontalElevatorInsertionPrototype(val elevatorPrototype: ElevatorPrototype) : InsertionPrototype
 
     value class VerticalElevatorInsertionPrototype(val elevatorPrototype: ElevatorPrototype) : InsertionPrototype
@@ -55,11 +67,51 @@ sealed interface InsertionPrototype {
 
     object FloorSpikeInsertionPrototype : InsertionPrototype
 
-    value class RopeInsertionPrototype(val ropePrototype: RopePrototype) : InsertionPrototype
+    data class RopeInsertionPrototype(
+        private val ropePrototype: RopePrototype,
+    ) : WapObjectAlikeInsertionPrototype {
+        override val imageSetId: ImageSetId = ropePrototype.imageSetId
 
-    value class CrateStackInsertionPrototype(val crateStackPrototype: CrateStackPrototype) : InsertionPrototype
+        override fun buildInserted(
+            context: WapObjectAlikeInsertionPrototype.BuildContext,
+        ): Entity = Rope(
+            rezIndex = context.rezIndex,
+            prototype = ropePrototype,
+            initialPosition = context.insertionWorldPoint,
+            initialSwingDurationMs = 1500,
+        )
+    }
 
-    value class CrumblingPegInsertionPrototype(val crumblingPegPrototype: CrumblingPegPrototype) : InsertionPrototype
+    data class CrateStackInsertionPrototype(
+        private val crateStackPrototype: CrateStackPrototype,
+    ) : WapObjectAlikeInsertionPrototype {
+        override val imageSetId: ImageSetId = crateStackPrototype.crateImageSetId
+
+        override fun buildInserted(
+            context: WapObjectAlikeInsertionPrototype.BuildContext,
+        ): Entity = CrateStack(
+            rezIndex = context.rezIndex,
+            prototype = crateStackPrototype,
+            initialPosition = context.insertionWorldPoint,
+            initialPickups = listOf(PickupKind.TreasureCoins),
+        )
+    }
+
+    data class CrumblingPegInsertionPrototype(
+        private val crumblingPegPrototype: CrumblingPegPrototype,
+    ) : WapObjectAlikeInsertionPrototype {
+        override val imageSetId: ImageSetId = crumblingPegPrototype.imageSetId
+
+        override fun buildInserted(
+            context: WapObjectAlikeInsertionPrototype.BuildContext,
+        ): Entity = CrumblingPeg(
+            rezIndex = context.rezIndex,
+            retail = context.retail,
+            prototype = crumblingPegPrototype,
+            initialPosition = context.insertionWorldPoint,
+            initialCanRespawn = true,
+        )
+    }
 
     value class EnemyInsertionPrototype(
         val wapObjectPrototype: WapObjectPrototype,
@@ -333,65 +385,24 @@ class EnemyInsertionMode(
     }
 }
 
-class RopeInsertionMode(
-    private val world: World,
-    private val rezIndex: RezIndex,
-    override val insertionPrototype: RopeInsertionPrototype,
-) : WapObjectAlikeInsertionMode(
-    rezIndex = rezIndex,
-    imageSetId = insertionPrototype.ropePrototype.imageSetId,
-) {
-    override fun insert(insertionWorldPoint: IntVec2) {
-        world.insertEntity(
-            Rope(
-                rezIndex = rezIndex,
-                prototype = insertionPrototype.ropePrototype,
-                initialPosition = insertionWorldPoint,
-                initialSwingDurationMs = 1500,
-            )
-        )
-    }
-}
-
-class CrateStackInsertionMode(
-    private val world: World,
-    private val rezIndex: RezIndex,
-    override val insertionPrototype: CrateStackInsertionPrototype,
-) : WapObjectAlikeInsertionMode(
-    rezIndex = rezIndex,
-    imageSetId = insertionPrototype.crateStackPrototype.crateImageSetId,
-) {
-
-    override fun insert(insertionWorldPoint: IntVec2) {
-        world.insertEntity(
-            CrateStack(
-                rezIndex = rezIndex,
-                prototype = insertionPrototype.crateStackPrototype,
-                initialPosition = insertionWorldPoint,
-                initialPickups = listOf(PickupKind.TreasureCoins),
-            )
-        )
-    }
-}
-
-class CrumblingPegInsertionMode(
+class SimpleWapObjectAlikeInsertionMode(
     private val rezIndex: RezIndex,
     private val retail: Retail,
     private val world: World,
-    override val insertionPrototype: CrumblingPegInsertionPrototype,
+    override val insertionPrototype: WapObjectAlikeInsertionPrototype,
 ) : WapObjectAlikeInsertionMode(
     rezIndex = rezIndex,
-    imageSetId = insertionPrototype.crumblingPegPrototype.imageSetId,
+    imageSetId = insertionPrototype.imageSetId,
 ) {
     override fun insert(insertionWorldPoint: IntVec2) {
-        val crumblingPeg = CrumblingPeg(
-            rezIndex = rezIndex,
-            retail = retail,
-            prototype = insertionPrototype.crumblingPegPrototype,
-            initialPosition = insertionWorldPoint,
-            initialCanRespawn = true,
+        val entity = insertionPrototype.buildInserted(
+            context = WapObjectAlikeInsertionPrototype.BuildContext(
+                rezIndex = rezIndex,
+                retail = retail,
+                insertionWorldPoint = insertionWorldPoint,
+            ),
         )
 
-        world.insertEntity(crumblingPeg)
+        world.insertEntity(entity)
     }
 }
