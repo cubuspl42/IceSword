@@ -18,6 +18,7 @@ import icesword.editor.TileEntity
 import icesword.editor.TogglePeg
 import icesword.editor.VerticalElevator
 import icesword.editor.WapObject
+import icesword.editor.Warp
 import icesword.geometry.DynamicTransform
 
 fun createEntityNode(
@@ -65,5 +66,10 @@ fun createEntityNode(
     is TogglePeg -> TogglePegNode(
         editor = editor,
         togglePeg = entity,
+    )
+    is Warp -> EntityWapSpriteNode(
+        editor = editor,
+        entity = entity,
+        wapSprite = entity.wapSprite,
     )
 }

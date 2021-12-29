@@ -143,4 +143,12 @@ private fun setupEditDialogController(
             )
         )
     }
+
+    editor.editWarpTarget.reactTill(tillDetach) { warp ->
+        dialogOverlay.showDialog(
+            dialog = createWarpDialog(
+                warp = warp,
+            )
+        )
+    }
 }

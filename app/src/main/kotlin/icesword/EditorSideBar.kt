@@ -2,6 +2,7 @@ package icesword
 
 import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
+import icesword.editor.InsertionPrototype.WarpInsertionPrototype
 import icesword.editor.wap_object.prototype.Level1CrumblingPegPrototype
 import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Cell.Companion.constant
@@ -269,6 +270,13 @@ private fun createInsertSection(
             text = "FirstSuperCheckpoint",
             imagePath = "images/CLAW/GAME/IMAGES/SUPERCHECKPOINT/FRAME01.png",
             wapObjectPrototype = WapObjectPrototype.FirstSuperCheckpoint,
+            tillDetach = tillDetach,
+        ),
+        createInsertEntityButton(
+            editor = editor,
+            text = "",
+            imagePath = "images/CLAW/GAME/IMAGES/WARP/FRAME001.png",
+            insertionPrototype = WarpInsertionPrototype,
             tillDetach = tillDetach,
         ),
     )

@@ -20,6 +20,7 @@ import icesword.editor.SelectionMode
 import icesword.editor.TogglePegSelectionMode
 import icesword.editor.Tool
 import icesword.editor.WapObjectSelectionMode
+import icesword.editor.WarpSelectionMode
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.dynamic_list.size
@@ -203,6 +204,9 @@ fun createSelectionModeButtonsRow(
             selectionMode = selectionMode,
         )
         is TogglePegSelectionMode -> createTogglePegSelectionModeButtonsRow(
+            selectionMode = selectionMode,
+        )
+        is WarpSelectionMode -> createWarpSelectionModeButtonsRow(
             selectionMode = selectionMode,
         )
     }
@@ -495,6 +499,22 @@ fun createWapObjectSelectionModeButtonsRow(
     )
 }
 
+fun createWarpSelectionModeButtonsRow(
+    selectionMode: WarpSelectionMode,
+): HTMLWidgetB<*> {
+    val editTimingButton = createTextButtonWb(
+        text = "Edit target",
+        onPressed = {
+            selectionMode.editTarget()
+        },
+    )
+
+    return createRow(
+        children = listOf(
+            editTimingButton,
+        ),
+    )
+}
 
 private inline fun <reified Mode : EditorMode> createModeButton(
     editor: Editor,

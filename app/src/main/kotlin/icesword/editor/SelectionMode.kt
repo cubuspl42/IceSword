@@ -39,3 +39,7 @@ data class CrumblingPegSelectionMode(
 interface TogglePegSelectionMode : SelectionMode {
     fun editTiming()
 }
+
+interface WarpSelectionMode : SelectionMode {
+    fun editTarget()
+}

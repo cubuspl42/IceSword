@@ -344,6 +344,11 @@ class Editor(
     val editTogglePegTiming: Stream<TogglePeg>
         get() = _editTogglePegTiming
 
+    private val _editWarpTarget = StreamSink<Warp>()
+
+    val editWarpTarget: Stream<Warp>
+        get() = _editWarpTarget
+
     val selectionMode: Cell<SelectionMode?> =
         selectedEntity.map { selectedEntity ->
             when (selectedEntity) {
@@ -400,6 +405,11 @@ class Editor(
                 is TogglePeg -> object : TogglePegSelectionMode {
                     override fun editTiming() {
                         _editTogglePegTiming.send(selectedEntity)
+                    }
+                }
+                is Warp -> object : WarpSelectionMode {
+                    override fun editTarget() {
+                        _editWarpTarget.send(selectedEntity)
                     }
                 }
             }
