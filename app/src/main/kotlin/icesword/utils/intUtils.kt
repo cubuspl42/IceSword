@@ -1,6 +1,7 @@
 package icesword.utils
 
 import kotlinx.css.a
+import kotlin.math.roundToInt
 
 /// "Round-down" integer division, a rough equivalent of mathematical function
 // f(a, b) = floor(a / b). Assumes b > 0.
@@ -22,3 +23,6 @@ fun Int.divCeil(b: Int): Int {
     val r = if (this % b > 0) 1 else 0
     return this / b + r
 }
+
+fun Int.roundToMultipleOf(n: Int): Int =
+    (toDouble() / n).roundToInt() * n

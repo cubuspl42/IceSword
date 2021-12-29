@@ -29,7 +29,7 @@ class TileEntity(
 ) :
     Entity() {
 
-    override val entityPosition = EntityTilePosition(
+    override val entityPosition = SimpleEntityTilePosition(
         initialTileOffset = initialTileOffset,
     )
 

@@ -113,14 +113,14 @@ class Elastic(
             )
     }
 
-    inner class BoundsEntityPosition : EntityPosition {
-        override val position: Cell<IntVec2> by lazy {
-            tileBounds.map { it.topLeft * TILE_SIZE }
+    inner class BoundsEntityPosition : EntityTilePosition() {
+        override val tileOffset: Cell<IntVec2> by lazy {
+            tileBounds.map { it.topLeft }
         }
 
-        override fun setPosition(newPosition: IntVec2) {
+        override fun setTileOffset(tileOffset: IntVec2) {
             _tileBounds.update { b: IntRect ->
-                b.copy(position = newPosition.divRound(TILE_SIZE))
+                b.copy(position = tileOffset)
             }
         }
     }

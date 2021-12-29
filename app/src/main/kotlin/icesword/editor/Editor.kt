@@ -6,6 +6,7 @@ import icesword.EditorTextureBank
 import icesword.JsonRezIndex
 import icesword.RezIndex
 import icesword.RezTextureBank
+import icesword.TILE_SIZE
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
@@ -33,6 +34,7 @@ import icesword.frp.switchMapNotNull
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.loadRetailTextureBank
+import icesword.utils.roundToMultipleOf
 import icesword.wwd.DumpWwd.dumpWwd
 import icesword.wwd.OutputDataStream.OutputStream
 import icesword.wwd.Wwd
@@ -429,11 +431,18 @@ class Editor(
         positionDelta: Cell<IntVec2>,
         tillStop: Till,
     ) {
-        val selectedEntities = this.selectedEntities.sample()
+        val selectedEntitiesPositions = this.selectedEntities.sample()
+            .map { it.entityPosition }
 
-        selectedEntities.forEach {
+        val effectivePositionDelta = when {
+            selectedEntitiesPositions.any { it is EntityTilePosition } ->
+                positionDelta.map { p: IntVec2 -> p.map { it.roundToMultipleOf(TILE_SIZE) } }
+            else -> positionDelta
+        }
+
+        selectedEntitiesPositions.forEach {
             it.move(
-                positionDelta = positionDelta,
+                positionDelta = effectivePositionDelta,
                 tillStop = tillStop
             )
         }
