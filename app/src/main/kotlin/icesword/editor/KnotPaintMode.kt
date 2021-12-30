@@ -7,11 +7,11 @@ import icesword.frp.Stream
 import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
+import icesword.frp.divertMap
 import icesword.frp.divertMapOrNever
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.reactTill
-import icesword.frp.switchMap
 import icesword.frp.switchMapOrNull
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
@@ -20,8 +20,8 @@ import icesword.geometry.IntVec2
 
 class KnotPaintMode(
     val knotPrototype: KnotPrototype,
-    private val knotMeshes: DynamicSet<KnotMesh>,
-    private val tillExit: Till,
+    private val world: World,
+    tillExit: Till,
 ) : EditorMode {
 
     data class BrushCursor(
@@ -47,22 +47,36 @@ class KnotPaintMode(
     }
 
     interface IdleMode : State {
-        val readyMode: Cell<ReadyMode?>
+        val state: Cell<IdleModeState>
     }
 
     interface PaintingMode : State {
-        val targetKnotMesh: KnotMesh
+        val paintedKnotMesh: KnotMesh
     }
 
-    interface ReadyMode {
-        val targetKnotMesh: KnotMesh
+    sealed interface IdleModeState
 
-        val deltaKnotMesh: KnotMesh
+    interface BrushOverMode : IdleModeState {
+        val brushCursor: Cell<BrushCursor>
 
+        val paintReadyMode: Cell<PaintReadyMode>
+    }
+
+    object BrushOutMode : IdleModeState
+
+    sealed interface PaintReadyMode {
         fun paintKnots(stop: Stream<Unit>)
 
         val enterPaintingMode: Stream<Tilled<PaintingMode>>
     }
+
+    interface PaintOverReadyMode : PaintReadyMode {
+        val targetKnotMesh: KnotMesh
+    }
+
+    interface PaintNewReadyMode : PaintReadyMode
+
+    private val knotMeshes: DynamicSet<KnotMesh> = world.knotMeshes
 
     private val inputStateLoop: CellLoop<InputState> =
         CellLoop(placeholderValue = BrushOutInputMode)
@@ -73,100 +87,142 @@ class KnotPaintMode(
         inputStateLoop.close(inputState)
     }
 
-    private val brushPosition: Cell<IntVec2?> = inputState.switchMap { inputStateNow ->
-        when (inputStateNow) {
-            is BrushOverInputMode -> inputStateNow.brushPosition
-            BrushOutInputMode -> Cell.constant(null)
-        }
-    }
-
-    val brushCursor: Cell<BrushCursor?> = brushPosition.mapNested { brushPositionNow ->
-        val brushKnotCoord = closestKnot(brushPositionNow)
-
-        BrushCursor(
-            knotArea = IntRect(
-                position = brushKnotCoord,
-                size = IntSize.UNIT,
-            )
-        )
-    }
-
     val state: Cell<State> = Stream.followTillNext<State>(
         initialValue = buildIdleMode(),
         extractNext = { it.enterNextState },
         till = tillExit,
     )
 
-    val readyMode: Cell<ReadyMode?> =
-        state.switchMapOrNull { (it as? IdleMode)?.readyMode }
+    private val idleMode: Cell<IdleMode?> =
+        state.map { it as? IdleMode }
+
+    val brushOverMode: Cell<BrushOverMode?> =
+        idleMode.switchMapOrNull { idleModeNowOrNull ->
+            idleModeNowOrNull?.state?.map { it as? BrushOverMode }
+        }
+
+    val paintReadyMode: Cell<PaintReadyMode?> =
+        brushOverMode.switchMapOrNull { it?.paintReadyMode }
+
+    val paintOverReadyMode: Cell<PaintOverReadyMode?> =
+        paintReadyMode.mapNested { it as? PaintOverReadyMode }
 
     private fun buildIdleMode() = Tilled.pure(
         object : IdleMode {
-            override val readyMode: Cell<ReadyMode?> =
-                brushCursor.map { brushCursorOrNull ->
-                    brushCursorOrNull?.let { brushCursor ->
-                        buildReadyMode(brushCursor = brushCursor)
-                    }
+            override val state: Cell<IdleModeState> = inputState.map { inputStateNow ->
+                when (inputStateNow) {
+                    is BrushOverInputMode -> buildBrushOverMode(inputStateNow)
+                    BrushOutInputMode -> BrushOutMode
                 }
+            }
+
+            val brushOverMode: Cell<BrushOverMode?> =
+                state.map { it as? BrushOverMode }
 
             override val enterNextState: Stream<Tilled<State>> =
-                readyMode.divertMapOrNever { it.enterPaintingMode }
+                brushOverMode.divertMapOrNever { brushOverMode ->
+                    brushOverMode.paintReadyMode.divertMap { it.enterPaintingMode }
+                }
         },
     )
 
-    private fun buildReadyMode(brushCursor: BrushCursor): ReadyMode? {
-        val targetKnotMeshOrNull = knotMeshes.volatileContentView.firstOrNull {
-            val knotMeshKnotCoords = it.globalKnotCoords.volatileContentView
-            val adjacentKnotCoords = brushCursor.knotArea.expand(1).points()
+    private fun buildBrushOverMode(inputMode: BrushOverInputMode): BrushOverMode =
+        object : BrushOverMode {
+            override val brushCursor: Cell<BrushCursor> = inputMode.brushPosition.map { brushPositionNow ->
+                val brushKnotCoord = closestKnot(brushPositionNow)
 
-            it.knotPrototype == knotPrototype && adjacentKnotCoords.any(knotMeshKnotCoords::contains)
-        }
-
-        return targetKnotMeshOrNull?.let { targetKnotMesh ->
-            val enterPaintingMode = StreamSink<Tilled<PaintingMode>>()
-
-            object : ReadyMode {
-                override val targetKnotMesh: KnotMesh = targetKnotMesh
-
-                override val deltaKnotMesh: KnotMesh
-                    get() = TODO("Not yet implemented")
-
-                override fun paintKnots(stop: Stream<Unit>) {
-                    enterPaintingMode.send(
-                        buildPaintingMode(
-                            targetKnotMesh = targetKnotMesh,
-                            stop = stop,
-                        )
+                BrushCursor(
+                    knotArea = IntRect(
+                        position = brushKnotCoord,
+                        size = IntSize.UNIT,
                     )
+                )
+            }
+
+            override val paintReadyMode: Cell<PaintReadyMode> =
+                brushCursor.map { brushCursorNow ->
+                    buildPaintReadyMode(brushCursorNow = brushCursorNow)
                 }
 
-                override val enterPaintingMode: Stream<Tilled<PaintingMode>> =
-                    enterPaintingMode
-            }
-        }
-    }
+            private fun buildPaintReadyMode(brushCursorNow: BrushCursor): PaintReadyMode =
+                buildPaintOverReadyMode(brushCursorNow = brushCursorNow)
+                    ?: buildPaintNewReadyMode(brushCursorNow = brushCursorNow)
 
-    private fun buildPaintingMode(
-        targetKnotMesh: KnotMesh,
-        stop: Stream<Unit>,
-    ) = object : Tilled<PaintingMode> {
-        override fun build(till: Till): PaintingMode {
-            brushCursor.reactTill(till) { brushCursorNowOrNull ->
-                brushCursorNowOrNull?.let { brushCursorNow ->
-                    brushCursorNow.knotCoords.forEach { knotCoord ->
-                        targetKnotMesh.putKnot(globalKnotCoord = knotCoord)
+            private fun buildPaintOverReadyMode(brushCursorNow: BrushCursor): PaintOverReadyMode? {
+                val adjacentKnotCoords = brushCursorNow.knotArea.expand(1).points()
+
+                val targetKnotMeshOrNull = knotMeshes.volatileContentView.firstOrNull {
+                    val knotMeshKnotCoords = it.globalKnotCoords.volatileContentView
+                    it.knotPrototype == knotPrototype && adjacentKnotCoords.any(knotMeshKnotCoords::contains)
+                }
+
+                return targetKnotMeshOrNull?.let { targetKnotMesh ->
+                    val enterPaintingMode = StreamSink<Tilled<PaintingMode>>()
+
+                    object : PaintOverReadyMode {
+                        override val targetKnotMesh: KnotMesh = targetKnotMesh
+
+                        override fun paintKnots(stop: Stream<Unit>) {
+                            enterPaintingMode.send(
+                                buildPaintingMode(
+                                    paintedKnotMesh = targetKnotMesh,
+                                    stop = stop,
+                                )
+                            )
+                        }
+
+                        override val enterPaintingMode: Stream<Tilled<PaintingMode>> =
+                            enterPaintingMode
                     }
                 }
             }
 
-            return object : PaintingMode {
-                override val targetKnotMesh: KnotMesh = targetKnotMesh
+            private fun buildPaintNewReadyMode(brushCursorNow: BrushCursor): PaintNewReadyMode {
+                val enterPaintingMode = StreamSink<Tilled<PaintingMode>>()
 
-                override val enterNextState: Stream<Tilled<State>> =
-                    stop.map { buildIdleMode() }
+                return object : PaintNewReadyMode {
+                    override fun paintKnots(stop: Stream<Unit>) {
+                        val newKnotMesh = KnotMesh.createSquare(
+                            knotPrototype = knotPrototype,
+                            initialTileOffset = brushCursorNow.knotCoord,
+                            initialSideLength = 1,
+                        )
+
+                        world.insertKnotMesh(newKnotMesh)
+
+                        enterPaintingMode.send(
+                            buildPaintingMode(
+                                paintedKnotMesh = newKnotMesh,
+                                stop = stop,
+                            )
+                        )
+                    }
+
+                    override val enterPaintingMode: Stream<Tilled<PaintingMode>> =
+                        enterPaintingMode
+                }
+            }
+
+            private fun buildPaintingMode(
+                paintedKnotMesh: KnotMesh,
+                stop: Stream<Unit>,
+            ) = object : Tilled<PaintingMode> {
+                override fun build(till: Till): PaintingMode {
+                    brushCursor.reactTill(till) { brushCursorNow ->
+                        brushCursorNow.knotCoords.forEach { knotCoord ->
+                            paintedKnotMesh.putKnot(globalKnotCoord = knotCoord)
+                        }
+                    }
+
+                    return object : PaintingMode {
+                        override val paintedKnotMesh: KnotMesh = paintedKnotMesh
+
+                        override val enterNextState: Stream<Tilled<State>> =
+                            stop.map { buildIdleMode() }
+                    }
+                }
             }
         }
-    }
 
     override fun toString(): String = "KnotPaintMode()"
 }

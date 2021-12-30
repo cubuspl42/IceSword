@@ -195,7 +195,7 @@ class Editor(
     private fun buildKnotPaintMode(knotPrototype: KnotPrototype) = object : Tilled<KnotPaintMode> {
         override fun build(till: Till) = KnotPaintMode(
             knotPrototype = knotPrototype,
-            knotMeshes = world.knotMeshes,
+            world = world,
             tillExit = till,
         )
     }
@@ -289,8 +289,8 @@ class Editor(
     val knotPaintMode: Cell<KnotPaintMode?> =
         editorMode.map { it as? KnotPaintMode }
 
-    val knotPaintReadyMode = knotPaintMode.switchMapOrNull { knotPaintModeNow ->
-        knotPaintModeNow?.readyMode
+    val knotPaintOverReadyMode = knotPaintMode.switchMapOrNull { knotPaintModeNow ->
+        knotPaintModeNow?.paintOverReadyMode
     }
 
     val selectedKnotPrototype =

@@ -57,16 +57,16 @@ class KnotMeshUi private constructor(
             editor.isAreaSelectionCovered(knotMesh),
             editor.isEntitySelected(knotMesh),
             editor.editorMode,
-            editor.knotPaintReadyMode,
+            editor.knotPaintOverReadyMode,
         ) {
                 isCoveredNow,
                 isSelectedNow,
                 editorModeNow,
-                knotPaintReadyModeNow,
+                knotPaintOverReadyModeNow,
             ->
             when {
                 isCoveredNow -> Color.orange
-                knotPaintReadyModeNow?.targetKnotMesh == knotMesh -> Color.lightBlue
+                knotPaintOverReadyModeNow?.targetKnotMesh == knotMesh -> Color.lightBlue
                 isSelectedNow && editorModeNow is KnotSelectMode -> selectionColor.withAlpha(0.3)
                 isSelectedNow -> selectionColor
                 else -> {

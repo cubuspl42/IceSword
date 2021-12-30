@@ -21,7 +21,6 @@ import icesword.frp.dynamic_list.mapNotNull
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNested
-import icesword.frp.mapTillNext
 import icesword.frp.mapTillRemoved
 import icesword.frp.reactDynamicNotNullTill
 import icesword.frp.reactTill
@@ -494,13 +493,11 @@ fun setupKnotPaintModeController(
     )
 
     onMousePressed.reactDynamicNotNullTill(
-        knotPaintMode.readyMode.map { readyModeNowOrNull ->
-            readyModeNowOrNull?.let { readyModeNow ->
-                fun(mousePressedGesture: MousePressedGesture) {
-                    readyModeNow.paintKnots(
-                        stop = mousePressedGesture.released.asStream(),
-                    )
-                }
+        knotPaintMode.paintReadyMode.mapNested { paintReadyModeNow ->
+            fun(mousePressedGesture: MousePressedGesture) {
+                paintReadyModeNow.paintKnots(
+                    stop = mousePressedGesture.released.asStream(),
+                )
             }
         },
         till = tillDetach,
