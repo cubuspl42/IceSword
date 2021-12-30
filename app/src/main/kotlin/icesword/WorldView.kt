@@ -14,13 +14,16 @@ import icesword.frp.DynamicSet
 import icesword.frp.DynamicView
 import icesword.frp.Stream
 import icesword.frp.Till
+import icesword.frp.asStream
 import icesword.frp.contentDynamicView
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.mapNotNull
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNested
+import icesword.frp.mapTillNext
 import icesword.frp.mapTillRemoved
+import icesword.frp.reactDynamicNotNullTill
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
 import icesword.frp.switchMapNotNull
@@ -30,6 +33,7 @@ import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
 import icesword.html.MouseButton
 import icesword.html.MousePosition
+import icesword.html.MousePressedGesture
 import icesword.html.calculateRelativePosition
 import icesword.html.clientPosition
 import icesword.html.createHTMLElementRaw
@@ -40,6 +44,7 @@ import icesword.html.onMouseMove
 import icesword.html.onMouseUp
 import icesword.html.onWheel
 import icesword.html.trackMousePosition
+import icesword.html.trackMousePressed
 import icesword.scene.FloorSpikeRowNode
 import icesword.scene.KnotMeshUi
 import icesword.scene.Layer
@@ -468,19 +473,38 @@ fun setupKnotPaintModeController(
     root: HTMLElement,
     tillDetach: Till,
 ) {
-    root.onMouseDrag(button = MouseButton.Primary, till = tillDetach)
-        .reactTill(tillDetach) { mouseDrag ->
-            val viewportPosition =
-                mouseDrag.position.map(root::calculateRelativePosition)
+    knotPaintMode.closeInputLoop(
+        inputState = root.trackMousePosition(tillDetach).map { mousePosition ->
+            when (mousePosition) {
+                is MousePosition.Over -> object : KnotPaintMode.BrushOverInputMode {
+                    private val viewportPosition =
+                        mousePosition.position.map(root::calculateRelativePosition)
 
-            val worldPosition: Cell<IntVec2> =
-                editor.camera.transformToWorld(viewportPosition)
-
-            knotPaintMode.paintKnots(
-                brushWorldPosition = worldPosition,
-                tillStop = mouseDrag.tillEnd,
-            )
+                    override val brushPosition: Cell<IntVec2> =
+                        editor.camera.transformToWorld(viewportPosition)
+                }
+                MousePosition.Out -> KnotPaintMode.BrushOutInputMode
+            }
         }
+    )
+
+    val onMousePressed = root.trackMousePressed(
+        button = MouseButton.Primary,
+        till = tillDetach,
+    )
+
+    onMousePressed.reactDynamicNotNullTill(
+        knotPaintMode.readyMode.map { readyModeNowOrNull ->
+            readyModeNowOrNull?.let { readyModeNow ->
+                fun(mousePressedGesture: MousePressedGesture) {
+                    readyModeNow.paintKnots(
+                        stop = mousePressedGesture.released.asStream(),
+                    )
+                }
+            }
+        },
+        till = tillDetach,
+    )
 }
 
 fun setupBasicInsertionModeController(
@@ -521,7 +545,7 @@ fun setupWapObjectAlikeInsertionModeController(
 
     root.trackMousePosition(till = tillDetach)
         .reactTillNext(tillAbort = tillDetach) { mousePosition: MousePosition, tillNext: Till ->
-            if (mousePosition is MousePosition.Entered) {
+            if (mousePosition is MousePosition.Over) {
                 insertionMode.place(
                     placementWorldPoint = mousePosition.position.map {
                         calculateWorldPosition(it)

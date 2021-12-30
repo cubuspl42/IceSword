@@ -20,6 +20,13 @@ interface Stream<out A> : Observable<A> {
             tag: String,
         ): Stream<A> = SourceStream(subscribeToSource, tag = tag)
 
+        fun <A> mirror(
+            observable: Observable<A>,
+        ): Stream<A> = source(
+            observable::subscribe,
+            tag = "mirror",
+        )
+
         fun <A> merge(
             streams: Iterable<Stream<A>>,
         ): Stream<A> = StreamMerge(streams)

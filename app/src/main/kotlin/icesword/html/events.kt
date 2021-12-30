@@ -72,8 +72,8 @@ fun Element.onDragGestureStart(): Stream<DragGesture> =
     }
 
 sealed interface MousePosition {
-    value class Entered(val position: Cell<IntVec2>) : MousePosition
-    object Left : MousePosition
+    value class Over(val position: Cell<IntVec2>) : MousePosition
+    object Out : MousePosition
 }
 
 fun Element.trackMousePosition(till: Till): Cell<MousePosition> {
@@ -82,18 +82,39 @@ fun Element.trackMousePosition(till: Till): Cell<MousePosition> {
     val onLeave = this.onMouseLeave()
 
     val mousePosition = onEnter.map { enterEvent ->
-        MousePosition.Entered(
+        MousePosition.Over(
             position = onMove.map { it.clientPosition }
                 .hold(enterEvent.clientPosition, till = onLeave.tillNext(till)),
         )
     }.mergeWith(
-        onLeave.map { MousePosition.Left }
+        onLeave.map { MousePosition.Out }
     ).hold(
-        initialValue = MousePosition.Left,
+        initialValue = MousePosition.Out,
         till = till,
     )
 
     return mousePosition
+}
+
+interface MousePressedGesture {
+    val pressClientPosition: IntVec2
+
+    val released: Till
+}
+
+fun Element.trackMousePressed(button: MouseButton, till: Till): Stream<MousePressedGesture> {
+    val onMouseDown = this.onMouseDown(button = button)
+    val onMouseUp = this.onMouseUp(button = button)
+
+    return onMouseDown.map { downEvent ->
+        object : MousePressedGesture {
+            override val pressClientPosition: IntVec2 =
+                downEvent.clientPosition
+
+            override val released: Till =
+                onMouseUp.tillNext(orTill = till)
+        }
+    }
 }
 
 enum class DraggableState {

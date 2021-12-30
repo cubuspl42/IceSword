@@ -18,6 +18,15 @@ interface Cell<out A> : Behavior<A> {
         ): Cell<C> =
             CellMap2(ca, cb, f)
 
+        fun <A, B, C, D, E> map4(
+            ca: Cell<A>,
+            cb: Cell<B>,
+            cc: Cell<C>,
+            cd: Cell<D>,
+            f: (A, B, C, D) -> E,
+        ): Cell<E> =
+            CellMap4(ca, cb, cc, cd, f)
+
         fun <A> switch(ca: Cell<Cell<A>>): Cell<A> =
             CellSwitch(ca)
 
@@ -61,6 +70,9 @@ fun <A : Any, B> Cell<A?>.mapNested(f: (A) -> B): Cell<B?> =
 fun <A, B> Cell<A>.switchMap(transform: (A) -> Cell<B>): Cell<B> =
     Cell.switch(map(transform))
 
+fun <A, B : Any> Cell<A>.switchMapOrNull(transform: (A) -> Cell<B?>?): Cell<B?> =
+    this.switchMap { transform(it) ?: Cell.constant(null) }
+
 fun <A, B> Cell<A>.diffMap(transform: (A) -> List<B>): DynamicList<B> =
     DynamicList.diff(map(transform))
 
@@ -84,6 +96,9 @@ fun <A, B> Cell<A?>.switchMapNotNull(transform: (A) -> Cell<B>): Cell<B?> =
 
 fun <A, B> Cell<A>.divertMap(transform: (A) -> Stream<B>): Stream<B> =
     Cell.divert(map(transform))
+
+fun <A : Any, B> Cell<A?>.divertMapOrNever(transform: (A) -> Stream<B>): Stream<B> =
+    this.divertMap { it?.let(transform) ?: Stream.never() }
 
 fun <A> Cell<A>.reactTill(till: Till, handler: (A) -> Unit) {
     handler(sample())

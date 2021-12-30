@@ -179,6 +179,11 @@ fun <A> DynamicSet<A>.filterDynamic(test: (A) -> Cell<Boolean>): DynamicSet<A> =
         .filter { it.second }
         .distinctMap(tag = "") { it.first }
 
+fun <A> DynamicSet<A>.filterDiffed(test: Cell<(A) -> Boolean>): DynamicSet<A> =
+    DynamicSet.diff(
+        test.map { testNow -> this.filter(test = testNow) },
+    )
+
 inline fun <A, reified B : A> DynamicSet<A>.filterType(): DynamicSet<B> =
     this.distinctMapNotNull { it as? B }
 

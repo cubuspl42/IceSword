@@ -92,3 +92,5 @@ fun <A> subscribeTill(
         }
     }
 }
+
+fun Till.asStream(): Stream<Unit> = Stream.mirror(this)

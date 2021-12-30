@@ -30,6 +30,7 @@ import icesword.frp.mapNested
 import icesword.frp.mapTillNext
 import icesword.frp.switchMap
 import icesword.frp.switchMapNotNull
+import icesword.frp.switchMapOrNull
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.loadRetailTextureBank
@@ -287,6 +288,10 @@ class Editor(
 
     val knotPaintMode: Cell<KnotPaintMode?> =
         editorMode.map { it as? KnotPaintMode }
+
+    val knotPaintReadyMode = knotPaintMode.switchMapOrNull { knotPaintModeNow ->
+        knotPaintModeNow?.readyMode
+    }
 
     val selectedKnotPrototype =
         knotPaintMode.mapNested { it.knotPrototype }

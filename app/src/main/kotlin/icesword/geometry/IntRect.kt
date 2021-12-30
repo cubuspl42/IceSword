@@ -168,4 +168,9 @@ data class IntRect(
         right = xMax,
         bottom = yMax,
     )
+
+    fun expand(n: Int): IntRect = fromDiagonal(
+        topLeft - IntVec2.both(n),
+        bottomRight + IntVec2.both(n),
+    )
 }

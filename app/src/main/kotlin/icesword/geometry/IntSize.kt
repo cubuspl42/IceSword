@@ -9,6 +9,8 @@ data class IntSize(
 ) {
     companion object {
         val ZERO = IntSize(0, 0)
+
+        val UNIT = IntSize(1, 1)
     }
 
     fun toRect(position: IntVec2 = IntVec2.ZERO): IntRect =

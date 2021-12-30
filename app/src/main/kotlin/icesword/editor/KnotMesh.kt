@@ -13,6 +13,7 @@ import icesword.frp.unionMap
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
+import icesword.tileRect
 import icesword.tileTopLeftCorner
 import icesword.tilesOverlappingArea
 import kotlinx.serialization.SerialName
@@ -113,6 +114,9 @@ fun knotsAroundTile(tileCoord: IntVec2, distance: Int): List<IntVec2> {
 
 fun knotsInArea(worldArea: IntRect): List<IntVec2> =
     tilesOverlappingArea(worldArea.translate(IntVec2(-32, -32)))
+
+fun knotRect(globalKnotCoord: IntVec2): IntRect =
+    tileRect(globalKnotCoord).translate(IntVec2(32, 32))
 
 class KnotMesh(
     val knotPrototype: KnotPrototype,
