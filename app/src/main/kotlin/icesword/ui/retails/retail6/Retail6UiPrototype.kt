@@ -3,6 +3,7 @@ package icesword.ui.retails.retail6
 import icesword.createInsertElasticButton
 import icesword.createInsertEntityButton
 import icesword.createInsertKnotMeshButton
+import icesword.createKnotPaintButton
 import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
 import icesword.editor.KnotPrototype
@@ -141,14 +142,14 @@ object Retail6UiPrototype : RetailUiPrototype {
             imagePath = "images/CLAW/LEVEL6/TILES/ACTION/128.png",
             tillDetach = tillDetach,
         ),
-        createInsertKnotMeshButton(
-            editor = editor,
-            knotPrototype = KnotPrototype.Retail6BricksPrototype,
-            imagePath = "images/CLAW/LEVEL6/TILES/ACTION/102.png",
-            tillDetach = tillDetach,
-        ),
     )
 
     override fun buildBrushesButtons(editor: Editor): List<HTMLWidgetB<*>> =
-        emptyList()
+        listOf(
+            createKnotPaintButton(
+                editor = editor,
+                knotPrototype = KnotPrototype.Retail6BricksPrototype,
+                imagePath = "images/CLAW/LEVEL6/TILES/ACTION/102.png",
+            ),
+        )
 }

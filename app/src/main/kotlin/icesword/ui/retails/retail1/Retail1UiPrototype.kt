@@ -5,6 +5,7 @@ import icesword.createInsertEnemyButton
 import icesword.createInsertEntityButton
 import icesword.createInsertKnotMeshButton
 import icesword.createInsertWapObjectButton
+import icesword.createKnotPaintButton
 import icesword.editor.elastic.prototype.Retail1ColumnPrototype
 import icesword.editor.CrateStackPrototype
 import icesword.editor.Editor
@@ -116,12 +117,6 @@ object Retail1UiPrototype : RetailUiPrototype {
             ),
             tillDetach = tillDetach,
         ),
-        createInsertKnotMeshButton(
-            editor = editor,
-            knotPrototype = KnotPrototype.Level1Foundation,
-            imagePath = "images/CLAW/LEVEL1/TILES/ACTION/303.png",
-            tillDetach = tillDetach,
-        ),
         createInsertElasticButton(
             editor = editor,
             prototype = Retail1PlatformPrototype,
@@ -168,5 +163,11 @@ object Retail1UiPrototype : RetailUiPrototype {
     )
 
     override fun buildBrushesButtons(editor: Editor): List<HTMLWidgetB<*>> =
-        emptyList()
+        listOf(
+            createKnotPaintButton(
+                editor = editor,
+                knotPrototype = KnotPrototype.Level1Foundation,
+                imagePath = "images/CLAW/LEVEL1/TILES/ACTION/303.png",
+            ),
+        )
 }
