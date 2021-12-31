@@ -94,10 +94,10 @@ fun worldView(
 
     root.onMouseDrag(button = MouseButton.Secondary, till = tillDetach)
         .reactTill(tillDetach) { mouseDrag ->
-            val initialClientPosition = mouseDrag.position.sample()
+            val initialClientPosition = mouseDrag.clientPosition.sample()
 
             val offsetDelta = Cell.map2(
-                mouseDrag.position,
+                mouseDrag.clientPosition,
                 editor.camera.zoom,
             ) { clientPosition, zoom ->
                 val clientPositionDelta = initialClientPosition - clientPosition
@@ -106,7 +106,7 @@ fun worldView(
 
             editor.camera.drag(
                 offsetDelta = offsetDelta,
-                tillStop = mouseDrag.tillEnd,
+                tillStop = mouseDrag.released,
             )
         }
 
@@ -454,14 +454,14 @@ fun setupKnotBrushToolController(
     root.onMouseDrag(button = MouseButton.Primary, till = tillDetach)
         .reactTill(tillDetach) { mouseDrag ->
             val viewportPosition =
-                mouseDrag.position.map(root::calculateRelativePosition)
+                mouseDrag.clientPosition.map(root::calculateRelativePosition)
 
             val knotCoord: Cell<IntVec2> =
                 editor.camera.transformToWorld(viewportPosition)
 
             knotBrushMode.paintKnots(
                 knotCoord = knotCoord,
-                till = mouseDrag.tillEnd,
+                till = mouseDrag.released,
             )
         }
 }
@@ -569,9 +569,10 @@ private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
 
 
 class MouseDrag(
-    val position: Cell<IntVec2>,
-    val onEnd: Stream<Unit>,
-    val tillEnd: Till,
+    val clientPosition: Cell<IntVec2>,
+    val relativePosition: Cell<IntVec2>,
+    val onReleased: Stream<Unit>,
+    val released: Till,
 ) {
     companion object {
         fun start(
@@ -584,15 +585,19 @@ class MouseDrag(
 
             val tillEnd = onEnd.tillNext(tillAbort)
 
-            val position = element.onMouseMove().map { it.clientPosition }
+            val clientPosition = element.onMouseMove().map { it.clientPosition }
                 .hold(initialPosition, till = tillEnd)
 
+            val relativePosition = clientPosition.map(element::calculateRelativePosition)
+
             return MouseDrag(
-                position = position,
-                onEnd = onEnd,
-                tillEnd = tillEnd,
+                clientPosition = clientPosition,
+                relativePosition = relativePosition,
+                onReleased = onEnd,
+                released = tillEnd,
             )
         }
     }
+
 }
 

@@ -5,7 +5,7 @@ import icesword.geometry.IntVec2
 import kotlinx.serialization.Serializable
 
 @Serializable
-value class ImageSetId(
+data class ImageSetId(
     val fullyQualifiedId: String,
 ) {
     companion object {

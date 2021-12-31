@@ -6,8 +6,6 @@ import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.map
-import icesword.frp.mergeWith
-import icesword.frp.reactTill
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 
@@ -59,7 +57,6 @@ class SelectMode<
             anchorWorldCoord: IntVec2,
             targetWorldCoord: Cell<IntVec2>,
             confirm: Stream<Unit>,
-            abort: Stream<Unit>,
         ) {
             val selectionArea: Cell<IntRect> =
                 targetWorldCoord.map { target ->
@@ -79,7 +76,6 @@ class SelectMode<
                         ),
                         selectionArea = selectionArea,
                         confirm = confirm,
-                        abort = abort,
                         tillExit = till,
                     )
                 }
@@ -93,23 +89,13 @@ class SelectMode<
         val subMode: SubAreaSelectingMode,
         val selectionArea: Cell<IntRect>,
         confirm: Stream<Unit>,
-        abort: Stream<Unit>,
         tillExit: Till,
     ) : SelectModeState() {
-        val enterIdleMode: Stream<Tilled<IdleMode>> =
-            confirm.mergeWith(abort).map {
-                object : Tilled<IdleMode> {
-                    override fun build(till: Till): SelectMode<SubAreaSelectingMode>.IdleMode =
-                        IdleMode()
-                }
+        val enterIdleMode: Stream<Tilled<IdleMode>> = confirm.map {
+            object : Tilled<IdleMode> {
+                override fun build(till: Till): SelectMode<SubAreaSelectingMode>.IdleMode =
+                    IdleMode()
             }
-
-//        protected abstract fun onConfirm()
-
-        fun onConfirm() {}
-
-        init {
-            confirm.reactTill(till = tillExit) { onConfirm() }
         }
 
         override fun toString(): String = "AreaSelectingMode()"

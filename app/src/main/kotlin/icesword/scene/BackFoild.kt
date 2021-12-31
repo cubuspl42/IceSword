@@ -4,14 +4,10 @@ import icesword.editor.Editor
 import icesword.editor.EntitySelectMode
 import icesword.editor.KnotSelectMode
 import icesword.editor.SelectMode
-import icesword.frp.Stream
 import icesword.frp.Till
-import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
-import icesword.geometry.IntVec2
 import icesword.html.MouseButton
-import icesword.html.calculateRelativePosition
 import icesword.html.onMouseDrag
 import kotlinx.browser.document
 import org.w3c.dom.Element
@@ -63,33 +59,19 @@ private fun setupSelectModeController(
     selectMode: SelectMode<*>,
     tillDetach: Till,
 ) {
-    val world = editor.world
-
-    fun calculateWorldPosition(clientPosition: IntVec2): IntVec2 {
-        val viewportPosition =
-            element.calculateRelativePosition(clientPosition)
-
-        val worldPosition: IntVec2 =
-            editor.camera.transformToWorld(cameraPoint = viewportPosition).sample()
-
-        return worldPosition
-    }
-
-    val button = MouseButton.Primary
-
     element.onMouseDrag(
-        button = button,
+        button = MouseButton.Primary,
         outer = viewport,
         till = tillDetach
-    )
-        .reactTill(tillDetach) { mouseDrag ->
-            (selectMode.state.sample() as? SelectMode.IdleMode)?.selectArea(
-                anchorWorldCoord = calculateWorldPosition(
-                    clientPosition = mouseDrag.position.sample()
-                ),
-                targetWorldCoord = mouseDrag.position.map(::calculateWorldPosition),
-                confirm = mouseDrag.onEnd,
-                abort = Stream.never(), // FIXME?
-            )
-        }
+    ).reactTill(tillDetach) { mouseDrag ->
+        val worldPosition = editor.camera.transformToWorld(
+            cameraPoint = mouseDrag.relativePosition,
+        )
+
+        (selectMode.state.sample() as? SelectMode.IdleMode)?.selectArea(
+            anchorWorldCoord = worldPosition.sample(),
+            targetWorldCoord = worldPosition,
+            confirm = mouseDrag.onReleased,
+        )
+    }
 }

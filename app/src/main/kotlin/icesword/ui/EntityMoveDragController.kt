@@ -49,7 +49,7 @@ class EntityMoveDragController(
 
         val world = editor.world
 
-        val worldPosition = editor.camera.transformToWorld(mouseDrag.position)
+        val worldPosition = editor.camera.transformToWorld(mouseDrag.clientPosition)
         val initialWorldPosition = worldPosition.sample()
         val positionDelta = worldPosition.map {
             (it - initialWorldPosition)
@@ -57,7 +57,7 @@ class EntityMoveDragController(
 
         editor.moveSelectedEntities(
             positionDelta = positionDelta,
-            tillStop = mouseDrag.tillEnd,
+            tillStop = mouseDrag.released,
         )
     }
 }
@@ -75,12 +75,12 @@ fun setupMoveController(
         filterTarget = true,
         till = till,
     ).reactTill(till) { mouseDrag ->
-        val worldPosition = viewTransform.inversed.transform(mouseDrag.position)
+        val worldPosition = viewTransform.inversed.transform(mouseDrag.clientPosition)
         val initialWorldPosition = worldPosition.sample()
         val positionDelta = worldPosition.map {
             (it - initialWorldPosition)
         }
 
-        move(positionDelta, mouseDrag.tillEnd)
+        move(positionDelta, mouseDrag.released)
     }
 }

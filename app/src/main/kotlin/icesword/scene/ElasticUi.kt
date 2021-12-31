@@ -195,7 +195,7 @@ private fun createElasticOverlayElement(
             outer = viewport,
             till = tillDetach,
         ).reactTill(tillDetach) { mouseDrag ->
-            val worldPosition = viewTransform.inversed.transform(mouseDrag.position)
+            val worldPosition = viewTransform.inversed.transform(mouseDrag.clientPosition)
 
             val initialPosition = worldPosition.sample()
 
@@ -207,7 +207,7 @@ private fun createElasticOverlayElement(
 
             resize(
                 deltaTileCoord,
-                mouseDrag.tillEnd,
+                mouseDrag.released,
             )
         }
 

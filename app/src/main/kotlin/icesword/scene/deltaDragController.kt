@@ -29,7 +29,7 @@ fun setupDeltaDragController(
         till = tillDetach,
     ).reactTill(tillDetach) { mouseDrag ->
         val worldPointerPosition = reverseTransform.transform(
-            point = mouseDrag.position,
+            point = mouseDrag.clientPosition,
         )
 
         val initialWorldPosition = worldPointerPosition.sample()
@@ -40,7 +40,7 @@ fun setupDeltaDragController(
 
         apply(
             worldDelta,
-            mouseDrag.tillEnd,
+            mouseDrag.released,
         )
     }
 }
