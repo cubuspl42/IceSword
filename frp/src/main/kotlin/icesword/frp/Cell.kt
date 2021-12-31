@@ -18,6 +18,14 @@ interface Cell<out A> : Behavior<A> {
         ): Cell<C> =
             CellMap2(ca, cb, f)
 
+        fun <A, B, C, D> map3(
+            ca: Cell<A>,
+            cb: Cell<B>,
+            cc: Cell<C>,
+            f: (A, B, C) -> D,
+        ): Cell<D> =
+            CellMap3(ca, cb, cc, f)
+
         fun <A, B, C, D, E> map4(
             ca: Cell<A>,
             cb: Cell<B>,
@@ -36,7 +44,6 @@ interface Cell<out A> : Behavior<A> {
         private fun <A> sequence(lca: List<Cell<A>>): Cell<List<A>> =
             CellSequenceList(lca)
 
-        //
         fun <A, B> traverse(lca: Iterable<A>, f: (A) -> Cell<B>): Cell<List<B>> =
             sequence(lca.map { f(it) })
 

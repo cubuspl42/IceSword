@@ -28,6 +28,7 @@ import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
 import icesword.html.onMouseDrag
 import icesword.tileRect
+import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
 import org.w3c.dom.CanvasRenderingContext2D
@@ -267,18 +268,26 @@ fun createEntityFrameElement(
         outer = outer,
         till = tillDetach,
     ) { context ->
-        val isAreaSelectionCovered = editor.isAreaSelectionCovered(entity)
+        val isBeingSelected = editor.isEntityBeingSelected(entity)
+
+        val isSelectedInProjection = editor.isEntitySelectedInProjection(entity)
 
         val isSelected = editor.isEntitySelected(entity)
 
-        val stroke = Cell.map2(
+        val stroke: Cell<Color> = Cell.map3(
+            isSelectedInProjection,
             isSelected,
-            isAreaSelectionCovered,
-        ) { isSel, isCovered ->
+            isBeingSelected,
+        ) {
+                isSelectedInProjectionNow,
+                isSelectedNow,
+                isBeingSelectedNow,
+            ->
             when {
-                isCovered -> "orange"
-                isSel -> "red"
-                else -> "none"
+                isBeingSelectedNow -> Color.orange
+                isSelectedNow -> Color.red
+                isSelectedInProjectionNow -> Color.blue
+                else -> Color.transparent
             }
         }
 
@@ -286,7 +295,7 @@ fun createEntityFrameElement(
             svg = svg,
             size = boundingBox.map { it.size },
             translate = boundingBox.map { it.position },
-            strokeString = stroke,
+            stroke = stroke,
             style = DynamicStyleDeclaration(
                 pointerEvents = context.map { it.pointerEvents },
                 cursor = context.map { it.cursor },

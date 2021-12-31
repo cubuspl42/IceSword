@@ -2,17 +2,18 @@ package icesword.scene
 
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.EditorMode
+import icesword.editor.EntitySelectMode
 import icesword.editor.KnotPaintMode
 import icesword.editor.knotRect
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.map
 import icesword.frp.mapNested
+import icesword.frp.switchMapNested
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.createSvgRectR
 import icesword.html.createSvgSwitch
 import kotlinx.css.Color
 import kotlinx.css.PointerEvents
-import kotlinx.css.style
 import org.w3c.dom.svg.SVGElement
 
 fun createEditorModeModeNode(
@@ -20,6 +21,7 @@ fun createEditorModeModeNode(
 ): HybridNode? = when (editorMode) {
     is EditPathElevatorMode -> EditPathElevatorModeNode(editorMode)
     is KnotPaintMode -> KnotPaintModeNode(editorMode)
+    is EntitySelectMode -> EntitySelectModeNode(entitySelectMode = editorMode)
     else -> null
 }
 
@@ -63,6 +65,30 @@ class KnotPaintModeNode(
 
         createSvgSwitch(
             child = brushElement,
+            tillDetach = tillDetach,
+        )
+    }
+}
+
+class EntitySelectModeNode(
+    private val entitySelectMode: EntitySelectMode,
+) : HybridNode() {
+    override fun buildOverlayElement(context: OverlayBuildContext): SVGElement = context.run {
+        val selectionAreaRect = entitySelectMode.selectingMode
+            .switchMapNested { selectingModeNow ->
+                selectingModeNow.selectionForm.map { it as? EntitySelectMode.AreaSelection }
+            }
+            .mapNested { areaSelection ->
+                createAreaSelectionRectElement(
+                    svg = svg,
+                    viewTransform = viewTransform,
+                    worldArea = constant(areaSelection.worldArea),
+                    tillDetach = tillDetach,
+                )
+            }
+
+        createSvgSwitch(
+            child = selectionAreaRect,
             tillDetach = tillDetach,
         )
     }

@@ -3,6 +3,7 @@ package icesword
 
 import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
+import icesword.editor.EntitySelectMode
 import icesword.editor.InsertWapObjectCommand
 import icesword.editor.KnotBrushMode
 import icesword.editor.KnotPaintMode
@@ -25,6 +26,7 @@ import icesword.frp.mapTillRemoved
 import icesword.frp.reactDynamicNotNullTill
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
+import icesword.frp.switchMap
 import icesword.frp.switchMapNotNull
 import icesword.frp.tillNext
 import icesword.frp.units
@@ -112,6 +114,12 @@ fun worldView(
 
     editor.editorMode.reactTillNext(tillDetach) { mode, tillNext ->
         when (mode) {
+            is EntitySelectMode -> setupEntitySelectModeController(
+                editor = editor,
+                entitySelectMode = mode,
+                root = root,
+                tillDetach = tillNext,
+            )
             Tool.MOVE -> setupMoveToolController(
                 editor = editor,
                 root = root,
@@ -394,18 +402,6 @@ fun worldView(
                                         )
                                     },
                                     DynamicSet.ofSingle(
-                                        editor.entitySelectMode.switchMapNotNull {
-                                            it.areaSelectingMode.mapNested { areaSelectingMode ->
-                                                createAreaSelectionOverlayElement(
-                                                    svg = svg,
-                                                    viewTransform = dynamicViewTransform,
-                                                    areaSelectingMode = areaSelectingMode,
-                                                    tillDetach = tillDetach,
-                                                )
-                                            }
-                                        }
-                                    ),
-                                    DynamicSet.ofSingle(
                                         editor.knotSelectMode.switchMapNotNull {
                                             it.selectMode.areaSelectingMode.mapNested { areaSelectingMode ->
                                                 createAreaSelectionOverlayElement(
@@ -425,6 +421,50 @@ fun worldView(
             },
         )
     }
+}
+
+fun setupEntitySelectModeController(
+    editor: Editor,
+    entitySelectMode: EntitySelectMode,
+    root: HTMLElement,
+    tillDetach: Till,
+) {
+    entitySelectMode.closeInputLoop(
+        object : EntitySelectMode.Input {
+            override val cursorWorldPosition: Cell<IntVec2?> =
+                root.trackMousePosition(tillDetach).switchMap { mousePosition: MousePosition ->
+                    when (mousePosition) {
+                        is MousePosition.Over -> editor.camera.transformToWorld(
+                            cameraPoint = mousePosition.relativePosition,
+                        )
+                        MousePosition.Out -> Cell.constant(null)
+                    }
+                }
+
+            override val enableAddModifier: Cell<Boolean> = Cell.constant(false)
+
+            override val enableSubtractModifier: Cell<Boolean> = Cell.constant(false)
+        },
+    )
+
+    root.onMouseDrag(
+        button = MouseButton.Primary,
+        till = tillDetach
+    ).reactDynamicNotNullTill(
+        entitySelectMode.idleMode.mapNested { idleMode ->
+            { mouseDrag ->
+                val worldPosition = editor.camera.transformToWorld(
+                    cameraPoint = mouseDrag.relativePosition,
+                )
+                idleMode.select(
+                    worldAnchor = worldPosition.sample(),
+                    worldTarget = worldPosition,
+                    commit = mouseDrag.onReleased,
+                )
+            }
+        },
+        till = tillDetach,
+    )
 }
 
 fun setupMoveToolController(
@@ -477,7 +517,7 @@ fun setupKnotPaintModeController(
             when (mousePosition) {
                 is MousePosition.Over -> object : KnotPaintMode.BrushOverInputMode {
                     private val viewportPosition =
-                        mousePosition.position.map(root::calculateRelativePosition)
+                        mousePosition.clientPosition.map(root::calculateRelativePosition)
 
                     override val brushPosition: Cell<IntVec2> =
                         editor.camera.transformToWorld(viewportPosition)
@@ -544,7 +584,7 @@ fun setupWapObjectAlikeInsertionModeController(
         .reactTillNext(tillAbort = tillDetach) { mousePosition: MousePosition, tillNext: Till ->
             if (mousePosition is MousePosition.Over) {
                 insertionMode.place(
-                    placementWorldPoint = mousePosition.position.map {
+                    placementWorldPoint = mousePosition.clientPosition.map {
                         calculateWorldPosition(it)
                     },
                     insert = root.onMouseDown(button = MouseButton.Primary).map { event ->

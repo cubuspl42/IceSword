@@ -29,6 +29,50 @@ class CellMap2<A, B, C>(
     }
 }
 
+class CellMap3<A, B, C, D>(
+    private val ca: Cell<A>,
+    private val cb: Cell<B>,
+    private val cc: Cell<C>,
+    private val f: (A, B, C) -> D,
+) : CachingCell<D>(tag = "CellMap3") {
+    private var subscriptionA: Subscription? = null
+    private var subscriptionB: Subscription? = null
+    private var subscriptionC: Subscription? = null
+
+    override fun sampleUncached(): D = f(
+        ca.sample(),
+        cb.sample(),
+        cc.sample(),
+    )
+
+    override fun onStartUncached(): Unit {
+        subscriptionA = ca.values().subscribe {
+            cacheAndNotifyListeners(f(it, cb.sample(), cc.sample()))
+        }
+
+        subscriptionB = cb.values().subscribe {
+            cacheAndNotifyListeners(f(ca.sample(), it, cc.sample()))
+        }
+
+        subscriptionC = cc.values().subscribe {
+            cacheAndNotifyListeners(f(ca.sample(), cb.sample(), it))
+        }
+
+    }
+
+    override fun onStopUncached() {
+        subscriptionC!!.unsubscribe()
+        subscriptionC = null
+
+        subscriptionB!!.unsubscribe()
+        subscriptionB = null
+
+        subscriptionA!!.unsubscribe()
+        subscriptionA = null
+    }
+}
+
+
 class CellMap4<A, B, C, D, E>(
     private val ca: Cell<A>,
     private val cb: Cell<B>,

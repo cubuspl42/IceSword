@@ -32,13 +32,6 @@ fun createBackFoilOverlayElement(
 
     editor.editorMode.reactTillNext(tillDetach) { mode, tillNext ->
         when (mode) {
-            is EntitySelectMode -> setupSelectModeController(
-                editor = editor,
-                viewport = viewport,
-                element = foil,
-                selectMode = mode.selectMode,
-                tillDetach = tillNext,
-            )
             is KnotSelectMode -> setupSelectModeController(
                 editor = editor,
                 viewport = viewport,

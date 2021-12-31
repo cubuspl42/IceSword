@@ -32,7 +32,7 @@ interface DynamicMap<K, V> {
 
         fun <K, V> diff(
             content: Cell<Map<K, V>>,
-            tag: String,
+            tag: String = "diff",
         ): DynamicMap<K, V> =
             DiffDynamicMap(
                 content,
@@ -128,6 +128,9 @@ interface DynamicMap<K, V> {
 
     }
 }
+
+fun <K, V> staticMapOf(vararg pairs: Pair<K, V>): DynamicMap<K, V> =
+    DynamicMap.of(mapOf(*pairs))
 
 //val <K, V> DynamicMap<K, V>.entries: DynamicSet<Map.Entry<K, V>>
 //    get() = DynamicSet.diff(

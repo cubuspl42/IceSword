@@ -54,7 +54,7 @@ class KnotMeshUi private constructor(
             }
         ),
         strokeColor = Cell.map4(
-            editor.isAreaSelectionCovered(knotMesh),
+            editor.isEntityBeingSelected(knotMesh),
             editor.isEntitySelected(knotMesh),
             editor.editorMode,
             editor.knotPaintOverReadyMode,

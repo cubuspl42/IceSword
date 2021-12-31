@@ -72,8 +72,14 @@ fun Element.onDragGestureStart(): Stream<DragGesture> =
     }
 
 sealed interface MousePosition {
-    value class Over(val position: Cell<IntVec2>) : MousePosition
-    object Out : MousePosition
+    data class Over(
+        val clientPosition: Cell<IntVec2>,
+        val relativePosition: Cell<IntVec2>,
+    ) : MousePosition
+
+    object Out : MousePosition {
+        override fun toString(): String = "Out"
+    }
 }
 
 fun Element.trackMousePosition(till: Till): Cell<MousePosition> {
@@ -82,9 +88,14 @@ fun Element.trackMousePosition(till: Till): Cell<MousePosition> {
     val onLeave = this.onMouseLeave()
 
     val mousePosition = onEnter.map { enterEvent ->
+        val clientPosition = onMove.map { it.clientPosition }
+            .hold(enterEvent.clientPosition, till = onLeave.tillNext(till))
+
+        val relativePosition = clientPosition.map(this::calculateRelativePosition)
+
         MousePosition.Over(
-            position = onMove.map { it.clientPosition }
-                .hold(enterEvent.clientPosition, till = onLeave.tillNext(till)),
+            clientPosition = clientPosition,
+            relativePosition = relativePosition,
         )
     }.mergeWith(
         onLeave.map { MousePosition.Out }

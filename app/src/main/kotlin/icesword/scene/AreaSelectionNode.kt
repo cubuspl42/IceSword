@@ -1,8 +1,10 @@
 package icesword.scene
 
 import icesword.editor.SelectMode
+import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.geometry.DynamicTransform
+import icesword.geometry.IntRect
 import icesword.html.createSvgRectR
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
@@ -12,10 +14,20 @@ fun createAreaSelectionOverlayElement(
     viewTransform: DynamicTransform,
     areaSelectingMode: SelectMode<*>.AreaSelectingMode,
     tillDetach: Till,
-): SVGElement {
-    val rect = areaSelectingMode.selectionArea
+): SVGElement = createAreaSelectionRectElement(
+    svg = svg,
+    viewTransform = viewTransform,
+    worldArea = areaSelectingMode.selectionArea,
+    tillDetach = tillDetach,
+)
 
-    val viewRect = viewTransform.transform(rect)
+fun createAreaSelectionRectElement(
+    svg: SVGSVGElement,
+    viewTransform: DynamicTransform,
+    worldArea: Cell<IntRect>,
+    tillDetach: Till,
+): SVGElement {
+    val viewRect = viewTransform.transform(worldArea)
 
     return createSvgRectR(
         svg = svg,

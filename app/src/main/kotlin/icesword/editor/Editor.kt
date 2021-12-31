@@ -8,15 +8,14 @@ import icesword.RezIndex
 import icesword.RezTextureBank
 import icesword.TILE_SIZE
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
-import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
-import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
-import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
-import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
-import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
-import icesword.editor.EntitySelectMode.EntityAreaSelectingMode
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
+import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
+import icesword.editor.InsertionPrototype.HorizontalElevatorInsertionPrototype
+import icesword.editor.InsertionPrototype.KnotMeshInsertionPrototype
 import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
+import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectAlikeInsertionPrototype
+import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.MutCell
@@ -24,12 +23,11 @@ import icesword.frp.Stream
 import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
-import icesword.frp.contains
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.mapTillNext
 import icesword.frp.switchMap
-import icesword.frp.switchMapNotNull
+import icesword.frp.switchMapNested
 import icesword.frp.switchMapOrNull
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -40,12 +38,12 @@ import icesword.wwd.OutputDataStream.OutputStream
 import icesword.wwd.Wwd
 import kotlinx.browser.document
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.w3c.dom.HTMLAnchorElement
 import org.w3c.dom.url.URL
 import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
-import kotlinx.serialization.encodeToString
 
 interface EditorMode
 
@@ -283,6 +281,13 @@ class Editor(
     val entitySelectMode: Cell<EntitySelectMode?> =
         editorMode.map { it as? EntitySelectMode }
 
+
+    val entitySelectIdleMode: Cell<EntitySelectMode.IdleMode?> =
+        entitySelectMode.switchMapNested { it.idleMode }
+
+    val entitySelectSelectingMode: Cell<EntitySelectMode.SelectingMode?> =
+        entitySelectMode.switchMapNested { it.selectingMode }
+
     val knotSelectMode: Cell<KnotSelectMode?> =
         editorMode.map { it as? KnotSelectMode }
 
@@ -296,13 +301,9 @@ class Editor(
     val selectedKnotPrototype =
         knotPaintMode.mapNested { it.knotPrototype }
 
-    private val entityAreaSelectingMode: Cell<EntityAreaSelectingMode?> =
-        entitySelectMode.switchMapNotNull { it.entityAreaSelectingMode }
-
-    fun isAreaSelectionCovered(entity: Entity): Cell<Boolean> =
-        entityAreaSelectingMode.switchMap {
-            it?.coveredEntities?.contains(entity) ?: Cell.constant(false)
-        }
+    fun isEntityBeingSelected(entity: Entity): Cell<Boolean> =
+        entitySelectSelectingMode.switchMapNested { it.selectionModification }
+            .switchMapNested { it.isEntitySelected(entity) }.map { it ?: false }
 
     fun enterMoveMode() {
         selectTool(Tool.MOVE)
@@ -420,36 +421,17 @@ class Editor(
             }
         }
 
-    fun selectEntitiesByArea(
-        entities: Set<Entity>,
-        selectionArea: IntRect,
-    ) {
-        val viewTransform = camera.transform.transform.sample()
-        val viewSelectionArea = viewTransform.transform(selectionArea)
-
-        if (viewSelectionArea.area > 4) {
-            _selectedEntities.set(entities)
-        } else {
-            // If selection area is very small, let's assume the intention was
-            // to select the next entity, not perform actual area selection
-
-            val selectedEntities = this.selectedEntities.sample()
-
-            val entitiesInArea = this.world.entities.volatileContentView
-                .filter { it.isSelectableIn(selectionArea) }
-
-            if (entitiesInArea.isEmpty()) {
-                _selectedEntities.set(emptySet())
-            } else {
-                val entityToSelect = selectedEntities.singleOrNull()?.let { selectedEntity ->
-                    val selectedEntityIndex = entitiesInArea.indexOfOrNull(selectedEntity)
-                    selectedEntityIndex?.let { entitiesInArea[(it + 1) % entitiesInArea.size] }
-                } ?: entitiesInArea.first()
-
-                _selectedEntities.set(setOf(entityToSelect))
-            }
-        }
+    fun selectEntities(entities: Iterable<Entity>) {
+        _selectedEntities.set(entities.toSet())
     }
+
+    fun isEntitySelectedInProjection(entity: Entity): Cell<Boolean> =
+        entitySelectIdleMode.switchMapNested { idleMode ->
+            idleMode.projectedSelectionModification.map { it?.stateAdjustments }
+        }.switchMap { stateAdjustments ->
+            stateAdjustments?.get(entity)?.map { it == EntitySelectMode.SelectionState.Selected }
+                ?: Cell.constant(false)
+        }
 
     fun isEntitySelected(entity: Entity): Cell<Boolean> =
         selectedEntities.map { it.contains(entity) }
@@ -586,7 +568,7 @@ class Editor(
     }
 }
 
-private fun <T> Iterable<T>.indexOfOrNull(element: T?): Int? {
+fun <T> Iterable<T>.indexOfOrNull(element: T?): Int? {
     val i = this.indexOf(element)
     return when {
         i >= 0 -> i
