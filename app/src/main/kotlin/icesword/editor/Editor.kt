@@ -277,11 +277,17 @@ class Editor(
 
     val selectedTool: Cell<Tool?> = editorMode.map { it as? Tool }
 
-    val entitySelectMode: Cell<EntitySelectMode?> =
+    private val entitySelectMode: Cell<EntitySelectMode?> =
         editorMode.map { it as? EntitySelectMode }
 
-    val entitySelectModeState: Cell<EntitySelectMode.State?> =
+    private val entitySelectModeState: Cell<EntitySelectMode.State?> =
         entitySelectMode.switchMapNested { it.state }
+
+    private val entitySelectIdleMode: Cell<EntitySelectMode.IdleMode?> =
+        entitySelectModeState.map { it as? EntitySelectMode.IdleMode }
+
+    private val entitySelectSelectingMode: Cell<EntitySelectMode.SelectingMode?> =
+        entitySelectModeState.map { it as? EntitySelectMode.SelectingMode }
 
     val knotSelectMode: Cell<KnotSelectMode?> =
         editorMode.map { it as? KnotSelectMode }
@@ -437,9 +443,14 @@ class Editor(
     fun isEntitySelected(entity: Entity): Cell<Boolean> =
         selectedEntities.map { it.contains(entity) }
 
+    fun isEntityFocused(entity: Entity): Cell<Boolean> =
+        entitySelectIdleMode.switchMapNested { idleMode ->
+            idleMode.focusedEntity.map { it == entity }
+        }.map { it ?: false }
+
     fun projectEntitySelectionState(entity: Entity): Cell<EntitySelectMode.SelectionState?> =
-        entitySelectModeState.switchMapNested { state ->
-            state.selectionProjection.switchMapNested { it.projectEntitySelectionState(entity) }
+        entitySelectSelectingMode.switchMapNested { selectingMode ->
+            selectingMode.selectionProjection.switchMapNested { it.projectEntitySelectionState(entity) }
         }
 
     fun moveSelectedEntities(

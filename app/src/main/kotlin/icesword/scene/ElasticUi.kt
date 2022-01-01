@@ -204,7 +204,7 @@ private fun createElasticOverlayElement(
                 isSelectedNow,
                 dragHandlerNow,
             ->
-            val color = if (isSelectedNow) Color.red else Color.transparent
+            val color = if (isSelectedNow) Color.red else Color.lightGray
             val alpha = if (dragHandlerNow != null) 1.0 else 0.3
 
             color.withAlpha(alpha)
@@ -293,18 +293,24 @@ fun createEntityFrameElement(
         outer = outer,
         till = tillDetach,
     ) { context ->
-        val projectedSelectionState = editor.projectEntitySelectionState(entity)
 
         val isSelected = editor.isEntitySelected(entity)
 
-        val stroke: Cell<Color> = Cell.map2(
+        val isFocused = editor.isEntityFocused(entity)
+
+        val projectedSelectionState = editor.projectEntitySelectionState(entity)
+
+        val stroke: Cell<Color> = Cell.map3(
             isSelected,
+            isFocused,
             projectedSelectionState,
         ) {
                 isSelectedNow,
+                isFocusedNow,
                 projectedSelectionStateNow,
             ->
             when {
+                isFocusedNow -> Color.blue
                 isSelectedNow && projectedSelectionStateNow == SelectionState.NonSelected ->
                     Color.red.withAlpha(0.3)
                 isSelectedNow || projectedSelectionStateNow == SelectionState.Selected -> Color.red

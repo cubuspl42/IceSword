@@ -119,13 +119,11 @@ class EntitySelectMode(
     }
 
     sealed interface State {
-        val selectionProjection: Cell<SelectionProjection?>
-
         val enterNextMode: Stream<Tilled<State>>
     }
 
     interface IdleMode : State {
-        override val selectionProjection: Cell<SelectionProjection?>
+        val focusedEntity: Cell<Entity?>
 
         fun select(
             worldAnchor: IntVec2,
@@ -137,7 +135,7 @@ class EntitySelectMode(
     interface SelectingMode : State {
         val selectionForm: Cell<SelectionForm>
 
-        override val selectionProjection: Cell<SelectionProjection?>
+        val selectionProjection: Cell<SelectionProjection?>
     }
 
     private val inputLoop: CellLoop<Input> =
@@ -174,38 +172,39 @@ class EntitySelectMode(
             it.isSelectableIn(area)
         }
 
-    private fun buildPointSelectionModification(worldPoint: IntVec2): SelectionProjection? {
+    private fun findFocusedEntity(worldPoint: IntVec2): Entity? {
         val entitiesAtPoint = findEntitiesAtPoint(worldPoint = worldPoint)
         val selectedEntitiesAtPoint = entitiesAtPoint.filter { editor.isEntitySelected(it).sample() }
 
-        val entityToSelectOrNull = selectedEntitiesAtPoint.singleOrNull()?.let { singleSelectedEntity ->
+        val focusedEntityOrNull = selectedEntitiesAtPoint.singleOrNull()?.let { singleSelectedEntity ->
             val selectedEntityIndex = entitiesAtPoint.indexOfOrNull(singleSelectedEntity)
             selectedEntityIndex?.let { entitiesAtPoint[(it + 1) % entitiesAtPoint.size] }
         } ?: entitiesAtPoint.firstOrNull()
 
-        return entityToSelectOrNull?.let { entityToSelect ->
+        return focusedEntityOrNull
+    }
+
+    private fun buildPointSelectionModification(worldPoint: IntVec2): SelectionProjection? =
+        findFocusedEntity(worldPoint = worldPoint)?.let { focusedEntity ->
             SelectionProjection(
-                consideredEntities = setOf(entityToSelect),
+                consideredEntities = setOf(focusedEntity),
             )
         }
-    }
 
     private fun buildAreaSelectionModification(
         worldAreaNow: IntRect,
-    ): SelectionProjection {
-        val entitiesInArea = findEntitiesInArea(worldAreaNow)
-
-        return SelectionProjection(
-            consideredEntities = entitiesInArea.toSet(),
-        )
-    }
+    ): SelectionProjection = SelectionProjection(
+        consideredEntities = findEntitiesInArea(worldAreaNow).toSet(),
+    )
 
     private fun buildIdleMode(): IdleMode = object : IdleMode {
         private val enterSelectingMode = StreamSink<Tilled<SelectingMode>>()
 
-        override val selectionProjection: Cell<SelectionProjection?> =
+        override val focusedEntity: Cell<Entity?> =
             input.cursorWorldPosition.map { cursorWorldPositionNow ->
-                cursorWorldPositionNow?.let { buildPointSelectionModification(worldPoint = it) }
+                cursorWorldPositionNow?.let {
+                    findFocusedEntity(worldPoint = it)
+                }
             }
 
         override fun select(
