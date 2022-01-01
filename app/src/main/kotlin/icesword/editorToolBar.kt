@@ -1,26 +1,26 @@
 package icesword
 
 import icesword.editor.App
-import icesword.editor.CrateStackSelectionMode
-import icesword.editor.CrumblingPegSelectionMode
+import icesword.editor.CrateStackSelectionContext
+import icesword.editor.CrumblingPegSelectionContext
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.EditorMode
-import icesword.editor.EnemySelectionMode
+import icesword.editor.EnemySelectionContext
 import icesword.editor.KnotSelectMode
 import icesword.editor.EntitySelectMode
-import icesword.editor.FloorSpikeRowSelectionMode
+import icesword.editor.FloorSpikeRowSelectionContext
 import icesword.editor.KnotBrush
 import icesword.editor.KnotBrushMode
-import icesword.editor.KnotMeshSelectionMode
+import icesword.editor.KnotMeshSelectionContext
 import icesword.editor.PathElevatorPath
-import icesword.editor.PathElevatorSelectionMode
-import icesword.editor.RopeSelectionMode
-import icesword.editor.SelectionMode
-import icesword.editor.TogglePegSelectionMode
+import icesword.editor.PathElevatorSelectionContext
+import icesword.editor.RopeSelectionContext
+import icesword.editor.SelectionContext
+import icesword.editor.TogglePegSelectionContext
 import icesword.editor.Tool
-import icesword.editor.WapObjectSelectionMode
-import icesword.editor.WarpSelectionMode
+import icesword.editor.WapObjectSelectionContext
+import icesword.editor.WarpSelectionContext
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.dynamic_list.size
@@ -110,10 +110,10 @@ fun createEditorToolBar(
         )
     ).buildElement(tillDetach)
 
-    val selectionModeButtonsRow = editor.selectionMode.mapTillNext(tillDetach) { it, tillNext ->
+    val selectionModeButtonsRow = editor.selectionContext.mapTillNext(tillDetach) { it, tillNext ->
         createSelectionModeButtonsRow(
             editor = editor,
-            selectionMode = it,
+            selectionContext = it,
             tillDetach = tillNext,
         )
     }
@@ -166,48 +166,48 @@ fun createEditorToolBar(
 
 fun createSelectionModeButtonsRow(
     editor: Editor,
-    selectionMode: SelectionMode?,
+    selectionContext: SelectionContext?,
     tillDetach: Till,
 ): HTMLElement? {
-    val htmlWidgetB = when (selectionMode) {
+    val htmlWidgetB = when (selectionContext) {
         null -> null
-        is KnotMeshSelectionMode -> HTMLWidget.of(
+        is KnotMeshSelectionContext -> HTMLWidget.of(
             createKnotMeshSelectionModeButtonsRow(
                 editor = editor,
-                knotMeshSelectionMode = selectionMode,
+                knotMeshSelectionMode = selectionContext,
                 tillDetach = tillDetach,
             ),
         )
-        is PathElevatorSelectionMode -> HTMLWidget.of(
+        is PathElevatorSelectionContext -> HTMLWidget.of(
             createPathElevatorSelectionModeButtonsRow(
                 editor = editor,
-                pathElevatorSelectionMode = selectionMode,
+                pathElevatorSelectionMode = selectionContext,
                 tillDetach = tillDetach,
             ),
         )
-        is EnemySelectionMode -> createEnemySelectionModeButtonsRow(
-            selectionMode = selectionMode,
+        is EnemySelectionContext -> createEnemySelectionModeButtonsRow(
+            selectionMode = selectionContext,
         )
-        is FloorSpikeRowSelectionMode -> createFloorSpikeRowSelectionModeButtonsRow(
-            selectionMode = selectionMode,
+        is FloorSpikeRowSelectionContext -> createFloorSpikeRowSelectionModeButtonsRow(
+            selectionMode = selectionContext,
         )
-        is RopeSelectionMode -> createRopeSelectionModeButtonsRow(
-            selectionMode = selectionMode,
+        is RopeSelectionContext -> createRopeSelectionModeButtonsRow(
+            selectionMode = selectionContext,
         )
-        is CrateStackSelectionMode -> createCrateStackSelectionModeButtonsRow(
-            selectionMode = selectionMode,
+        is CrateStackSelectionContext -> createCrateStackSelectionModeButtonsRow(
+            selectionMode = selectionContext,
         )
-        is WapObjectSelectionMode -> createWapObjectSelectionModeButtonsRow(
-            selectionMode = selectionMode,
+        is WapObjectSelectionContext -> createWapObjectSelectionModeButtonsRow(
+            selectionMode = selectionContext,
         )
-        is CrumblingPegSelectionMode -> createCrumblingPegSelectionModeButtonsRow(
-            selectionMode = selectionMode,
+        is CrumblingPegSelectionContext -> createCrumblingPegSelectionModeButtonsRow(
+            selectionMode = selectionContext,
         )
-        is TogglePegSelectionMode -> createTogglePegSelectionModeButtonsRow(
-            selectionMode = selectionMode,
+        is TogglePegSelectionContext -> createTogglePegSelectionModeButtonsRow(
+            selectionMode = selectionContext,
         )
-        is WarpSelectionMode -> createWarpSelectionModeButtonsRow(
-            selectionMode = selectionMode,
+        is WarpSelectionContext -> createWarpSelectionModeButtonsRow(
+            selectionMode = selectionContext,
         )
     }
 
@@ -235,7 +235,7 @@ fun createEditorModeButtonsRow(
 
 fun createKnotMeshSelectionModeButtonsRow(
     editor: Editor,
-    knotMeshSelectionMode: KnotMeshSelectionMode,
+    knotMeshSelectionMode: KnotMeshSelectionContext,
     tillDetach: Till,
 ): HTMLElement {
     val knotBrushButton = createModeButton<KnotBrushMode>(
@@ -316,7 +316,7 @@ fun createKnotSelectModeButtonsRow(
 
 fun createPathElevatorSelectionModeButtonsRow(
     editor: Editor,
-    pathElevatorSelectionMode: PathElevatorSelectionMode,
+    pathElevatorSelectionMode: PathElevatorSelectionContext,
     tillDetach: Till,
 ): HTMLElement {
     val editPathElevatorButton = createModeButton<EditPathElevatorMode>(
@@ -376,7 +376,7 @@ fun createEditPathElevatorModeButtonsRow(
 }
 
 fun createEnemySelectionModeButtonsRow(
-    selectionMode: EnemySelectionMode,
+    selectionMode: EnemySelectionContext,
 ): HTMLWidgetB<*> {
     val editTreasuresButton = createTextButtonWb(
         text = "Edit pickups",
@@ -393,7 +393,7 @@ fun createEnemySelectionModeButtonsRow(
 }
 
 fun createFloorSpikeRowSelectionModeButtonsRow(
-    selectionMode: FloorSpikeRowSelectionMode,
+    selectionMode: FloorSpikeRowSelectionContext,
 ): HTMLWidgetB<*> {
     val editTreasuresButton = createTextButtonWb(
         text = "Edit spikes",
@@ -410,7 +410,7 @@ fun createFloorSpikeRowSelectionModeButtonsRow(
 }
 
 fun createRopeSelectionModeButtonsRow(
-    selectionMode: RopeSelectionMode,
+    selectionMode: RopeSelectionContext,
 ): HTMLWidgetB<*> {
     val editTreasuresButton = createTextButtonWb(
         text = "Edit speed",
@@ -427,7 +427,7 @@ fun createRopeSelectionModeButtonsRow(
 }
 
 fun createCrateStackSelectionModeButtonsRow(
-    selectionMode: CrateStackSelectionMode,
+    selectionMode: CrateStackSelectionContext,
 ): HTMLWidgetB<*> {
     val editTreasuresButton = createTextButtonWb(
         text = "Edit pickups",
@@ -444,7 +444,7 @@ fun createCrateStackSelectionModeButtonsRow(
 }
 
 fun createCrumblingPegSelectionModeButtonsRow(
-    selectionMode: CrumblingPegSelectionMode,
+    selectionMode: CrumblingPegSelectionContext,
 ): HTMLWidgetB<*> {
     val crumblingPeg = selectionMode.crumblingPeg
 
@@ -466,7 +466,7 @@ fun createCrumblingPegSelectionModeButtonsRow(
 
 
 fun createTogglePegSelectionModeButtonsRow(
-    selectionMode: TogglePegSelectionMode,
+    selectionMode: TogglePegSelectionContext,
 ): HTMLWidgetB<*> {
     val editTimingButton = createTextButtonWb(
         text = "Edit timing",
@@ -483,7 +483,7 @@ fun createTogglePegSelectionModeButtonsRow(
 }
 
 fun createWapObjectSelectionModeButtonsRow(
-    selectionMode: WapObjectSelectionMode,
+    selectionMode: WapObjectSelectionContext,
 ): HTMLWidgetB<*> {
     val editTreasuresButton = createTextButtonWb(
         text = "Edit properties",
@@ -500,7 +500,7 @@ fun createWapObjectSelectionModeButtonsRow(
 }
 
 fun createWarpSelectionModeButtonsRow(
-    selectionMode: WarpSelectionMode,
+    selectionMode: WarpSelectionContext,
 ): HTMLWidgetB<*> {
     val editTimingButton = createTextButtonWb(
         text = "Edit target",

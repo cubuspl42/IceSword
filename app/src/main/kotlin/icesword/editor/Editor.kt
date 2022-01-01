@@ -352,35 +352,35 @@ class Editor(
     val editWarpTarget: Stream<Warp>
         get() = _editWarpTarget
 
-    val selectionMode: Cell<SelectionMode?> =
+    val selectionContext: Cell<SelectionContext?> =
         selectedEntity.map { selectedEntity ->
             when (selectedEntity) {
                 null -> null
-                is PathElevator -> object : PathElevatorSelectionMode {
+                is PathElevator -> object : PathElevatorSelectionContext {
                     override fun enterEditPathElevatorMode() {
                         this@Editor.enterEditPathElevatorMode()
                     }
                 }
-                is FloorSpikeRow -> object : FloorSpikeRowSelectionMode {
+                is FloorSpikeRow -> object : FloorSpikeRowSelectionContext {
                     override fun editSpikes() {
                         _editFloorSpikeRowSpikes.send(selectedEntity)
                     }
                 }
-                is WapObject -> object : WapObjectSelectionMode {
+                is WapObject -> object : WapObjectSelectionContext {
                     override fun editProperties() {
                         _editWapObjectProperties.send(selectedEntity)
                     }
                 }
                 is HorizontalElevator -> null
                 is VerticalElevator -> null
-                is Enemy -> object : EnemySelectionMode {
+                is Enemy -> object : EnemySelectionContext {
                     override fun editPickups() {
                         _editEnemyPickups.send(selectedEntity)
                     }
                 }
                 is StartPoint -> null
                 is Elastic -> null
-                is KnotMesh -> object : KnotMeshSelectionMode {
+                is KnotMesh -> object : KnotMeshSelectionContext {
                     override fun enterKnotSelectMode() {
                         this@Editor.enterKnotSelectMode()
                     }
@@ -392,25 +392,25 @@ class Editor(
                     }
                 }
                 is TileEntity -> null
-                is Rope -> object : RopeSelectionMode {
+                is Rope -> object : RopeSelectionContext {
                     override fun editSpeed() {
                         _editRopeSpeed.send(selectedEntity)
                     }
                 }
-                is CrateStack -> object : CrateStackSelectionMode {
+                is CrateStack -> object : CrateStackSelectionContext {
                     override fun editPickups() {
                         _editCrateStackPickups.send(selectedEntity)
                     }
                 }
-                is CrumblingPeg -> CrumblingPegSelectionMode(
+                is CrumblingPeg -> CrumblingPegSelectionContext(
                     crumblingPeg = selectedEntity,
                 )
-                is TogglePeg -> object : TogglePegSelectionMode {
+                is TogglePeg -> object : TogglePegSelectionContext {
                     override fun editTiming() {
                         _editTogglePegTiming.send(selectedEntity)
                     }
                 }
-                is Warp -> object : WarpSelectionMode {
+                is Warp -> object : WarpSelectionContext {
                     override fun editTarget() {
                         _editWarpTarget.send(selectedEntity)
                     }
