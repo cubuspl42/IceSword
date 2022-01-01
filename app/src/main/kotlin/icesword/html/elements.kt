@@ -389,7 +389,7 @@ fun createSvgCircle(
     svg: SVGSVGElement,
     radius: Float,
     translate: Cell<IntVec2>,
-    stroke: Cell<String>? = null,
+    stroke: Cell<Color?>? = null,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
 ): SVGElement {
@@ -409,7 +409,7 @@ fun createSvgCircle(
     linkAttribute(
         element = circle,
         attributeName = "stroke",
-        attribute = stroke,
+        attribute = stroke?.map { it?.toString() },
         till = tillDetach,
     )
 
@@ -420,7 +420,7 @@ fun createSvgCircle(
     svg: SVGSVGElement,
     radius: Float,
     transform: DynamicTransform,
-    stroke: Cell<String>? = null,
+    stroke: Cell<Color?>? = null,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
 ): SVGElement {
@@ -440,7 +440,7 @@ fun createSvgCircle(
     linkAttribute(
         element = circle,
         attributeName = "stroke",
-        attribute = stroke,
+        attribute = stroke?.map { it?.toString() },
         till = tillDetach,
     )
 

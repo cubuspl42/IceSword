@@ -1,14 +1,15 @@
 package icesword.scene
 
-import icesword.RezTextureBank
+import icesword.MouseDrag
 import icesword.RezIndex
+import icesword.RezTextureBank
 import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.Elastic
 import icesword.editor.Entity
-import icesword.editor.EntitySelectMode
 import icesword.editor.EntitySelectMode.SelectionState
 import icesword.editor.MetaTileCluster
+import icesword.editor.Tool
 import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
@@ -17,7 +18,7 @@ import icesword.frp.dynamic_list.map
 import icesword.frp.getKeys
 import icesword.frp.map
 import icesword.frp.mergeWith
-import icesword.frp.reactTill
+import icesword.frp.reactDynamicNotNullTill
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.DynamicTransform
@@ -150,10 +151,6 @@ private fun createElasticOverlayElement(
 
     val isSelected = editor.isEntitySelected(elastic)
 
-    val pointerEvents = isSelected.map {
-        if (it) null else PointerEvents.none
-    }
-
     val box = createEntityFrameElement(
         editor = editor,
         svg = svg,
@@ -163,15 +160,56 @@ private fun createElasticOverlayElement(
         tillDetach = tillDetach,
     )
 
-    val handleStroke = isSelected.map {
-        if (it) "red" else "none"
-    }
-
     fun createHandle(
-        cursor: Cursor,
+        dragCursor: Cursor,
         resize: (tileCoord: Cell<IntVec2>, till: Till) -> Unit,
         corner: (IntRect) -> IntVec2,
     ): SVGElement {
+        val dragHandler = Cell.map2(
+            editor.editorMode,
+            isSelected,
+        ) { editorModeNow, isSelectedNow ->
+            if (editorModeNow == Tool.MOVE && isSelectedNow) { mouseDrag: MouseDrag ->
+                val worldPosition = viewTransform.inversed.transform(mouseDrag.clientPosition)
+
+                val initialPosition = worldPosition.sample()
+
+                // TODO: Support dragging handle and camera at the same time
+                val deltaTileCoord = worldPosition.map {
+                    val deltaPosition = it - initialPosition
+                    deltaPosition.divRound(TILE_SIZE)
+                }
+
+                resize(
+                    deltaTileCoord,
+                    mouseDrag.released,
+                )
+            } else null
+        }
+
+        val pointerEvents = dragHandler.map {
+            if (it != null) PointerEvents.auto
+            else PointerEvents.none
+        }
+
+        val cursor = dragHandler.map {
+            if (it != null) dragCursor
+            else null
+        }
+
+        val handleStroke = Cell.map2(
+            isSelected,
+            dragHandler,
+        ) {
+                isSelectedNow,
+                dragHandlerNow,
+            ->
+            val color = if (isSelectedNow) Color.red else Color.transparent
+            val alpha = if (dragHandlerNow != null) 1.0 else 0.3
+
+            color.withAlpha(alpha)
+        }
+
         val handle = createSvgCircle(
             svg = svg,
             translate = relativeViewBounds.map(corner),
@@ -179,7 +217,7 @@ private fun createElasticOverlayElement(
             stroke = handleStroke,
             style = DynamicStyleDeclaration(
                 pointerEvents = pointerEvents,
-                cursor = Cell.constant(cursor),
+                cursor = cursor,
             ),
             tillDetach = tillDetach,
         ).apply {
@@ -197,22 +235,7 @@ private fun createElasticOverlayElement(
             button = MouseButton.Primary,
             outer = viewport,
             till = tillDetach,
-        ).reactTill(tillDetach) { mouseDrag ->
-            val worldPosition = viewTransform.inversed.transform(mouseDrag.clientPosition)
-
-            val initialPosition = worldPosition.sample()
-
-            // TODO: Support dragging handle and camera at the same time
-            val deltaTileCoord = worldPosition.map {
-                val deltaPosition = it - initialPosition
-                deltaPosition.divRound(TILE_SIZE)
-            }
-
-            resize(
-                deltaTileCoord,
-                mouseDrag.released,
-            )
-        }
+        ).reactDynamicNotNullTill(dragHandler, tillDetach)
 
         return handle
     }
@@ -220,22 +243,22 @@ private fun createElasticOverlayElement(
     fun buildHandles(): List<SVGElement> {
         val handles = listOf(
             createHandle(
-                cursor = Cursor.nwseResize,
+                dragCursor = Cursor.nwseResize,
                 resize = elastic::resizeTopLeft,
                 corner = { it.topLeft },
             ),
             createHandle(
-                cursor = Cursor.neswResize,
+                dragCursor = Cursor.neswResize,
                 resize = elastic::resizeTopRight,
                 corner = { it.topRight },
             ),
             createHandle(
-                cursor = Cursor.nwseResize,
+                dragCursor = Cursor.nwseResize,
                 resize = elastic::resizeBottomRight,
                 corner = { it.bottomRight },
             ),
             createHandle(
-                cursor = Cursor.neswResize,
+                dragCursor = Cursor.neswResize,
                 resize = elastic::resizeBottomLeft,
                 corner = { it.bottomLeft },
             )
