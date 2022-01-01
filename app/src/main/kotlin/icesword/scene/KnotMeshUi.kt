@@ -54,21 +54,25 @@ class KnotMeshUi private constructor(
             }
         ),
         strokeColor = Cell.map4(
-            editor.isEntityBeingSelected(knotMesh),
             editor.isEntitySelected(knotMesh),
+            editor.projectEntitySelectionState(knotMesh),
             editor.editorMode,
             editor.knotPaintOverReadyMode,
         ) {
-                isCoveredNow,
                 isSelectedNow,
+                projectedSelectionStateNow,
                 editorModeNow,
                 knotPaintOverReadyModeNow,
             ->
             when {
-                isCoveredNow -> Color.orange
                 knotPaintOverReadyModeNow?.targetKnotMesh == knotMesh -> Color.lightBlue
                 isSelectedNow && editorModeNow is KnotSelectMode -> selectionColor.withAlpha(0.3)
-                isSelectedNow -> selectionColor
+
+                // TODO: Deduplicate
+                isSelectedNow && projectedSelectionStateNow == EntitySelectMode.SelectionState.NonSelected ->
+                    Color.red.withAlpha(0.3)
+                isSelectedNow || projectedSelectionStateNow == EntitySelectMode.SelectionState.Selected -> Color.red
+
                 else -> {
                     val a = 128
                     rgba(a, a, a, 0.4)

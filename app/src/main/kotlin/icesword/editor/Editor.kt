@@ -26,10 +26,9 @@ import icesword.frp.Tilled
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.mapTillNext
-import icesword.frp.switchMap
 import icesword.frp.switchMapNested
 import icesword.frp.switchMapOrNull
-import icesword.geometry.IntRect
+import icesword.frp.update
 import icesword.geometry.IntVec2
 import icesword.loadRetailTextureBank
 import icesword.utils.roundToMultipleOf
@@ -281,12 +280,8 @@ class Editor(
     val entitySelectMode: Cell<EntitySelectMode?> =
         editorMode.map { it as? EntitySelectMode }
 
-
-    val entitySelectIdleMode: Cell<EntitySelectMode.IdleMode?> =
-        entitySelectMode.switchMapNested { it.idleMode }
-
-    val entitySelectSelectingMode: Cell<EntitySelectMode.SelectingMode?> =
-        entitySelectMode.switchMapNested { it.selectingMode }
+    val entitySelectModeState: Cell<EntitySelectMode.State?> =
+        entitySelectMode.switchMapNested { it.state }
 
     val knotSelectMode: Cell<KnotSelectMode?> =
         editorMode.map { it as? KnotSelectMode }
@@ -300,10 +295,6 @@ class Editor(
 
     val selectedKnotPrototype =
         knotPaintMode.mapNested { it.knotPrototype }
-
-    fun isEntityBeingSelected(entity: Entity): Cell<Boolean> =
-        entitySelectSelectingMode.switchMapNested { it.selectionModification }
-            .switchMapNested { it.isEntitySelected(entity) }.map { it ?: false }
 
     fun enterMoveMode() {
         selectTool(Tool.MOVE)
@@ -421,20 +412,35 @@ class Editor(
             }
         }
 
-    fun selectEntities(entities: Iterable<Entity>) {
-        _selectedEntities.set(entities.toSet())
+    fun setSelectedEntities(entities: Set<Entity>) {
+        _selectedEntities.set(entities)
     }
 
-    fun isEntitySelectedInProjection(entity: Entity): Cell<Boolean> =
-        entitySelectIdleMode.switchMapNested { idleMode ->
-            idleMode.projectedSelectionModification.map { it?.stateAdjustments }
-        }.switchMap { stateAdjustments ->
-            stateAdjustments?.get(entity)?.map { it == EntitySelectMode.SelectionState.Selected }
-                ?: Cell.constant(false)
-        }
+    fun selectEntities(entities: Set<Entity>) {
+        _selectedEntities.update { it + entities }
+    }
+
+    fun unselectEntities(entities: Set<Entity>) {
+        _selectedEntities.update { it - entities }
+    }
+
+    fun invertEntitySelection(entities: Set<Entity>) {
+        val oldSelectedEntities = _selectedEntities.sample()
+
+        _selectedEntities.set(
+            oldSelectedEntities -
+                    oldSelectedEntities.intersect(entities) +
+                    (entities - oldSelectedEntities)
+        )
+    }
 
     fun isEntitySelected(entity: Entity): Cell<Boolean> =
         selectedEntities.map { it.contains(entity) }
+
+    fun projectEntitySelectionState(entity: Entity): Cell<EntitySelectMode.SelectionState?> =
+        entitySelectModeState.switchMapNested { state ->
+            state.selectionProjection.switchMapNested { it.projectEntitySelectionState(entity) }
+        }
 
     fun moveSelectedEntities(
         positionDelta: Cell<IntVec2>,

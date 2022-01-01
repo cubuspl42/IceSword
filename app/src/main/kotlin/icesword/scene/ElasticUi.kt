@@ -6,6 +6,8 @@ import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.Elastic
 import icesword.editor.Entity
+import icesword.editor.EntitySelectMode
+import icesword.editor.EntitySelectMode.SelectionState
 import icesword.editor.MetaTileCluster
 import icesword.frp.Cell
 import icesword.frp.Stream
@@ -268,25 +270,21 @@ fun createEntityFrameElement(
         outer = outer,
         till = tillDetach,
     ) { context ->
-        val isBeingSelected = editor.isEntityBeingSelected(entity)
-
-        val isSelectedInProjection = editor.isEntitySelectedInProjection(entity)
+        val projectedSelectionState = editor.projectEntitySelectionState(entity)
 
         val isSelected = editor.isEntitySelected(entity)
 
-        val stroke: Cell<Color> = Cell.map3(
-            isSelectedInProjection,
+        val stroke: Cell<Color> = Cell.map2(
             isSelected,
-            isBeingSelected,
+            projectedSelectionState,
         ) {
-                isSelectedInProjectionNow,
                 isSelectedNow,
-                isBeingSelectedNow,
+                projectedSelectionStateNow,
             ->
             when {
-                isBeingSelectedNow -> Color.orange
-                isSelectedNow -> Color.red
-                isSelectedInProjectionNow -> Color.blue
+                isSelectedNow && projectedSelectionStateNow == SelectionState.NonSelected ->
+                    Color.red.withAlpha(0.3)
+                isSelectedNow || projectedSelectionStateNow == SelectionState.Selected -> Color.red
                 else -> Color.transparent
             }
         }

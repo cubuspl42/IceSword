@@ -138,11 +138,30 @@ fun Element.trackDraggingState(till: Till): Cell<DraggableState> =
         .mergeWith(onDragEnd().map { DraggableState.Idle })
         .hold(DraggableState.Idle, till)
 
+enum class KeyPressedState {
+    Pressed,
+    Released,
+}
+
+fun Element.trackKeyPressedState(key: String, till: Till): Cell<KeyPressedState> =
+    onKeyDown(key = key).map { KeyPressedState.Pressed }
+        .mergeWith(onKeyUp(key = key).map { KeyPressedState.Released })
+        .hold(KeyPressedState.Released, till)
+
 fun HTMLElement.onClick(): Stream<MouseEvent> =
     this.onEvent("click")
 
-fun HTMLElement.onKeyDown(): Stream<KeyboardEvent> =
+fun Element.onKeyDown(): Stream<KeyboardEvent> =
     this.onEvent("keydown", useCapture = true)
+
+fun Element.onKeyDown(key: String): Stream<KeyboardEvent> =
+    onKeyDown().filter { it.key == key }
+
+fun Element.onKeyUp(): Stream<KeyboardEvent> =
+    this.onEvent("keyup", useCapture = true)
+
+fun Element.onKeyUp(key: String): Stream<KeyboardEvent> =
+    this.onEvent("keyup", useCapture = true)
 
 fun HTMLElement.onWheel(): Stream<WheelEvent> =
     this.onEvent("wheel", useCapture = true)

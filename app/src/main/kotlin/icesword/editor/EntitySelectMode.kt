@@ -2,20 +2,17 @@ package icesword.editor
 
 import icesword.frp.Cell
 import icesword.frp.CellLoop
-import icesword.frp.DynamicMap
 import icesword.frp.Stream
 import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.map
 import icesword.frp.reactTill
-import icesword.frp.staticMapOf
 import icesword.frp.switchMap
 import icesword.geometry.IntLineSeg
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
-import icesword.utils.filterValuesNotNull
 
 
 class EntitySelectMode(
@@ -63,7 +60,13 @@ class EntitySelectMode(
 
     enum class SelectionState {
         Selected,
-        NonSelected,
+        NonSelected;
+
+        val opposite: SelectionState
+            get() = when (this) {
+                Selected -> NonSelected
+                NonSelected -> Selected
+            }
     }
 
     sealed interface SelectionForm
@@ -76,25 +79,53 @@ class EntitySelectMode(
         val worldArea: IntRect,
     ) : SelectionForm
 
-    data class SelectionModification(
-        val stateAdjustments: DynamicMap<Entity, SelectionState>,
+    inner class SelectionProjection(
+        val consideredEntities: Set<Entity>,
     ) {
-        fun isEntitySelected(entity: Entity): Cell<Boolean> =
-            stateAdjustments.get(entity).map { it == SelectionState.Selected }
+        fun projectEntitySelectionState(entity: Entity): Cell<SelectionState> =
+            editor.isEntitySelected(entity).switchMap { isSelected ->
+                val currentSelectionState =
+                    if (isSelected) SelectionState.Selected
+                    else SelectionState.NonSelected
 
-        fun getEntitiesToSelect() = stateAdjustments.volatileContentView
-            .mapNotNull { (entity, selectionState) ->
-                if (selectionState == SelectionState.Selected) entity
-                else null
+                selectionStrategy.map { selectionStrategyNow ->
+                    when (selectionStrategyNow) {
+                        SelectionStrategy.Select ->
+                            if (consideredEntities.contains(entity)) SelectionState.Selected
+                            else SelectionState.NonSelected
+                        SelectionStrategy.Add ->
+                            if (consideredEntities.contains(entity)) SelectionState.Selected
+                            else currentSelectionState
+                        SelectionStrategy.Subtract ->
+                            if (consideredEntities.contains(entity)) SelectionState.NonSelected
+                            else currentSelectionState
+                        SelectionStrategy.Invert ->
+                            if (consideredEntities.contains(entity)) currentSelectionState.opposite
+                            else currentSelectionState
+                    }
+                }
             }
+
+        fun applyStrategy() {
+            val selectionStrategyNow = selectionStrategy.sample()
+
+            when (selectionStrategyNow) {
+                SelectionStrategy.Select -> editor.setSelectedEntities(consideredEntities)
+                SelectionStrategy.Add -> editor.selectEntities(consideredEntities)
+                SelectionStrategy.Subtract -> editor.unselectEntities(consideredEntities)
+                SelectionStrategy.Invert -> editor.invertEntitySelection(consideredEntities)
+            }
+        }
     }
 
     sealed interface State {
+        val selectionProjection: Cell<SelectionProjection?>
+
         val enterNextMode: Stream<Tilled<State>>
     }
 
     interface IdleMode : State {
-        val projectedSelectionModification: Cell<SelectionModification?>
+        override val selectionProjection: Cell<SelectionProjection?>
 
         fun select(
             worldAnchor: IntVec2,
@@ -106,7 +137,7 @@ class EntitySelectMode(
     interface SelectingMode : State {
         val selectionForm: Cell<SelectionForm>
 
-        val selectionModification: Cell<SelectionModification>
+        override val selectionProjection: Cell<SelectionProjection?>
     }
 
     private val inputLoop: CellLoop<Input> =
@@ -143,51 +174,36 @@ class EntitySelectMode(
             it.isSelectableIn(area)
         }
 
-    private fun buildPointSelectionModification(worldPoint: IntVec2): SelectionModification {
+    private fun buildPointSelectionModification(worldPoint: IntVec2): SelectionProjection? {
         val entitiesAtPoint = findEntitiesAtPoint(worldPoint = worldPoint)
         val selectedEntitiesAtPoint = entitiesAtPoint.filter { editor.isEntitySelected(it).sample() }
 
-        val entityToSelect = selectedEntitiesAtPoint.singleOrNull()?.let { singleSelectedEntity ->
+        val entityToSelectOrNull = selectedEntitiesAtPoint.singleOrNull()?.let { singleSelectedEntity ->
             val selectedEntityIndex = entitiesAtPoint.indexOfOrNull(singleSelectedEntity)
             selectedEntityIndex?.let { entitiesAtPoint[(it + 1) % entitiesAtPoint.size] }
         } ?: entitiesAtPoint.firstOrNull()
 
-        return SelectionModification(
-            stateAdjustments = entityToSelect?.let {
-                staticMapOf(it to SelectionState.Selected)
-            } ?: DynamicMap.empty()
-        )
+        return entityToSelectOrNull?.let { entityToSelect ->
+            SelectionProjection(
+                consideredEntities = setOf(entityToSelect),
+            )
+        }
     }
 
     private fun buildAreaSelectionModification(
         worldAreaNow: IntRect,
-    ): SelectionModification {
+    ): SelectionProjection {
         val entitiesInArea = findEntitiesInArea(worldAreaNow)
 
-        return SelectionModification(
-            stateAdjustments = DynamicMap.diff(
-                selectionStrategy.map { selectionStrategyNow ->
-                    entitiesInArea.associateWith { entity ->
-                        val isEntitySelected = editor.isEntitySelected(entity).sample()
-
-                        when (selectionStrategyNow) {
-                            SelectionStrategy.Select -> SelectionState.Selected
-                            SelectionStrategy.Add -> SelectionState.Selected
-                            SelectionStrategy.Subtract -> SelectionState.NonSelected
-                            SelectionStrategy.Invert ->
-                                if (isEntitySelected) SelectionState.NonSelected
-                                else SelectionState.Selected
-                        }
-                    }.filterValuesNotNull()
-                },
-            ),
+        return SelectionProjection(
+            consideredEntities = entitiesInArea.toSet(),
         )
     }
 
     private fun buildIdleMode(): IdleMode = object : IdleMode {
         private val enterSelectingMode = StreamSink<Tilled<SelectingMode>>()
 
-        override val projectedSelectionModification: Cell<SelectionModification?> =
+        override val selectionProjection: Cell<SelectionProjection?> =
             input.cursorWorldPosition.map { cursorWorldPositionNow ->
                 cursorWorldPositionNow?.let { buildPointSelectionModification(worldPoint = it) }
             }
@@ -217,11 +233,7 @@ class EntitySelectMode(
         override fun build(till: Till) = object : SelectingMode {
             init {
                 commit.reactTill(till = till) {
-                    val entitiesToSelect = selectionModification.sample().getEntitiesToSelect()
-
-                    editor.selectEntities(
-                        entities = entitiesToSelect,
-                    )
+                    selectionProjection.sample()?.applyStrategy()
                 }
             }
 
@@ -237,7 +249,7 @@ class EntitySelectMode(
                 }
             }
 
-            override val selectionModification: Cell<SelectionModification> =
+            override val selectionProjection: Cell<SelectionProjection?> =
                 selectionForm.map { selectionFormNow ->
                     when (selectionFormNow) {
                         is PointSelection -> buildPointSelectionModification(selectionFormNow.worldPoint)
@@ -249,9 +261,6 @@ class EntitySelectMode(
                 commit.map { Tilled.pure(buildIdleMode()) }
         }
     }
-
-    private val world: World
-        get() = editor.world
 
     val state: Cell<State> = Stream.followTillNext<State>(
         initialValue = Tilled.pure(buildIdleMode()),

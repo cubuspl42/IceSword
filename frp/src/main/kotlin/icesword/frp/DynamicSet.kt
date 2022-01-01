@@ -73,6 +73,9 @@ interface DynamicSet<out A> {
     }
 }
 
+fun <A> staticSetOf(vararg elements: A): DynamicSet<A> =
+    DynamicSet.of(setOf(*elements))
+
 fun <A, B> DynamicSet<A>.unionMap(
     tag: String,
     transform: (A) -> Set<B>,

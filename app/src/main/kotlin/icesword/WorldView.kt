@@ -32,6 +32,7 @@ import icesword.frp.tillNext
 import icesword.frp.units
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
+import icesword.html.KeyPressedState
 import icesword.html.MouseButton
 import icesword.html.MousePosition
 import icesword.html.MousePressedGesture
@@ -44,6 +45,7 @@ import icesword.html.onMouseDrag
 import icesword.html.onMouseMove
 import icesword.html.onMouseUp
 import icesword.html.onWheel
+import icesword.html.trackKeyPressedState
 import icesword.html.trackMousePosition
 import icesword.html.trackMousePressed
 import icesword.scene.FloorSpikeRowNode
@@ -441,9 +443,13 @@ fun setupEntitySelectModeController(
                     }
                 }
 
-            override val enableAddModifier: Cell<Boolean> = Cell.constant(false)
+            override val enableAddModifier: Cell<Boolean> =
+                root.trackKeyPressedState(key = "Control", tillDetach)
+                    .map { it == KeyPressedState.Pressed }
 
-            override val enableSubtractModifier: Cell<Boolean> = Cell.constant(false)
+            override val enableSubtractModifier: Cell<Boolean> =
+                root.trackKeyPressedState(key = "Alt", tillDetach)
+                    .map { it == KeyPressedState.Pressed }
         },
     )
 
