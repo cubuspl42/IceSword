@@ -310,7 +310,7 @@ fun createEntityFrameElement(
                 projectedSelectionStateNow,
             ->
             when {
-                isFocusedNow -> Color.blue
+                isFocusedNow -> Color.blueViolet.withAlpha(0.8)
                 isSelectedNow && projectedSelectionStateNow == SelectionState.NonSelected ->
                     Color.red.withAlpha(0.3)
                 isSelectedNow || projectedSelectionStateNow == SelectionState.Selected -> Color.red

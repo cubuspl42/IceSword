@@ -1,14 +1,17 @@
 package icesword.editor
 
 import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.CellLoop
 import icesword.frp.Stream
 import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.map
+import icesword.frp.mapNested
 import icesword.frp.reactTill
 import icesword.frp.switchMap
+import icesword.frp.switchMapNested
 import icesword.geometry.IntLineSeg
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
@@ -22,13 +25,13 @@ class EntitySelectMode(
     interface Input {
         object Noop : Input {
             override val cursorWorldPosition: Cell<IntVec2?> =
-                Cell.constant(null)
+                constant(null)
 
             override val enableAddModifier: Cell<Boolean> =
-                Cell.constant(false)
+                constant(false)
 
             override val enableSubtractModifier: Cell<Boolean> =
-                Cell.constant(false)
+                constant(false)
         }
 
         companion object {
@@ -144,7 +147,7 @@ class EntitySelectMode(
     private val input: Input = Input.switch(inputLoop.asCell)
 
     fun closeInputLoop(input: Input) {
-        inputLoop.close(Cell.constant(input))
+        inputLoop.close(constant(input))
     }
 
     private val selectionStrategy: Cell<SelectionStrategy> = Cell.map2(
@@ -172,22 +175,34 @@ class EntitySelectMode(
             it.isSelectableIn(area)
         }
 
-    private fun findFocusedEntity(worldPoint: IntVec2): Entity? {
+    private fun findFocusedEntity(worldPoint: IntVec2): Cell<Entity?> {
         val entitiesAtPoint = findEntitiesAtPoint(worldPoint = worldPoint)
-        val selectedEntitiesAtPoint = entitiesAtPoint.filter { editor.isEntitySelected(it).sample() }
+        val selectedEntitiesAtPoint = entitiesAtPoint
+            .filter { editor.isEntitySelected(it).sample() }.toSet()
 
-        val focusedEntityOrNull = selectedEntitiesAtPoint.singleOrNull()?.let { singleSelectedEntity ->
-            val selectedEntityIndex = entitiesAtPoint.indexOfOrNull(singleSelectedEntity)
-            selectedEntityIndex?.let { entitiesAtPoint[(it + 1) % entitiesAtPoint.size] }
-        } ?: entitiesAtPoint.firstOrNull()
+        fun findFirstNonSelectedEntity(): Entity? {
+            val candidateEntity = selectedEntitiesAtPoint.singleOrNull()?.let { singleSelectedEntity ->
+                val selectedEntityIndex = entitiesAtPoint.indexOfOrNull(singleSelectedEntity)
+                selectedEntityIndex?.let { entitiesAtPoint[(it + 1) % entitiesAtPoint.size] }
+            } ?: entitiesAtPoint.firstOrNull()
 
-        return focusedEntityOrNull
+            return candidateEntity.takeIf { !selectedEntitiesAtPoint.contains(it) }
+        }
+
+        return selectionStrategy.map { selectionStrategyNow ->
+            when (selectionStrategyNow) {
+                SelectionStrategy.Select -> findFirstNonSelectedEntity()
+                SelectionStrategy.Add -> findFirstNonSelectedEntity()
+                SelectionStrategy.Subtract -> selectedEntitiesAtPoint.firstOrNull()
+                SelectionStrategy.Invert -> selectedEntitiesAtPoint.firstOrNull()
+            }
+        }
     }
 
-    private fun buildPointSelectionModification(worldPoint: IntVec2): SelectionProjection? =
-        findFocusedEntity(worldPoint = worldPoint)?.let { focusedEntity ->
+    private fun buildPointSelectionModification(worldPoint: IntVec2): Cell<SelectionProjection?> =
+        findFocusedEntity(worldPoint = worldPoint).map { focusedEntityOrNull ->
             SelectionProjection(
-                consideredEntities = setOf(focusedEntity),
+                consideredEntities = setOfNotNull(focusedEntityOrNull),
             )
         }
 
@@ -201,10 +216,8 @@ class EntitySelectMode(
         private val enterSelectingMode = StreamSink<Tilled<SelectingMode>>()
 
         override val focusedEntity: Cell<Entity?> =
-            input.cursorWorldPosition.map { cursorWorldPositionNow ->
-                cursorWorldPositionNow?.let {
-                    findFocusedEntity(worldPoint = it)
-                }
+            input.cursorWorldPosition.switchMapNested { cursorWorldPositionNow ->
+                findFocusedEntity(worldPoint = cursorWorldPositionNow)
             }
 
         override fun select(
@@ -249,10 +262,10 @@ class EntitySelectMode(
             }
 
             override val selectionProjection: Cell<SelectionProjection?> =
-                selectionForm.map { selectionFormNow ->
+                selectionForm.switchMap { selectionFormNow ->
                     when (selectionFormNow) {
                         is PointSelection -> buildPointSelectionModification(selectionFormNow.worldPoint)
-                        is AreaSelection -> buildAreaSelectionModification(selectionFormNow.worldArea)
+                        is AreaSelection -> constant(buildAreaSelectionModification(selectionFormNow.worldArea))
                     }
                 }
 
