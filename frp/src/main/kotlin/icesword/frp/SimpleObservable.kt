@@ -30,7 +30,9 @@ abstract class SimpleObservable<A>(
         companion object {
             @Suppress("ThrowableNotThrown")
             fun build(tag: String): Identity {
-                val trace = Error().stackTraceToString()
+                // This method seems to be very slow...
+//                val trace = Error().stackTraceToString()
+                val trace = ""
 
                 return Identity(
                     tag = tag,
@@ -58,7 +60,7 @@ abstract class SimpleObservable<A>(
     val tag: String
         get() = identity.tag
 
-    fun logError(description: String){
+    fun logError(description: String) {
         console.error("@@@@@ Error in $name: $description @@@@@")
 
         val traceLines = identity.trace.lines()
