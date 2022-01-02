@@ -2,10 +2,14 @@ package icesword.editor
 
 sealed interface SelectionContext
 
-interface KnotMeshSelectionContext : SelectionContext {
+interface SingleKnotMeshSelectionContext : SelectionContext {
     fun enterKnotSelectMode()
 
     fun enterKnotBrushMode()
+}
+
+interface MultipleKnotMeshesSelectionContext : SelectionContext {
+    fun mergeKnotMeshes()
 }
 
 interface PathElevatorSelectionContext : SelectionContext {

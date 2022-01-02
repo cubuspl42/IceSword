@@ -122,6 +122,11 @@ fun <A, B> Cell<A>.mapTillNext(
         tillAbort = tillFreeze,
     )
 
+fun <A : Any> Cell<A?>.orElse(other: Cell<A?>): Cell<A?> =
+    this.switchMap {
+        it?.let(Cell.Companion::constant) ?: other
+    }
+
 fun <A> Cell<A>.reactTillNext(
     tillAbort: Till,
     handler: (value: A, tillNext: Till) -> Unit,

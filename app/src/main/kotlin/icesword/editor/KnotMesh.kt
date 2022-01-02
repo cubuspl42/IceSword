@@ -7,6 +7,7 @@ import icesword.frp.DynamicSet
 import icesword.frp.MutableDynamicSet
 import icesword.frp.adjust
 import icesword.frp.associateWith
+import icesword.frp.getKeys
 import icesword.frp.memorized
 import icesword.frp.sample
 import icesword.frp.unionMap
@@ -150,6 +151,27 @@ class KnotMesh(
                 knotPrototype = knotPrototype,
                 initialLocalKnots = initialLocalKnots,
             )
+        }
+
+        fun createMerged(
+            knotMeshes: Iterable<KnotMesh>,
+        ): KnotMesh? = knotMeshes.firstOrNull()?.let { firstKnotMesh ->
+            val knotPrototype = firstKnotMesh.knotPrototype
+
+            if (knotMeshes.all { it.knotPrototype == knotPrototype }) {
+                val initialTileOffset = firstKnotMesh.tileOffset.sample()
+
+                val initialLocalKnots: Set<IntVec2> = knotMeshes.fold(emptySet()) { acc, knotMesh ->
+                    val globalKnots = knotMesh.globalKnots.getKeys().volatileContentView
+                    acc + globalKnots.map { it - initialTileOffset }.toSet()
+                }
+
+                KnotMesh(
+                    initialTileOffset = initialTileOffset,
+                    knotPrototype = knotPrototype,
+                    initialLocalKnots = initialLocalKnots,
+                )
+            } else null
         }
 
         fun load(data: KnotMeshData): KnotMesh =

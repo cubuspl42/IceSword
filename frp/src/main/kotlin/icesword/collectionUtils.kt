@@ -116,3 +116,9 @@ fun <T> List<T>.withReplaced(
 //    other.isEmpty() -> this.toSet()
 //    else -> this.filterNotTo(fastSetOf()) { it in other }
 //}
+
+inline fun <reified R> Collection<*>.asFullOfInstances(): List<R>? {
+    val result = filterIsInstance<R>()
+    return if (result.size == this.size) result
+    else null
+}

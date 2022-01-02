@@ -7,6 +7,7 @@ import icesword.JsonRezIndex
 import icesword.RezIndex
 import icesword.RezTextureBank
 import icesword.TILE_SIZE
+import icesword.asFullOfInstances
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
@@ -26,6 +27,7 @@ import icesword.frp.Tilled
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.mapTillNext
+import icesword.frp.orElse
 import icesword.frp.switchMapNested
 import icesword.frp.switchMapOrNull
 import icesword.frp.update
@@ -352,71 +354,92 @@ class Editor(
     val editWarpTarget: Stream<Warp>
         get() = _editWarpTarget
 
-    val selectionContext: Cell<SelectionContext?> =
-        selectedEntity.map { selectedEntity ->
-            when (selectedEntity) {
-                null -> null
-                is PathElevator -> object : PathElevatorSelectionContext {
-                    override fun enterEditPathElevatorMode() {
-                        this@Editor.enterEditPathElevatorMode()
-                    }
-                }
-                is FloorSpikeRow -> object : FloorSpikeRowSelectionContext {
-                    override fun editSpikes() {
-                        _editFloorSpikeRowSpikes.send(selectedEntity)
-                    }
-                }
-                is WapObject -> object : WapObjectSelectionContext {
-                    override fun editProperties() {
-                        _editWapObjectProperties.send(selectedEntity)
-                    }
-                }
-                is HorizontalElevator -> null
-                is VerticalElevator -> null
-                is Enemy -> object : EnemySelectionContext {
-                    override fun editPickups() {
-                        _editEnemyPickups.send(selectedEntity)
-                    }
-                }
-                is StartPoint -> null
-                is Elastic -> null
-                is KnotMesh -> object : KnotMeshSelectionContext {
-                    override fun enterKnotSelectMode() {
-                        this@Editor.enterKnotSelectMode()
-                    }
+    val selectionContext: Cell<SelectionContext?> = buildSingleEntitySelectionContext()
+        .orElse(buildMultiEntitySelectionContext())
 
-                    override fun enterKnotBrushMode() {
-                        this@Editor.enterKnotBrushMode(
-                            knotMesh = selectedEntity,
-                        )
-                    }
+    private fun buildSingleEntitySelectionContext() = selectedEntity.map { selectedEntity ->
+        when (selectedEntity) {
+            null -> null
+            is PathElevator -> object : PathElevatorSelectionContext {
+                override fun enterEditPathElevatorMode() {
+                    this@Editor.enterEditPathElevatorMode()
                 }
-                is TileEntity -> null
-                is Rope -> object : RopeSelectionContext {
-                    override fun editSpeed() {
-                        _editRopeSpeed.send(selectedEntity)
-                    }
+            }
+            is FloorSpikeRow -> object : FloorSpikeRowSelectionContext {
+                override fun editSpikes() {
+                    _editFloorSpikeRowSpikes.send(selectedEntity)
                 }
-                is CrateStack -> object : CrateStackSelectionContext {
-                    override fun editPickups() {
-                        _editCrateStackPickups.send(selectedEntity)
-                    }
+            }
+            is WapObject -> object : WapObjectSelectionContext {
+                override fun editProperties() {
+                    _editWapObjectProperties.send(selectedEntity)
                 }
-                is CrumblingPeg -> CrumblingPegSelectionContext(
-                    crumblingPeg = selectedEntity,
-                )
-                is TogglePeg -> object : TogglePegSelectionContext {
-                    override fun editTiming() {
-                        _editTogglePegTiming.send(selectedEntity)
-                    }
+            }
+            is HorizontalElevator -> null
+            is VerticalElevator -> null
+            is Enemy -> object : EnemySelectionContext {
+                override fun editPickups() {
+                    _editEnemyPickups.send(selectedEntity)
                 }
-                is Warp -> object : WarpSelectionContext {
-                    override fun editTarget() {
-                        _editWarpTarget.send(selectedEntity)
-                    }
+            }
+            is StartPoint -> null
+            is Elastic -> null
+            is KnotMesh -> object : SingleKnotMeshSelectionContext {
+                override fun enterKnotSelectMode() {
+                    this@Editor.enterKnotSelectMode()
+                }
+
+                override fun enterKnotBrushMode() {
+                    this@Editor.enterKnotBrushMode(
+                        knotMesh = selectedEntity,
+                    )
+                }
+            }
+            is TileEntity -> null
+            is Rope -> object : RopeSelectionContext {
+                override fun editSpeed() {
+                    _editRopeSpeed.send(selectedEntity)
+                }
+            }
+            is CrateStack -> object : CrateStackSelectionContext {
+                override fun editPickups() {
+                    _editCrateStackPickups.send(selectedEntity)
+                }
+            }
+            is CrumblingPeg -> CrumblingPegSelectionContext(
+                crumblingPeg = selectedEntity,
+            )
+            is TogglePeg -> object : TogglePegSelectionContext {
+                override fun editTiming() {
+                    _editTogglePegTiming.send(selectedEntity)
+                }
+            }
+            is Warp -> object : WarpSelectionContext {
+                override fun editTarget() {
+                    _editWarpTarget.send(selectedEntity)
                 }
             }
         }
+    }
+
+    private fun buildMultiEntitySelectionContext() = selectedEntities.map { selectedEntitiesNow ->
+        inline fun <reified TEntity : Entity> asMultipleSelection(): Set<TEntity>? {
+            val entities = selectedEntitiesNow.asFullOfInstances<TEntity>()
+            return entities?.takeIf { it.isNotEmpty() }?.toSet()
+        }
+
+        val selectedKnotMeshes = asMultipleSelection<KnotMesh>()
+
+        when {
+            selectedKnotMeshes != null -> object : MultipleKnotMeshesSelectionContext {
+                override fun mergeKnotMeshes() {
+                    KnotMesh.createMerged(selectedKnotMeshes)?.let(world::insertKnotMesh)
+                    world.removeEntities(selectedKnotMeshes)
+                }
+            }
+            else -> null
+        }
+    }
 
     fun setSelectedEntities(entities: Set<Entity>) {
         _selectedEntities.set(entities)

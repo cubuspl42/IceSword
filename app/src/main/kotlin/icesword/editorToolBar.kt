@@ -12,7 +12,8 @@ import icesword.editor.EntitySelectMode
 import icesword.editor.FloorSpikeRowSelectionContext
 import icesword.editor.KnotBrush
 import icesword.editor.KnotBrushMode
-import icesword.editor.KnotMeshSelectionContext
+import icesword.editor.MultipleKnotMeshesSelectionContext
+import icesword.editor.SingleKnotMeshSelectionContext
 import icesword.editor.PathElevatorPath
 import icesword.editor.PathElevatorSelectionContext
 import icesword.editor.RopeSelectionContext
@@ -171,14 +172,21 @@ fun createSelectionModeButtonsRow(
 ): HTMLElement? {
     val htmlWidgetB = when (selectionContext) {
         null -> null
-        is KnotMeshSelectionContext -> HTMLWidget.of(
-            createKnotMeshSelectionModeButtonsRow(
+        is SingleKnotMeshSelectionContext -> HTMLWidget.of(
+            createSingleKnotMeshSelectionModeButtonsRow(
                 editor = editor,
                 knotMeshSelectionMode = selectionContext,
                 tillDetach = tillDetach,
             ),
         )
-        is PathElevatorSelectionContext -> HTMLWidget.of(
+        is MultipleKnotMeshesSelectionContext ->
+            createMultipleKnotMeshesSelectionContextButtonsRow(
+                editor = editor,
+                selectionContext = selectionContext,
+                tillDetach = tillDetach,
+            )
+        is PathElevatorSelectionContext,
+        -> HTMLWidget.of(
             createPathElevatorSelectionModeButtonsRow(
                 editor = editor,
                 pathElevatorSelectionMode = selectionContext,
@@ -233,9 +241,9 @@ fun createEditorModeButtonsRow(
         else -> null
     }
 
-fun createKnotMeshSelectionModeButtonsRow(
+fun createSingleKnotMeshSelectionModeButtonsRow(
     editor: Editor,
-    knotMeshSelectionMode: KnotMeshSelectionContext,
+    knotMeshSelectionMode: SingleKnotMeshSelectionContext,
     tillDetach: Till,
 ): HTMLElement {
     val knotBrushButton = createModeButton<KnotBrushMode>(
@@ -260,6 +268,27 @@ fun createKnotMeshSelectionModeButtonsRow(
         ),
     ).buildElement(tillDetach = tillDetach)
 }
+
+
+fun createMultipleKnotMeshesSelectionContextButtonsRow(
+    editor: Editor,
+    selectionContext: MultipleKnotMeshesSelectionContext,
+    tillDetach: Till,
+): HTMLWidgetB<*> {
+    val mergeButton = createButton(
+        text = "Merge",
+        onPressed = {
+        },
+        tillDetach = tillDetach,
+    )
+
+    return createRow(
+        children = listOf(
+            HTMLWidget.of(mergeButton),
+        ),
+    )
+}
+
 
 fun createKnotBrushModeButtonsRow(
     knotBrushMode: KnotBrushMode,
