@@ -1,9 +1,9 @@
 package icesword.frp
 
 abstract class SimpleCell<A>(
-    tag: String,
+    identity: Identity,
 ) : SimpleObservable<ValueChange<A>>(
-    tag = tag
+    identity = identity
 ), Cell<A> {
     override val changes: Stream<ValueChange<A>>
         get() = Stream.source(this::subscribe, tag = "Cell.changes")

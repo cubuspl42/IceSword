@@ -10,9 +10,9 @@ private data class Entry<K, V>(
 class MapValuesNotNullDynamicMap<K, V, V2 : Any>(
     private val source: DynamicMap<K, V>,
     private val transform: (Map.Entry<K, V>) -> V2?,
-    tag: String,
+    identity: Identity,
 ) : SimpleDynamicMap<K, V2>(
-    tag = tag,
+    identity = identity,
 ) {
 //    private var keyMap: MutableMap<K, V>? = null
 

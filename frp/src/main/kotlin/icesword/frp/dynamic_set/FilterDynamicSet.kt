@@ -5,9 +5,9 @@ import icesword.frp.*
 class FilterDynamicSet<A>(
     private val source: DynamicSet<A>,
     private val test: (A) -> Boolean,
-    tag: String,
+    identity: Identity,
 ) : SimpleDynamicSet<A>(
-    tag = tag,
+    identity = identity,
 ) {
     override val volatileContentView: Set<A>
         get() = source.volatileContentView.asSequence()

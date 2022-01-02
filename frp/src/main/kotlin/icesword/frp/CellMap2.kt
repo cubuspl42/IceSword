@@ -4,7 +4,9 @@ class CellMap2<A, B, C>(
     private val ca: Cell<A>,
     private val cb: Cell<B>,
     private val f: (A, B) -> C,
-) : CachingCell<C>(tag = "CellMap2") {
+) : CachingCell<C>(
+    identity = Identity.build(tag = "CellMap2"),
+) {
     private var subscriptionA: Subscription? = null
     private var subscriptionB: Subscription? = null
 
@@ -34,7 +36,9 @@ class CellMap3<A, B, C, D>(
     private val cb: Cell<B>,
     private val cc: Cell<C>,
     private val f: (A, B, C) -> D,
-) : CachingCell<D>(tag = "CellMap3") {
+) : CachingCell<D>(
+    identity = Identity.build(tag = "CellMap3"),
+) {
     private var subscriptionA: Subscription? = null
     private var subscriptionB: Subscription? = null
     private var subscriptionC: Subscription? = null
@@ -79,7 +83,9 @@ class CellMap4<A, B, C, D, E>(
     private val cc: Cell<C>,
     private val cd: Cell<D>,
     private val f: (A, B, C, D) -> E,
-) : CachingCell<E>(tag = "CellMap4") {
+) : CachingCell<E>(
+    identity = Identity.build(tag = "CellMap4"),
+) {
     private var subscriptionA: Subscription? = null
     private var subscriptionB: Subscription? = null
     private var subscriptionC: Subscription? = null

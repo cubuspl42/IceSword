@@ -5,9 +5,9 @@ import icesword.frp.*
 
 class DynamicMapFuseValues<K, V>(
     private val source: DynamicMap<K, Cell<V>>,
-    tag: String,
+    identity: Identity,
 ) : SimpleDynamicMap<K, V>(
-    tag = tag,
+    identity = identity,
 ) {
 //    private var _mutableContent: MutableMap<K, V>? = null
 //

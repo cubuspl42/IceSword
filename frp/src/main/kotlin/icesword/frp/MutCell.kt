@@ -1,6 +1,8 @@
 package icesword.frp
 
-class MutCell<A>(initialValue: A) : SimpleCell<A>(tag = "MutCell") {
+class MutCell<A>(initialValue: A) : SimpleCell<A>(
+    identity = Identity.build(tag = "MutCell"),
+) {
     private var _currentValue: A = initialValue
 
     override fun sample(): A = _currentValue

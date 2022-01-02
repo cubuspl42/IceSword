@@ -5,8 +5,8 @@ import icesword.frp.*
 class DynamicMapUnion<K, V>(
     private val source1: DynamicMap<K, V>,
     private val source2: DynamicMap<K, V>,
-    tag: String,
-) : SimpleDynamicMap<K, V>(tag = tag) {
+    identity: Identity,
+) : SimpleDynamicMap<K, V>(identity = identity) {
     private var keyMap: MutableMap<K, K>? = null
 
 //    private var mutableContent: MutableMap<K, V>? = null

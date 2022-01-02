@@ -5,7 +5,9 @@ import icesword.frp.*
 open class ValidatedDynamicSet<A>(
     private val source: DynamicSet<A>,
     private val sourceTag: String,
-) : SimpleDynamicSet<A>(tag = "$sourceTag-validated") {
+) : SimpleDynamicSet<A>(
+    identity = SimpleObservable.Identity.build(tag = "$sourceTag-validated"),
+) {
     private var mutableContent: MutableSet<A>? = null
 
     override val volatileContentView: Set<A>

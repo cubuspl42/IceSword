@@ -9,8 +9,8 @@ class AdjustDynamicSet<K, A>(
     private val source: DynamicSet<K>,
     private val adjustment: Cell<A>,
     private val combine: (K, A) -> K,
-    tag: String,
-) : SimpleDynamicSet<K>(tag = tag) {
+    identity: Identity,
+) : SimpleDynamicSet<K>(identity = identity) {
     private var mutableContent: MutableSet<K>? = null
 
     override val volatileContentView: Set<K>

@@ -1,9 +1,9 @@
 package icesword.frp
 
 abstract class SimpleDynamicMap<K, V>(
-    tag: String,
+    identity: Identity,
 ) : DynamicMap<K, V>, SimpleObservable<MapChange<K, V>>(
-    tag = tag,
+    identity = identity,
 ) {
 //    override val content: Cell<Map<K, V>>
 //        get() = TODO("Not yet implemented")

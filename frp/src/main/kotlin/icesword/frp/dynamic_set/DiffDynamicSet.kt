@@ -4,8 +4,8 @@ import icesword.frp.*
 
 class DiffDynamicSet<A>(
     private val inputContent: Cell<Set<A>>,
-    tag: String,
-) : SimpleDynamicSet<A>(tag = tag) {
+    identity: Identity,
+) : SimpleDynamicSet<A>(identity = identity) {
     private var mutableContent: MutableSet<A>? = null
 
     override val volatileContentView: Set<A>
@@ -23,6 +23,7 @@ class DiffDynamicSet<A>(
             val change = SetChange.diff(mutableContent!!, newContent)
 
             if (change.added.intersect(mutableContent!!).isNotEmpty()) {
+                console.error("Dynamic map already contains added value", dump())
                 throw IllegalStateException("DiffDynamicSet: change.added.intersect")
             }
 

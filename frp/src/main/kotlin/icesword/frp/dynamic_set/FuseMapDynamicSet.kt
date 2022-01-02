@@ -6,7 +6,9 @@ class FuseMapDynamicSet<A, B>(
     private val source: DynamicSet<A>,
     // Note: this needs to be pure!
     private val extract: (A) -> Cell<B>,
-) : SimpleDynamicSet<B>(tag = "MapDynamicSet") {
+) : SimpleDynamicSet<B>(
+    identity = SimpleObservable.Identity.build(tag = "FuseMapDynamicSet"),
+) {
     // Value -> reference count
     private var linksMap: MutableMap<B, MutableSet<A>>? = null
 

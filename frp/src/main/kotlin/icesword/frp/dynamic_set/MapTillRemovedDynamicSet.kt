@@ -12,7 +12,9 @@ class MapTillRemovedDynamicSet<A, B>(
     source: DynamicSet<A>,
     transform: (element: A, tillRemoved: Till) -> B,
     tillAbort: Till,
-) : SimpleDynamicSet<B>(tag = "MapDynamicSet") {
+) : SimpleDynamicSet<B>(
+    identity = SimpleObservable.Identity.build("MapDynamicSet"),
+) {
     private var linksMap: MutableMap<A, Link<B>>? = null
 
     private var mutableContent: MutableSet<B>? = null

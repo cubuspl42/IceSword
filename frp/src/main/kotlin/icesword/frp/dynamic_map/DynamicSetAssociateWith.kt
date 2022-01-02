@@ -5,8 +5,10 @@ import icesword.frp.*
 class DynamicSetAssociateWith<K, V>(
     private val source: DynamicSet<K>,
     private val valueSelector: (K) -> V,
-    tag: String,
-) : SimpleDynamicMap<K, V>(tag = tag) {
+    identity: Identity,
+) : SimpleDynamicMap<K, V>(
+    identity = identity,
+) {
     private var mutableContent: MutableMap<K, V>? = null
 
     override val volatileContentView: Map<K, V>

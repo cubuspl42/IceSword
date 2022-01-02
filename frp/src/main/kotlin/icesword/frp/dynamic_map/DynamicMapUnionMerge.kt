@@ -9,7 +9,9 @@ class DynamicMapUnionMerge<K, V, R>(
     private val maps: DynamicSet<DynamicMap<K, V>>,
     private val merge: (Set<V>) -> R,
     tag: String? = null,
-) : SimpleDynamicMap<K, R>(tag = tag ?: "DynamicMapUnionMerge") {
+) : SimpleDynamicMap<K, R>(
+    identity = Identity.build(tag ?: "DynamicMapUnionMerge"),
+) {
 
     private var mutableContent: MutableMap<K, R>? = null
 

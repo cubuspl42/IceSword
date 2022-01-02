@@ -8,8 +8,8 @@ import icesword.frp.*
 class DistinctMapDynamicSet<A, B>(
     private val source: DynamicSet<A>,
     private val transform: (A) -> B,
-    tag: String,
-) : SimpleDynamicSet<B>(tag = tag) {
+    identity: Identity,
+) : SimpleDynamicSet<B>(identity = identity) {
     private var mutableContent: MutableMap<B, Int>? = null
 
     override val volatileContentView: Set<B>

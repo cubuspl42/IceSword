@@ -4,7 +4,9 @@ import icesword.frp.*
 
 class DynamicSetUnion<A>(
     private val sets: DynamicSet<DynamicSet<A>>,
-) : SimpleDynamicSet<A>(tag = "DynamicSetUnion") {
+) : SimpleDynamicSet<A>(
+    identity = SimpleObservable.Identity.build("DynamicSetUnion"),
+) {
 //    private var mutableContent: MutableSet<A>? = null
 
     private var linksMap: MutableMap<A, MutableSet<DynamicSet<A>>>? = null

@@ -5,7 +5,9 @@ import icesword.frp.*
 class ValidatedDynamicMap<K, V>(
     private val source: DynamicMap<K, V>,
     private val sourceTag: String,
-) : SimpleDynamicMap<K, V>(tag = "${sourceTag}-validated") {
+) : SimpleDynamicMap<K, V>(
+    identity = SimpleObservable.Identity.build(tag = "${sourceTag}-validated"),
+) {
     private var mutableContent: MutableMap<K, V>? = null
 
     override val volatileContentView: Map<K, V>

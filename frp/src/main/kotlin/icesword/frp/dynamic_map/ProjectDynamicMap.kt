@@ -14,7 +14,9 @@ class ProjectDynamicMap<K, V, K2, V2>(
     private val projectKey: (K) -> Iterable<K2>,
     private val buildValue: (K2, Map<K, V>) -> V2,
     tag: String? = null,
-) : SimpleDynamicMap<K2, V2>(tag = tag ?: "ProjectDynamicMap") {
+) : SimpleDynamicMap<K2, V2>(
+    identity = SimpleObservable.Identity.build(tag ?: "ProjectDynamicMap"),
+) {
     private var linksMap: MutableMap<K2, MutableSet<K>>? = null
 
     private var subscription: Subscription? = null

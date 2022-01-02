@@ -1,6 +1,7 @@
 package icesword.frp.stream
 
 import icesword.frp.SimpleCell
+import icesword.frp.SimpleObservable
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.TillMarker
@@ -13,7 +14,9 @@ class FollowTillNextCell<A>(
     initialValue: Tilled<A>,
     private val extractNext: (A) -> Stream<Tilled<A>>,
     private val till: Till,
-) : SimpleCell<A>(tag = "FollowCell") {
+) : SimpleCell<A>(
+    identity = SimpleObservable.Identity.build("FollowTillNextCell"),
+) {
     private var _currentValue: A = buildValueTillNext(initialValue)
 
     override fun sample(): A = _currentValue

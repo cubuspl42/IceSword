@@ -35,10 +35,9 @@ interface DynamicMap<K, V> {
             tag: String = "diff",
         ): DynamicMap<K, V> =
             DiffDynamicMap(
-                content,
-                tag = "$tag/diff",
-            )
-                .validated(tag = tag)
+                inputContent = content,
+                identity = SimpleObservable.Identity.build(tag = "$tag/diff"),
+            ).validated(tag = tag)
 
         fun <K, V> diff(
             content: Cell<DynamicMap<K, V>>,
@@ -51,7 +50,10 @@ interface DynamicMap<K, V> {
         fun <K, V> fromEntries(
             entries: DynamicSet<Pair<K, V>>,
         ): DynamicMap<K, V> =
-            FromEntriesDynamicMap(entries, tag = "fromEntries")
+            FromEntriesDynamicMap(
+                source = entries,
+                identity = SimpleObservable.Identity.build("fromEntries"),
+            )
 
 //        fun <K, V> fromEntriesDiff(
 //            entries: DynamicSet<Pair<K, V>>
@@ -191,7 +193,8 @@ fun <K, V> DynamicMap<K, V>.sample(): Map<K, V> = volatileContentView.toMap()
 
 fun <K, V> DynamicMap<K, Cell<V>>.fuseValues(tag: String? = null): DynamicMap<K, V> {
     val effectiveTag = tag ?: "fuseValues"
-    return DynamicMapFuseValues(this, tag = effectiveTag)
+    val identity = SimpleObservable.Identity.build(tag = effectiveTag)
+    return DynamicMapFuseValues(this, identity = identity)
         .validated(tag = effectiveTag)
 }
 
@@ -220,7 +223,7 @@ fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNull(
     MapValuesNotNullDynamicMap(
         source = this,
         transform = transform,
-        tag = tag,
+        identity = SimpleObservable.Identity.build(tag = tag),
     )
 
 //fun <K, V, V2 : Any> DynamicMap<K, V>.mapValuesNotNullDiff(
@@ -266,7 +269,10 @@ fun <K, V : Any> DynamicMap<K, V?>.filterValuesNotNull(
 //    TODO()
 
 fun <K, V> DynamicMap<K, V>.getKeys(tag: String = "getKeys"): DynamicSet<K> =
-    KeysDynamicSet(this, tag = tag)
+    KeysDynamicSet(
+        source = this,
+        identity = SimpleObservable.Identity.build(tag),
+    )
 
 //val <K, V> DynamicMap<K, V>.contentView: Cell<Map<K, V>>
 //    get() = TODO()
@@ -292,7 +298,9 @@ fun <K, V> DynamicMap<K, V>.getNow(key: K): V? = this.volatileContentView[key]
 class RawCell<A>(
     private val sampleValue: () -> A,
     private val _changes: Stream<A>,
-) : CachingCell<A>(tag = "RawCell") {
+) : CachingCell<A>(
+    identity = Identity.build(tag = "RawCell"),
+) {
     private var subscription: Subscription? = null
 
     override fun sampleUncached(): A = this.sampleValue()
@@ -312,8 +320,8 @@ class RawCell<A>(
 
 class DiffDynamicMap<K, V>(
     private val inputContent: Cell<Map<K, V>>,
-    tag: String,
-) : SimpleDynamicMap<K, V>(tag) {
+    identity: Identity,
+) : SimpleDynamicMap<K, V>(identity = identity) {
     private var mutableContent: MutableMap<K, V>? = null
 
     override val volatileContentView: Map<K, V>
@@ -346,7 +354,9 @@ class DiffDynamicMap<K, V>(
 class DynamicDiffDynamicMap<K, V>(
     private val inputContent: Cell<DynamicMap<K, V>>,
     tag: String,
-) : SimpleDynamicMap<K, V>(tag = tag) {
+) : SimpleDynamicMap<K, V>(
+    identity = Identity.build(tag = "RawCell"),
+) {
     private var mutableContent: MutableMap<K, V>? = null
 
     override val volatileContentView: Map<K, V>
@@ -414,7 +424,9 @@ class StaticDynamicMap<K, V>(
 
 class MutableDynamicMap<K, V : Any>(
     initialContent: Map<K, V>,
-) : SimpleDynamicMap<K, V>(tag = "MutableDynamicMap") {
+) : SimpleDynamicMap<K, V>(
+    identity = Identity.build(tag = "MutableDynamicMap"),
+) {
     companion object {
         fun <K, V : Any> of(content: Map<K, V>): MutableDynamicMap<K, V> =
             MutableDynamicMap(content)

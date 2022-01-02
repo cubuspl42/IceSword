@@ -1,5 +1,7 @@
 package icesword.frp
 
+import base.jsObjectOf
+
 private external class Set<A>(
     other: Set<A> = definedExternally,
 ) {
@@ -19,8 +21,29 @@ private fun <A> Set<A>.isEmpty(): Boolean =
     this.size == 0
 
 abstract class SimpleObservable<A>(
-    val tag: String,
+    val identity: Identity,
 ) : Observable<A> {
+    data class Identity(
+        val tag: String,
+        val trace: String,
+    ) {
+        companion object {
+            @Suppress("ThrowableNotThrown")
+            fun build(tag: String): Identity {
+                val trace = Error().stackTraceToString()
+
+                return Identity(
+                    tag = tag,
+                    trace = trace,
+                )
+            }
+        }
+
+        fun withSubTag(tag: String): Identity {
+            return copy(tag = this.tag + "/$tag")
+        }
+    }
+
     companion object {
         private var nextId = 0
 
@@ -31,6 +54,16 @@ abstract class SimpleObservable<A>(
 
     val name: String
         get() = "Observable $tag #$id#"
+
+    val tag: String
+        get() = identity.tag
+
+    fun dump(): Any? = jsObjectOf(
+        mapOf(
+            "name" to name,
+            "trace" to identity.trace,
+        )
+    )
 
     private val listeners = Set<(A) -> Unit>()
 

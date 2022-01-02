@@ -53,7 +53,9 @@ class OrderedSetChange<A>(
 
 abstract class SimpleDynamicOrderedSet<A> :
     DynamicOrderedSet<A>,
-    SimpleObservable<OrderedSetChange<A>>(tag = "SimpleDynamicOrderedSet") {
+    SimpleObservable<OrderedSetChange<A>>(
+        identity = Identity.build(tag = "SimpleDynamicOrderedSet")
+    ) {
 
     override val changes: Stream<OrderedSetChange<A>>
         get() = Stream.source(this::subscribe, tag = "SimpleDynamicSet.changes")

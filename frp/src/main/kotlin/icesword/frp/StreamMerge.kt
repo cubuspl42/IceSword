@@ -2,7 +2,9 @@ package icesword.frp
 
 class StreamMerge<A>(
     private val sources: Iterable<Stream<A>>,
-) : SimpleStream<A>(tag = "StreamMerge") {
+) : SimpleStream<A>(
+    identity = Identity.build(tag = "StreamMerge"),
+) {
     private var subscriptions: List<Subscription> = emptyList()
 
     override fun onStart() {

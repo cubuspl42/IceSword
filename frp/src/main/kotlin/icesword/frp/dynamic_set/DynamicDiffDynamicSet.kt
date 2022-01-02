@@ -4,8 +4,8 @@ import icesword.frp.*
 
 class DynamicDiffDynamicSet<A>(
     private val inputContent: Cell<DynamicSet<A>>,
-    tag: String,
-) : SimpleDynamicSet<A>(tag = tag) {
+    identity: Identity,
+) : SimpleDynamicSet<A>(identity = identity) {
     private var mutableContent: MutableSet<A>? = null
 
     override val volatileContentView: Set<A>

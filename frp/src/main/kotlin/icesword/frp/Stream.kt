@@ -1,6 +1,6 @@
 package icesword.frp
 
-import frp.cell.CorrelateCell
+import icesword.frp.cell.CorrelateCell
 import icesword.frp.stream.FollowTillNextCell
 
 interface Tilled<out A> {
@@ -63,7 +63,11 @@ fun <A> Stream<A>.tillNext(orTill: Till): Till =
     if (orTill.wasReached()) {
         Till.reached
     } else {
-        TillOr(this, orTill, tag = "tillNext")
+        TillOr(
+            source1 = this,
+            source2 = orTill,
+            identity = SimpleObservable.Identity.build(tag = "Stream.tillNext"),
+        )
     }
 
 fun <A> Stream<A>.hold(initialValue: A, till: Till): Cell<A> =

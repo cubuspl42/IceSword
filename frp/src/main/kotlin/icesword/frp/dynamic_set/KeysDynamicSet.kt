@@ -4,8 +4,8 @@ import icesword.frp.*
 
 class KeysDynamicSet<K, V>(
     private val source: DynamicMap<K, V>,
-    tag: String,
-) : SimpleDynamicSet<K>(tag = tag) {
+    identity: Identity,
+) : SimpleDynamicSet<K>(identity = identity) {
     private var mutableContent: MutableSet<K>? = null
 
     override val volatileContentView: Set<K>

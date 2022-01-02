@@ -4,7 +4,9 @@ import icesword.frp.*
 
 class MemorizedDynamicSet<A>(
     private val source: DynamicSet<A>,
-) : SimpleDynamicSet<A>(tag = "MapDynamicSet") {
+) : SimpleDynamicSet<A>(
+    identity = SimpleObservable.Identity.build("MemorizedDynamicSet"),
+) {
     private var mutableContent: MutableSet<A>? = null
 
     override val volatileContentView: Set<A>

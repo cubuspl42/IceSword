@@ -5,7 +5,7 @@ private sealed class Cache<A> {
     class EmptyCache<A> : Cache<A>()
 }
 
-abstract class CachingCell<A>(tag: String) : SimpleCell<A>(tag = tag) {
+abstract class CachingCell<A>(identity: Identity) : SimpleCell<A>(identity = identity) {
     private var cache: Cache<A> = Cache.EmptyCache()
 
     final override fun sample(): A =

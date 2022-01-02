@@ -2,7 +2,11 @@ package icesword.frp
 
 class CellDivert<A>(
     private val source: Cell<Stream<A>>,
-) : SimpleStream<A>(tag = "CellDivert") {
+) : SimpleStream<A>(
+    identity = Identity.build(
+        tag = "CellDivert",
+    ),
+) {
 
     private var _subscriptionOuter: Subscription? = null
 

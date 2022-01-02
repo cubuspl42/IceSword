@@ -23,7 +23,9 @@ class TillUnreachable : Till {
         Subscription.noop()
 }
 
-class TillMarker : Till, SimpleObservable<Unit>("TillMarker") {
+class TillMarker : Till, SimpleObservable<Unit>(
+    identity = Identity.build(tag = "TillMarker"),
+) {
     private var _wasReached = false
 
     override fun wasReached(): Boolean = false
@@ -39,8 +41,8 @@ class TillMarker : Till, SimpleObservable<Unit>("TillMarker") {
 class TillOr(
     source1: Observable<Any?>,
     source2: Observable<Any?>,
-    tag: String,
-) : SimpleObservable<Unit>(tag = tag), Till {
+    identity: Identity,
+) : SimpleObservable<Unit>(identity = identity), Till {
 
     private var _wasReached: Boolean = false
 
@@ -75,7 +77,13 @@ fun Till.or(orTill: Till): Till =
     if (this.wasReached() || orTill.wasReached()) {
         Till.reached
     } else {
-        TillOr(this, orTill, tag = "Till.or")
+        TillOr(
+            source1 = this,
+            source2 = orTill,
+            identity = SimpleObservable.Identity.build(
+                tag = "Till.or",
+            )
+        )
     }
 
 fun <A> subscribeTill(

@@ -4,7 +4,11 @@ class CellMapTillNext<A, B>(
     source: Cell<A>,
     f: (A, tillNext: Till) -> B,
     tillAbort: Till,
-) : SimpleCell<B>(tag = "CellMapTillNext") {
+) : SimpleCell<B>(
+    identity = Identity.build(
+        tag = "CellMapTillNext",
+    ),
+) {
     private var tillNextSink = StreamSink<Unit>()
 
     private var value: B = f(

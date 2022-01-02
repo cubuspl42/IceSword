@@ -19,11 +19,16 @@ interface DynamicSet<out A> {
             )
 
         fun <A> diff(content: Cell<Set<A>>, tag: String = "diff"): DynamicSet<A> =
-            DiffDynamicSet(content, tag = tag)
-                .validated("$tag-validated")
+            DiffDynamicSet(
+                inputContent = content,
+                identity = SimpleObservable.Identity.build(tag),
+            ).validated("$tag-validated")
 
         fun <A> diff(content: Cell<DynamicSet<A>>, tag: String = "diff-dynamic"): DynamicSet<A> =
-            DynamicDiffDynamicSet(content, tag)
+            DynamicDiffDynamicSet(
+                inputContent = content,
+                identity = SimpleObservable.Identity.build(tag = tag),
+            )
 
         fun <A> union(sets: DynamicSet<DynamicSet<A>>): DynamicSet<A> =
             DynamicSetUnion(sets)
@@ -105,7 +110,7 @@ fun <A, R> DynamicSet<A>.distinctMap(
         // TODO: This validation shouldn't be needed, source should validate itself
         source = this.validated("$tag-this"),
         transform = transform,
-        tag = tag,
+        identity = SimpleObservable.Identity.build(tag = tag),
     ).validated(tag)
 
 fun <A : Any> DynamicSet<A?>.filterNotNull(): DynamicSet<A> =
@@ -140,8 +145,11 @@ fun <K, B> DynamicSet<K>.fuseMap(transform: (K) -> Cell<B>): DynamicSet<B> =
     FuseMapDynamicSet(this, transform)
 
 fun <K, V> DynamicSet<K>.associateWith(tag: String, valueSelector: (K) -> V): DynamicMap<K, V> =
-    DynamicSetAssociateWith(this, valueSelector, tag = tag)
-        .validated(tag = tag)
+    DynamicSetAssociateWith(
+        source = this,
+        valueSelector = valueSelector,
+        identity = SimpleObservable.Identity.build("associateWith"),
+    ).validated(tag = tag)
 
 fun <K, V> DynamicSet<K>.associateWithDynamic(tag: String, valueSelector: (K) -> Cell<V>): DynamicMap<K, V> =
     this.associateWith(tag = "$tag/associateWithDynamic/associateWith", valueSelector)
@@ -160,7 +168,7 @@ fun <A, B> DynamicSet<A>.adjust(
         source = this,
         adjustment = adjustment,
         combine = combine,
-        tag = "adjust",
+        identity = SimpleObservable.Identity.build(tag = "adjust"),
     )
         .validated(sourceTag = "adjust")
 
@@ -174,7 +182,7 @@ fun <A> DynamicSet<A>.filter(tag: String = "filter", test: (A) -> Boolean): Dyna
     FilterDynamicSet(
         source = this,
         test = test,
-        tag = tag
+        identity = SimpleObservable.Identity.build(tag = tag),
     ).validated(sourceTag = tag)
 
 fun <A> DynamicSet<A>.filterDynamic(test: (A) -> Cell<Boolean>): DynamicSet<A> =
@@ -201,9 +209,9 @@ fun <A> MutableDynamicSet<A>.validatedMutable(tag: String): MutableDynamicSet<A>
     else this
 
 abstract class SimpleDynamicSet<A>(
-    tag: String,
+    identity: Identity,
 ) : DynamicSet<A>, SimpleObservable<SetChange<A>>(
-    tag = tag,
+    identity = identity,
 ) {
     override val content: Cell<Set<A>>
         get() = RawCell(
@@ -250,7 +258,11 @@ interface MutableDynamicSet<A> : DynamicSet<A> {
 private class MutableDynamicSetImpl<A>(
     initialContent: Set<A>,
     tag: String = "MutableDynamicSet",
-) : SimpleDynamicSet<A>(tag = tag), MutableDynamicSet<A> {
+) : SimpleDynamicSet<A>(
+    identity = Identity.build(
+        tag = "MutableDynamicSet",
+    ),
+), MutableDynamicSet<A> {
     private val mutableContent: MutableSet<A> = initialContent.toMutableSet()
 
     override val volatileContentView: Set<A>
