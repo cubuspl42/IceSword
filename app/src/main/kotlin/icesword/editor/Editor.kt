@@ -8,6 +8,7 @@ import icesword.RezIndex
 import icesword.RezTextureBank
 import icesword.TILE_SIZE
 import icesword.asFullOfInstances
+import icesword.collections.unionView
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
@@ -19,11 +20,14 @@ import icesword.editor.InsertionPrototype.WapObjectAlikeInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
+import icesword.frp.DynamicMap
+import icesword.frp.DynamicView
 import icesword.frp.MutCell
 import icesword.frp.Stream
 import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
+import icesword.frp.contentDynamicView
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.mapTillNext
@@ -441,6 +445,23 @@ class Editor(
         }
     }
 
+    fun buildTilesPreview(): DynamicView<Map<IntVec2, Int>> {
+        val elasticPreviewTiles = DynamicMap.diff(
+            elasticInsertionMode.switchMapNested { it.elasticPreview }
+                .mapNested { it.metaTileLayerProduct.tiles }
+                .orElse(Cell.constant(DynamicMap.empty()))
+        ).also {
+            it.changes.subscribe { } // FIXME: DynamicView keep-alive
+        }
+
+        return DynamicView.map2(
+            world.tiles.contentDynamicView,
+            elasticPreviewTiles.contentDynamicView,
+        ) { tilesView, elasticPreviewTilesView ->
+            tilesView.unionView(elasticPreviewTilesView)
+        }
+    }
+
     fun setSelectedEntities(entities: Set<Entity>) {
         _selectedEntities.set(entities)
     }
@@ -507,6 +528,9 @@ class Editor(
 
     val wapObjectAlikeInsertionMode: Cell<WapObjectAlikeInsertionMode?> =
         insertionMode.map { it as? WapObjectAlikeInsertionMode }
+
+    val elasticInsertionMode: Cell<ElasticInsertionMode?> =
+        insertionMode.map { it as? ElasticInsertionMode }
 
     fun enterInsertionMode(
         insertionPrototype: InsertionPrototype,

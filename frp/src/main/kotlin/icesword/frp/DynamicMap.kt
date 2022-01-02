@@ -40,6 +40,14 @@ interface DynamicMap<K, V> {
             )
                 .validated(tag = tag)
 
+        fun <K, V> diff(
+            content: Cell<DynamicMap<K, V>>,
+            tag: String = "diffDynamic",
+        ): DynamicMap<K, V> = DynamicDiffDynamicMap(
+            inputContent = content,
+            tag = tag,
+        )
+
         fun <K, V> fromEntries(
             entries: DynamicSet<Pair<K, V>>,
         ): DynamicMap<K, V> =
@@ -334,6 +342,51 @@ class DiffDynamicMap<K, V>(
     }
 
 }
+
+class DynamicDiffDynamicMap<K, V>(
+    private val inputContent: Cell<DynamicMap<K, V>>,
+    tag: String,
+) : SimpleDynamicMap<K, V>(tag = tag) {
+    private var mutableContent: MutableMap<K, V>? = null
+
+    override val volatileContentView: Map<K, V>
+        get() = mutableContent ?: inputContent.sample().volatileContentView
+
+    private var subscription: Subscription? = null
+
+    private var innerSubscription: Subscription? = null
+
+    override fun onStart() {
+        subscription = inputContent.values().subscribe { newInner ->
+            innerSubscription!!.unsubscribe()
+            innerSubscription = subscribeInner(newInner)
+
+            val change = MapChange.diff(mutableContent!!, newInner.volatileContentView)
+            change.applyTo(mutableContent!!)
+
+            notifyListeners(change)
+        }
+
+        val initialInner = inputContent.sample()
+
+        innerSubscription = subscribeInner(initialInner)
+
+        mutableContent = initialInner.volatileContentView.toMutableMap()
+    }
+
+    private fun subscribeInner(initialInner: DynamicMap<K, V>): Subscription =
+        initialInner.changes.subscribe { innerChange ->
+            innerChange.applyTo(mutableContent!!)
+            notifyListeners(innerChange)
+        }
+
+    override fun onStop() {
+        mutableContent = null
+
+        subscription!!.unsubscribe()
+    }
+}
+
 
 //class ContentDynamicMap<K, V>(
 //    override val content: Cell<Map<K, V>>,

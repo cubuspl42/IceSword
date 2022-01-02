@@ -1,26 +1,18 @@
 package icesword.scene
 
 import icesword.MouseDrag
-import icesword.RezIndex
 import icesword.RezTextureBank
 import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.Elastic
 import icesword.editor.Entity
 import icesword.editor.EntitySelectMode.SelectionState
-import icesword.editor.MetaTileCluster
 import icesword.editor.Tool
 import icesword.frp.Cell
-import icesword.frp.Stream
 import icesword.frp.Till
-import icesword.frp.changesUnits
 import icesword.frp.dynamic_list.map
-import icesword.frp.getKeys
 import icesword.frp.map
-import icesword.frp.mergeWith
 import icesword.frp.reactDynamicNotNullTill
-import icesword.frp.units
-import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -30,89 +22,21 @@ import icesword.html.createSvgCircle
 import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
 import icesword.html.onMouseDrag
-import icesword.tileRect
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents
-import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
-
-private class ElasticUi private constructor(
-    private val viewTransform: DynamicTransform,
-    private val elastic: Elastic,
-    private val isSelected: Cell<Boolean>,
-) : CanvasNode {
-    constructor(
-        editor: Editor,
-        viewTransform: DynamicTransform,
-        elastic: Elastic,
-    ) : this(
-        viewTransform = viewTransform,
-        elastic = elastic,
-        isSelected = editor.isEntitySelected(elastic)
-    )
-
-    private val metaTileCluster: MetaTileCluster
-        get() = elastic.metaTileCluster
-
-    private val localTileCoords = metaTileCluster.localMetaTiles.getKeys()
-
-    override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-
-        val viewTransform = this.viewTransform.transform.sample()
-        val tileBounds = elastic.tileBounds.sample()
-        val pixelBounds = tileBounds * TILE_SIZE
-
-        val isSelected = isSelected.sample()
-
-        ctx.strokeStyle = if (isSelected) "red" else "rgba(103, 103, 131, 0.3)"
-
-        tileBounds.points().forEach { globalTileCoord ->
-            val viewTileRect = viewTransform.transform(tileRect(globalTileCoord))
-
-            ctx.lineWidth = 1.0
-
-            ctx.strokeRect(
-                x = viewTileRect.xMin.toDouble(),
-                y = viewTileRect.yMin.toDouble(),
-                w = viewTileRect.width.toDouble(),
-                h = viewTileRect.height.toDouble(),
-            )
-        }
-
-        val viewBounds = viewTransform.transform(pixelBounds)
-
-        ctx.lineWidth = 4.0
-
-        ctx.strokeRect(
-            x = viewBounds.xMin.toDouble(),
-            y = viewBounds.yMin.toDouble(),
-            w = viewBounds.width.toDouble(),
-            h = viewBounds.height.toDouble(),
-        )
-    }
-
-    override val onDirty: Stream<Unit> =
-        viewTransform.transform.values().units()
-            .mergeWith(metaTileCluster.localMetaTiles.changesUnits())
-            .mergeWith(elastic.tileBounds.values().units())
-            .mergeWith(isSelected.values().units())
-            .mergeWith(localTileCoords.changes.units())
-}
-
 class ElasticNode(
-    private val rezIndex: RezIndex,
     private val editor: Editor,
     private val elastic: Elastic,
-    private val viewTransform: DynamicTransform,
 ) : HybridNode() {
     override fun buildCanvasNode(
         textureBank: RezTextureBank,
     ): CanvasNode = GroupCanvasNode(
-        children = elastic.wapObjectSprites.map {
+        children = elastic.product.wapObjectSprites.map {
             WapSpriteNode(
                 editorTextureBank = editor.editorTextureBank,
                 textureBank = textureBank,
@@ -122,7 +46,7 @@ class ElasticNode(
     )
 
     override fun buildOverlayElement(
-        context: HybridNode.OverlayBuildContext,
+        context: OverlayBuildContext,
     ): SVGElement = context.run {
         createElasticOverlayElement(
             editor = editor,
@@ -144,10 +68,12 @@ private fun createElasticOverlayElement(
     elastic: Elastic,
     tillDetach: Till,
 ): SVGElement {
-    val relativeViewBounds = viewTransform.transform(elastic.pixelBounds)
+    val elasticProduct = elastic.product
+
+    val relativeViewBounds = viewTransform.transform(elasticProduct.pixelBounds)
         .map { it.copy(position = IntVec2.ZERO) }
 
-    val rootTranslate = viewTransform.transform(elastic.position)
+    val rootTranslate = viewTransform.transform(elasticProduct.pixelBoundsTopLeft)
 
     val isSelected = editor.isEntitySelected(elastic)
 

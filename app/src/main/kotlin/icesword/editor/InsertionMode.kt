@@ -16,11 +16,17 @@ import icesword.editor.retails.Retail
 import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.editor.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
 import icesword.frp.Cell
+import icesword.frp.CellLoop
 import icesword.frp.CellSlot
+import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
+import icesword.frp.distinctMap
+import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.reactTill
+import icesword.frp.staticSetOf
+import icesword.frp.unionWith
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
@@ -165,9 +171,70 @@ class ElasticInsertionMode(
     private val world: World,
     override val insertionPrototype: ElasticInsertionPrototype,
 ) : BasicInsertionMode {
-    override fun insert(insertionWorldPoint: IntVec2) {
-        val elasticPrototype = insertionPrototype.elasticPrototype
 
+    sealed interface InputState
+
+    interface CursorOverInputMode : InputState {
+        val cursorWorldPosition: Cell<IntVec2>
+    }
+
+    object CursorOutInputMode : InputState
+
+    inner class Preview(
+        val elasticProduct: ElasticProduct,
+    ) {
+        private val metaTileClusters = world.metaTileLayer.metaTileClusters.unionWith(
+            staticSetOf(elasticProduct.metaTileCluster),
+        )
+
+        val metaTileLayerProduct = MetaTileLayerProduct(
+            tileGenerator = retail.tileGenerator,
+            metaTileClusters = metaTileClusters,
+            globalTileCoords = elasticProduct.metaTileCluster.globalTileCoords,
+        )
+    }
+
+    private val elasticPrototype = insertionPrototype.elasticPrototype
+
+    private val inputStateLoop: CellLoop<InputState> =
+        CellLoop(placeholderValue = CursorOutInputMode)
+
+    private val inputState: Cell<InputState> = inputStateLoop.asCell
+
+    fun closeInputLoop(inputState: Cell<InputState>) {
+        inputStateLoop.close(inputState)
+    }
+
+    val elasticPreview: Cell<Preview?> = inputState.map { inputStateNow ->
+        when (inputStateNow) {
+            is CursorOverInputMode -> {
+                val generator = elasticPrototype.buildGenerator(
+                    retail = retail,
+                )
+
+                val elasticProduct = ElasticProduct(
+                    rezIndex = rezIndex,
+                    retail = retail,
+                    generator = generator,
+                    tileBounds = inputStateNow.cursorWorldPosition.map {
+                        val cursorTilePosition = tileAtPoint(it)
+                        IntRect(
+                            position = cursorTilePosition,
+                            size = elasticPrototype.defaultSize,
+                        )
+                    }
+                )
+
+                Preview(
+                    elasticProduct = elasticProduct,
+                )
+            }
+            CursorOutInputMode -> null
+        }
+    }
+
+
+    override fun insert(insertionWorldPoint: IntVec2) {
         val elastic = Elastic(
             rezIndex = rezIndex,
             retail = retail,

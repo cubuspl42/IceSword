@@ -122,7 +122,7 @@ fun <A, B> Cell<A>.mapTillNext(
         tillAbort = tillFreeze,
     )
 
-fun <A : Any> Cell<A?>.orElse(other: Cell<A?>): Cell<A?> =
+fun <A> Cell<A?>.orElse(other: Cell<A>): Cell<A> =
     this.switchMap {
         it?.let(Cell.Companion::constant) ?: other
     }

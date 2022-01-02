@@ -69,33 +69,17 @@ class MetaTileCluster(
     override fun toString(): String = "MetaTileCluster(tileOffset=${tileOffset.sample()})"
 }
 
-class MetaTileLayer(
+
+class MetaTileLayerProduct(
     private val tileGenerator: TileGenerator,
-    knotMeshLayer: KnotMeshLayer,
-    elastics: DynamicSet<Elastic>,
+    private val metaTileClusters: DynamicSet<MetaTileCluster>,
+    globalTileCoords: DynamicSet<IntVec2>,
 ) {
-    private val metaTileClusters = elastics.distinctMap(
-        tag = "MetaTileLayer/elastics.map"
-    ) { it.metaTileCluster }
-        .unionWith(DynamicSet.of(setOf(knotMeshLayer.metaTileCluster)))
-
-    private val globalTileCoords: DynamicSet<IntVec2> =
-        metaTileClusters.unionMapDynamic(
-            tag = "metaTileClusters.unionMapDynamic",
-        ) { it.globalTileCoords }
-            .also {
-                it.changes.subscribe { change ->
-                }
-            }
-
     val tiles: DynamicMap<IntVec2, Int> =
         globalTileCoords.associateWithDynamic(
             tag = "globalTileCoords.associateWithDynamic",
             this::buildTileAt,
-        ).also {
-            it.changes.subscribe { } // FIXME
-        }
-
+        )
     private fun buildTileAt(
         globalTileCoord: IntVec2,
     ): Cell<Int> {
@@ -122,4 +106,26 @@ class MetaTileLayer(
         metaTilesContent.filterNotNull().maxWithOrNull(
             compareBy({ it.z }, { it.tileId }),
         )
+}
+
+class MetaTileLayer(
+    tileGenerator: TileGenerator,
+    knotMeshLayer: KnotMeshLayer,
+    elastics: DynamicSet<Elastic>,
+) {
+    val metaTileClusters = elastics.distinctMap(
+        tag = "MetaTileLayer/elastics.map"
+    ) { it.product.metaTileCluster }
+        .unionWith(DynamicSet.of(setOf(knotMeshLayer.metaTileCluster)))
+
+    private val globalTileCoords: DynamicSet<IntVec2> =
+        metaTileClusters.unionMapDynamic(
+            tag = "metaTileClusters.unionMapDynamic",
+        ) { it.globalTileCoords }
+
+    val product = MetaTileLayerProduct(
+        tileGenerator = tileGenerator,
+        metaTileClusters = metaTileClusters,
+        globalTileCoords = globalTileCoords,
+    )
 }

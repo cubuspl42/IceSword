@@ -29,10 +29,8 @@ fun createEntityNode(
     entity: Entity,
 ): HybridNode? = when (entity) {
     is Elastic -> ElasticNode(
-        rezIndex = rezIndex,
         editor = editor,
         elastic = entity,
-        viewTransform = viewTransform,
     )
     is HorizontalElevator -> null
     is VerticalElevator -> null

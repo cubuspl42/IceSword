@@ -3,6 +3,7 @@ package icesword
 
 import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
+import icesword.editor.ElasticInsertionMode
 import icesword.editor.EntitySelectMode
 import icesword.editor.InsertWapObjectCommand
 import icesword.editor.KnotBrushMode
@@ -139,6 +140,12 @@ fun worldView(
                 root = root,
                 tillDetach = tillNext,
             )
+            is ElasticInsertionMode -> setupElasticInsertionModeController(
+                editor = editor,
+                elasticInsertionMode = mode,
+                root = root,
+                tillDetach = tillNext,
+            )
             is BasicInsertionMode -> setupBasicInsertionModeController(
                 editor = editor,
                 insertionMode = mode,
@@ -222,6 +229,8 @@ fun worldView(
             retail = editor.retail,
         )
 
+        val tilesPreview = editor.buildTilesPreview()
+
         val planeLayer = Layer(
             textureBank = textureBank,
             viewTransform = dynamicViewTransform,
@@ -238,7 +247,7 @@ fun worldView(
                                 ),
                                 TileLayer(
                                     tileset = tileset,
-                                    tiles = world.tiles.contentDynamicView.map {
+                                    tiles = tilesPreview.map {
                                         OffsetTilesView(IntVec2.ZERO, it)
                                     },
                                 ),
@@ -606,13 +615,37 @@ fun setupWapObjectAlikeInsertionModeController(
         }
 }
 
+fun setupElasticInsertionModeController(
+    editor: Editor,
+    elasticInsertionMode: ElasticInsertionMode,
+    root: HTMLElement,
+    tillDetach: Till,
+) {
+    elasticInsertionMode.closeInputLoop(
+        inputState = root.trackMousePosition(tillDetach).map { mousePosition ->
+            when (mousePosition) {
+                is MousePosition.Over -> object : ElasticInsertionMode.CursorOverInputMode {
+                    override val cursorWorldPosition: Cell<IntVec2> =
+                        editor.camera.transformToWorld(mousePosition.relativePosition)
+                }
+                MousePosition.Out -> ElasticInsertionMode.CursorOutInputMode
+            }
+        }
+    )
+
+    setupBasicInsertionModeController(
+        editor = editor,
+        insertionMode = elasticInsertionMode,
+        root = root,
+        tillDetach = tillDetach,
+    )
+}
 
 private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
     val rect = origin.getBoundingClientRect()
     val originPosition = IntVec2(rect.x.roundToInt(), rect.y.roundToInt())
     return this.clientPosition - originPosition
 }
-
 
 class MouseDrag(
     val clientPosition: Cell<IntVec2>,

@@ -5,6 +5,7 @@ import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Subscription
 import icesword.frp.Till
+import icesword.frp.Tilled
 import icesword.frp.cast
 import icesword.frp.filter
 import icesword.frp.hold
@@ -84,23 +85,35 @@ sealed interface MousePosition {
 
 fun Element.trackMousePosition(till: Till): Cell<MousePosition> {
     val onMove = this.onMouseMove()
-    val onEnter = onMove.mergeWith(this.onMouseEnter())
+    val onEnter = this.onMouseEnter()
     val onLeave = this.onMouseLeave()
 
-    val mousePosition = onEnter.map { enterEvent ->
-        val clientPosition = onMove.map { it.clientPosition }
-            .hold(enterEvent.clientPosition, till = onLeave.tillNext(till))
+    val self = this
 
-        val relativePosition = clientPosition.map(this::calculateRelativePosition)
+    val mousePosition = Stream.followTillNext<MousePosition>(
+        initialValue = Tilled.pure(MousePosition.Out),
+        extractNext = { mousePosition ->
+            when (mousePosition) {
+                is MousePosition.Over -> onLeave.map {
+                    Tilled.pure(MousePosition.Out)
+                }
+                MousePosition.Out -> onMove.mergeWith(onEnter).map { enterEvent ->
+                    object : Tilled<MousePosition> {
+                        override fun build(till: Till): MousePosition {
+                            val clientPosition = onMove.map { it.clientPosition }
+                                .hold(enterEvent.clientPosition, till = till)
 
-        MousePosition.Over(
-            clientPosition = clientPosition,
-            relativePosition = relativePosition,
-        )
-    }.mergeWith(
-        onLeave.map { MousePosition.Out }
-    ).hold(
-        initialValue = MousePosition.Out,
+                            val relativePosition = clientPosition.map(self::calculateRelativePosition)
+
+                            return MousePosition.Over(
+                                clientPosition = clientPosition,
+                                relativePosition = relativePosition,
+                            )
+                        }
+                    }
+                }
+            }
+        },
         till = till,
     )
 

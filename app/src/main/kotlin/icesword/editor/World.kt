@@ -295,8 +295,9 @@ class World(
         elastics = elastics,
     )
 
-    val tiles = metaTileLayer.tiles
-
+    val tiles = metaTileLayer.product.tiles.also {
+        it.changes.subscribe { } // FIXME: DynamicView keep-alive
+    }
 
     fun export(): Wwd.World {
         val actionPlane = wwdWorld.planes[wwdPlaneIndex]

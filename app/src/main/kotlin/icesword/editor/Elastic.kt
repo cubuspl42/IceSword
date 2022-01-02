@@ -9,32 +9,17 @@ import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.elastic.prototype.ElasticPrototype
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
-import icesword.frp.DynamicMap
 import icesword.frp.MutCell
 import icesword.frp.Till
-import icesword.frp.diffMap
-import icesword.frp.dynamic_list.DynamicList
-import icesword.frp.dynamic_list.map
 import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.frp.update
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
-import icesword.tileTopLeftCorner
 import icesword.wwd.Wwd
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-
-data class ElasticWapObjectBuildContext(
-    val tileBounds: IntRect,
-) {
-    val position: IntVec2
-        get() = tileTopLeftCorner(tileBounds.topLeft)
-
-    val size: IntSize
-        get() = tileBounds.size
-}
 
 interface ElasticGenerator {
     companion object {
@@ -115,7 +100,7 @@ class Elastic(
 
     inner class BoundsEntityPosition : EntityTilePosition() {
         override val tileOffset: Cell<IntVec2> by lazy {
-            tileBounds.map { it.topLeft }
+            _tileBounds.map { it.topLeft }
         }
 
         override fun setTileOffset(tileOffset: IntVec2) {
@@ -127,10 +112,12 @@ class Elastic(
 
     private val _tileBounds = MutCell(initialBounds)
 
-    val tileBounds: Cell<IntRect>
-        get() = _tileBounds
-
-    val pixelBounds = tileBounds.map { it * TILE_SIZE }
+    val product = ElasticProduct(
+        rezIndex = rezIndex,
+        retail = retail,
+        generator = generator,
+        tileBounds = _tileBounds,
+    )
 
     override val entityPosition = BoundsEntityPosition()
 
@@ -168,11 +155,11 @@ class Elastic(
         transform: (rect: IntRect, tileCoord: IntVec2) -> IntRect,
         till: Till,
     ) {
-        val initialTileCoord = sampleTileCoord(tileBounds.sample())
+        val initialTileCoord = sampleTileCoord(_tileBounds.sample())
         val tileCoord = deltaTileCoord.map { initialTileCoord + it }
 
         tileCoord.reactTill(till) { tc ->
-            val oldRect = tileBounds.sample()
+            val oldRect = _tileBounds.sample()
             val newRect = transform(oldRect, tc)
 
             if (newRect != oldRect) {
@@ -183,44 +170,15 @@ class Elastic(
 
     val size = _tileBounds.map { it.size }
 
-    private val boundsTopLeft = tileBounds.map { it.topLeft }
-
-    private val generatorOutput = size.map {
-        generator.buildOutput(size = it)
-    }
-
-    private val localWapObjects: DynamicList<WapObjectPropsData> =
-        generatorOutput.diffMap { it.localWapObjects }
-
-    val metaTileCluster = MetaTileCluster(
-        tileOffset = boundsTopLeft,
-        localMetaTiles = DynamicMap.diff(
-            generatorOutput.map { it.localMetaTiles },
-            tag = "metaTileCluster.localMetaTilesDynamic",
-        )
-    )
-
-    val wapObjectSprites = this.localWapObjects.map { localWapObject ->
-        DynamicWapSprite.fromImageSet(
-            rezIndex = rezIndex,
-            imageSetId = expandImageSetId(
-                retail = retail,
-                shortImageSetId = localWapObject.imageSet,
-            ),
-            position = position.map { it + localWapObject.position },
-            i = localWapObject.i,
-        )
-    }
-
     override fun isSelectableIn(area: IntRect): Boolean =
-        (tileBounds.sample() * TILE_SIZE).overlaps(area)
+        (product.tileBounds.sample() * TILE_SIZE).overlaps(area)
 
-    override fun toString(): String = "Elastic(boundsTopLeft=${boundsTopLeft.sample()})"
+    override fun toString(): String = "Elastic(boundsTopLeft=${product.boundsTopLeft.sample()})"
 
     override fun exportWapObjects(): List<Wwd.Object_> {
         val position = this.position.sample()
 
-        return localWapObjects.volatileContentView.map { wapObjectProps ->
+        return product.localWapObjects.volatileContentView.map { wapObjectProps ->
             wapObjectProps.copy(
                 x = position.x + wapObjectProps.x,
                 y = position.y + wapObjectProps.y,
@@ -231,7 +189,7 @@ class Elastic(
     fun toData(): ElasticData =
         ElasticData(
             prototype = prototype,
-            bounds = tileBounds.sample(),
+            bounds = _tileBounds.sample(),
         )
 }
 
