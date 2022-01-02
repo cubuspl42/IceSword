@@ -207,6 +207,7 @@ fun worldView(
             }
 
         val backFoilLayer = Layer(
+            editorTextureBank = editor.editorTextureBank,
             textureBank = textureBank,
             viewTransform = DynamicTransform.identity,
             nodes = DynamicSet.empty(),
@@ -232,6 +233,7 @@ fun worldView(
         val tilesPreview = editor.buildTilesPreview()
 
         val planeLayer = Layer(
+            editorTextureBank = editor.editorTextureBank,
             textureBank = textureBank,
             viewTransform = dynamicViewTransform,
             nodes = DynamicSet.union(
@@ -319,6 +321,7 @@ fun worldView(
         )
 
         val planeUiLayer = Layer(
+            editorTextureBank = editor.editorTextureBank,
             textureBank = textureBank,
             viewTransform = DynamicTransform.identity,
             nodes = DynamicSet.union(

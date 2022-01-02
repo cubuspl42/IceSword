@@ -1,6 +1,5 @@
 package icesword.scene
 
-import icesword.RezTextureBank
 import icesword.editor.DynamicWapSprite
 import icesword.editor.Editor
 import icesword.editor.Entity
@@ -12,10 +11,10 @@ class EntityWapSpriteNode(
     private val wapSprite: DynamicWapSprite,
 ) : HybridNode() {
     override fun buildCanvasNode(
-        textureBank: RezTextureBank,
+        context: CanvasNodeBuildContext,
     ): CanvasNode = WapSpriteNode(
         editorTextureBank = editor.editorTextureBank,
-        textureBank = textureBank,
+        textureBank = context.textureBank,
         wapSprite = wapSprite,
     )
 

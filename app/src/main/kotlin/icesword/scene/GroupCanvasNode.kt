@@ -10,7 +10,7 @@ import icesword.frp.values
 import icesword.geometry.IntRect
 import org.w3c.dom.CanvasRenderingContext2D
 
-class GroupCanvasNode(
+open class GroupCanvasNode(
     private val children: DynamicList<CanvasNode>,
 ) : CanvasNode {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {

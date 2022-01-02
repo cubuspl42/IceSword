@@ -1,16 +1,17 @@
 package icesword.scene
 
 import icesword.MouseDrag
-import icesword.RezTextureBank
 import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.Elastic
+import icesword.editor.ElasticProduct
 import icesword.editor.Entity
 import icesword.editor.EntitySelectMode.SelectionState
 import icesword.editor.Tool
 import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.dynamic_list.map
+import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
 import icesword.frp.reactDynamicNotNullTill
 import icesword.geometry.DynamicTransform
@@ -30,21 +31,43 @@ import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
 class ElasticNode(
-    private val editor: Editor,
-    private val elastic: Elastic,
+    editor: Editor,
+    elastic: Elastic,
+) : GroupNode(
+    children = staticListOf(
+        ElasticProductNode(
+            elasticProduct = elastic.product,
+            alpha = 1.0,
+        ),
+        ElasticOverlayNode(
+            editor = editor,
+            elastic = elastic,
+        ),
+    )
+)
+
+class ElasticProductNode(
+    private val elasticProduct: ElasticProduct,
+    private val alpha: Double,
 ) : HybridNode() {
     override fun buildCanvasNode(
-        textureBank: RezTextureBank,
+        context: CanvasNodeBuildContext,
     ): CanvasNode = GroupCanvasNode(
-        children = elastic.product.wapObjectSprites.map {
+        children = elasticProduct.wapObjectSprites.map {
             WapSpriteNode(
-                editorTextureBank = editor.editorTextureBank,
-                textureBank = textureBank,
+                editorTextureBank = context.editorTextureBank,
+                textureBank = context.textureBank,
                 wapSprite = it,
+                alpha = alpha,
             )
         }
     )
+}
 
+class ElasticOverlayNode(
+    private val editor: Editor,
+    private val elastic: Elastic,
+) : HybridNode() {
     override fun buildOverlayElement(
         context: OverlayBuildContext,
     ): SVGElement = context.run {
@@ -58,7 +81,6 @@ class ElasticNode(
         )
     }
 }
-
 
 private fun createElasticOverlayElement(
     editor: Editor,

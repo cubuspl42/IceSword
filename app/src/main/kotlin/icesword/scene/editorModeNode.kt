@@ -2,6 +2,7 @@ package icesword.scene
 
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.EditorMode
+import icesword.editor.ElasticInsertionMode
 import icesword.editor.EntitySelectMode
 import icesword.editor.KnotPaintMode
 import icesword.editor.knotRect
@@ -22,6 +23,7 @@ fun createEditorModeModeNode(
     is EditPathElevatorMode -> EditPathElevatorModeNode(editorMode)
     is KnotPaintMode -> KnotPaintModeNode(editorMode)
     is EntitySelectMode -> EntitySelectModeNode(entitySelectMode = editorMode)
+    is ElasticInsertionMode -> buildElasticInsertionModeNode(elasticInsertionMode = editorMode)
     else -> null
 }
 
@@ -93,3 +95,14 @@ class EntitySelectModeNode(
         )
     }
 }
+
+fun buildElasticInsertionModeNode(
+    elasticInsertionMode: ElasticInsertionMode,
+) = HybridNode.ofSingle(
+    elasticInsertionMode.elasticPreview.mapNested {
+        ElasticProductNode(
+            elasticProduct = it.elasticProduct,
+            alpha = 0.3,
+        )
+    },
+)

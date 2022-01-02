@@ -1,5 +1,6 @@
 package icesword.scene
 
+import icesword.EditorTextureBank
 import icesword.RezTextureBank
 import icesword.html.createHTMLElementRaw
 import icesword.html.createSvgGroup
@@ -44,7 +45,7 @@ data class Texture(
     val sourceRect: IntRect,
 ) {
     companion object {
-         suspend fun load(imagePath: String): Texture {
+        suspend fun load(imagePath: String): Texture {
             val imageBitmap = loadImageBitmap(imagePath = imagePath)!!
 
             val texture = Texture(
@@ -90,6 +91,12 @@ class Tileset(
 )
 
 interface CanvasNode {
+    companion object {
+        fun ofSingle(node: Cell<CanvasNode?>): CanvasNode = GroupCanvasNode(
+            children = DynamicList.ofSingle(node),
+        )
+    }
+
     fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect)
 
     val onDirty: Stream<Unit>
@@ -103,6 +110,17 @@ class NoopCanvasNode : CanvasNode {
 }
 
 abstract class HybridNode {
+    companion object {
+        fun ofSingle(node: Cell<HybridNode?>): HybridNode = GroupNode(
+            children = DynamicList.ofSingle(node)
+        )
+    }
+
+    data class CanvasNodeBuildContext(
+        val editorTextureBank: EditorTextureBank,
+        val textureBank: RezTextureBank,
+    )
+
     data class OverlayBuildContext(
         val svg: SVGSVGElement,
         val viewport: HTMLElement,
@@ -111,7 +129,7 @@ abstract class HybridNode {
     )
 
     open fun buildCanvasNode(
-        textureBank: RezTextureBank,
+        context: CanvasNodeBuildContext,
     ): CanvasNode = NoopCanvasNode()
 
     open fun buildOverlayElement(
@@ -138,6 +156,7 @@ abstract class HybridNode {
 typealias BuildOverlayElements = (SVGSVGElement) -> DynamicSet<SVGElement>
 
 class Layer(
+    editorTextureBank: EditorTextureBank,
     textureBank: RezTextureBank,
     private val viewTransform: DynamicTransform,
     nodes: DynamicSet<CanvasNode>,
@@ -148,7 +167,12 @@ class Layer(
     private val canvasNodes = DynamicList.concat(
         nodes.internalOrder,
         hybridNodes.mapTillRemoved(tillDetach) { hybridNode, _ ->
-            hybridNode.buildCanvasNode(textureBank = textureBank)
+            hybridNode.buildCanvasNode(
+                context = HybridNode.CanvasNodeBuildContext(
+                    editorTextureBank = editorTextureBank,
+                    textureBank = textureBank,
+                )
+            )
         },
     )
 

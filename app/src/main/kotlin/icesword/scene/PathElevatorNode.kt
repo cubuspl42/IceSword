@@ -1,6 +1,5 @@
 package icesword.scene
 
-import icesword.RezTextureBank
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.PathElevator
@@ -140,10 +139,10 @@ class PathElevatorStepNode(
     private val step: PathElevatorStep,
 ) : HybridNode() {
     override fun buildCanvasNode(
-        textureBank: RezTextureBank,
+        context: CanvasNodeBuildContext,
     ): CanvasNode = WapSpriteNode(
         editorTextureBank = editor.editorTextureBank,
-        textureBank = textureBank,
+        textureBank = context.textureBank,
         wapSprite = step.wapSprite,
     )
 

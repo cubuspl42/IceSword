@@ -1,6 +1,5 @@
 package icesword.scene
 
-import icesword.RezTextureBank
 import icesword.editor.CrumblingPeg
 import icesword.editor.Editor
 import org.w3c.dom.svg.SVGElement
@@ -10,10 +9,10 @@ class CrumblingPegNode(
     private val crumblingPeg: CrumblingPeg,
 ) : HybridNode() {
     override fun buildCanvasNode(
-        textureBank: RezTextureBank,
+        context: CanvasNodeBuildContext,
     ): CanvasNode = WapSpriteNode(
         editorTextureBank = editor.editorTextureBank,
-        textureBank = textureBank,
+        textureBank = context.textureBank,
         wapSprite = crumblingPeg.wapSprite,
     )
 
