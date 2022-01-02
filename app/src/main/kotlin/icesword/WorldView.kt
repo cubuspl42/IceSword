@@ -17,7 +17,6 @@ import icesword.frp.DynamicView
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.asStream
-import icesword.frp.contentDynamicView
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.mapNotNull
 import icesword.frp.hold
@@ -49,6 +48,7 @@ import icesword.html.onWheel
 import icesword.html.trackKeyPressedState
 import icesword.html.trackMousePosition
 import icesword.html.trackMousePressed
+import icesword.scene.EntityStyle
 import icesword.scene.FloorSpikeRowNode
 import icesword.scene.KnotMeshUi
 import icesword.scene.Layer
@@ -201,7 +201,7 @@ fun worldView(
                         editorTextureBank = editorTextureBank,
                         textureBank = textureBank,
                         wapSprite = it,
-                        alpha = 0.4,
+                        alpha = EntityStyle.previewAlpha,
                     )
                 }
             }
@@ -230,7 +230,7 @@ fun worldView(
             retail = editor.retail,
         )
 
-        val tilesPreview = editor.buildTilesPreview()
+        val editorTilesView = editor.buildEditorTilesView()
 
         val planeLayer = Layer(
             editorTextureBank = editor.editorTextureBank,
@@ -243,15 +243,7 @@ fun worldView(
                             setOf(
                                 TileLayer(
                                     tileset = tileset,
-                                    tiles = DynamicView.static(
-                                        OffsetTilesView(IntVec2.ZERO, world.tileLayer.tiles),
-                                    ),
-                                ),
-                                TileLayer(
-                                    tileset = tileset,
-                                    tiles = tilesPreview.map {
-                                        OffsetTilesView(IntVec2.ZERO, it)
-                                    },
+                                    tiles = editorTilesView,
                                 ),
                             )
                         ),

@@ -445,7 +445,7 @@ class Editor(
         }
     }
 
-    fun buildTilesPreview(): DynamicView<Map<IntVec2, Int>> {
+    fun buildEditorTilesView(): DynamicView<EditorTilesView> {
         val elasticPreviewTiles = DynamicMap.diff(
             elasticInsertionMode.switchMapNested { it.elasticPreview }
                 .mapNested { it.metaTileLayerProduct.tiles }
@@ -454,11 +454,32 @@ class Editor(
             it.changes.subscribe { } // FIXME: DynamicView keep-alive
         }
 
+        val primaryTilesView = world.tiles.contentDynamicView.map {
+            OffsetTilesView(
+                offset = IntVec2.ZERO,
+                localTilesView = it,
+            )
+        }
+
+        val previewTilesView = elasticPreviewTiles.contentDynamicView.map {
+            OffsetTilesView(
+                offset = IntVec2.ZERO,
+                localTilesView = it,
+            )
+        }
+
         return DynamicView.map2(
-            world.tiles.contentDynamicView,
-            elasticPreviewTiles.contentDynamicView,
-        ) { tilesView, elasticPreviewTilesView ->
-            tilesView.unionView(elasticPreviewTilesView)
+            primaryTilesView,
+            previewTilesView,
+        ) {
+                primaryTilesViewUnpacked,
+                previewTilesViewUnpacked,
+            ->
+            object : EditorTilesView {
+                override val primaryTilesView: TilesView = primaryTilesViewUnpacked
+
+                override val previewTilesView: TilesView = previewTilesViewUnpacked
+            }
         }
     }
 

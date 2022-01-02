@@ -17,11 +17,9 @@ data class OffsetTilesView(
         localTilesView[globalCoord - offset]
 }
 
-data class CombinedTilesView(
-    val tilesViews: List<TilesView>,
-) : TilesView {
-    override fun getTile(globalCoord: IntVec2): Int? =
-        tilesViews.firstNotNullOfOrNull { it.getTile(globalCoord) }
+interface EditorTilesView {
+    val primaryTilesView: TilesView
+    val previewTilesView: TilesView
 }
 
 class TileEntity(

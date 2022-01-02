@@ -102,7 +102,7 @@ fun buildElasticInsertionModeNode(
     elasticInsertionMode.elasticPreview.mapNested {
         ElasticProductNode(
             elasticProduct = it.elasticProduct,
-            alpha = 0.3,
+            alpha = EntityStyle.previewAlpha,
         )
     },
 )
