@@ -2,14 +2,14 @@ package icesword.editor.retails.retail3
 
 import icesword.editor.entities.KnotPrototype
 import icesword.editor.MetaTile
-import icesword.editor.elastic.ElasticLinearPattern
-import icesword.editor.elastic.ElasticLinearPatternOrientation
-import icesword.editor.elastic.LinearMetaTilePattern
-import icesword.editor.knot_mesh.KnotStructurePattern
-import icesword.editor.knot_mesh.MetaTilePattern1x1
-import icesword.editor.knot_mesh.MetaTilePattern2x1
-import icesword.editor.knot_mesh.StructureConcavePattern
-import icesword.editor.knot_mesh.StructureConvexPattern
+import icesword.editor.entities.elastic.ElasticLinearPattern
+import icesword.editor.entities.elastic.ElasticLinearPatternOrientation
+import icesword.editor.entities.elastic.LinearMetaTilePattern
+import icesword.editor.entities.knot_mesh.KnotStructurePattern
+import icesword.editor.entities.knot_mesh.MetaTilePattern1x1
+import icesword.editor.entities.knot_mesh.MetaTilePattern2x1
+import icesword.editor.entities.knot_mesh.StructureConcavePattern
+import icesword.editor.entities.knot_mesh.StructureConvexPattern
 import icesword.editor.retails.Retail3
 import icesword.editor.retails.Retail3.MetaTiles.Rock
 

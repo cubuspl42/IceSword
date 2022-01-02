@@ -6,11 +6,11 @@ import icesword.editor.entities.ElevatorPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
-import icesword.editor.elastic.ElasticLinearPattern
-import icesword.editor.elastic.ElasticLinearPatternOrientation
-import icesword.editor.elastic.LinearMetaTilePattern
+import icesword.editor.entities.elastic.ElasticLinearPattern
+import icesword.editor.entities.elastic.ElasticLinearPatternOrientation
+import icesword.editor.entities.elastic.LinearMetaTilePattern
 import icesword.editor.entities.encode
-import icesword.editor.knot_mesh.KnotStructurePattern
+import icesword.editor.entities.knot_mesh.KnotStructurePattern
 import icesword.editor.retails.Retail3.MetaTiles.Rock
 import icesword.editor.retails.retail3.retail3KnotStructurePatterns
 import icesword.editor.retails.retail3.retail3LadderPattern

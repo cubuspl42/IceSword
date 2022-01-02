@@ -11,7 +11,7 @@ import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectAlikeInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
-import icesword.editor.elastic.prototype.ElasticPrototype
+import icesword.editor.entities.elastic.prototype.ElasticPrototype
 import icesword.editor.entities.CrateStack
 import icesword.editor.entities.CrateStackPrototype
 import icesword.editor.entities.CrumblingPeg
@@ -40,8 +40,8 @@ import icesword.editor.entities.WapObjectPropsData
 import icesword.editor.entities.Warp
 import icesword.editor.entities.WarpPrototype
 import icesword.editor.retails.Retail
-import icesword.editor.wap_object.prototype.WapObjectPrototype
-import icesword.editor.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
+import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
+import icesword.editor.entities.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
 import icesword.frp.Cell
 import icesword.frp.CellLoop
 import icesword.frp.CellSlot

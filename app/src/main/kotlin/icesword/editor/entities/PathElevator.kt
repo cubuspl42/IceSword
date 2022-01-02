@@ -7,7 +7,7 @@ import icesword.RezIndex
 import icesword.editor.DynamicWapSprite
 import icesword.editor.IntVec2Serializer
 import icesword.editor.retails.Retail
-import icesword.editor.wap_object.prototype.WapObjectPrototype
+import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Cell
 import icesword.frp.Loop.Companion.looped
 import icesword.frp.MutCell

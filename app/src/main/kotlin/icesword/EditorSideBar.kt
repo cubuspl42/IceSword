@@ -4,7 +4,7 @@ import icesword.editor.Editor
 import icesword.editor.InsertionPrototype
 import icesword.editor.InsertionPrototype.WarpInsertionPrototype
 import icesword.editor.entities.Warp
-import icesword.editor.wap_object.prototype.WapObjectPrototype
+import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.html.DynamicStyleDeclaration

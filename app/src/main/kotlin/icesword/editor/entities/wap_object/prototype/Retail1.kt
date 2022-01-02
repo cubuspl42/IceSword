@@ -1,4 +1,4 @@
-package icesword.editor.wap_object.prototype
+package icesword.editor.entities.wap_object.prototype
 
 import icesword.ImageSetId
 import icesword.editor.entities.encode
@@ -7,38 +7,38 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 
 @Serializable
-object Retail2Health : WapObjectPrototype() {
+object Level1CrumblingPegPrototype : WapObjectPrototype() {
     @Transient
     override val imageSetId: ImageSetId = ImageSetId(
-        fullyQualifiedId = "LEVEL2_IMAGES_HEALTH",
+        fullyQualifiedId = "LEVEL1_IMAGES_CRUMBLINGPEG",
     )
 
     @Transient
     override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
-        logic = encode("HealthPowerup"),
-        imageSet = encode("LEVEL_HEALTH"),
+        logic = encode("CrumblingPeg"),
+        imageSet = encode("LEVEL_CRUMBLINGPEG"),
     )
 }
 
 @Serializable
-object Retail2PowderKeg : WapObjectPrototype() {
+object Level1RatPrototype : WapObjectPrototype() {
     @Transient
     override val imageSetId: ImageSetId = ImageSetId(
-        fullyQualifiedId = "LEVEL2_IMAGES_POWDERKEG",
+        fullyQualifiedId = "LEVEL1_IMAGES_RAT",
     )
 
     @Transient
     override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
-        logic = encode("Powderkeg"),
-        imageSet = encode("LEVEL_POWDERKEG"),
+        logic = encode("Rat"),
+        imageSet = encode("LEVEL_RAT"),
     )
 }
 
 @Serializable
-object Retail2SoldierPrototype : WapObjectPrototype() {
+object SoldierPrototype : WapObjectPrototype() {
     @Transient
     override val imageSetId: ImageSetId = ImageSetId(
-        fullyQualifiedId = "LEVEL2_IMAGES_SOLDIER",
+        fullyQualifiedId = "LEVEL1_IMAGES_SOLDIER",
     )
 
     @Transient
@@ -49,10 +49,10 @@ object Retail2SoldierPrototype : WapObjectPrototype() {
 }
 
 @Serializable
-object Retail2OfficerPrototype : WapObjectPrototype() {
+object OfficerPrototype : WapObjectPrototype() {
     @Transient
     override val imageSetId: ImageSetId = ImageSetId(
-        fullyQualifiedId = "LEVEL2_IMAGES_OFFICER",
+        fullyQualifiedId = "LEVEL1_IMAGES_OFFICER",
     )
 
     @Transient
@@ -63,29 +63,29 @@ object Retail2OfficerPrototype : WapObjectPrototype() {
 }
 
 @Serializable
-object LaRauxPrototype : WapObjectPrototype() {
+object Retail1Health : WapObjectPrototype() {
     @Transient
     override val imageSetId: ImageSetId = ImageSetId(
-        fullyQualifiedId = "LEVEL2_IMAGES_RAUX",
+        fullyQualifiedId = "LEVEL1_IMAGES_HEALTH",
     )
 
     @Transient
     override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
-        logic = encode("Raux"),
-        imageSet = encode("LEVEL_RAUX"),
+        logic = encode("HealthPowerup"),
+        imageSet = encode("LEVEL_HEALTH"),
     )
 }
 
 @Serializable
-object PunkRatCannon : WapObjectPrototype() {
+object Retail1PowderKeg : WapObjectPrototype() {
     @Transient
     override val imageSetId: ImageSetId = ImageSetId(
-        fullyQualifiedId = "LEVEL2_IMAGES_PUNKRAT",
+        fullyQualifiedId = "LEVEL1_IMAGES_POWDERKEG",
     )
 
     @Transient
     override val wwdObjectPrototype: Wwd.Object_ = Wwd.Object_.empty().copy(
-        logic = encode("PunkRat"),
-        imageSet = encode("LEVEL_PUNKRAT"),
+        logic = encode("Powderkeg"),
+        imageSet = encode("LEVEL_POWDERKEG"),
     )
 }

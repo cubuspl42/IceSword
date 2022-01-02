@@ -1,11 +1,11 @@
-package icesword.editor.elastic.prototype
+package icesword.editor.entities.elastic.prototype
 
 import icesword.editor.entities.ElasticGenerator
 import icesword.editor.entities.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
 import icesword.editor.entities.WapObjectPropsData
-import icesword.editor.elastic.ElasticRectangularFragment
-import icesword.editor.elastic.ElasticRectangularPattern
+import icesword.editor.entities.elastic.ElasticRectangularFragment
+import icesword.editor.entities.elastic.ElasticRectangularPattern
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail2.MetaTiles
 import icesword.editor.retails.Retail2.MetaTiles.DoublePile

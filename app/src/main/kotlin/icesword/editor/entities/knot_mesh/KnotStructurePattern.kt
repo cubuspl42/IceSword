@@ -1,4 +1,4 @@
-package icesword.editor.knot_mesh
+package icesword.editor.entities.knot_mesh
 
 import icesword.editor.KnotMetaTileBuilder
 import icesword.editor.entities.KnotPrototype

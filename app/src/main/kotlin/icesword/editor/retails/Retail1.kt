@@ -7,11 +7,11 @@ import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
 import icesword.editor.entities.TogglePegPrototype
-import icesword.editor.elastic.ElasticLinearPattern
-import icesword.editor.elastic.ElasticLinearPatternOrientation
-import icesword.editor.elastic.LinearMetaTilePattern
+import icesword.editor.entities.elastic.ElasticLinearPattern
+import icesword.editor.entities.elastic.ElasticLinearPatternOrientation
+import icesword.editor.entities.elastic.LinearMetaTilePattern
 import icesword.editor.entities.encode
-import icesword.editor.knot_mesh.KnotStructurePattern
+import icesword.editor.entities.knot_mesh.KnotStructurePattern
 import icesword.editor.retails.retail1.retail1KnotStructurePatterns
 import icesword.editor.retails.retail1.retail1LadderPattern
 import icesword.wwd.Wwd

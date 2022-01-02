@@ -1,4 +1,4 @@
-package icesword.editor.wap_object.prototype
+package icesword.editor.entities.wap_object.prototype
 
 import icesword.ImageSetId
 import icesword.editor.entities.encode

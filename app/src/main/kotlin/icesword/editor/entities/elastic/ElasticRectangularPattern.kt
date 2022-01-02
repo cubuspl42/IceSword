@@ -1,4 +1,4 @@
-package icesword.editor.elastic
+package icesword.editor.entities.elastic
 
 import icesword.editor.entities.ElasticGenerator
 import icesword.editor.entities.ElasticGeneratorOutput

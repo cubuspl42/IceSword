@@ -6,10 +6,10 @@ import icesword.editor.entities.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
-import icesword.editor.knot_mesh.KnotStructurePattern
-import icesword.editor.knot_mesh.MetaTilePattern1x1
-import icesword.editor.knot_mesh.StructureConcavePattern
-import icesword.editor.knot_mesh.StructureConvexPattern
+import icesword.editor.entities.knot_mesh.KnotStructurePattern
+import icesword.editor.entities.knot_mesh.MetaTilePattern1x1
+import icesword.editor.entities.knot_mesh.StructureConcavePattern
+import icesword.editor.entities.knot_mesh.StructureConvexPattern
 import icesword.editor.retails.Retail6.MetaTiles.BackWall
 import icesword.editor.retails.Retail6.MetaTiles.Bricks
 import icesword.editor.retails.Retail6.MetaTiles.BrownHouse

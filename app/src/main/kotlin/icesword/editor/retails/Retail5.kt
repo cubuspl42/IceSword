@@ -8,11 +8,11 @@ import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
 import icesword.editor.entities.TogglePegPrototype
-import icesword.editor.knot_mesh.KnotStructurePattern
-import icesword.editor.knot_mesh.MetaTilePattern1x1
-import icesword.editor.knot_mesh.MetaTilePattern2x1
-import icesword.editor.knot_mesh.StructureConcavePattern
-import icesword.editor.knot_mesh.StructureConvexPattern
+import icesword.editor.entities.knot_mesh.KnotStructurePattern
+import icesword.editor.entities.knot_mesh.MetaTilePattern1x1
+import icesword.editor.entities.knot_mesh.MetaTilePattern2x1
+import icesword.editor.entities.knot_mesh.StructureConcavePattern
+import icesword.editor.entities.knot_mesh.StructureConvexPattern
 import icesword.editor.retails.Retail5.MetaTiles.Arch
 import icesword.editor.retails.Retail5.MetaTiles.Bridge
 import icesword.editor.retails.Retail5.MetaTiles.House

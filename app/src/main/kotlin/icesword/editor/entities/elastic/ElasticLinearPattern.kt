@@ -1,4 +1,4 @@
-package icesword.editor.elastic
+package icesword.editor.entities.elastic
 
 import icesword.editor.entities.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile

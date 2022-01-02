@@ -6,7 +6,7 @@ import icesword.RezIndex
 import icesword.editor.DynamicWapSprite
 import icesword.editor.IntVec2Serializer
 import icesword.editor.PickupKind
-import icesword.editor.wap_object.prototype.WapObjectPrototype
+import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
 import icesword.frp.dynamic_list.sampleContent

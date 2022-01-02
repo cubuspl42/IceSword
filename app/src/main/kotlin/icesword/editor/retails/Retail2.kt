@@ -5,9 +5,9 @@ import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
 import icesword.editor.entities.TogglePegPrototype
-import icesword.editor.elastic.ElasticLinearPattern
-import icesword.editor.elastic.ElasticLinearPatternOrientation
-import icesword.editor.elastic.LinearMetaTilePattern
+import icesword.editor.entities.elastic.ElasticLinearPattern
+import icesword.editor.entities.elastic.ElasticLinearPatternOrientation
+import icesword.editor.entities.elastic.LinearMetaTilePattern
 import icesword.editor.retails.Retail2.MetaTiles
 import icesword.editor.retails.Retail2.MetaTiles.SinglePile
 import icesword.editor.retails.Retail2.MetaTiles.Tower

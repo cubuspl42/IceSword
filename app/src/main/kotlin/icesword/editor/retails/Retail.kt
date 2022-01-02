@@ -7,10 +7,10 @@ import icesword.editor.entities.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
-import icesword.editor.elastic.ElasticLinearPattern
-import icesword.editor.elastic.ElasticLinearPatternOrientation
-import icesword.editor.elastic.LinearMetaTilePattern
-import icesword.editor.knot_mesh.KnotStructurePattern
+import icesword.editor.entities.elastic.ElasticLinearPattern
+import icesword.editor.entities.elastic.ElasticLinearPatternOrientation
+import icesword.editor.entities.elastic.LinearMetaTilePattern
+import icesword.editor.entities.knot_mesh.KnotStructurePattern
 import icesword.geometry.IntVec2
 
 object LadderElasticGenerator{

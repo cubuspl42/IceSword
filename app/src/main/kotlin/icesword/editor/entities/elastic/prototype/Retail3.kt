@@ -1,4 +1,4 @@
-package icesword.editor.elastic.prototype
+package icesword.editor.entities.elastic.prototype
 
 import icesword.editor.entities.ElasticMetaTilesGenerator
 import icesword.editor.retails.Retail

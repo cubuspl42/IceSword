@@ -9,7 +9,7 @@ import icesword.editor.JeweledTreasureKind.Gecko
 import icesword.editor.JeweledTreasureKind.Ring
 import icesword.editor.JeweledTreasureKind.Scepter
 import icesword.editor.JeweledTreasureKind.Skull
-import icesword.editor.wap_object.prototype.WapObjectPrototype.CoinPrototype
+import icesword.editor.entities.wap_object.prototype.WapObjectPrototype.CoinPrototype
 
 enum class JeweledTreasureKind(
     private val treasureImageId: String,

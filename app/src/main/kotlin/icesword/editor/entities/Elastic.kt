@@ -6,9 +6,9 @@ import icesword.RezIndex
 import icesword.TILE_SIZE
 import icesword.editor.IntVec2Serializer
 import icesword.editor.MetaTile
-import icesword.editor.elastic.ElasticRectangularFragment
-import icesword.editor.elastic.ElasticRectangularPattern
-import icesword.editor.elastic.prototype.ElasticPrototype
+import icesword.editor.entities.elastic.ElasticRectangularFragment
+import icesword.editor.entities.elastic.ElasticRectangularPattern
+import icesword.editor.entities.elastic.prototype.ElasticPrototype
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.MutCell
