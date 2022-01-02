@@ -2,9 +2,11 @@ package icesword.scene
 
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.mapNotNull
+import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.frp.dynamic_list.toDynamicSet
 import icesword.frp.mapTillRemoved
 import icesword.html.createSvgGroup
+import icesword.html.createSvgGroupDl
 import org.w3c.dom.svg.SVGElement
 
 open class GroupNode(
@@ -20,15 +22,14 @@ open class GroupNode(
     )
 
     override fun buildOverlayElement(
-        context: HybridNode.OverlayBuildContext,
+        context: OverlayBuildContext,
     ): SVGElement = context.run {
-        createSvgGroup(
+        createSvgGroupDl(
             svg = svg,
-            children = children.toDynamicSet().mapTillRemoved(tillDetach) { it, tillRemoved ->
+            children = children.mapTillRemoved(tillDetach) { it, tillRemoved ->
                 it.buildOverlayElement(context.copy(tillDetach = tillRemoved))
             },
             tillDetach = tillDetach,
         )
     }
 }
-
