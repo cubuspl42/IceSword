@@ -23,7 +23,7 @@ class DiffDynamicSet<A>(
             val change = SetChange.diff(mutableContent!!, newContent)
 
             if (change.added.intersect(mutableContent!!).isNotEmpty()) {
-                console.error("Dynamic map already contains added value", dump())
+                logError("Dynamic map already contains added value")
                 throw IllegalStateException("DiffDynamicSet: change.added.intersect")
             }
 

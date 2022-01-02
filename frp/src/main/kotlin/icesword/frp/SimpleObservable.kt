@@ -58,12 +58,16 @@ abstract class SimpleObservable<A>(
     val tag: String
         get() = identity.tag
 
-    fun dump(): Any? = jsObjectOf(
-        mapOf(
-            "name" to name,
-            "trace" to identity.trace,
-        )
-    )
+    fun logError(description: String){
+        console.error("@@@@@ Error in $name: $description @@@@@")
+
+        val traceLines = identity.trace.lines()
+            .drop(4).filter { it.isNotEmpty() }
+
+        traceLines.forEach { console.error(it) }
+
+        console.error("@@@@@@@@@@")
+    }
 
     private val listeners = Set<(A) -> Unit>()
 
