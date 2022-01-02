@@ -1,4 +1,4 @@
-package icesword.scene
+package icesword.ui.scene
 
 import icesword.MouseDrag
 import icesword.TILE_SIZE

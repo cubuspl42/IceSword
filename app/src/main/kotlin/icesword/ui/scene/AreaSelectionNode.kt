@@ -1,4 +1,4 @@
-package icesword.scene
+package icesword.ui.scene
 
 import icesword.editor.SelectMode
 import icesword.frp.Cell

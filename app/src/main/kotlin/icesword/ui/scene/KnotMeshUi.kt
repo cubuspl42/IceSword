@@ -1,4 +1,4 @@
-package icesword.scene
+package icesword.ui.scene
 
 import icesword.html.*
 import icesword.TILE_SIZE

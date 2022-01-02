@@ -1,4 +1,4 @@
-package icesword.scene
+package icesword.ui.scene
 
 import icesword.geometry.IntVec2
 import icesword.geometry.Transform

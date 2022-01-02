@@ -4,7 +4,7 @@ import icesword.TextureAtlasIndex.FramePath
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
-import icesword.scene.Texture
+import icesword.ui.scene.Texture
 import kotlinx.browser.window
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async

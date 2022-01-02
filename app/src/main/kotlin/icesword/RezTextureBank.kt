@@ -1,8 +1,8 @@
 package icesword
 
 import icesword.editor.retails.Retail
-import icesword.scene.Texture
-import icesword.scene.Tileset
+import icesword.ui.scene.Texture
+import icesword.ui.scene.Tileset
 import kotlinx.browser.window
 import kotlinx.coroutines.async
 import kotlinx.coroutines.await

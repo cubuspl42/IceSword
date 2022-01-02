@@ -1,4 +1,4 @@
-package icesword.scene
+package icesword.ui.scene
 
 import icesword.editor.Editor
 import icesword.editor.entities.Entity

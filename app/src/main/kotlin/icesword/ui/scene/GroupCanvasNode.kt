@@ -1,4 +1,4 @@
-package icesword.scene
+package icesword.ui.scene
 
 import icesword.frp.Stream
 import icesword.frp.dynamic_list.DynamicList

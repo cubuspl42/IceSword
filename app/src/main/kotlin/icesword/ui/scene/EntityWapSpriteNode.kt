@@ -1,31 +1,33 @@
-package icesword.scene
+package icesword.ui.scene
 
-import icesword.editor.entities.CrumblingPeg
+import icesword.editor.DynamicWapSprite
 import icesword.editor.Editor
+import icesword.editor.entities.Entity
 import org.w3c.dom.svg.SVGElement
 
-class CrumblingPegNode(
+class EntityWapSpriteNode(
     private val editor: Editor,
-    private val crumblingPeg: CrumblingPeg,
+    private val entity: Entity,
+    private val wapSprite: DynamicWapSprite,
 ) : HybridNode() {
     override fun buildCanvasNode(
         context: CanvasNodeBuildContext,
     ): CanvasNode = WapSpriteNode(
         editorTextureBank = editor.editorTextureBank,
         textureBank = context.textureBank,
-        wapSprite = crumblingPeg.wapSprite,
+        wapSprite = wapSprite,
     )
 
     override fun buildOverlayElement(
         context: OverlayBuildContext,
     ): SVGElement = context.run {
-        val boundingBox = crumblingPeg.wapSprite.boundingBox
+        val boundingBox = wapSprite.boundingBox
 
         createEntityFrameElement(
             editor = editor,
             svg = svg,
             outer = viewport,
-            entity = crumblingPeg,
+            entity = entity,
             boundingBox = viewTransform.transform(boundingBox),
             tillDetach = tillDetach,
         )

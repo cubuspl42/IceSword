@@ -1,31 +1,31 @@
-package icesword.scene
+package icesword.ui.scene
 
 import icesword.editor.Editor
-import icesword.editor.entities.TogglePeg
+import icesword.editor.entities.Rope
 import org.w3c.dom.svg.SVGElement
 
-class TogglePegNode(
+class RopeNode(
     private val editor: Editor,
-    private val togglePeg: TogglePeg,
+    private val rope: Rope,
 ) : HybridNode() {
     override fun buildCanvasNode(
         context: CanvasNodeBuildContext,
     ): CanvasNode = WapSpriteNode(
         editorTextureBank = editor.editorTextureBank,
         textureBank = context.textureBank,
-        wapSprite = togglePeg.wapSprite,
+        wapSprite = rope.wapSprite,
     )
 
     override fun buildOverlayElement(
-        context: OverlayBuildContext,
+        context: HybridNode.OverlayBuildContext,
     ): SVGElement = context.run {
-        val boundingBox = togglePeg.wapSprite.boundingBox
+        val boundingBox = rope.wapSprite.boundingBox
 
         createEntityFrameElement(
             editor = editor,
             svg = svg,
             outer = viewport,
-            entity = togglePeg,
+            entity = rope,
             boundingBox = viewTransform.transform(boundingBox),
             tillDetach = tillDetach,
         )

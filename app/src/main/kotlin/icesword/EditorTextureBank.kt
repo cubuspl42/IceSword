@@ -1,6 +1,6 @@
 package icesword
 
-import icesword.scene.Texture
+import icesword.ui.scene.Texture
 
 data class EditorTextureBank(
     val gameTextureBank: RezTextureBank,
