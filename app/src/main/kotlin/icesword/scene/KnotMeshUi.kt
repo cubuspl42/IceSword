@@ -3,6 +3,9 @@ package icesword.scene
 import icesword.html.*
 import icesword.TILE_SIZE
 import icesword.editor.*
+import icesword.editor.entities.KnotMesh
+import icesword.editor.entities.knotCenter
+import icesword.editor.entities.knotRect
 import icesword.frp.*
 import icesword.frp.Cell.Companion.constant
 import icesword.geometry.DynamicTransform

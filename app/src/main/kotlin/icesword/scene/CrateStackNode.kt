@@ -1,6 +1,6 @@
 package icesword.scene
 
-import icesword.editor.CrateStack
+import icesword.editor.entities.CrateStack
 import icesword.editor.Editor
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.map

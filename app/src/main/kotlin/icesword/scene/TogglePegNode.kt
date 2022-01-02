@@ -1,7 +1,7 @@
 package icesword.scene
 
 import icesword.editor.Editor
-import icesword.editor.TogglePeg
+import icesword.editor.entities.TogglePeg
 import org.w3c.dom.svg.SVGElement
 
 class TogglePegNode(

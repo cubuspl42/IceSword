@@ -1,10 +1,10 @@
 package icesword.editor.elastic.prototype
 
-import icesword.editor.ElasticGenerator
-import icesword.editor.ElasticGeneratorOutput
-import icesword.editor.ElasticMetaTilesGenerator
+import icesword.editor.entities.ElasticGenerator
+import icesword.editor.entities.ElasticGeneratorOutput
+import icesword.editor.entities.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
-import icesword.editor.WapObjectPropsData
+import icesword.editor.entities.WapObjectPropsData
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.ElasticRectangularFragment
@@ -22,7 +22,6 @@ import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
 
 @Serializable
 @SerialName("Retail5MetalPlatform")

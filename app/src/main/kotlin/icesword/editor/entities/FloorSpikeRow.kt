@@ -1,8 +1,10 @@
 @file:UseSerializers(IntVec2Serializer::class)
 
-package icesword.editor
+package icesword.editor.entities
 
 import icesword.RezIndex
+import icesword.editor.IntVec2Serializer
+import icesword.editor.calculateWapSpriteBounds
 import icesword.editor.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
 import icesword.frp.Cell
 import icesword.frp.MutCell

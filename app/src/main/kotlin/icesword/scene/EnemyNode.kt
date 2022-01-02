@@ -3,7 +3,7 @@ package icesword.scene
 import icesword.RezTextureBank
 import icesword.RezIndex
 import icesword.editor.Editor
-import icesword.editor.Enemy
+import icesword.editor.entities.Enemy
 import icesword.editor.PickupKind
 import icesword.frp.Cell
 import icesword.frp.DynamicSet

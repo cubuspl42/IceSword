@@ -1,7 +1,8 @@
 @file:UseSerializers(IntVec2Serializer::class)
 
-package icesword.editor
+package icesword.editor.entities
 
+import icesword.editor.IntVec2Serializer
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.MutableDynamicSet

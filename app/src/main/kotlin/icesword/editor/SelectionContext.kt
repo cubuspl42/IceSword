@@ -1,5 +1,7 @@
 package icesword.editor
 
+import icesword.editor.entities.CrumblingPeg
+
 sealed interface SelectionContext
 
 interface SingleKnotMeshSelectionContext : SelectionContext {

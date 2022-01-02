@@ -1,7 +1,7 @@
 package icesword.editor.knot_mesh
 
 import icesword.editor.KnotMetaTileBuilder
-import icesword.editor.KnotPrototype
+import icesword.editor.entities.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.geometry.IntVec2
 

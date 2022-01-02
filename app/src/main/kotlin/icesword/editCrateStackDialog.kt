@@ -1,6 +1,6 @@
 package icesword
 
-import icesword.editor.CrateStack
+import icesword.editor.entities.CrateStack
 import icesword.editor.PickupKind
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant

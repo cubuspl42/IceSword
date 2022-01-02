@@ -1,7 +1,9 @@
-package icesword.editor
+package icesword.editor.entities
 
 import icesword.RezIndex
 import icesword.TILE_SIZE
+import icesword.editor.DynamicWapSprite
+import icesword.editor.MetaTileCluster
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.DynamicMap

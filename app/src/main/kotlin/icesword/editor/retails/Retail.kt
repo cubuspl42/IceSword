@@ -1,9 +1,9 @@
 package icesword.editor.retails
 
-import icesword.editor.ElasticMetaTilesGenerator
-import icesword.editor.ElevatorPrototype
+import icesword.editor.entities.ElasticMetaTilesGenerator
+import icesword.editor.entities.ElevatorPrototype
 import icesword.editor.KnotMetaTileBuilder
-import icesword.editor.KnotPrototype
+import icesword.editor.entities.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext

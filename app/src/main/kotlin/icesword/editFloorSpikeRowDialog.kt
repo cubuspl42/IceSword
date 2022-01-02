@@ -1,6 +1,6 @@
 package icesword
 
-import icesword.editor.FloorSpikeRow
+import icesword.editor.entities.FloorSpikeRow
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.StreamSink

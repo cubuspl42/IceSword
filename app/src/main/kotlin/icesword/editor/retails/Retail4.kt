@@ -2,7 +2,7 @@ package icesword.editor.retails
 
 import icesword.ImageSetId
 import icesword.editor.ChainedTileGenerator
-import icesword.editor.CrumblingPegPrototype
+import icesword.editor.entities.CrumblingPegPrototype
 import icesword.editor.ForwardTileGenerator
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator

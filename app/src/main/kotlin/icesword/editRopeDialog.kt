@@ -1,6 +1,6 @@
 package icesword
 
-import icesword.editor.Rope
+import icesword.editor.entities.Rope
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.reactTill
 import icesword.frp.values

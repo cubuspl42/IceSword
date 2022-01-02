@@ -1,15 +1,15 @@
 package icesword.editor.retails
 
 import icesword.ImageSetId
-import icesword.editor.CrumblingPegPrototype
-import icesword.editor.ElevatorPrototype
+import icesword.editor.entities.CrumblingPegPrototype
+import icesword.editor.entities.ElevatorPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.LinearMetaTilePattern
-import icesword.editor.encode
+import icesword.editor.entities.encode
 import icesword.editor.knot_mesh.KnotStructurePattern
 import icesword.editor.retails.Retail3.MetaTiles.Rock
 import icesword.editor.retails.retail3.retail3KnotStructurePatterns

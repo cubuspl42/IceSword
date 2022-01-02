@@ -1,5 +1,6 @@
 package icesword.editor
 
+import icesword.editor.entities.Entity
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.CellLoop
@@ -8,7 +9,6 @@ import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.map
-import icesword.frp.mapNested
 import icesword.frp.reactTill
 import icesword.frp.switchMap
 import icesword.frp.switchMapNested

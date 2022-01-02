@@ -1,66 +1,68 @@
 @file:UseSerializers(IntVec2Serializer::class)
 
-package icesword.editor
+package icesword.editor.entities
 
 import icesword.RezIndex
+import icesword.editor.IntVec2Serializer
 import icesword.editor.retails.Retail
 import icesword.geometry.IntLineSeg
 import icesword.geometry.IntVec2
-import icesword.wwd.Geometry
+import icesword.wwd.Geometry.Rectangle
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
 @Serializable
-data class HorizontalRange(
-    val minX: Int,
-    val maxX: Int,
-) : AxisRange<HorizontalRange> {
+data class VerticalRange(
+    val minY: Int,
+    val maxY: Int,
+) : AxisRange<VerticalRange> {
     companion object {
-        val ZERO = HorizontalRange(minX = 0, maxX = 0)
+        val ZERO = VerticalRange(minY = 0, maxY = 0)
     }
 
     override val min: Int
-        get() = minX
+        get() = minY
 
     override val max: Int
-        get() = maxX
+        get() = maxY
 
     val width: Int
-        get() = maxX - minX
+        get() = maxY - minY
 
-    override fun translate(t: IntVec2): HorizontalRange =
-        HorizontalRange(minX + t.x, maxX + t.x)
+    override fun translate(t: IntVec2): VerticalRange =
+        VerticalRange(minY + t.y, maxY + t.y)
 
-    override fun copyWithMin(min: Int): HorizontalRange =
-        this.copy(minX = min)
+    override fun copyWithMin(min: Int): VerticalRange =
+        this.copy(minY = min)
 
-    override fun copyWithMax(max: Int): HorizontalRange =
-        this.copy(maxX = max)
+    override fun copyWithMax(max: Int): VerticalRange =
+        this.copy(maxY = max)
 
     override fun toLineSeg(origin: IntVec2): IntLineSeg = IntLineSeg(
-        pointA = origin + IntVec2(minX, 0),
-        pointB = origin + IntVec2(maxX, 0),
+        pointA = origin + IntVec2(0, minY),
+        pointB = origin + IntVec2(0, maxY),
     )
 }
 
-class HorizontalElevator(
+class VerticalElevator(
     rezIndex: RezIndex,
     prototype: ElevatorPrototype,
     initialPosition: IntVec2,
-    initialRelativeMovementRange: HorizontalRange,
-) : Elevator<HorizontalRange>(
+    initialRelativeMovementRange: VerticalRange,
+) : Elevator<VerticalRange>(
     rezIndex = rezIndex,
     prototype = prototype,
     initialPosition = initialPosition,
     initialRelativeMovementRange = initialRelativeMovementRange,
 ), WapObjectExportable {
+
     companion object {
         fun load(
             rezIndex: RezIndex,
             retail: Retail,
-            data: HorizontalElevatorData,
-        ): HorizontalElevator =
-            HorizontalElevator(
+            data: VerticalElevatorData,
+        ): VerticalElevator =
+            VerticalElevator(
                 rezIndex = rezIndex,
                 prototype = retail.elevatorPrototype,
                 initialPosition = data.position,
@@ -68,24 +70,24 @@ class HorizontalElevator(
             )
     }
 
-    fun toData(): HorizontalElevatorData = HorizontalElevatorData(
+    fun toData(): VerticalElevatorData = VerticalElevatorData(
         position = entityPosition.position.sample(),
         relativeMovementRange = movementRange.relativeMovementRange.sample(),
     )
 
-    override fun exportElevatorRangeRect(): Geometry.Rectangle {
+    override fun exportElevatorRangeRect(): Rectangle {
         val movementRange = globalMovementRange.sample()
-        return Geometry.Rectangle(
-            left = movementRange.minX,
-            right = movementRange.maxX,
-            top = 0,
-            bottom = 0,
+        return Rectangle(
+            top = movementRange.minY,
+            bottom = movementRange.maxY,
+            left = 0,
+            right = 0,
         )
     }
 }
 
 @Serializable
-data class HorizontalElevatorData(
+data class VerticalElevatorData(
     val position: IntVec2,
-    val relativeMovementRange: HorizontalRange = HorizontalRange.ZERO,
+    val relativeMovementRange: VerticalRange = VerticalRange.ZERO,
 )

@@ -1,11 +1,9 @@
 package icesword.editor.retails.retail1
 
-import icesword.editor.KnotPrototype
+import icesword.editor.entities.KnotPrototype
 import icesword.editor.MetaTile
-import icesword.editor.WapObjectPropsData
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
-import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.knot_mesh.MetaTilePattern1x1
 import icesword.editor.knot_mesh.MetaTilePattern2x1

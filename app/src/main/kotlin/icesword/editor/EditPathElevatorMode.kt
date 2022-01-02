@@ -1,5 +1,7 @@
 package icesword.editor
 
+import icesword.editor.entities.PathElevator
+import icesword.editor.entities.PathElevatorStep
 import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.Stream

@@ -1,9 +1,9 @@
 package icesword.editor.elastic
 
-import icesword.editor.ElasticGenerator
-import icesword.editor.ElasticGeneratorOutput
+import icesword.editor.entities.ElasticGenerator
+import icesword.editor.entities.ElasticGeneratorOutput
 import icesword.editor.MetaTile
-import icesword.editor.WapObjectPropsData
+import icesword.editor.entities.WapObjectPropsData
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.tileTopLeftCorner

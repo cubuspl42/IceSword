@@ -1,6 +1,6 @@
 package icesword
 
-import icesword.editor.Enemy
+import icesword.editor.entities.Enemy
 import icesword.editor.PickupKind
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant

@@ -14,7 +14,7 @@ import icesword.editor.KnotBrush
 import icesword.editor.KnotBrushMode
 import icesword.editor.MultipleKnotMeshesSelectionContext
 import icesword.editor.SingleKnotMeshSelectionContext
-import icesword.editor.PathElevatorPath
+import icesword.editor.entities.PathElevatorPath
 import icesword.editor.PathElevatorSelectionContext
 import icesword.editor.RopeSelectionContext
 import icesword.editor.SelectionContext

@@ -1,4 +1,4 @@
-package icesword.editor
+package icesword.editor.entities
 
 import icesword.TILE_SIZE
 import icesword.frp.Cell

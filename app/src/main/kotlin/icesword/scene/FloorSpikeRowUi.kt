@@ -2,7 +2,7 @@ package icesword.scene
 
 import icesword.RezTextureBank
 import icesword.editor.Editor
-import icesword.editor.FloorSpikeRow
+import icesword.editor.entities.FloorSpikeRow
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.units

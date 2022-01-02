@@ -4,7 +4,7 @@ import icesword.ImageSetId
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
-import icesword.editor.TogglePegPrototype
+import icesword.editor.entities.TogglePegPrototype
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.LinearMetaTilePattern

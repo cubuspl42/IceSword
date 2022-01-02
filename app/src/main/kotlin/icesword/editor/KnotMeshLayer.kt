@@ -1,5 +1,8 @@
 package icesword.editor
 
+import icesword.editor.entities.KnotMesh
+import icesword.editor.entities.KnotPrototype
+import icesword.editor.entities.tilesAroundKnotForTileBuilding
 import icesword.frp.Cell
 import icesword.frp.DynamicMap
 import icesword.frp.DynamicSet

@@ -1,7 +1,7 @@
 package icesword.editor.wap_object.prototype
 
 import icesword.ImageSetId
-import icesword.editor.encode
+import icesword.editor.entities.encode
 import icesword.wwd.Wwd
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

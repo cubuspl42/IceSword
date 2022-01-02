@@ -1,6 +1,6 @@
 package icesword
 
-import icesword.editor.WapObject
+import icesword.editor.entities.WapObject
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB

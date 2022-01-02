@@ -1,6 +1,6 @@
 package icesword.scene
 
-import icesword.editor.CrumblingPeg
+import icesword.editor.entities.CrumblingPeg
 import icesword.editor.Editor
 import org.w3c.dom.svg.SVGElement
 

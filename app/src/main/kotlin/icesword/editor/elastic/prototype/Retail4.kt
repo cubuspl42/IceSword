@@ -1,10 +1,10 @@
 package icesword.editor.elastic.prototype
 
-import icesword.editor.ElasticGenerator
-import icesword.editor.ElasticGeneratorOutput
-import icesword.editor.ElasticMetaTilesGenerator
+import icesword.editor.entities.ElasticGenerator
+import icesword.editor.entities.ElasticGeneratorOutput
+import icesword.editor.entities.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
-import icesword.editor.WapObjectPropsData
+import icesword.editor.entities.WapObjectPropsData
 import icesword.editor.elastic.ElasticLinearPattern
 import icesword.editor.elastic.ElasticLinearPatternOrientation
 import icesword.editor.elastic.ElasticRectangularFragment
@@ -12,8 +12,6 @@ import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.elastic.LinearMetaTilePattern
 import icesword.editor.retails.LadderElasticGenerator
 import icesword.editor.retails.Retail
-import icesword.editor.retails.Retail2
-import icesword.editor.retails.Retail4
 import icesword.editor.retails.Retail4.MetaTiles
 import icesword.editor.retails.Retail4.MetaTiles.Goo
 import icesword.editor.retails.Retail4.MetaTiles.NaturalPlatform

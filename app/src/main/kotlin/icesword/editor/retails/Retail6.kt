@@ -1,8 +1,8 @@
 package icesword.editor.retails
 
 import icesword.ImageSetId
-import icesword.editor.CrumblingPegPrototype
-import icesword.editor.KnotPrototype
+import icesword.editor.entities.CrumblingPegPrototype
+import icesword.editor.entities.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext

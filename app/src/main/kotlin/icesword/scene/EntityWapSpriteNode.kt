@@ -2,7 +2,7 @@ package icesword.scene
 
 import icesword.editor.DynamicWapSprite
 import icesword.editor.Editor
-import icesword.editor.Entity
+import icesword.editor.entities.Entity
 import org.w3c.dom.svg.SVGElement
 
 class EntityWapSpriteNode(

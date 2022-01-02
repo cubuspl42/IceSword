@@ -1,8 +1,7 @@
 package icesword.editor.elastic
 
-import icesword.editor.ElasticMetaTilesGenerator
+import icesword.editor.entities.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
-import icesword.editor.WapObjectPropsData
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 

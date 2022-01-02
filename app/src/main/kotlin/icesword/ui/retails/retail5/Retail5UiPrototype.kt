@@ -2,14 +2,10 @@ package icesword.ui.retails.retail5
 
 import icesword.createInsertElasticButton
 import icesword.createInsertEntityButton
-import icesword.createInsertKnotMeshButton
 import icesword.createKnotPaintButton
-import icesword.editor.CrumblingPegPrototype
 import icesword.editor.Editor
-import icesword.editor.InsertionPrototype
-import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.InsertionPrototype.TogglePegInsertionPrototype
-import icesword.editor.KnotPrototype
+import icesword.editor.entities.KnotPrototype
 import icesword.editor.elastic.prototype.Retail5ArchLegPrototype
 import icesword.editor.elastic.prototype.Retail5ArchSpanPrototype
 import icesword.editor.elastic.prototype.Retail5BreakPlankPrototype
@@ -26,7 +22,6 @@ import icesword.editor.elastic.prototype.Retail5Post1Prototype
 import icesword.editor.elastic.prototype.Retail5Post2PaddedPrototype
 import icesword.editor.elastic.prototype.Retail5Post2Prototype
 import icesword.editor.elastic.prototype.Retail5SpikesPrototype
-import icesword.editor.retails.Retail3
 import icesword.editor.retails.Retail5
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB

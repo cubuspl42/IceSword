@@ -1,13 +1,9 @@
 package icesword.editor.elastic.prototype
 
-import icesword.editor.ElasticGenerator
-import icesword.editor.ElasticMetaTilesGenerator
+import icesword.editor.entities.ElasticGenerator
+import icesword.editor.entities.ElasticMetaTilesGenerator
 import icesword.editor.MetaTile
-import icesword.editor.WapObjectPropsData
-import icesword.editor.elastic.ElasticRectangularFragment
-import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.retails.Retail
-import icesword.editor.retails.Retail1.MetaTiles.Column
 import icesword.editor.retails.Retail3
 import icesword.editor.retails.RetailLadderPrototype
 import icesword.geometry.IntSize

@@ -3,8 +3,8 @@ package icesword.scene
 import icesword.EditorTextureBank
 import icesword.RezTextureBank
 import icesword.editor.Editor
-import icesword.editor.Entity
-import icesword.editor.WapObject
+import icesword.editor.entities.Entity
+import icesword.editor.entities.WapObject
 import icesword.editor.DynamicWapSprite
 import icesword.frp.Stream
 import icesword.frp.Till

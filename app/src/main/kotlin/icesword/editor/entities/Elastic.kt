@@ -1,9 +1,11 @@
 @file:UseSerializers(IntVec2Serializer::class)
 
-package icesword.editor
+package icesword.editor.entities
 
 import icesword.RezIndex
 import icesword.TILE_SIZE
+import icesword.editor.IntVec2Serializer
+import icesword.editor.MetaTile
 import icesword.editor.elastic.ElasticRectangularFragment
 import icesword.editor.elastic.ElasticRectangularPattern
 import icesword.editor.elastic.prototype.ElasticPrototype

@@ -2,23 +2,22 @@ package icesword.scene
 
 import icesword.RezTextureBank
 import icesword.RezIndex
-import icesword.editor.CrateStack
-import icesword.editor.CrumblingPeg
+import icesword.editor.entities.CrateStack
+import icesword.editor.entities.CrumblingPeg
 import icesword.editor.Editor
-import icesword.editor.Elastic
-import icesword.editor.Enemy
-import icesword.editor.Entity
-import icesword.editor.FloorSpikeRow
-import icesword.editor.HorizontalElevator
-import icesword.editor.KnotMesh
-import icesword.editor.PathElevator
-import icesword.editor.Rope
-import icesword.editor.StartPoint
-import icesword.editor.TileEntity
-import icesword.editor.TogglePeg
-import icesword.editor.VerticalElevator
-import icesword.editor.WapObject
-import icesword.editor.Warp
+import icesword.editor.entities.Elastic
+import icesword.editor.entities.Enemy
+import icesword.editor.entities.Entity
+import icesword.editor.entities.FloorSpikeRow
+import icesword.editor.entities.HorizontalElevator
+import icesword.editor.entities.KnotMesh
+import icesword.editor.entities.PathElevator
+import icesword.editor.entities.Rope
+import icesword.editor.entities.StartPoint
+import icesword.editor.entities.TogglePeg
+import icesword.editor.entities.VerticalElevator
+import icesword.editor.entities.WapObject
+import icesword.editor.entities.Warp
 import icesword.geometry.DynamicTransform
 
 fun createEntityNode(
@@ -43,7 +42,6 @@ fun createEntityNode(
     is FloorSpikeRow -> null
     is KnotMesh -> null
     is StartPoint -> null
-    is TileEntity -> null
     is WapObject -> null
     is PathElevator -> PathElevatorNode(
         editor = editor,

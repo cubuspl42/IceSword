@@ -1,6 +1,6 @@
 package icesword.editor.elastic.prototype
 
-import icesword.editor.ElasticMetaTilesGenerator
+import icesword.editor.entities.ElasticMetaTilesGenerator
 import icesword.editor.retails.Retail
 import icesword.editor.retails.Retail3
 import icesword.editor.retails.retail3DarkSpikesPattern

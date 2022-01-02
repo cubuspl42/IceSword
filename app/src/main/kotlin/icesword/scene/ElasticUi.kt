@@ -3,9 +3,9 @@ package icesword.scene
 import icesword.MouseDrag
 import icesword.TILE_SIZE
 import icesword.editor.Editor
-import icesword.editor.Elastic
-import icesword.editor.ElasticProduct
-import icesword.editor.Entity
+import icesword.editor.entities.Elastic
+import icesword.editor.entities.ElasticProduct
+import icesword.editor.entities.Entity
 import icesword.editor.EntitySelectMode.SelectionState
 import icesword.editor.Tool
 import icesword.frp.Cell

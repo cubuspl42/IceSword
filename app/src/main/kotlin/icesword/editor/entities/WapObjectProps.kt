@@ -1,4 +1,4 @@
-package icesword.editor
+package icesword.editor.entities
 
 import icesword.frp.MutCell
 import icesword.geometry.IntRect

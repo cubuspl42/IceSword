@@ -1,5 +1,7 @@
 package icesword.editor
 
+import icesword.editor.entities.KnotMesh
+import icesword.editor.entities.knotCenter
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.MutCell

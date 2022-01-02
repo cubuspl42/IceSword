@@ -1,9 +1,11 @@
 @file:UseSerializers(IntVec2Serializer::class)
 
-package icesword.editor
+package icesword.editor.entities
 
 import icesword.ImageMetadata
 import icesword.RezIndex
+import icesword.editor.DynamicWapSprite
+import icesword.editor.IntVec2Serializer
 import icesword.editor.retails.Retail
 import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Cell

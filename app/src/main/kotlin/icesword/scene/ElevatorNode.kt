@@ -4,11 +4,11 @@ import icesword.html.DynamicStyleDeclaration
 import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
 import icesword.editor.Editor
-import icesword.editor.Elevator
-import icesword.editor.EntityMovementRange
-import icesword.editor.HorizontalElevator
+import icesword.editor.entities.Elevator
+import icesword.editor.entities.EntityMovementRange
+import icesword.editor.entities.HorizontalElevator
 import icesword.editor.InsertionMode
-import icesword.editor.VerticalElevator
+import icesword.editor.entities.VerticalElevator
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till

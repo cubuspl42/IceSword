@@ -1,7 +1,7 @@
 package icesword.scene
 
 import icesword.editor.Editor
-import icesword.editor.Entity
+import icesword.editor.entities.Entity
 import icesword.frp.Cell
 import icesword.frp.Till
 import icesword.frp.map

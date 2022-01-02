@@ -3,7 +3,7 @@ package icesword
 import icesword.editor.Editor
 import icesword.editor.elastic.prototype.ElasticPrototype
 import icesword.editor.InsertionPrototype
-import icesword.editor.KnotPrototype
+import icesword.editor.entities.KnotPrototype
 import icesword.editor.retails.Retail
 import icesword.editor.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Till

@@ -5,7 +5,7 @@ import icesword.editor.EditorMode
 import icesword.editor.ElasticInsertionMode
 import icesword.editor.EntitySelectMode
 import icesword.editor.KnotPaintMode
-import icesword.editor.knotRect
+import icesword.editor.entities.knotRect
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.map
 import icesword.frp.mapNested

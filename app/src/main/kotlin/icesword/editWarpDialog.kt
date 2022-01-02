@@ -1,6 +1,6 @@
 package icesword
 
-import icesword.editor.Warp
+import icesword.editor.entities.Warp
 import icesword.frp.Cell.Companion.constant
 import icesword.html.createColumnWb
 import icesword.html.createHeading4Wb

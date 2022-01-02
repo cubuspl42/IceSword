@@ -1,9 +1,13 @@
 @file:UseSerializers(IntVec2Serializer::class)
 
-package icesword.editor
+package icesword.editor.entities
 
 import icesword.ImageSetId
 import icesword.RezIndex
+import icesword.editor.DynamicWapSprite
+import icesword.editor.IntVec2Serializer
+import icesword.editor.PickupKind
+import icesword.editor.calculateWapSpriteBounds
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.dynamic_list.DynamicList

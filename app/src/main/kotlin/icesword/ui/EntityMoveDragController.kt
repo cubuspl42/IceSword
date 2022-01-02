@@ -4,7 +4,7 @@ import icesword.html.MouseButton
 import icesword.html.onMouseDrag
 import icesword.MouseDrag
 import icesword.editor.Editor
-import icesword.editor.Entity
+import icesword.editor.entities.Entity
 import icesword.editor.Tool
 import icesword.frp.*
 import icesword.geometry.DynamicTransform

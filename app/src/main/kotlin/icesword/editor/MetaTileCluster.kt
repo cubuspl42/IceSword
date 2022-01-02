@@ -1,5 +1,6 @@
 package icesword.editor
 
+import icesword.editor.entities.Elastic
 import icesword.frp.Cell
 import icesword.frp.DynamicMap
 import icesword.frp.DynamicSet

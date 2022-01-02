@@ -8,7 +8,6 @@ import icesword.RezIndex
 import icesword.RezTextureBank
 import icesword.TILE_SIZE
 import icesword.asFullOfInstances
-import icesword.collections.unionView
 import icesword.editor.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.InsertionPrototype.EnemyInsertionPrototype
 import icesword.editor.InsertionPrototype.FloorSpikeInsertionPrototype
@@ -18,6 +17,24 @@ import icesword.editor.InsertionPrototype.PathElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.VerticalElevatorInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectAlikeInsertionPrototype
 import icesword.editor.InsertionPrototype.WapObjectInsertionPrototype
+import icesword.editor.entities.CrateStack
+import icesword.editor.entities.CrumblingPeg
+import icesword.editor.entities.Elastic
+import icesword.editor.entities.Enemy
+import icesword.editor.entities.Entity
+import icesword.editor.entities.EntityTilePosition
+import icesword.editor.entities.FloorSpikeRow
+import icesword.editor.entities.HorizontalElevator
+import icesword.editor.entities.KnotMesh
+import icesword.editor.entities.KnotPrototype
+import icesword.editor.entities.PathElevator
+import icesword.editor.entities.Rope
+import icesword.editor.entities.StartPoint
+import icesword.editor.entities.TogglePeg
+import icesword.editor.entities.VerticalElevator
+import icesword.editor.entities.WapObject
+import icesword.editor.entities.Warp
+import icesword.editor.entities.move
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.DynamicMap
@@ -399,7 +416,6 @@ class Editor(
                     )
                 }
             }
-            is TileEntity -> null
             is Rope -> object : RopeSelectionContext {
                 override fun editSpeed() {
                     _editRopeSpeed.send(selectedEntity)

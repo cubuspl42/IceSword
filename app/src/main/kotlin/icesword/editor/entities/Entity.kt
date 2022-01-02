@@ -1,4 +1,4 @@
-package icesword.editor
+package icesword.editor.entities
 
 import icesword.frp.*
 import icesword.geometry.IntRect

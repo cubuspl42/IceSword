@@ -2,9 +2,9 @@ package icesword.scene
 
 import icesword.editor.EditPathElevatorMode
 import icesword.editor.Editor
-import icesword.editor.PathElevator
-import icesword.editor.PathElevatorEdge
-import icesword.editor.PathElevatorStep
+import icesword.editor.entities.PathElevator
+import icesword.editor.entities.PathElevatorEdge
+import icesword.editor.entities.PathElevatorStep
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicSet
