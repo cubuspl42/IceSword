@@ -1,14 +1,11 @@
 package icesword.scene
 
-import icesword.html.DynamicStyleDeclaration
-import icesword.html.createSvgGroup
-import icesword.html.createSvgRect
 import icesword.editor.Editor
 import icesword.editor.entities.Elevator
 import icesword.editor.entities.EntityMovementRange
 import icesword.editor.entities.HorizontalElevator
-import icesword.editor.InsertionMode
 import icesword.editor.entities.VerticalElevator
+import icesword.editor.modes.InsertionMode
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
@@ -17,7 +14,10 @@ import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.geometry.Transform
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.createSvgGroup
 import icesword.html.createSvgGroupDt
+import icesword.html.createSvgRect
 import icesword.html.createSvgRectR
 import icesword.html.createSvgSwitch
 import kotlinx.css.Color

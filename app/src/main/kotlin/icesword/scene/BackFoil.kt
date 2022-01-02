@@ -1,8 +1,7 @@
 package icesword.scene
 
 import icesword.editor.Editor
-import icesword.editor.EntitySelectMode
-import icesword.editor.KnotSelectMode
+import icesword.editor.modes.KnotSelectMode
 import icesword.editor.SelectMode
 import icesword.frp.Till
 import icesword.frp.reactTill

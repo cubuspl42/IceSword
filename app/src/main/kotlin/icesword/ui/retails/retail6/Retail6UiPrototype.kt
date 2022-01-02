@@ -4,7 +4,7 @@ import icesword.createInsertElasticButton
 import icesword.createInsertEntityButton
 import icesword.createKnotPaintButton
 import icesword.editor.Editor
-import icesword.editor.InsertionPrototype
+import icesword.editor.modes.InsertionPrototype
 import icesword.editor.entities.KnotPrototype
 import icesword.editor.entities.elastic.prototype.Retail6BrownHousePrototype
 import icesword.editor.entities.elastic.prototype.Retail6FencePrototype

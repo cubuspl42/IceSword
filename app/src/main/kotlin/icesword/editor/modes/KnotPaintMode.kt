@@ -1,5 +1,7 @@
-package icesword.editor
+package icesword.editor.modes
 
+import icesword.editor.EditorMode
+import icesword.editor.World
 import icesword.editor.entities.KnotMesh
 import icesword.editor.entities.KnotPrototype
 import icesword.editor.entities.closestKnot

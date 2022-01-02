@@ -1,5 +1,7 @@
-package icesword.editor
+package icesword.editor.modes
 
+import icesword.editor.Editor
+import icesword.editor.EditorMode
 import icesword.editor.entities.PathElevator
 import icesword.editor.entities.PathElevatorStep
 import icesword.frp.Cell

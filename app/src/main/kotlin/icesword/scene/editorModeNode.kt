@@ -1,11 +1,11 @@
 package icesword.scene
 
-import icesword.editor.EditPathElevatorMode
+import icesword.editor.modes.EditPathElevatorMode
 import icesword.editor.EditorMode
-import icesword.editor.ElasticInsertionMode
-import icesword.editor.EntitySelectMode
-import icesword.editor.KnotPaintMode
+import icesword.editor.modes.EntitySelectMode
+import icesword.editor.modes.KnotPaintMode
 import icesword.editor.entities.knotRect
+import icesword.editor.modes.ElasticInsertionMode
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.map
 import icesword.frp.mapNested

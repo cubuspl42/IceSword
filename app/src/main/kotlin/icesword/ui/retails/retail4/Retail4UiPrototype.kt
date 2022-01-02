@@ -3,7 +3,7 @@ package icesword.ui.retails.retail4
 import icesword.createInsertElasticButton
 import icesword.createInsertEntityButton
 import icesword.editor.Editor
-import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
+import icesword.editor.modes.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.entities.elastic.prototype.Retail4CavePrototype
 import icesword.editor.entities.elastic.prototype.Retail4GooPrototype
 import icesword.editor.entities.elastic.prototype.Retail4LadderPrototype

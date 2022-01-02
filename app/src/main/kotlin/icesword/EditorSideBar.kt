@@ -1,10 +1,10 @@
 package icesword
 
 import icesword.editor.Editor
-import icesword.editor.InsertionPrototype
-import icesword.editor.InsertionPrototype.WarpInsertionPrototype
 import icesword.editor.entities.Warp
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
+import icesword.editor.modes.InsertionPrototype
+import icesword.editor.modes.InsertionPrototype.WarpInsertionPrototype
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.html.DynamicStyleDeclaration

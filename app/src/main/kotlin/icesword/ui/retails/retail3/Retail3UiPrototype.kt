@@ -7,7 +7,7 @@ import icesword.createInsertWapObjectButton
 import icesword.createKnotPaintButton
 import icesword.editor.entities.CrateStackPrototype
 import icesword.editor.Editor
-import icesword.editor.InsertionPrototype
+import icesword.editor.modes.InsertionPrototype
 import icesword.editor.entities.KnotPrototype
 import icesword.editor.entities.RopePrototype
 import icesword.editor.entities.elastic.prototype.LadderPrototype

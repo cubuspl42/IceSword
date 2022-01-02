@@ -6,6 +6,8 @@ import icesword.editor.*
 import icesword.editor.entities.KnotMesh
 import icesword.editor.entities.knotCenter
 import icesword.editor.entities.knotRect
+import icesword.editor.modes.EntitySelectMode
+import icesword.editor.modes.KnotSelectMode
 import icesword.frp.*
 import icesword.frp.Cell.Companion.constant
 import icesword.geometry.DynamicTransform

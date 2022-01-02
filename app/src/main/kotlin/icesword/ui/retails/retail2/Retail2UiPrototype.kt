@@ -5,7 +5,7 @@ import icesword.createInsertEnemyButton
 import icesword.createInsertEntityButton
 import icesword.createInsertWapObjectButton
 import icesword.editor.Editor
-import icesword.editor.InsertionPrototype
+import icesword.editor.modes.InsertionPrototype
 import icesword.editor.entities.elastic.prototype.Retail2DoublePilePrototype
 import icesword.editor.entities.elastic.prototype.Retail2GooPrototype
 import icesword.editor.entities.elastic.prototype.Retail2PlatformPrototype

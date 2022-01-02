@@ -6,7 +6,7 @@ import icesword.editor.Editor
 import icesword.editor.entities.Elastic
 import icesword.editor.entities.ElasticProduct
 import icesword.editor.entities.Entity
-import icesword.editor.EntitySelectMode.SelectionState
+import icesword.editor.modes.EntitySelectMode.SelectionState
 import icesword.editor.Tool
 import icesword.frp.Cell
 import icesword.frp.Till

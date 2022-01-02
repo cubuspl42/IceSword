@@ -1,19 +1,17 @@
 package icesword
 
 
-import icesword.editor.BasicInsertionMode
 import icesword.editor.Editor
-import icesword.editor.ElasticInsertionMode
-import icesword.editor.EntitySelectMode
-import icesword.editor.InsertWapObjectCommand
-import icesword.editor.KnotBrushMode
-import icesword.editor.KnotPaintMode
-import icesword.editor.OffsetTilesView
 import icesword.editor.Tool
-import icesword.editor.WapObjectAlikeInsertionMode
+import icesword.editor.modes.BasicInsertionMode
+import icesword.editor.modes.ElasticInsertionMode
+import icesword.editor.modes.EntitySelectMode
+import icesword.editor.modes.InsertWapObjectCommand
+import icesword.editor.modes.KnotBrushMode
+import icesword.editor.modes.KnotPaintMode
+import icesword.editor.modes.WapObjectAlikeInsertionMode
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
-import icesword.frp.DynamicView
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.asStream

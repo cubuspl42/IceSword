@@ -1,6 +1,9 @@
-package icesword.editor
+package icesword.editor.modes
 
+import icesword.editor.Editor
+import icesword.editor.EditorMode
 import icesword.editor.entities.Entity
+import icesword.editor.indexOfOrNull
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.CellLoop

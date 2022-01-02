@@ -1,5 +1,7 @@
-package icesword.editor
+package icesword.editor.modes
 
+import icesword.editor.EditorMode
+import icesword.editor.KnotBrush
 import icesword.editor.entities.KnotMesh
 import icesword.editor.entities.closestKnot
 import icesword.frp.Cell

@@ -8,8 +8,8 @@ import icesword.createKnotPaintButton
 import icesword.editor.entities.elastic.prototype.Retail1ColumnPrototype
 import icesword.editor.entities.CrateStackPrototype
 import icesword.editor.Editor
-import icesword.editor.InsertionPrototype
-import icesword.editor.InsertionPrototype.CrumblingPegInsertionPrototype
+import icesword.editor.modes.InsertionPrototype
+import icesword.editor.modes.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.entities.KnotPrototype
 import icesword.editor.entities.elastic.prototype.LadderPrototype
 import icesword.editor.entities.elastic.prototype.Retail1PlatformPrototype

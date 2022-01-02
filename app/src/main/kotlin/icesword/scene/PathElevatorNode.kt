@@ -1,6 +1,6 @@
 package icesword.scene
 
-import icesword.editor.EditPathElevatorMode
+import icesword.editor.modes.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.entities.PathElevator
 import icesword.editor.entities.PathElevatorEdge

@@ -4,7 +4,7 @@ import icesword.createInsertElasticButton
 import icesword.createInsertEntityButton
 import icesword.createKnotPaintButton
 import icesword.editor.Editor
-import icesword.editor.InsertionPrototype.TogglePegInsertionPrototype
+import icesword.editor.modes.InsertionPrototype.TogglePegInsertionPrototype
 import icesword.editor.entities.KnotPrototype
 import icesword.editor.entities.elastic.prototype.Retail5ArchLegPrototype
 import icesword.editor.entities.elastic.prototype.Retail5ArchSpanPrototype
