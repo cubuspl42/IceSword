@@ -1,5 +1,7 @@
-package icesword
+package icesword.ui
 
+import icesword.RezIndex
+import icesword.RezTextureBank
 import icesword.editor.entities.Enemy
 import icesword.editor.PickupKind
 import icesword.frp.Cell

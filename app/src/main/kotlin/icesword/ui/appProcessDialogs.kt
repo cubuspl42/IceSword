@@ -1,11 +1,10 @@
-package icesword
+package icesword.ui
 
 import icesword.html.createHTMLElementRaw
 import icesword.editor.LoadingWorldProcess
 import icesword.html.HTMLWidget
 import icesword.html.HTMLWidgetB
 import kotlinx.browser.document
-import org.w3c.dom.HTMLElement
 
 fun createCreatingNewProjectDialog(): HTMLWidgetB<*> =
     HTMLWidget.of(

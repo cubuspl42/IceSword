@@ -1,7 +1,7 @@
-package icesword
+package icesword.ui
 
-import icesword.DragOverOverlayState.DragOverState
-import icesword.DragOverOverlayState.IdleState
+import icesword.ui.DragOverOverlayState.DragOverState
+import icesword.ui.DragOverOverlayState.IdleState
 import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till

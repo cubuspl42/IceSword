@@ -2,7 +2,6 @@ package icesword.ui
 
 import icesword.html.MouseButton
 import icesword.html.onMouseDrag
-import icesword.MouseDrag
 import icesword.editor.Editor
 import icesword.editor.entities.Entity
 import icesword.editor.Tool

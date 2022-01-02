@@ -1,4 +1,4 @@
-package icesword
+package icesword.ui
 
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.createHTMLElementRaw

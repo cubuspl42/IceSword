@@ -1,5 +1,7 @@
-package icesword
+package icesword.ui
 
+import icesword.RezIndex
+import icesword.RezTextureBank
 import icesword.editor.entities.CrateStack
 import icesword.editor.PickupKind
 import icesword.frp.Cell
@@ -45,7 +47,8 @@ import icesword.html.map
 import icesword.html.onDragGestureStart
 import icesword.html.onDragStart
 import icesword.html.trackDraggingState
-import icesword.ui.createPickupImage
+import icesword.withReplaced
+import icesword.withSwapped
 import kotlinx.css.Align
 import kotlinx.css.BorderStyle
 import kotlinx.css.Color

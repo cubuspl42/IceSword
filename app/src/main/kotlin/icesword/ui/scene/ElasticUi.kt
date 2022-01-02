@@ -1,6 +1,6 @@
 package icesword.ui.scene
 
-import icesword.MouseDrag
+import icesword.ui.MouseDrag
 import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.entities.Elastic

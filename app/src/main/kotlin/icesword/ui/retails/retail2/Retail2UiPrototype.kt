@@ -1,9 +1,9 @@
 package icesword.ui.retails.retail2
 
-import icesword.createInsertElasticButton
-import icesword.createInsertEnemyButton
-import icesword.createInsertEntityButton
-import icesword.createInsertWapObjectButton
+import icesword.ui.createInsertElasticButton
+import icesword.ui.createInsertEnemyButton
+import icesword.ui.createInsertEntityButton
+import icesword.ui.createInsertWapObjectButton
 import icesword.editor.Editor
 import icesword.editor.modes.InsertionPrototype
 import icesword.editor.entities.elastic.prototype.Retail2DoublePilePrototype

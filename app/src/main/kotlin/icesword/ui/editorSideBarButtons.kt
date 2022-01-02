@@ -1,4 +1,4 @@
-package icesword
+package icesword.ui
 
 import icesword.editor.Editor
 import icesword.editor.entities.elastic.prototype.ElasticPrototype
@@ -9,7 +9,6 @@ import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Till
 import icesword.frp.map
 import icesword.html.HTMLWidgetB
-import icesword.ui.createImageSelectButton
 import org.w3c.dom.HTMLElement
 
 fun createInsertElasticButton(

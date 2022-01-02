@@ -6,7 +6,6 @@ import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
 import icesword.ui.scene.Texture
 import kotlinx.browser.window
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.await
 import kotlinx.coroutines.coroutineScope

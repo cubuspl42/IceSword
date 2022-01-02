@@ -1,4 +1,4 @@
-package icesword
+package icesword.ui
 
 import icesword.editor.entities.FloorSpikeRow
 import icesword.frp.Cell

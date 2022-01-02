@@ -1,10 +1,10 @@
 package icesword.ui.retails.retail1
 
-import icesword.createInsertElasticButton
-import icesword.createInsertEnemyButton
-import icesword.createInsertEntityButton
-import icesword.createInsertWapObjectButton
-import icesword.createKnotPaintButton
+import icesword.ui.createInsertElasticButton
+import icesword.ui.createInsertEnemyButton
+import icesword.ui.createInsertEntityButton
+import icesword.ui.createInsertWapObjectButton
+import icesword.ui.createKnotPaintButton
 import icesword.editor.entities.elastic.prototype.Retail1ColumnPrototype
 import icesword.editor.entities.CrateStackPrototype
 import icesword.editor.Editor

@@ -1,8 +1,8 @@
 package icesword.ui.retails.retail6
 
-import icesword.createInsertElasticButton
-import icesword.createInsertEntityButton
-import icesword.createKnotPaintButton
+import icesword.ui.createInsertElasticButton
+import icesword.ui.createInsertEntityButton
+import icesword.ui.createKnotPaintButton
 import icesword.editor.Editor
 import icesword.editor.modes.InsertionPrototype
 import icesword.editor.entities.KnotPrototype

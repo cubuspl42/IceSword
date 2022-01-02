@@ -1,6 +1,6 @@
 package icesword.html
 
-import icesword.MouseDrag
+import icesword.ui.MouseDrag
 import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Subscription

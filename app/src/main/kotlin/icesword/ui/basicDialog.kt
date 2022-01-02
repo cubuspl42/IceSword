@@ -1,4 +1,4 @@
-package icesword
+package icesword.ui
 
 import icesword.frp.Cell
 import icesword.frp.MutCell

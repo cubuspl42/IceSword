@@ -1,4 +1,4 @@
-import icesword.createAppView
+import icesword.ui.createAppView
 import icesword.editor.App
 import icesword.editor.retails.Retail
 import icesword.frp.Till

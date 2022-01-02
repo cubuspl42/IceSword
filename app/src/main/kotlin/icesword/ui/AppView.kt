@@ -1,4 +1,4 @@
-package icesword
+package icesword.ui
 
 import icesword.html.createHTMLElementRaw
 import icesword.html.linkChild

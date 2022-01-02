@@ -5,8 +5,6 @@ import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.changesUnits
 import icesword.frp.dynamic_list.mergeBy
 import icesword.frp.mergeWith
-import icesword.frp.units
-import icesword.frp.values
 import icesword.geometry.IntRect
 import org.w3c.dom.CanvasRenderingContext2D
 

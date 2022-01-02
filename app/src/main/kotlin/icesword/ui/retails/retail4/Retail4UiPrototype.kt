@@ -1,7 +1,7 @@
 package icesword.ui.retails.retail4
 
-import icesword.createInsertElasticButton
-import icesword.createInsertEntityButton
+import icesword.ui.createInsertElasticButton
+import icesword.ui.createInsertEntityButton
 import icesword.editor.Editor
 import icesword.editor.modes.InsertionPrototype.CrumblingPegInsertionPrototype
 import icesword.editor.entities.elastic.prototype.Retail4CavePrototype

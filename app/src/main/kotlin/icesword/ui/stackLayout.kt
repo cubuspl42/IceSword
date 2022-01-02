@@ -1,4 +1,4 @@
-package icesword
+package icesword.ui
 
 import icesword.frp.Cell
 import icesword.frp.Till
@@ -12,7 +12,6 @@ import icesword.html.createHTMLWidgetB
 import icesword.html.resolve
 import kotlinx.css.Align
 import kotlinx.css.Display
-import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 
 fun createStackLayout(children: List<HTMLElement>): HTMLElement =

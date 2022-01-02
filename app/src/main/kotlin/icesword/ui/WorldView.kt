@@ -1,6 +1,10 @@
-package icesword
+package icesword.ui
 
 
+import icesword.RezIndex
+import icesword.RezTextureBank
+import icesword.TILE_SIZE
+import icesword.buildTileset
 import icesword.editor.Editor
 import icesword.editor.Tool
 import icesword.editor.modes.BasicInsertionMode

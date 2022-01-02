@@ -1,4 +1,4 @@
-package icesword
+package icesword.ui
 
 import icesword.editor.Editor
 import icesword.editor.entities.Warp

@@ -1,4 +1,4 @@
-package icesword
+package icesword.ui
 
 import icesword.editor.App
 import icesword.editor.CrateStackSelectionContext
@@ -43,7 +43,6 @@ import icesword.html.createStyledText
 import icesword.html.createTextButtonWb
 import icesword.html.createTextWb
 import icesword.html.resolve
-import icesword.ui.createSelectButton
 import kotlinx.css.Color
 import kotlinx.css.FontWeight
 import kotlinx.css.JustifyContent

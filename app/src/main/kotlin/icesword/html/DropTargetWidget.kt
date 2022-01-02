@@ -1,6 +1,6 @@
 package icesword.html
 
-import icesword.createStackWb
+import icesword.ui.createStackWb
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Stream

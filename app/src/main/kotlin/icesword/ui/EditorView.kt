@@ -1,5 +1,7 @@
-package icesword
+package icesword.ui
 
+import icesword.RezIndex
+import icesword.RezTextureBank
 import icesword.editor.App
 import icesword.html.createHTMLElementRaw
 import icesword.editor.Editor

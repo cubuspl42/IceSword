@@ -1,4 +1,4 @@
-package icesword
+package icesword.ui
 
 import icesword.editor.NewProjectContext
 import icesword.editor.retails.Retail
