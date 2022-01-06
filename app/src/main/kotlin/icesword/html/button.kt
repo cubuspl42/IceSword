@@ -47,26 +47,31 @@ fun createTextButtonWb(
     style: DynamicStyleDeclaration? = null,
     text: String,
     onPressed: (() -> Unit)? = null,
+    disabled: Boolean = false,
 ): HTMLWidgetB<HTMLButton> = createButtonWb(
     style = style,
     child = createTextWb(Cell.constant(text)),
     onPressed = onPressed,
+    disabled = disabled,
 )
 
 fun createButtonWb(
     style: DynamicStyleDeclaration? = null,
     child: HTMLWidgetB<*>,
     onPressed: (() -> Unit)? = null,
+    disabled: Boolean = false,
 ) = createButtonDynamicWb(
     style = style,
     child = Cell.constant(child),
     onPressed = onPressed,
+    disabled = disabled,
 )
 
 fun createButtonDynamicWb(
     style: DynamicStyleDeclaration? = null,
     child: Cell<HTMLWidgetB<*>>,
     onPressed: (() -> Unit)? = null,
+    disabled: Boolean = false,
 ) = object : HTMLWidgetB<HTMLButton> {
     override fun build(tillDetach: Till): HTMLButton {
         val childElement = HTMLWidgetB.build(child, tillDetach)
@@ -83,6 +88,10 @@ fun createButtonDynamicWb(
             element.onClick().reactTill(tillDetach) {
                 onPressed()
             }
+        }
+
+        if (disabled) {
+            element.disabled = disabled
         }
 
         return HTMLButton(

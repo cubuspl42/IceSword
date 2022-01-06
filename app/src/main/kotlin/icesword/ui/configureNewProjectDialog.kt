@@ -73,34 +73,42 @@ fun createConfigureNewProjectDialog(
                             createTextButtonWb(
                                 text = "Retail 7",
                                 onPressed = onRetailButtonPressed(Retail7),
+                                disabled = true,
                             ),
                             createTextButtonWb(
                                 text = "Retail 8",
                                 onPressed = onRetailButtonPressed(Retail8),
+                                disabled = true,
                             ),
                             createTextButtonWb(
                                 text = "Retail 9",
                                 onPressed = onRetailButtonPressed(Retail9),
+                                disabled = true,
                             ),
                             createTextButtonWb(
                                 text = "Retail 10",
                                 onPressed = onRetailButtonPressed(Retail10),
+                                disabled = true,
                             ),
                             createTextButtonWb(
                                 text = "Retail 11",
                                 onPressed = onRetailButtonPressed(Retail11),
+                                disabled = true,
                             ),
                             createTextButtonWb(
                                 text = "Retail 12",
                                 onPressed = onRetailButtonPressed(Retail12),
+                                disabled = true,
                             ),
                             createTextButtonWb(
                                 text = "Retail 13",
                                 onPressed = onRetailButtonPressed(Retail13),
+                                disabled = true,
                             ),
                             createTextButtonWb(
                                 text = "Retail 14",
                                 onPressed = onRetailButtonPressed(Retail14),
+                                disabled = true,
                             ),
                         )
                     ),
