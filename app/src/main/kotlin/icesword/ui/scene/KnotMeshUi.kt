@@ -1,19 +1,31 @@
 package icesword.ui.scene
 
-import icesword.html.*
 import icesword.TILE_SIZE
-import icesword.editor.*
+import icesword.editor.Editor
 import icesword.editor.entities.KnotMesh
 import icesword.editor.entities.knotCenter
 import icesword.editor.entities.knotRect
-import icesword.editor.modes.EntitySelectMode
 import icesword.editor.modes.KnotSelectMode
-import icesword.frp.*
+import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
+import icesword.frp.DynamicSet
+import icesword.frp.Stream
+import icesword.frp.Till
+import icesword.frp.map
+import icesword.frp.mapTillRemoved
+import icesword.frp.mergeWith
+import icesword.frp.orElse
+import icesword.frp.switchMap
+import icesword.frp.units
+import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import icesword.html.DynamicStyleDeclaration
+import icesword.html.createSvgGroup
+import icesword.html.createSvgRect
+import icesword.html.linkSvgChildren
 import icesword.tileRect
 import icesword.ui.EntityMoveDragController
 import kotlinx.css.Color
@@ -36,6 +48,8 @@ class KnotMeshUi private constructor(
 ) : CanvasNode {
     companion object {
         val selectionColor = Color.red
+
+        val fallbackColor = rgba(128, 128, 128, 0.4)
     }
 
     constructor(
@@ -58,32 +72,15 @@ class KnotMeshUi private constructor(
                 } ?: constant(emptySet<IntVec2>())
             }
         ),
-        strokeColor = Cell.map4(
-            editor.isEntitySelected(knotMesh),
-            editor.projectEntitySelectionState(knotMesh),
-            editor.editorMode,
-            editor.knotPaintOverReadyMode,
-        ) {
-                isSelectedNow,
-                projectedSelectionStateNow,
-                editorModeNow,
-                knotPaintOverReadyModeNow,
-            ->
-            when {
-                knotPaintOverReadyModeNow?.targetKnotMesh == knotMesh -> Color.lightBlue
-                isSelectedNow && editorModeNow is KnotSelectMode -> selectionColor.withAlpha(0.3)
-
-                // TODO: Deduplicate
-                isSelectedNow && projectedSelectionStateNow == EntitySelectMode.SelectionState.NonSelected ->
-                    Color.red.withAlpha(0.3)
-                isSelectedNow || projectedSelectionStateNow == EntitySelectMode.SelectionState.Selected -> Color.red
-
-                else -> {
-                    val a = 128
-                    rgba(a, a, a, 0.4)
-                }
-            }
-        },
+        strokeColor = buildSpecialKnotMeshStrokeColor(
+            editor = editor,
+            knotMesh = knotMesh,
+        ).orElse(
+            buildEntityStrokeColor(
+                editor = editor,
+                entity = knotMesh,
+            ),
+        ).orElse(constant(fallbackColor)),
     )
 
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
@@ -110,8 +107,6 @@ class KnotMeshUi private constructor(
             val globalTileCoord = tileOffset + localTileCoord
             val rect = tileRect(globalTileCoord)
             val viewRect = viewTransform.transform(rect)
-
-            val selectionColor = Color.red
 
             // Here, window rect = viewport rect...
             if (windowRect.overlaps(viewRect)) {
@@ -168,7 +163,8 @@ class KnotMeshUi private constructor(
         ctx.restore()
     }
 
-    override val onDirty: Stream<Unit> =
+    override
+    val onDirty: Stream<Unit> =
         viewTransform.transform.values().units()
             .mergeWith(isSelected.values().units())
             .mergeWith(knotMesh.tileOffset.values().units())
@@ -176,6 +172,25 @@ class KnotMeshUi private constructor(
             .mergeWith(knotsInSelectionArea.changes.units())
             .mergeWith(selectedKnots.changes.units())
             .mergeWith(strokeColor.changes.units())
+}
+
+private fun buildSpecialKnotMeshStrokeColor(
+    editor: Editor,
+    knotMesh: KnotMesh,
+): Cell<Color?> = Cell.map3(
+    editor.isEntitySelected(knotMesh),
+    editor.editorMode,
+    editor.knotPaintOverReadyMode,
+) {
+        isSelectedNow,
+        editorModeNow,
+        knotPaintOverReadyModeNow,
+    ->
+    when {
+        knotPaintOverReadyModeNow?.targetKnotMesh == knotMesh -> Color.lightBlue
+        isSelectedNow && editorModeNow is KnotSelectMode -> KnotMeshUi.selectionColor.withAlpha(0.3)
+        else -> null
+    }
 }
 
 fun createKnotMeshOverlayElement(

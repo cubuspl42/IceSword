@@ -9,10 +9,12 @@ import icesword.editor.entities.Entity
 import icesword.editor.modes.EntitySelectMode.SelectionState
 import icesword.editor.Tool
 import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
+import icesword.frp.orElse
 import icesword.frp.reactDynamicNotNullTill
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
@@ -241,30 +243,10 @@ fun createEntityFrameElement(
         outer = outer,
         till = tillDetach,
     ) { context ->
-
-        val isSelected = editor.isEntitySelected(entity)
-
-        val isFocused = editor.isEntityFocused(entity)
-
-        val projectedSelectionState = editor.projectEntitySelectionState(entity)
-
-        val stroke: Cell<Color> = Cell.map3(
-            isSelected,
-            isFocused,
-            projectedSelectionState,
-        ) {
-                isSelectedNow,
-                isFocusedNow,
-                projectedSelectionStateNow,
-            ->
-            when {
-                isFocusedNow -> Color.blueViolet.withAlpha(0.8)
-                isSelectedNow && projectedSelectionStateNow == SelectionState.NonSelected ->
-                    Color.red.withAlpha(0.3)
-                isSelectedNow || projectedSelectionStateNow == SelectionState.Selected -> Color.red
-                else -> Color.transparent
-            }
-        }
+        val stroke: Cell<Color> = buildEntityStrokeColor(
+            editor = editor,
+            entity = entity,
+        ).orElse(constant(Color.transparent))
 
         val box = createSvgRect(
             svg = svg,
@@ -282,3 +264,32 @@ fun createEntityFrameElement(
 
         box
     }
+
+fun buildEntityStrokeColor(
+    editor: Editor,
+    entity: Entity,
+): Cell<Color?> {
+    val isSelected = editor.isEntitySelected(entity)
+
+    val isFocused = editor.isEntityFocused(entity)
+
+    val projectedSelectionState = editor.projectEntitySelectionState(entity)
+
+    return Cell.map3(
+        isSelected,
+        isFocused,
+        projectedSelectionState,
+    ) {
+            isSelectedNow,
+            isFocusedNow,
+            projectedSelectionStateNow,
+        ->
+        when {
+            isFocusedNow -> Color.blueViolet.withAlpha(0.8)
+            isSelectedNow && projectedSelectionStateNow == SelectionState.NonSelected ->
+                Color.red.withAlpha(0.3)
+            isSelectedNow || projectedSelectionStateNow == SelectionState.Selected -> Color.red
+            else -> null
+        }
+    }
+}
