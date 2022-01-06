@@ -22,9 +22,12 @@ import icesword.editor.entities.elastic.prototype.Retail5Post1Prototype
 import icesword.editor.entities.elastic.prototype.Retail5Post2PaddedPrototype
 import icesword.editor.entities.elastic.prototype.Retail5Post2Prototype
 import icesword.editor.entities.elastic.prototype.Retail5SpikesPrototype
+import icesword.editor.entities.fixture.prototypes.Retail2TowerWindow
+import icesword.editor.entities.fixture.prototypes.Retail5WallCover
 import icesword.editor.retails.Retail5
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
+import icesword.ui.createInsertFixtureButton
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -154,6 +157,12 @@ object Retail5UiPrototype : RetailUiPrototype {
             prototype = Retail5Post2PaddedPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL5/IMAGES/POSTTOP2/001.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertFixtureButton(
+            editor = editor,
+            prototype = Retail5WallCover,
+            imagePath = "images/CLAW/LEVEL5/IMAGES/BRICKBACKWALLCOVER/001.png",
             tillDetach = tillDetach,
         ),
     )

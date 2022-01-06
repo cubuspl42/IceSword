@@ -4,10 +4,13 @@ import icesword.editor.MetaTile
 import icesword.editor.entities.WapObjectPropsData
 import icesword.geometry.IntVec2
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 @Serializable
 sealed class FixturePrototype {
+    @Transient
     open val localWapObjects: List<WapObjectPropsData> = emptyList()
 
-    abstract val localMetaTiles: Map<IntVec2, MetaTile>
+    @Transient
+    open val localMetaTiles: Map<IntVec2, MetaTile> = emptyMap()
 }

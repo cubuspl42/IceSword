@@ -13,6 +13,7 @@ import icesword.frp.fuseValues
 import icesword.frp.getKeys
 import icesword.frp.map
 import icesword.frp.distinctMap
+import icesword.frp.mapNested
 import icesword.frp.switchMap
 import icesword.frp.unionMapDynamic
 import icesword.frp.unionWith
@@ -67,20 +68,23 @@ class MetaTileCluster(
             }
         }
 
-    private val localTileBoundingBox = localMetaTiles.content.map { localMetaTilesNow ->
-        IntRect.enclosing(
-            localMetaTilesNow.keys.map { IntRect.unit(position = it) },
-        )
-    }
+    private val localTileBoundingBox: Cell<IntRect?> =
+        localMetaTiles.content.map { localMetaTilesNow ->
+            if (localMetaTilesNow.isEmpty()) null
+            else IntRect.enclosing(
+                localMetaTilesNow.keys.map { IntRect.unit(position = it) },
+            )
+        }
 
     private val tileBoundingBox = Cell.map2(
         tileOffset,
         localTileBoundingBox,
     ) { tileOffsetNow, localTileBoundingBoxNow ->
-        localTileBoundingBoxNow.translate(tileOffsetNow)
+        localTileBoundingBoxNow?.translate(tileOffsetNow)
     }
 
-    val boundingBox = tileBoundingBox.map { it * TILE_SIZE }
+    val boundingBox: Cell<IntRect?> =
+        tileBoundingBox.mapNested { it * TILE_SIZE }
 
     fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
         tileOffset.switchMap { localMetaTiles.get(globalTileCoord - it) }

@@ -10,6 +10,7 @@ import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.DynamicMap
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.concatWith
 import icesword.frp.dynamic_list.fuseBy
 import icesword.frp.dynamic_list.sampleContent
 import icesword.frp.dynamic_list.withAppended
@@ -43,7 +44,7 @@ class FixtureProduct(
 
     val boundingBox: Cell<IntRect> = IntRect.enclosing(
         wapObjectSprites.fuseBy { it.boundingBox }
-            .withAppended(metaTileCluster.boundingBox)
+            .concatWith(DynamicList.ofSingle(metaTileCluster.boundingBox))
     )
 }
 

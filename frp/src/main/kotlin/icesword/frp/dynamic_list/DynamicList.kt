@@ -115,6 +115,9 @@ fun <A : Any> DynamicList<A?>.filterNotNull(): DynamicList<A> =
 fun <E : Any> DynamicList<Cell<E?>>.fuseNotNull(): DynamicList<E> =
     this.fuse().filterNotNull()
 
+fun <E> DynamicList<E>.concatWith(other: DynamicList<E>): DynamicList<E> =
+    DynamicList.concat(listOf(this, other))
+
 fun <E : Any> DynamicList<E>.drop(n: Int): DynamicList<E> =
     ContentDynamicList(content = this.content.map { it.drop(n) })
 

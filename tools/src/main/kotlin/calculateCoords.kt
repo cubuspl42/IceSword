@@ -14,17 +14,17 @@ data class Case(
 }
 
 val cases = listOf(
-    "cannon left" to Case(
-        tileX = 173,
-        tileY = 54,
-        objectX = 11100,
-        objectY = 3532,
+    "wall cover" to Case(
+        tileX = 298,
+        tileY = 79,
+        objectX = 19104,
+        objectY = 5079,
     ),
-    "cannon right" to Case(
-        tileX = 178,
-        tileY = 54,
-        objectX = 11493,
-        objectY = 3533,
+    "wall cover 2" to Case(
+        tileX = 367,
+        tileY = 85,
+        objectX = 23520,
+        objectY = 5481,
     ),
 )
 
