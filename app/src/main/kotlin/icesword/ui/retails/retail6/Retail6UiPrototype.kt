@@ -20,9 +20,12 @@ import icesword.editor.entities.elastic.prototype.Retail6TunnelTubeCoverGapProto
 import icesword.editor.entities.elastic.prototype.Retail6TunnelTubeCoverPrototype
 import icesword.editor.entities.elastic.prototype.Retail6TunnelTubePrototype
 import icesword.editor.entities.elastic.prototype.Retail6WhiteHousePrototype
+import icesword.editor.entities.fixture.prototypes.Retail2TowerWindow
+import icesword.editor.entities.fixture.prototypes.Retail6ShutterWindow
 import icesword.editor.retails.Retail6
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
+import icesword.ui.createInsertFixtureButton
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -138,6 +141,12 @@ object Retail6UiPrototype : RetailUiPrototype {
             prototype = Retail6PlatePrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL6/TILES/ACTION/128.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertFixtureButton(
+            editor = editor,
+            prototype = Retail6ShutterWindow,
+            imagePath = "images/CLAW/LEVEL6/TILES/ACTION/056.png",
             tillDetach = tillDetach,
         ),
     )

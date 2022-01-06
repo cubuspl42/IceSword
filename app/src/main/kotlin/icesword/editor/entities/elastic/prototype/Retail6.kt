@@ -149,7 +149,7 @@ sealed class Retail6HousePrototype : ElasticPrototype() {
             height = 1,
         ),
         center = ElasticRectangularFragment.ofSingle(
-            house.center,
+            house.core,
         ),
         centerRight = ElasticRectangularFragment.ofSingle(
             house.right,

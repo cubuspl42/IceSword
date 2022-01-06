@@ -18,6 +18,7 @@ import icesword.editor.retails.Retail6.MetaTiles.HorizontalRoof
 import icesword.editor.retails.Retail6.MetaTiles.House
 import icesword.editor.retails.Retail6.MetaTiles.Ladder
 import icesword.editor.retails.Retail6.MetaTiles.Pavement
+import icesword.editor.retails.Retail6.MetaTiles.ShutterWindow
 import icesword.editor.retails.Retail6.MetaTiles.TunnelBricksFloor
 import icesword.editor.retails.Retail6.MetaTiles.TunnelPlateFloor
 import icesword.editor.retails.Retail6.MetaTiles.TunnelTube
@@ -52,6 +53,18 @@ private val horizontalRoofTileGenerator = TileGenerator.forwardAll(
     HorizontalRoof.topRightInner,
     HorizontalRoof.topRightOuter,
 )
+
+interface HouseShutterWindowTiles {
+    val coreLeftShutter: Int
+
+    val leftInnerLeftShutter: Int
+
+    val coreCore: Int
+
+    val coreRightShutter: Int
+
+    val rightRightShutter: Int
+}
 
 interface HouseTiles {
     companion object {
@@ -95,6 +108,8 @@ interface HouseTiles {
     val shadow: Int
 
     val supportRightInner: Int
+
+    val shutterWindow: HouseShutterWindowTiles
 }
 
 private val whiteHouseTiles = object : HouseTiles {
@@ -133,6 +148,18 @@ private val whiteHouseTiles = object : HouseTiles {
     override val shadow: Int = 42
 
     override val supportRightInner: Int = 46
+
+    override val shutterWindow: HouseShutterWindowTiles = object : HouseShutterWindowTiles {
+        override val coreLeftShutter: Int = 56
+
+        override val leftInnerLeftShutter: Int = 50
+
+        override val coreCore: Int = 51
+
+        override val coreRightShutter: Int = 53
+
+        override val rightRightShutter: Int = 52
+    }
 }
 
 private val brownHouseTiles = object : HouseTiles {
@@ -171,6 +198,18 @@ private val brownHouseTiles = object : HouseTiles {
     override val shadow: Int = 76
 
     override val supportRightInner: Int = 73
+
+    override val shutterWindow: HouseShutterWindowTiles = object : HouseShutterWindowTiles {
+        override val coreLeftShutter: Int = 71
+
+        override val leftInnerLeftShutter: Int = 80
+
+        override val coreCore: Int = 81
+
+        override val coreRightShutter: Int = 82
+
+        override val rightRightShutter: Int = 83
+    }
 }
 
 val bricksTileGenerator = TileGenerator.chained(
@@ -207,6 +246,16 @@ fun buildHouseTileGenerator(
     object : TileGenerator {
         override fun buildTile(context: TileGeneratorContext): Int? = context.run {
             when {
+                // House / shutter window
+
+                containsAll(house.core, ShutterWindow.leftShutter) -> houseTiles.shutterWindow.coreLeftShutter
+                containsAll(house.leftInner, ShutterWindow.leftShutter) -> houseTiles.shutterWindow.leftInnerLeftShutter
+
+                containsAll(house.core, ShutterWindow.core) -> houseTiles.shutterWindow.coreCore
+
+                containsAll(house.core, ShutterWindow.rightShutter) -> houseTiles.shutterWindow.coreRightShutter
+                containsAll(house.right, ShutterWindow.rightShutter) -> houseTiles.shutterWindow.rightRightShutter
+
                 // House / house
 
                 containsAll(house.topLeft, house.bottomLeftOuter) -> houseTiles.bottomLeftOuterWall
@@ -235,7 +284,7 @@ fun buildHouseTileGenerator(
                 // House / horizontal roof
 
                 containsAll(house.leftInner, HorizontalRoof.supportLeft) -> houseTiles.supportLeft
-                containsAll(house.center, HorizontalRoof.shadow) -> houseTiles.shadow
+                containsAll(house.core, HorizontalRoof.shadow) -> houseTiles.shadow
                 containsAll(house.right, HorizontalRoof.supportRightInner) -> houseTiles.supportRightInner
 
                 else -> null
@@ -248,7 +297,7 @@ fun buildHouseTileGenerator(
         house.topRight,
         house.leftOuter,
         house.leftInner,
-        house.center,
+        house.core,
         house.right,
         house.bottomLeftOuter,
         house.bottomLeftInner,
@@ -413,6 +462,14 @@ object Retail6 : Retail(naturalIndex = 6) {
             val concaveBottomRight = MetaTile(115)
         }
 
+        object ShutterWindow {
+            val leftShutter = MetaTile(whiteHouseTiles.shutterWindow.coreLeftShutter)
+
+            val core = MetaTile(whiteHouseTiles.shutterWindow.coreCore)
+
+            val rightShutter = MetaTile(whiteHouseTiles.shutterWindow.coreRightShutter)
+        }
+
         interface House {
             val topLeft: MetaTile
 
@@ -424,7 +481,7 @@ object Retail6 : Retail(naturalIndex = 6) {
 
             val leftInner: MetaTile
 
-            val center: MetaTile
+            val core: MetaTile
 
             val right: MetaTile
 
@@ -448,7 +505,7 @@ object Retail6 : Retail(naturalIndex = 6) {
 
             override val leftInner: MetaTile = MetaTile(55)
 
-            override val center: MetaTile = MetaTile(49)
+            override val core: MetaTile = MetaTile(49)
 
             override val right: MetaTile = MetaTile(57)
 
@@ -472,7 +529,7 @@ object Retail6 : Retail(naturalIndex = 6) {
 
             override val leftInner: MetaTile = MetaTile(70)
 
-            override val center: MetaTile = MetaTile(72)
+            override val core: MetaTile = MetaTile(72)
 
             override val right: MetaTile = MetaTile(88)
 
