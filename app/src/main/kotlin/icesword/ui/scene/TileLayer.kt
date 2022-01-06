@@ -1,5 +1,6 @@
 package icesword.ui.scene
 
+import icesword.Debug
 import icesword.TILE_SIZE
 import icesword.editor.EditorTilesView
 import icesword.frp.*
@@ -60,19 +61,21 @@ class TileLayer(
 
                     val tdv = dv + IntVec2.both(TILE_SIZE / 2)
 
-                    ctx.strokeStyle = "black"
+                    if (Debug.showTileIds) {
+                        ctx.strokeStyle = "black"
 
-                    ctx.strokeText(
-                        tileId.toString(),
-                        x = tdv.x.toDouble(),
-                        y = tdv.y.toDouble(),
-                    )
+                        ctx.strokeText(
+                            tileId.toString(),
+                            x = tdv.x.toDouble(),
+                            y = tdv.y.toDouble(),
+                        )
 
-                    ctx.fillText(
-                        tileId.toString(),
-                        x = tdv.x.toDouble(),
-                        y = tdv.y.toDouble(),
-                    )
+                        ctx.fillText(
+                            tileId.toString(),
+                            x = tdv.x.toDouble(),
+                            y = tdv.y.toDouble(),
+                        )
+                    }
 
                     ctx.globalAlpha = 0.2
 
