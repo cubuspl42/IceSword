@@ -180,7 +180,6 @@ fun createSelectionModeButtonsRow(
         )
         is MultipleKnotMeshesSelectionContext ->
             createMultipleKnotMeshesSelectionContextButtonsRow(
-                editor = editor,
                 selectionContext = selectionContext,
                 tillDetach = tillDetach,
             )
@@ -270,13 +269,13 @@ fun createSingleKnotMeshSelectionModeButtonsRow(
 
 
 fun createMultipleKnotMeshesSelectionContextButtonsRow(
-    editor: Editor,
     selectionContext: MultipleKnotMeshesSelectionContext,
     tillDetach: Till,
 ): HTMLWidgetB<*> {
     val mergeButton = createButton(
         text = "Merge",
         onPressed = {
+            selectionContext.mergeKnotMeshes()
         },
         tillDetach = tillDetach,
     )

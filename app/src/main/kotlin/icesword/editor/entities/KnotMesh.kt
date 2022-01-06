@@ -163,7 +163,7 @@ class KnotMesh(
                 val initialTileOffset = firstKnotMesh.tileOffset.sample()
 
                 val initialLocalKnots: Set<IntVec2> = knotMeshes.fold(emptySet()) { acc, knotMesh ->
-                    val globalKnots = knotMesh.globalKnots.getKeys().volatileContentView
+                    val globalKnots = knotMesh.globalKnots.volatileContentView.keys
                     acc + globalKnots.map { it - initialTileOffset }.toSet()
                 }
 
