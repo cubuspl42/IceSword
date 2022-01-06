@@ -57,14 +57,14 @@ fun createEditorToolBar(
 ): HTMLElement {
     val selectButton = createModeButton<EntitySelectMode>(
         editor = editor,
-        name = "Select",
+        name = "Select [S]",
         enterMode = { editor.enterSelectMode() },
         tillDetach = tillDetach,
     )
 
     val moveButton = createToolButton(
         editor = editor,
-        name = "Move",
+        name = "Move [V]",
         tool = Tool.MOVE,
         enterMode = { editor.enterMoveMode() },
         tillDetach = tillDetach,
