@@ -38,53 +38,58 @@ class TileLayer(
                 val tileCoord = IntVec2(j, i)
 
                 val previewTileId = editorTilesView.previewTilesView.getTile(tileCoord)
-                val primaryTileId = editorTilesView.primaryTilesView.getTile(tileCoord)
-
-                val tileId = previewTileId ?: primaryTileId ?: -1
-
-                val alpha = when {
-                    previewTileId != null -> EntityStyle.previewAlpha
-                    else -> 1.0
-                }
+                val primaryTileIdOrNull = editorTilesView.primaryTilesView.getTile(tileCoord)
 
                 ctx.strokeStyle = "grey"
                 ctx.lineWidth = 1.0
 
-                tileset.tileTextures[tileId]?.let { texture ->
-                    val tilePosition = tileTopLeftCorner(tileCoord)
+                fun drawTile(tileId: Int, alpha: Double) {
+                    tileset.tileTextures[tileId]?.let { texture ->
+                        val tilePosition = tileTopLeftCorner(tileCoord)
 
-                    val dv = tilePosition
+                        val dv = tilePosition
 
-                    ctx.globalAlpha = alpha
+                        ctx.globalAlpha = alpha
 
-                    drawTexture(ctx = ctx, texture = texture, dv = dv)
+                        drawTexture(ctx = ctx, texture = texture, dv = dv)
 
-                    val tdv = dv + IntVec2.both(TILE_SIZE / 2)
+                        val tdv = dv + IntVec2.both(TILE_SIZE / 2)
 
-                    if (Debug.showTileIds) {
-                        ctx.strokeStyle = "black"
+                        if (Debug.showTileIds) {
+                            ctx.strokeStyle = "black"
 
-                        ctx.strokeText(
-                            tileId.toString(),
-                            x = tdv.x.toDouble(),
-                            y = tdv.y.toDouble(),
-                        )
+                            ctx.strokeText(
+                                tileId.toString(),
+                                x = tdv.x.toDouble(),
+                                y = tdv.y.toDouble(),
+                            )
 
-                        ctx.fillText(
-                            tileId.toString(),
-                            x = tdv.x.toDouble(),
-                            y = tdv.y.toDouble(),
+                            ctx.fillText(
+                                tileId.toString(),
+                                x = tdv.x.toDouble(),
+                                y = tdv.y.toDouble(),
+                            )
+                        }
+
+                        ctx.globalAlpha = 0.2
+
+                        ctx.strokeRect(
+                            x = dv.x.toDouble(),
+                            y = dv.y.toDouble(),
+                            w = TILE_SIZE.toDouble(),
+                            h = TILE_SIZE.toDouble(),
                         )
                     }
+                }
 
-                    ctx.globalAlpha = 0.2
+                if (previewTileId != null) {
+                    if (primaryTileIdOrNull != null) {
+                        drawTile(tileId = primaryTileIdOrNull, alpha = 0.5)
+                    }
 
-                    ctx.strokeRect(
-                        x = dv.x.toDouble(),
-                        y = dv.y.toDouble(),
-                        w = TILE_SIZE.toDouble(),
-                        h = TILE_SIZE.toDouble(),
-                    )
+                    drawTile(tileId = previewTileId, alpha = 0.5)
+                } else if (primaryTileIdOrNull != null) {
+                    drawTile(tileId = primaryTileIdOrNull, alpha = 1.0)
                 }
             }
         }
