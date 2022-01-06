@@ -28,7 +28,7 @@ class EntityWapSpriteNode(
             svg = svg,
             outer = viewport,
             entity = entity,
-            boundingBox = viewTransform.transform(boundingBox),
+            viewBoundingBox = viewTransform.transform(boundingBox),
             tillDetach = tillDetach,
         )
     }

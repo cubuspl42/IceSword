@@ -98,7 +98,7 @@ fun createWapSpriteOverlayElement(
         svg = svg,
         outer = viewport,
         entity = entity,
-        boundingBox = viewTransform.transform(wapSprite.boundingBox),
+        viewBoundingBox = viewTransform.transform(wapSprite.boundingBox),
         tillDetach = tillDetach,
     )
 

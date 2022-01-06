@@ -34,7 +34,7 @@ class CrateStackNode(
             svg = svg,
             outer = viewport,
             entity = crateStack,
-            boundingBox = viewTransform.transform(crateStack.boundingBox),
+            viewBoundingBox = viewTransform.transform(crateStack.boundingBox),
             tillDetach = tillDetach,
         )
     }

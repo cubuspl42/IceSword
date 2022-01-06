@@ -57,7 +57,7 @@ fun createFloorSpikeRowOverlayElement(
         svg = svg,
         outer = viewport,
         entity = floorSpikeRow,
-        boundingBox = viewTransform.transform(boundingBox),
+        viewBoundingBox = viewTransform.transform(boundingBox),
         tillDetach = tillDetach,
     )
 }

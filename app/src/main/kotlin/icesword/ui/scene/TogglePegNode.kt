@@ -26,7 +26,7 @@ class TogglePegNode(
             svg = svg,
             outer = viewport,
             entity = togglePeg,
-            boundingBox = viewTransform.transform(boundingBox),
+            viewBoundingBox = viewTransform.transform(boundingBox),
             tillDetach = tillDetach,
         )
     }

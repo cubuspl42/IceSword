@@ -57,8 +57,7 @@ class FixtureOverlayNode(
             svg = svg,
             outer = viewport,
             entity = fixture,
-            // TODO: Rename to viewBoundingBox
-            boundingBox = viewBoundingBox,
+            viewBoundingBox = viewBoundingBox,
             tillDetach = tillDetach,
         )
     }

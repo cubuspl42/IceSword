@@ -165,7 +165,7 @@ class PathElevatorStepNode(
                         svg = svg,
                         outer = viewport,
                         entity = pathElevator,
-                        boundingBox = viewTransform.transform(boundingBox),
+                        viewBoundingBox = viewTransform.transform(boundingBox),
                         tillDetach = tillDetach,
                     )
                 }

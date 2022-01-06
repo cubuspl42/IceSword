@@ -26,7 +26,7 @@ class CrumblingPegNode(
             svg = svg,
             outer = viewport,
             entity = crumblingPeg,
-            boundingBox = viewTransform.transform(boundingBox),
+            viewBoundingBox = viewTransform.transform(boundingBox),
             tillDetach = tillDetach,
         )
     }

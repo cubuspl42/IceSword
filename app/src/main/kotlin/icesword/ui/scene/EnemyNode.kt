@@ -58,7 +58,7 @@ class EnemyNode(
             svg = svg,
             outer = viewport,
             entity = enemy,
-            boundingBox = viewTransform.transform(boundingBox),
+            viewBoundingBox = viewTransform.transform(boundingBox),
             tillDetach = tillDetach,
         )
 

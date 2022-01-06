@@ -95,7 +95,7 @@ private fun createElevatorOverlayElement(
         svg = svg,
         outer = viewport,
         entity = elevator,
-        boundingBox = viewTransform.transform(boundingBox),
+        viewBoundingBox = viewTransform.transform(boundingBox),
         tillDetach = tillDetach,
     )
 

@@ -26,7 +26,7 @@ class RopeNode(
             svg = svg,
             outer = viewport,
             entity = rope,
-            boundingBox = viewTransform.transform(boundingBox),
+            viewBoundingBox = viewTransform.transform(boundingBox),
             tillDetach = tillDetach,
         )
     }
