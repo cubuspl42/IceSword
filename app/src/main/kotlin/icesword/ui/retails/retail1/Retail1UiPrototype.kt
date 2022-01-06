@@ -14,6 +14,7 @@ import icesword.editor.entities.KnotPrototype
 import icesword.editor.entities.elastic.prototype.LadderPrototype
 import icesword.editor.entities.elastic.prototype.Retail1PlatformPrototype
 import icesword.editor.entities.elastic.prototype.Retail1SpikesPrototype
+import icesword.editor.entities.fixture.prototypes.Retail1NicheTorch
 import icesword.editor.retails.Retail1
 import icesword.editor.entities.wap_object.prototype.Level1RatPrototype
 import icesword.editor.entities.wap_object.prototype.OfficerPrototype
@@ -23,6 +24,7 @@ import icesword.editor.entities.wap_object.prototype.SoldierPrototype
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
+import icesword.ui.createInsertFixtureButton
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -59,6 +61,12 @@ object Retail1UiPrototype : RetailUiPrototype {
             prototype = Retail1ColumnPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL1/TILES/ACTION/933.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertFixtureButton(
+            editor = editor,
+            prototype = Retail1NicheTorch,
+            imagePath = "images/CLAW/LEVEL1/TILES/ACTION/926.png",
             tillDetach = tillDetach,
         ),
         createInsertEntityButton(

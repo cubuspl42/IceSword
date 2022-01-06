@@ -13,6 +13,7 @@ import icesword.editor.modes.EntitySelectMode
 import icesword.editor.modes.InsertWapObjectCommand
 import icesword.editor.modes.KnotBrushMode
 import icesword.editor.modes.KnotPaintMode
+import icesword.editor.modes.StampInsertionMode
 import icesword.editor.modes.WapObjectAlikeInsertionMode
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
@@ -139,6 +140,12 @@ fun worldView(
             is KnotPaintMode -> setupKnotPaintModeController(
                 editor = editor,
                 knotPaintMode = mode,
+                root = root,
+                tillDetach = tillNext,
+            )
+            is StampInsertionMode<*> -> setupStampInsertionModeController(
+                editor = editor,
+                stampInsertionMode = mode,
                 root = root,
                 tillDetach = tillNext,
             )
@@ -638,6 +645,32 @@ fun setupElasticInsertionModeController(
     )
 }
 
+fun setupStampInsertionModeController(
+    editor: Editor,
+    stampInsertionMode: StampInsertionMode<*>,
+    root: HTMLElement,
+    tillDetach: Till,
+) {
+    stampInsertionMode.closeInputLoop(
+        inputState = root.trackMousePosition(tillDetach).map { mousePosition ->
+            when (mousePosition) {
+                is MousePosition.Over -> object : StampInsertionMode.StampOverInputMode {
+                    override val stampWorldPosition: Cell<IntVec2> =
+                        editor.camera.transformToWorld(mousePosition.relativePosition)
+                }
+                MousePosition.Out -> StampInsertionMode.StampOutInputMode
+            }
+        }
+    )
+
+    setupBasicInsertionModeController(
+        editor = editor,
+        insertionMode = stampInsertionMode,
+        root = root,
+        tillDetach = tillDetach,
+    )
+}
+
 private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
     val rect = origin.getBoundingClientRect()
     val originPosition = IntVec2(rect.x.roundToInt(), rect.y.roundToInt())
@@ -676,4 +709,3 @@ class MouseDrag(
     }
 
 }
-

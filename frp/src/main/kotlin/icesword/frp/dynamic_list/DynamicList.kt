@@ -202,3 +202,6 @@ fun <E> DynamicList<E>.toSet(): DynamicSet<E> =
     DynamicSet.diff(
         content = this.content.map { it.toSet() },
     )
+
+fun <S, T : S> DynamicList<T>.reduce(operation: (acc: S, T) -> S): Cell<S> =
+    this.content.map { content -> content.reduce(operation) }

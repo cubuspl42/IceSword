@@ -6,6 +6,7 @@ import icesword.editor.modes.EntitySelectMode
 import icesword.editor.modes.KnotPaintMode
 import icesword.editor.entities.knotRect
 import icesword.editor.modes.ElasticInsertionMode
+import icesword.editor.modes.FixtureInsertionMode
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.map
 import icesword.frp.mapNested
@@ -24,6 +25,7 @@ fun createEditorModeModeNode(
     is KnotPaintMode -> KnotPaintModeNode(editorMode)
     is EntitySelectMode -> EntitySelectModeNode(entitySelectMode = editorMode)
     is ElasticInsertionMode -> buildElasticInsertionModeNode(elasticInsertionMode = editorMode)
+    is FixtureInsertionMode -> buildFixtureInsertionModeNode(fixtureInsertionMode = editorMode)
     else -> null
 }
 
@@ -102,6 +104,17 @@ fun buildElasticInsertionModeNode(
     elasticInsertionMode.elasticPreview.mapNested {
         ElasticProductNode(
             elasticProduct = it.elasticProduct,
+            alpha = EntityStyle.previewAlpha,
+        )
+    },
+)
+
+fun buildFixtureInsertionModeNode(
+    fixtureInsertionMode: FixtureInsertionMode,
+) = HybridNode.ofSingle(
+    fixtureInsertionMode.preview.mapNested {
+        FixtureProductNode(
+            fixtureProduct = it.fixtureProduct,
             alpha = EntityStyle.previewAlpha,
         )
     },

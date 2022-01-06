@@ -8,6 +8,7 @@ import icesword.editor.Editor
 import icesword.editor.entities.Elastic
 import icesword.editor.entities.Enemy
 import icesword.editor.entities.Entity
+import icesword.editor.entities.Fixture
 import icesword.editor.entities.FloorSpikeRow
 import icesword.editor.entities.HorizontalElevator
 import icesword.editor.entities.KnotMesh
@@ -67,5 +68,9 @@ fun createEntityNode(
         editor = editor,
         entity = entity,
         wapSprite = entity.wapSprite,
+    )
+    is Fixture -> FixtureNode(
+        editor = editor,
+        fixture = entity,
     )
 }

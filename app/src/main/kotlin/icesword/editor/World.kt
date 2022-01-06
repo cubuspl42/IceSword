@@ -16,6 +16,8 @@ import icesword.editor.entities.Enemy
 import icesword.editor.entities.EnemyData
 import icesword.editor.entities.Entity
 import icesword.editor.entities.EntityData
+import icesword.editor.entities.Fixture
+import icesword.editor.entities.FixtureData
 import icesword.editor.entities.FloorSpikeRow
 import icesword.editor.entities.FloorSpikeRowData
 import icesword.editor.entities.HorizontalElevator
@@ -218,6 +220,7 @@ class World(
                         is CrumblingPegData -> CrumblingPeg.load(rezIndex = rezIndex, retail = retail, data = it)
                         is TogglePegData -> TogglePeg.load(rezIndex = rezIndex, retail = retail, data = it)
                         is WarpData -> Warp.load(rezIndex = rezIndex, retail = retail, data = it)
+                        is FixtureData -> Fixture.load(rezIndex = rezIndex, retail = retail, data = it)
                     }
                 }.toSet()
 
@@ -279,6 +282,8 @@ class World(
 
     val elastics: DynamicSet<Elastic> = entities.filterType()
 
+    private val fixtures: DynamicSet<Fixture> = entities.filterType()
+
     val wapObjects: DynamicSet<WapObject> = entities.filterType()
 
     val horizontalElevators: DynamicSet<HorizontalElevator> = entities.filterType()
@@ -324,6 +329,7 @@ class World(
         tileGenerator = retail.tileGenerator,
         knotMeshLayer = knotMeshLayer,
         elastics = elastics,
+        fixtures = fixtures,
     )
 
     val tiles = metaTileLayer.product.tiles.also {

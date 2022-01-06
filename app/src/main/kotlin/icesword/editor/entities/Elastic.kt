@@ -82,7 +82,6 @@ class Elastic(
     initialBounds: IntRect,
 ) :
     Entity(),
-    EntityPosition,
     WapObjectExportable {
 
     companion object {

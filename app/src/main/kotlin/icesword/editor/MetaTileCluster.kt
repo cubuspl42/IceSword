@@ -1,6 +1,8 @@
 package icesword.editor
 
+import icesword.TILE_SIZE
 import icesword.editor.entities.Elastic
+import icesword.editor.entities.Fixture
 import icesword.frp.Cell
 import icesword.frp.DynamicMap
 import icesword.frp.DynamicSet
@@ -15,6 +17,7 @@ import icesword.frp.switchMap
 import icesword.frp.unionMapDynamic
 import icesword.frp.unionWith
 import icesword.frp.valuesSet
+import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 
 interface TileGeneratorContext {
@@ -64,6 +67,21 @@ class MetaTileCluster(
             }
         }
 
+    private val localTileBoundingBox = localMetaTiles.content.map { localMetaTilesNow ->
+        IntRect.enclosing(
+            localMetaTilesNow.keys.map { IntRect.unit(position = it) },
+        )
+    }
+
+    private val tileBoundingBox = Cell.map2(
+        tileOffset,
+        localTileBoundingBox,
+    ) { tileOffsetNow, localTileBoundingBoxNow ->
+        localTileBoundingBoxNow.translate(tileOffsetNow)
+    }
+
+    val boundingBox = tileBoundingBox.map { it * TILE_SIZE }
+
     fun getMetaTileAt(globalTileCoord: IntVec2): Cell<MetaTile?> =
         tileOffset.switchMap { localMetaTiles.get(globalTileCoord - it) }
 
@@ -81,6 +99,7 @@ class MetaTileLayerProduct(
             tag = "globalTileCoords.associateWithDynamic",
             this::buildTileAt,
         )
+
     private fun buildTileAt(
         globalTileCoord: IntVec2,
     ): Cell<Int> {
@@ -113,10 +132,10 @@ class MetaTileLayer(
     tileGenerator: TileGenerator,
     knotMeshLayer: KnotMeshLayer,
     elastics: DynamicSet<Elastic>,
+    fixtures: DynamicSet<Fixture>,
 ) {
-    val metaTileClusters = elastics.distinctMap(
-        tag = "MetaTileLayer/elastics.map"
-    ) { it.product.metaTileCluster }
+    val metaTileClusters = elastics.distinctMap { it.product.metaTileCluster }
+        .unionWith(fixtures.distinctMap { it.product.metaTileCluster })
         .unionWith(DynamicSet.of(setOf(knotMeshLayer.metaTileCluster)))
 
     private val globalTileCoords: DynamicSet<IntVec2> =

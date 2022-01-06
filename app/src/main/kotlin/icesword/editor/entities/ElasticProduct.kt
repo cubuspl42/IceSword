@@ -12,6 +12,7 @@ import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.map
 import icesword.frp.map
 import icesword.geometry.IntRect
+import icesword.geometry.IntVec2
 
 open class ElasticProduct(
     rezIndex: RezIndex,
@@ -42,15 +43,27 @@ open class ElasticProduct(
         )
     )
 
-    val wapObjectSprites = this.localWapObjects.map { localWapObject ->
-        DynamicWapSprite.fromImageSet(
-            rezIndex = rezIndex,
-            imageSetId = expandImageSetId(
-                retail = retail,
-                shortImageSetId = localWapObject.imageSet,
-            ),
-            position = pixelBoundsTopLeft.map { it + localWapObject.position },
-            i = localWapObject.i,
-        )
-    }
+    val wapObjectSprites = produceWapObjectSprites(
+        rezIndex = rezIndex,
+        retail = retail,
+        localWapObjects = this.localWapObjects,
+        pixelOffset = pixelBoundsTopLeft,
+    )
+}
+
+fun produceWapObjectSprites(
+    rezIndex: RezIndex,
+    retail: Retail,
+    localWapObjects: DynamicList<WapObjectPropsData>,
+    pixelOffset: Cell<IntVec2>,
+): DynamicList<DynamicWapSprite> = localWapObjects.map { localWapObject ->
+    DynamicWapSprite.fromImageSet(
+        rezIndex = rezIndex,
+        imageSetId = expandImageSetId(
+            retail = retail,
+            shortImageSetId = localWapObject.imageSet,
+        ),
+        position = pixelOffset.map { it + localWapObject.position },
+        i = localWapObject.i,
+    )
 }

@@ -4,6 +4,7 @@ import icesword.editor.Editor
 import icesword.editor.entities.elastic.prototype.ElasticPrototype
 import icesword.editor.modes.InsertionPrototype
 import icesword.editor.entities.KnotPrototype
+import icesword.editor.entities.fixture.prototypes.FixturePrototype
 import icesword.editor.retails.Retail
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Till
@@ -32,6 +33,21 @@ fun createInsertElasticButton(
         tillDetach = tillDetach,
     )
 }
+
+fun createInsertFixtureButton(
+    editor: Editor,
+    prototype: FixturePrototype,
+    imagePath: String,
+    tillDetach: Till,
+): HTMLElement = createInsertEntityButton(
+    editor = editor,
+    text = "Fixture",
+    imagePath = imagePath,
+    insertionPrototype = InsertionPrototype.FixtureInsertionPrototype(
+        fixturePrototype = prototype,
+    ),
+    tillDetach = tillDetach,
+)
 
 fun createInsertKnotMeshButton(
     editor: Editor,

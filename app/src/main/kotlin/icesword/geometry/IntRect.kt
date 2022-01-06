@@ -3,6 +3,9 @@
 package icesword.geometry
 
 import icesword.editor.IntVec2Serializer
+import icesword.frp.Cell
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.reduce
 import icesword.wwd.Geometry
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
@@ -18,6 +21,11 @@ data class IntRect(
         val ZERO: IntRect = IntRect(
             position = IntVec2.ZERO,
             size = IntSize.ZERO,
+        )
+
+        fun unit(position: IntVec2): IntRect = IntRect(
+            position = position,
+            size = IntSize.UNIT,
         )
 
         fun fromRectangle(rect: Geometry.Rectangle): IntRect = IntRect(
@@ -50,21 +58,40 @@ data class IntRect(
             size = IntSize(right - left, bottom - top)
         )
 
+        fun enclosing(rects: List<IntRect>): IntRect =
+            rects.reduce { acc, rect -> enclosing(acc, rect) }
+
+        fun enclosing(rects: DynamicList<IntRect>): Cell<IntRect> =
+            rects.reduce { acc, rect -> enclosing(acc, rect) }
+
         fun enclosing(
-            rects: List<IntRect>,
-        ): IntRect =
-            rects.reduce { acc, rect ->
-                fromDiagonal(
-                    pointA = IntVec2(
-                        x = min(acc.xMin, rect.xMin),
-                        y = min(acc.yMin, rect.yMin),
-                    ),
-                    pointC = IntVec2(
-                        x = max(acc.xMax, rect.xMax),
-                        y = max(acc.yMax, rect.yMax),
-                    ),
-                )
-            }
+            acc: IntRect,
+            rect: IntRect,
+        ): IntRect = fromDiagonal(
+            pointA = IntVec2(
+                x = min(acc.xMin, rect.xMin),
+                y = min(acc.yMin, rect.yMin),
+            ),
+            pointC = IntVec2(
+                x = max(acc.xMax, rect.xMax),
+                y = max(acc.yMax, rect.yMax),
+            ),
+        )
+
+//        fun containing(points: Iterable<IntVec2>): IntRect {
+//            val minX = points.minOfOrNull { it.x }!!
+//            val minY = points.minOfOrNull { it.y }!!
+//            val maxX = points.maxOfOrNull { it.x }!!
+//            val maxY = points.maxOfOrNull { it.y }!!
+//
+//            return fromLtrb(
+//                left = minX,
+//                top = minY,
+//                // Add 1, because this method treats points as tiny rects
+//                right = maxX + 1,
+//                bottom = maxY + 1,
+//            )
+//        }
     }
 
     val center: IntVec2

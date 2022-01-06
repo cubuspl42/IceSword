@@ -36,6 +36,7 @@ import icesword.editor.entities.WapObjectPropsData
 import icesword.editor.entities.Warp
 import icesword.editor.entities.WarpPrototype
 import icesword.editor.entities.elastic.prototype.ElasticPrototype
+import icesword.editor.entities.fixture.prototypes.FixturePrototype
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
 import icesword.editor.modes.InsertionPrototype.ElasticInsertionPrototype
@@ -94,6 +95,10 @@ sealed interface InsertionPrototype {
             context: BuildContext,
         ): Entity
     }
+
+    data class FixtureInsertionPrototype(
+        val fixturePrototype: FixturePrototype,
+    ) : InsertionPrototype
 
     value class HorizontalElevatorInsertionPrototype(val elevatorPrototype: ElevatorPrototype) : InsertionPrototype
 
@@ -210,7 +215,7 @@ class ElasticInsertionMode(
 
     object CursorOutInputMode : InputState
 
-    inner class Preview(
+    inner class ElasticPreview(
         val elasticProduct: ElasticProduct,
     ) {
         private val metaTileClusters = world.metaTileLayer.metaTileClusters.unionWith(
@@ -235,7 +240,7 @@ class ElasticInsertionMode(
         inputStateLoop.close(inputState)
     }
 
-    val elasticPreview: Cell<Preview?> = inputState.map { inputStateNow ->
+    val elasticPreview: Cell<ElasticPreview?> = inputState.map { inputStateNow ->
         when (inputStateNow) {
             is CursorOverInputMode -> {
                 val generator = elasticPrototype.buildGenerator(
@@ -255,7 +260,7 @@ class ElasticInsertionMode(
                     }
                 )
 
-                Preview(
+                ElasticPreview(
                     elasticProduct = elasticProduct,
                 )
             }

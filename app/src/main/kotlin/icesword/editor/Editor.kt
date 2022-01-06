@@ -14,6 +14,7 @@ import icesword.editor.entities.Elastic
 import icesword.editor.entities.Enemy
 import icesword.editor.entities.Entity
 import icesword.editor.entities.EntityTilePosition
+import icesword.editor.entities.Fixture
 import icesword.editor.entities.FloorSpikeRow
 import icesword.editor.entities.HorizontalElevator
 import icesword.editor.entities.KnotMesh
@@ -30,12 +31,14 @@ import icesword.editor.modes.EditPathElevatorMode
 import icesword.editor.modes.ElasticInsertionMode
 import icesword.editor.modes.EnemyInsertionMode
 import icesword.editor.modes.EntitySelectMode
+import icesword.editor.modes.FixtureInsertionMode
 import icesword.editor.modes.FloorSpikeInsertionMode
 import icesword.editor.modes.HorizontalElevatorInsertionMode
 import icesword.editor.modes.InsertionMode
 import icesword.editor.modes.InsertionPrototype
 import icesword.editor.modes.InsertionPrototype.ElasticInsertionPrototype
 import icesword.editor.modes.InsertionPrototype.EnemyInsertionPrototype
+import icesword.editor.modes.InsertionPrototype.FixtureInsertionPrototype
 import icesword.editor.modes.InsertionPrototype.FloorSpikeInsertionPrototype
 import icesword.editor.modes.InsertionPrototype.HorizontalElevatorInsertionPrototype
 import icesword.editor.modes.InsertionPrototype.KnotMeshInsertionPrototype
@@ -456,6 +459,7 @@ class Editor(
                     _editWarpTarget.send(selectedEntity)
                 }
             }
+            is Fixture -> null
         }
     }
 
@@ -479,13 +483,16 @@ class Editor(
     }
 
     fun buildEditorTilesView(): DynamicView<EditorTilesView> {
-        val elasticPreviewTiles = DynamicMap.diff(
-            elasticInsertionMode.switchMapNested { it.elasticPreview }
-                .mapNested { it.metaTileLayerProduct.tiles }
+        val elasticPreviewTiles = elasticInsertionMode.switchMapNested { it.elasticPreview }
+            .mapNested { it.metaTileLayerProduct.tiles }
+
+        val fixturePreviewTiles = fixtureInsertionMode.switchMapNested { it.preview }
+            .mapNested { it.metaTileLayerProduct.tiles }
+
+        val previewTiles: Cell<DynamicMap<IntVec2, Int>> =
+            elasticPreviewTiles
+                .orElse(fixturePreviewTiles)
                 .orElse(Cell.constant(DynamicMap.empty()))
-        ).also {
-            it.changes.subscribe { } // FIXME: DynamicView keep-alive
-        }
 
         val primaryTilesView = world.tiles.contentDynamicView.map {
             OffsetTilesView(
@@ -494,7 +501,9 @@ class Editor(
             )
         }
 
-        val previewTilesView = elasticPreviewTiles.contentDynamicView.map {
+        val previewTilesView = DynamicMap.diff(previewTiles).also {
+            it.changes.subscribe { } // FIXME: DynamicView keep-alive
+        }.contentDynamicView.map {
             OffsetTilesView(
                 offset = IntVec2.ZERO,
                 localTilesView = it,
@@ -583,8 +592,11 @@ class Editor(
     val wapObjectAlikeInsertionMode: Cell<WapObjectAlikeInsertionMode?> =
         insertionMode.map { it as? WapObjectAlikeInsertionMode }
 
-    val elasticInsertionMode: Cell<ElasticInsertionMode?> =
+    private val elasticInsertionMode: Cell<ElasticInsertionMode?> =
         insertionMode.map { it as? ElasticInsertionMode }
+
+    private val fixtureInsertionMode: Cell<FixtureInsertionMode?> =
+        insertionMode.map { it as? FixtureInsertionMode }
 
     fun enterInsertionMode(
         insertionPrototype: InsertionPrototype,
@@ -634,6 +646,12 @@ class Editor(
             is EnemyInsertionPrototype -> EnemyInsertionMode(
                 world = world,
                 rezIndex = rezIndex,
+                insertionPrototype = insertionPrototype,
+            )
+            is FixtureInsertionPrototype -> FixtureInsertionMode(
+                rezIndex = rezIndex,
+                retail = retail,
+                world = world,
                 insertionPrototype = insertionPrototype,
             )
         }
