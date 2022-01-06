@@ -51,23 +51,23 @@ fun createConfigureNewProjectDialog(
                                 onPressed = onRetailButtonPressed(Retail1),
                             ),
                             createTextButtonWb(
-                                text = "Retail 2",
+                                text = "Retail 2 (The Battlements)",
                                 onPressed = onRetailButtonPressed(Retail2),
                             ),
                             createTextButtonWb(
-                                text = "Retail 3",
+                                text = "Retail 3 (The Footpath)",
                                 onPressed = onRetailButtonPressed(Retail3),
                             ),
                             createTextButtonWb(
-                                text = "Retail 4",
+                                text = "Retail 4 (Dark Woods)",
                                 onPressed = onRetailButtonPressed(Retail4),
                             ),
                             createTextButtonWb(
-                                text = "Retail 5",
+                                text = "Retail 5 (The Township)",
                                 onPressed = onRetailButtonPressed(Retail5),
                             ),
                             createTextButtonWb(
-                                text = "Retail 6",
+                                text = "Retail 6 (Puerto Lobos)",
                                 onPressed = onRetailButtonPressed(Retail6),
                             ),
                             createTextButtonWb(
