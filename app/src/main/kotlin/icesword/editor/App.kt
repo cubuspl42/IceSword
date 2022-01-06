@@ -5,6 +5,7 @@ import icesword.EditorTextureBank
 import icesword.JsonRezIndex
 import icesword.RezTextureBank
 import icesword.editor.retails.Retail
+import icesword.editor.retails.Retail1
 import icesword.editor.retails.Retail6
 import icesword.frp.Cell
 import icesword.frp.DynamicLock
@@ -53,14 +54,10 @@ class App(
                 gameTextureBank = gameTextureBank,
             )
 
-            val wwdWorld: Wwd.World = fetchWorld(
-                retail = Retail6,
-            )
-
-            val editor = Editor.importWwd(
+            val editor = Editor.createProject(
                 jsonRezIndex = jsonRezIndex,
                 editorTextureBank = editorTextureBank,
-                wwdWorld = wwdWorld,
+                retail = Retail1,
             )
 
             return App(
