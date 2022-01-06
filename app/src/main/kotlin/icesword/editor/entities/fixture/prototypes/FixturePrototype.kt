@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed class FixturePrototype {
-    abstract val localWapObjects: List<WapObjectPropsData>
+    open val localWapObjects: List<WapObjectPropsData> = emptyList()
 
     abstract val localMetaTiles: Map<IntVec2, MetaTile>
 }

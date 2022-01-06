@@ -12,6 +12,10 @@ import icesword.editor.entities.elastic.prototype.Retail2PlatformPrototype
 import icesword.editor.entities.elastic.prototype.Retail2SinglePilePrototype
 import icesword.editor.entities.elastic.prototype.Retail2TowerPrototype
 import icesword.editor.entities.elastic.prototype.Retail2TowerTopPrototype
+import icesword.editor.entities.fixture.prototypes.Retail1DoorRight
+import icesword.editor.entities.fixture.prototypes.Retail2TowerCannonLeft
+import icesword.editor.entities.fixture.prototypes.Retail2TowerCannonRight
+import icesword.editor.entities.fixture.prototypes.Retail2TowerWindow
 import icesword.editor.retails.Retail2
 import icesword.editor.entities.wap_object.prototype.LaRauxPrototype
 import icesword.editor.entities.wap_object.prototype.PunkRatCannon
@@ -21,6 +25,7 @@ import icesword.editor.entities.wap_object.prototype.Retail2PowderKeg
 import icesword.editor.entities.wap_object.prototype.Retail2SoldierPrototype
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
+import icesword.ui.createInsertFixtureButton
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -94,6 +99,24 @@ object Retail2UiPrototype : RetailUiPrototype {
             prototype = Retail2GooPrototype,
             retail = retail,
             imagePath = "images/CLAW/LEVEL2/TILES/ACTION/313.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertFixtureButton(
+            editor = editor,
+            prototype = Retail2TowerCannonLeft,
+            imagePath = "images/CLAW/LEVEL2/IMAGES/TOWERCANNONLEFT/FRAME001.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertFixtureButton(
+            editor = editor,
+            prototype = Retail2TowerCannonRight,
+            imagePath = "images/CLAW/LEVEL2/IMAGES/TOWERCANNONRIGHT/FRAME001.png",
+            tillDetach = tillDetach,
+        ),
+        createInsertFixtureButton(
+            editor = editor,
+            prototype = Retail2TowerWindow,
+            imagePath = "images/CLAW/LEVEL2/TILES/ACTION/085.png",
             tillDetach = tillDetach,
         ),
         createInsertEnemyButton(

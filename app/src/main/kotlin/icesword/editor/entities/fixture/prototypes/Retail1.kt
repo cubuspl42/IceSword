@@ -20,3 +20,10 @@ object Retail1NicheTorch : FixturePrototype() {
         IntVec2.ZERO to MetaTile(926),
     )
 }
+
+object Retail1DoorRight : FixturePrototype() {
+    override val localMetaTiles: Map<IntVec2, MetaTile> = mapOf(
+        IntVec2(0, 0) to MetaTile(401), IntVec2(1, 0) to MetaTile(402),
+        IntVec2(0, 1) to MetaTile(403), IntVec2(1, 1) to MetaTile(404),
+    )
+}

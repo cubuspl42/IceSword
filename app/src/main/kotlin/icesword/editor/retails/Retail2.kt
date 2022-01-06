@@ -78,6 +78,24 @@ val retail2TowerTop = ElasticLinearPattern(
     orientation = ElasticLinearPatternOrientation.Horizontal,
 )
 
+private val towerTileGenerator = TileGenerator.forwardAll(
+    Tower.CannonLeft.topLeft,
+    Tower.CannonLeft.topRight,
+    Tower.CannonLeft.centerLeft,
+    Tower.CannonLeft.centerRight,
+    Tower.CannonLeft.bottomLeft,
+    Tower.CannonLeft.bottomRight,
+
+    Tower.CannonRight.topLeft,
+    Tower.CannonRight.topRight,
+    Tower.CannonRight.centerLeft,
+    Tower.CannonRight.centerRight,
+    Tower.CannonRight.bottomLeft,
+    Tower.CannonRight.bottomRight,
+
+    Tower.window,
+)
+
 private val retailTileGenerator = object : TileGenerator {
     override fun buildTile(context: TileGeneratorContext): Int? = context.run {
         val metaTiles = MetaTiles
@@ -171,6 +189,8 @@ object Retail2 : Retail(naturalIndex = 2) {
         object Tower {
             val core = MetaTile(77, z = MetaTileZOder.TowerCore.ordinal)
 
+            val window = MetaTile(85)
+
             object Platform {
                 val topLeftOuter = MetaTile(70, z = MetaTileZOder.Tower.ordinal)
                 val topLeftInner = MetaTile(71, z = MetaTileZOder.Tower.ordinal)
@@ -190,6 +210,24 @@ object Retail2 : Retail(naturalIndex = 2) {
                 val left = MetaTile(96, z = MetaTileZOder.TowerSide.ordinal)
                 val right = MetaTile(97, z = MetaTileZOder.TowerSide.ordinal)
             }
+
+            object CannonLeft {
+                val topLeft = MetaTile(83)
+                val topRight = MetaTile(84)
+                val centerLeft = MetaTile(88)
+                val centerRight = MetaTile(89)
+                val bottomLeft = MetaTile(92)
+                val bottomRight = MetaTile(93)
+            }
+
+            object CannonRight {
+                val topLeft = MetaTile(86)
+                val topRight = MetaTile(87)
+                val centerLeft = MetaTile(90)
+                val centerRight = MetaTile(91)
+                val bottomLeft = MetaTile(94)
+                val bottomRight = MetaTile(95)
+            }
         }
 
         object Goo {
@@ -201,7 +239,10 @@ object Retail2 : Retail(naturalIndex = 2) {
         }
     }
 
-    override val tileGenerator: TileGenerator = retailTileGenerator
+    override val tileGenerator: TileGenerator = TileGenerator.chained(
+        towerTileGenerator,
+        retailTileGenerator,
+    )
 
     val togglePegPrototype = TogglePegPrototype(
         imageSetId = ImageSetId(fullyQualifiedId = "LEVEL2_IMAGES_PEGSLIDER"),
