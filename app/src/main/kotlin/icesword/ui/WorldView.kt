@@ -181,6 +181,8 @@ fun worldView(
             }
             "Backspace" -> editor.deleteSelectedEntities()
             "Delete" -> editor.deleteSelectedEntities()
+            "-" -> editor.camera.zoomOut(IntVec2.ZERO)
+            "=" -> editor.camera.zoomIn(IntVec2.ZERO)
         }
     }
 
