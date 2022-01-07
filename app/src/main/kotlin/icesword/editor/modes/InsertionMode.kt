@@ -35,6 +35,7 @@ import icesword.editor.entities.WapObject
 import icesword.editor.entities.WapObjectPropsData
 import icesword.editor.entities.Warp
 import icesword.editor.entities.WarpPrototype
+import icesword.editor.entities.ZOrderedEntity
 import icesword.editor.entities.elastic.prototype.ElasticPrototype
 import icesword.editor.entities.fixture.prototypes.FixturePrototype
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
@@ -150,6 +151,7 @@ sealed interface InsertionPrototype {
             retail = context.retail,
             prototype = crumblingPegPrototype,
             initialPosition = context.insertionWorldPoint,
+            initialZOrder = ZOrderedEntity.defaultZOrder,
             initialCanRespawn = true,
         )
     }

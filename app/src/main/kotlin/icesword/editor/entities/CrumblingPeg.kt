@@ -27,6 +27,7 @@ class CrumblingPeg(
     retail: Retail,
     private val prototype: CrumblingPegPrototype,
     initialPosition: IntVec2,
+    initialZOrder: Int,
     initialCanRespawn: Boolean,
 ) : Entity(),
     WapObjectExportable {
@@ -41,9 +42,14 @@ class CrumblingPeg(
             retail = retail,
             prototype = data.prototype,
             initialPosition = data.position,
+            initialZOrder = data.zOrder,
             initialCanRespawn = data.canRespawn,
         )
     }
+
+    val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
+        initialZOrder = initialZOrder,
+    )
 
     private val _canRespawn = MutCell(
         initialValue = initialCanRespawn,
@@ -74,18 +80,21 @@ class CrumblingPeg(
     override fun toEntityData() = CrumblingPegData(
         prototype = prototype,
         position = position.sample(),
+        zOrder = asZOrderedEntity.zOrder.sample(),
         canRespawn = canRespawn.sample(),
     )
 
     override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
         val canRespawn = canRespawn.sample()
+        val zOrder = asZOrderedEntity.zOrder.sample()
 
         return WapObjectPropsData(
             logic = if (canRespawn) "CrumblingPeg" else "CrumblingPegNoRespawn",
             imageSet = prototype.shortImageSetId,
             x = position.x,
             y = position.y,
+            z = zOrder,
             i = -1,
         ).toWwdObject()
     }
@@ -96,5 +105,6 @@ class CrumblingPeg(
 data class CrumblingPegData(
     val prototype: CrumblingPegPrototype,
     val position: IntVec2,
+    val zOrder: Int,
     val canRespawn: Boolean,
 ) : EntityData()

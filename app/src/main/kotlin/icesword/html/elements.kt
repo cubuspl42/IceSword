@@ -134,13 +134,14 @@ fun createHTMLElement(
 
 fun createHTMLWidget(
     tagName: String,
-    children: DynamicList<HTMLWidget>,
+    children: DynamicList<HTMLWidget>? = null,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
 ): HTMLWidget {
     val element = createHTMLElement(
         tagName = tagName,
-        children = children.map(HTMLWidget.Companion::resolve),
+        children = (children ?: DynamicList.empty())
+            .map(HTMLWidget.Companion::resolve),
         style = style,
         tillDetach = tillDetach,
     )

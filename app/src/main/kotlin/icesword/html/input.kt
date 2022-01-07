@@ -23,34 +23,39 @@ class NumberInputWidget(
 }
 
 fun createNumberInput(
+    style: DynamicStyleDeclaration? = null,
     initialValue: Int,
     onValueChanged: ((newValue: Int) -> Unit)? = null,
-): HTMLWidgetB<NumberInputWidget> =
-    object : HTMLWidgetB<NumberInputWidget> {
-        override fun build(tillDetach: Till): NumberInputWidget {
-            val inputElement =
-                createHTMLElementRaw(tagName = "input") as HTMLInputElement
+): HTMLWidgetB<NumberInputWidget> = object : HTMLWidgetB<NumberInputWidget> {
+    override fun build(tillDetach: Till): NumberInputWidget {
+        val inputWidget = createHTMLWidget(
+            tagName = "input",
+            style = style,
+            tillDetach = tillDetach,
+        )
 
-            inputElement.apply {
-                type = "number"
-                value = initialValue.toString()
-            }
+        val inputElement = inputWidget.resolve() as HTMLInputElement
 
-            val root = NumberInputWidget(
-                inputElement = inputElement,
-                initialValue = initialValue,
-                tillDetach = tillDetach,
-            )
-
-            if (onValueChanged != null) {
-                root.value.values().reactTill(tillDetach) {
-                    onValueChanged(it)
-                }
-            }
-
-            return root
+        inputElement.apply {
+            type = "number"
+            value = initialValue.toString()
         }
+
+        val root = NumberInputWidget(
+            inputElement = inputElement,
+            initialValue = initialValue,
+            tillDetach = tillDetach,
+        )
+
+        if (onValueChanged != null) {
+            root.value.values().reactTill(tillDetach) {
+                onValueChanged(it)
+            }
+        }
+
+        return root
     }
+}
 
 class TextInputWidget(
     inputElement: HTMLInputElement,

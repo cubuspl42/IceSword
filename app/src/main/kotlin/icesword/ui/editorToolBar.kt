@@ -22,6 +22,7 @@ import icesword.editor.TogglePegSelectionContext
 import icesword.editor.Tool
 import icesword.editor.WapObjectSelectionContext
 import icesword.editor.WarpSelectionContext
+import icesword.editor.entities.ZOrderedEntity
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.dynamic_list.size
@@ -37,6 +38,8 @@ import icesword.html.createButton
 import icesword.html.createButtonWb
 import icesword.html.createContainer
 import icesword.html.createHTMLElementRaw
+import icesword.html.createLabel
+import icesword.html.createNumberInput
 import icesword.html.createRow
 import icesword.html.createRowElement
 import icesword.html.createStyledText
@@ -206,7 +209,7 @@ fun createSelectionModeButtonsRow(
         is WapObjectSelectionContext -> createWapObjectSelectionModeButtonsRow(
             selectionMode = selectionContext,
         )
-        is CrumblingPegSelectionContext -> createCrumblingPegSelectionModeButtonsRow(
+        is CrumblingPegSelectionContext -> createCrumblingPegSelectionModeToolRow(
             selectionMode = selectionContext,
         )
         is TogglePegSelectionContext -> createTogglePegSelectionModeButtonsRow(
@@ -470,7 +473,7 @@ fun createCrateStackSelectionModeButtonsRow(
     )
 }
 
-fun createCrumblingPegSelectionModeButtonsRow(
+fun createCrumblingPegSelectionModeToolRow(
     selectionMode: CrumblingPegSelectionContext,
 ): HTMLWidgetB<*> {
     val crumblingPeg = selectionMode.crumblingPeg
@@ -483,14 +486,34 @@ fun createCrumblingPegSelectionModeButtonsRow(
             crumblingPeg.setCanRespawn(!crumblingPeg.canRespawn.sample())
         },
     )
-
     return createRow(
         children = listOf(
             canRespawnButton,
+            createZOrderInput(zOrderedEntity = crumblingPeg.asZOrderedEntity),
         ),
+        horizontalGap = 8.px,
     )
 }
 
+private fun createZOrderInput(
+    zOrderedEntity: ZOrderedEntity,
+): HTMLWidgetB<*> {
+    val zOrderInput = createRow(
+        children = listOf(
+            createLabel("Z:"),
+            createNumberInput(
+                style = DynamicStyleDeclaration(
+                    width = constant(75.px),
+                ),
+                initialValue = zOrderedEntity.zOrder.sample(),
+                onValueChanged = zOrderedEntity::setZOrder,
+            ),
+        ),
+        horizontalGap = 4.px,
+    )
+
+    return zOrderInput
+}
 
 fun createTogglePegSelectionModeButtonsRow(
     selectionMode: TogglePegSelectionContext,
