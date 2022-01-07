@@ -135,13 +135,11 @@ fun createEditCrateStackDialog(
 ): HTMLWidgetB<Dialog> = EditCrateStackDialogObject(
     crateStack = crateStack,
     rezIndex = rezIndex,
-    textureBank = textureBank,
 ).root
 
 class EditCrateStackDialogObject(
     private val crateStack: CrateStack,
     private val rezIndex: RezIndex,
-    private val textureBank: RezTextureBank,
 ) {
     private fun createPickupDraggable(pickupKind: PickupKind) =
         createWrapperWb(
@@ -150,7 +148,6 @@ class EditCrateStackDialogObject(
             ),
             child = constant(createPickupImage(
                 rezIndex = rezIndex,
-                textureBank = textureBank,
                 pickupKind = pickupKind,
             )),
         ).flatMapTillDetach { draggable, tillDetach ->

@@ -1,28 +1,23 @@
 package icesword.ui
 
 import icesword.RezIndex
-import icesword.RezTextureBank
-import icesword.editor.entities.Enemy
 import icesword.editor.PickupKind
-import icesword.frp.Cell
+import icesword.editor.entities.Enemy
 import icesword.frp.Cell.Companion.constant
-import icesword.frp.Till
 import icesword.frp.dynamic_list.mapIndexed
 import icesword.frp.units
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.FlexStyleDeclaration
 import icesword.html.HTMLButton
-import icesword.html.HTMLWidget
 import icesword.html.HTMLWidgetB
 import icesword.html.createButtonWb
-import icesword.html.createTextButtonWb
 import icesword.html.createColumnWb
 import icesword.html.createGrid
 import icesword.html.createGridDl
 import icesword.html.createHeading4Wb
 import icesword.html.createHeading5Wb
 import icesword.html.createRow
-import icesword.html.createWrapper
+import icesword.html.createTextButtonWb
 import icesword.html.createWrapperWb
 import icesword.html.flatMap
 import icesword.html.map
@@ -36,31 +31,8 @@ import kotlinx.css.px
 
 fun createEditEnemyDialog(
     rezIndex: RezIndex,
-    textureBank: RezTextureBank,
     enemy: Enemy,
 ): HTMLWidgetB<Dialog> {
-    fun createPickupImage(pickupKind: PickupKind): HTMLWidget {
-        val imageSetId = pickupKind.imageSetId
-
-        val imageMetadata = rezIndex.getImageMetadata(
-            imageSetId = imageSetId,
-            i = -1,
-        )!!
-
-        val texture = textureBank.getImageTexture(imageMetadata.pidPath)!!
-
-        return HTMLWidget.of(
-            createWrapper(
-                child = Cell.constant(texture.createImage()),
-                tillDetach = Till.never,
-            ).apply {
-                style.apply {
-                    display = "inline-block"
-                }
-            },
-        )
-    }
-
     fun createPickupButton(
         pickupKind: PickupKind,
         onPressed: () -> Unit,
@@ -82,7 +54,10 @@ fun createEditEnemyDialog(
                         alignItems = constant(Align.center),
                     ),
                 ),
-                child = constant(createPickupImage(pickupKind)),
+                child = constant(createPickupImage(
+                    rezIndex = rezIndex,
+                    pickupKind = pickupKind,
+                )),
             ),
             onPressed = onPressed,
         )

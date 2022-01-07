@@ -1,16 +1,15 @@
 package icesword.ui
 
-import icesword.RezTextureBank
 import icesword.RezIndex
 import icesword.editor.PickupKind
-import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.html.HTMLWidget
 import icesword.html.createWrapper
+import org.w3c.dom.Image
 
 fun createPickupImage(
     rezIndex: RezIndex,
-    textureBank: RezTextureBank,
     pickupKind: PickupKind,
 ): HTMLWidget {
     val imageSetId = pickupKind.imageSetId
@@ -20,11 +19,20 @@ fun createPickupImage(
         i = -1,
     )!!
 
-    val texture = textureBank.getImageTexture(imageMetadata.pidPath)!!
+    val imagePath = "images/CLAW/${imageMetadata.pidPath.path.removeSuffix(".PID")}.png"
 
     return HTMLWidget.of(
         createWrapper(
-            child = Cell.constant(texture.createImage()),
+            child = constant(Image(
+                width = imageMetadata.size.width,
+                height = imageMetadata.size.height,
+            ).apply {
+                src = imagePath
+
+                style.apply {
+                    setProperty("pointer-events", "none")
+                }
+            }),
             tillDetach = Till.never,
         ).apply {
             style.apply {

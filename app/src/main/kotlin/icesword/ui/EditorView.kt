@@ -98,7 +98,6 @@ private fun setupEditDialogController(
         dialogOverlay.showDialog(
             dialog = createEditEnemyDialog(
                 rezIndex = rezIndex,
-                textureBank = textureBank,
                 enemy = enemy,
             ),
         )
