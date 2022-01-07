@@ -11,6 +11,7 @@ import icesword.editor.DynamicWapSprite
 import icesword.editor.IntVec2Serializer
 import icesword.editor.WwdObjectSerializer
 import icesword.editor.retails.Retail
+import icesword.frp.Cell
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.DataStreamObj
@@ -60,6 +61,8 @@ class WapObject(
     )
 
     val props = WapObjectProps(initialProps = initialProps)
+
+    override val zOrder: Cell<Int> = props.z
 
     val sprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,

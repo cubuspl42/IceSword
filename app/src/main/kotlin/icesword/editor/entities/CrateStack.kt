@@ -10,6 +10,7 @@ import icesword.editor.PickupKind
 import icesword.editor.calculateWapSpriteBounds
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
 import icesword.frp.dynamic_list.sampleContent
@@ -136,10 +137,7 @@ class CrateStack(
             initialPosition = initialPosition,
         )
 
-    val wapSprite = DynamicWapSprite.fromImageMetadata(
-        imageMetadata = crateImageMetadata,
-        position = entityPosition.position,
-    )
+    override val zOrder: Cell<Int> = constant(1000)
 
     private fun buildCrates(
         size: Int,
@@ -153,7 +151,7 @@ class CrateStack(
             ),
             wapSprite = DynamicWapSprite.fromImageMetadata(
                 imageMetadata = crateImageMetadata,
-                position = Cell.constant(position),
+                position = constant(position),
             ),
         )
 

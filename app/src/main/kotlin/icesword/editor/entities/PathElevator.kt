@@ -294,6 +294,8 @@ class PathElevator(
             initialPosition = initialPosition,
         )
 
+    override val zOrder: Cell<Int> = Cell.constant(2000)
+
     val path = PathElevatorPath.create(
         imageMetadata = elevatorImageMetadata,
         position = entityPosition.position,

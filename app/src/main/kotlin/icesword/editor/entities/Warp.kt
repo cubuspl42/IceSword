@@ -8,6 +8,7 @@ import icesword.editor.DynamicWapSprite
 import icesword.editor.IntVec2Serializer
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.MutCell
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -90,6 +91,8 @@ class Warp(
     override val entityPosition = EntityPixelPosition(
         initialPosition = initialPosition,
     )
+
+    override val zOrder: Cell<Int> = constant(0)
 
     val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,

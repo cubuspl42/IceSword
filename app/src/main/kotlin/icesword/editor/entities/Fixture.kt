@@ -73,6 +73,8 @@ class Fixture(
         initialTileOffset = initialTileOffset,
     )
 
+    override val zOrder: Cell<Int> = Cell.constant(0)
+
     private val tileOffset = entityPosition.tileOffset
 
     val product = FixtureProduct(

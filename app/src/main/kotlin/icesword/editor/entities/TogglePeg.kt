@@ -83,6 +83,8 @@ class TogglePeg(
         initialPosition = initialPosition,
     )
 
+    override val zOrder: Cell<Int> = Cell.constant(0)
+
     val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = expandImageSetId(

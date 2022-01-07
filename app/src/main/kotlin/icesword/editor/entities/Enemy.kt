@@ -7,6 +7,7 @@ import icesword.editor.DynamicWapSprite
 import icesword.editor.IntVec2Serializer
 import icesword.editor.PickupKind
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
+import icesword.frp.Cell
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
 import icesword.frp.dynamic_list.sampleContent
@@ -65,6 +66,8 @@ class Enemy(
         EntityPixelPosition(
             initialPosition = initialPosition,
         )
+
+    override val zOrder: Cell<Int> = Cell.constant(4000)
 
     val imageSetId = wapObjectPrototype.imageSetId
 

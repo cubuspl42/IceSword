@@ -1,5 +1,6 @@
 package icesword.editor.entities
 
+import icesword.frp.Cell
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 
@@ -12,6 +13,8 @@ class StartPoint(
     override val entityPosition = EntityPixelPosition(
         initialPosition = initialPosition,
     )
+
+    override val zOrder: Cell<Int> = Cell.constant(0)
 
     override fun isSelectableIn(area: IntRect): Boolean {
         val hitBox = IntRect.fromCenter(
