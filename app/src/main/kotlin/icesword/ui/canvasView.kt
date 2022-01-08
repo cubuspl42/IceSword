@@ -9,12 +9,15 @@ import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.hold
 import icesword.frp.mapTo
 import icesword.frp.mergeWith
+import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.html.HTMLWidgetB
 import icesword.html.alsoTillDetach
 import icesword.html.createCanvas
 import icesword.ui.scene.GroupCanvasNode
+import icesword.ui.scene.HybridNode
+import icesword.ui.scene.setTransformT
 import kotlinx.browser.window
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.DOMRect
@@ -97,11 +100,45 @@ interface CanvasNode {
         fun switch(node: Cell<CanvasNode?>): CanvasNode = GroupCanvasNode(
             children = DynamicList.ofSingle(node),
         )
+
+        fun transform(
+            node: CanvasNode,
+            viewTransform: DynamicTransform,
+        ): CanvasNode = object : CanvasNode {
+            override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
+                val transform = viewTransform.transform.sample()
+
+                val inverseTransform = transform.inversed
+
+                val newWindowRect = inverseTransform.transform(windowRect)
+
+                ctx.setTransformT(transform)
+
+                node.draw(ctx = ctx, windowRect = newWindowRect)
+            }
+
+            override val onDirty: Stream<Unit> = node.onDirty
+        }
+
+        fun transform(
+            children: DynamicList<CanvasNode>,
+            viewTransform: DynamicTransform,
+        ): CanvasNode = transform(
+            node = GroupCanvasNode(
+                children = children,
+            ),
+            viewTransform = viewTransform,
+        )
     }
 
     fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect)
 
     val onDirty: Stream<Unit>
+}
+
+fun CanvasNode.asHybridNode() = object : HybridNode() {
+    override fun buildCanvasNode(context: CanvasNodeBuildContext): CanvasNode =
+        this@asHybridNode
 }
 
 interface CanvasDrawer {

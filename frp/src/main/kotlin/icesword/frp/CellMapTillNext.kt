@@ -11,11 +11,6 @@ class CellMapTillNext<A, B>(
 ) {
     private var tillNextSink = StreamSink<Unit>()
 
-    private var value: B = f(
-        source.sample(),
-        tillNextSink.tillNext(tillAbort),
-    )
-
     init {
         source.values().reactTill(tillAbort) {
             tillNextSink.send(Unit)
@@ -38,6 +33,10 @@ class CellMapTillNext<A, B>(
         }
     }
 
+    private var value: B = f(
+        source.sample(),
+        tillNextSink.tillNext(tillAbort),
+    )
 
     override fun sample(): B = value
 }

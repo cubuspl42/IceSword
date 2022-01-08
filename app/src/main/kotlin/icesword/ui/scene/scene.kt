@@ -7,12 +7,8 @@ import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
-import icesword.frp.dynamic_list.changesUnits
-import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.frp.dynamic_list.staticListOf
-import icesword.frp.units
-import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
@@ -146,60 +142,28 @@ class Layer(
     editorTextureBank: EditorTextureBank,
     textureBank: RezTextureBank,
     private val viewTransform: DynamicTransform,
-    nodes: DynamicSet<CanvasNode>,
+    nodes: DynamicSet<CanvasNode>? = null,
     private val buildOverlayElements: BuildOverlayElements? = null,
     private val hybridNodes: DynamicList<HybridNode> = DynamicList.empty(),
+    private val hybridNodesUi: DynamicList<HybridNode> = DynamicList.empty(),
     tillDetach: Till,
 ) {
-    private val canvasNodes = DynamicList.concat(
-        nodes.internalOrder,
-        hybridNodes.mapTillRemoved(tillDetach) { hybridNode, _ ->
-            hybridNode.buildCanvasNode(
-                context = HybridNode.CanvasNodeBuildContext(
-                    editorTextureBank = editorTextureBank,
-                    textureBank = textureBank,
+    private val canvasNode = CanvasNode.transform(
+        children = DynamicList.concat(
+            nodes?.internalOrder ?: DynamicList.empty(),
+            hybridNodes.mapTillRemoved(tillDetach) { hybridNode, _ ->
+                hybridNode.buildCanvasNode(
+                    context = HybridNode.CanvasNodeBuildContext(
+                        editorTextureBank = editorTextureBank,
+                        textureBank = textureBank,
+                    )
                 )
-            )
-        },
+            },
+        ),
+        viewTransform = viewTransform,
     )
 
-    fun draw(ctx: CanvasRenderingContext2D, viewportRect: IntRect) {
-        val transform = this.viewTransform.transform.sample()
-
-        val inverseTransform = transform.inversed
-
-        val windowRect = inverseTransform.transform(viewportRect)
-
-        ctx.setTransform(
-            transform.a,
-            transform.b,
-            transform.c,
-            transform.d,
-            transform.e,
-            transform.f,
-        )
-
-        canvasNodes.volatileContentView.forEach {
-            it.draw(ctx, windowRect)
-        }
-    }
-
-    val onDirty: Stream<Unit> =
-        Stream.merge(
-            listOf(
-                viewTransform.transform.values().units(),
-                canvasNodes.changesUnits(),
-                DynamicList.merge(canvasNodes.map { it.onDirty }),
-            )
-        )
-
-    fun asCanvasNode() = object : CanvasNode {
-        override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-            this@Layer.draw(ctx = ctx, viewportRect = windowRect)
-        }
-
-        override val onDirty: Stream<Unit> = this@Layer.onDirty
-    }
+    fun asCanvasNode() = canvasNode
 
     fun buildOverlayRoot(
         svg: SVGSVGElement,

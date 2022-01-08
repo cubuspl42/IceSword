@@ -22,6 +22,8 @@ import icesword.frp.Till
 import icesword.frp.asStream
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.mapNotNull
+import icesword.frp.dynamic_list.mapTillRemoved
+import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNested
@@ -214,7 +216,7 @@ fun worldView(
                         textureBank = textureBank,
                         wapSprite = it,
                         alpha = EntityStyle.previewAlpha,
-                    )
+                    ).asHybridNode()
                 }
             }
 
@@ -222,7 +224,6 @@ fun worldView(
             editorTextureBank = editor.editorTextureBank,
             textureBank = textureBank,
             viewTransform = DynamicTransform.identity,
-            nodes = DynamicSet.empty(),
             buildOverlayElements = {
                 DynamicSet.of(
                     setOf(
@@ -248,50 +249,6 @@ fun worldView(
             editorTextureBank = editor.editorTextureBank,
             textureBank = textureBank,
             viewTransform = dynamicViewTransform,
-            nodes = DynamicSet.union(
-                DynamicSet.of(
-                    setOf(
-                        DynamicSet.of(
-                            setOf(
-                                TileLayer(
-                                    tileset = tileset,
-                                    tiles = editorTilesView,
-                                ),
-                            )
-                        ),
-                        world.wapObjects.mapTillRemoved(tillAbort = tillDetach) { wapObject, _ ->
-                            WapSpriteNode(
-                                editorTextureBank = editorTextureBank,
-                                textureBank = textureBank,
-                                wapSprite = wapObject.sprite,
-                            )
-                        },
-                        world.horizontalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
-                            WapSpriteNode(
-                                editorTextureBank = editorTextureBank,
-                                textureBank = textureBank,
-                                wapSprite = elevator.wapSprite,
-                            )
-                        },
-                        world.verticalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
-                            WapSpriteNode(
-                                editorTextureBank = editorTextureBank,
-                                textureBank = textureBank,
-                                wapSprite = elevator.wapSprite,
-                            )
-                        },
-                        world.floorSpikeRows.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, _ ->
-                            FloorSpikeRowNode(
-                                textureBank = textureBank,
-                                floorSpikeRow = floorSpikeRow,
-                            )
-                        },
-                        DynamicSet.ofSingle(
-                            element = wapObjectPreviewNode,
-                        ),
-                    ),
-                ),
-            ),
             buildOverlayElements = { svg ->
                 world.knotMeshes.mapTillRemoved(tillAbort = tillDetach) { knotMesh, tillRemoved ->
                     createKnotMeshOverlayElement(
@@ -305,6 +262,42 @@ fun worldView(
                 }
             },
             hybridNodes = DynamicList.concat(
+                staticListOf(
+                    TileLayer(
+                        tileset = tileset,
+                        tiles = editorTilesView,
+                    ).asHybridNode(),
+                ),
+                world.wapObjects.internalOrder.mapTillRemoved(tillAbort = tillDetach) { wapObject, _ ->
+                    WapSpriteNode(
+                        editorTextureBank = editorTextureBank,
+                        textureBank = textureBank,
+                        wapSprite = wapObject.sprite,
+                    ).asHybridNode()
+                },
+                world.horizontalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
+                    WapSpriteNode(
+                        editorTextureBank = editorTextureBank,
+                        textureBank = textureBank,
+                        wapSprite = elevator.wapSprite,
+                    ).asHybridNode()
+                },
+                world.verticalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
+                    WapSpriteNode(
+                        editorTextureBank = editorTextureBank,
+                        textureBank = textureBank,
+                        wapSprite = elevator.wapSprite,
+                    ).asHybridNode()
+                },
+                world.floorSpikeRows.internalOrder.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, _ ->
+                    FloorSpikeRowNode(
+                        textureBank = textureBank,
+                        floorSpikeRow = floorSpikeRow,
+                    ).asHybridNode()
+                },
+                DynamicList.ofSingle(
+                    element = wapObjectPreviewNode,
+                ),
                 world.entities.internalOrder.mapNotNull {
                     createEntityNode(
                         rezIndex = rezIndex,
@@ -314,12 +307,11 @@ fun worldView(
                         entity = it
                     )
                 },
-
                 DynamicList.ofSingle(
                     editor.editorMode.map {
                         createEditorModeModeNode(editorMode = it)
                     }
-                )
+                ),
             ),
             tillDetach = tillDetach,
         )
