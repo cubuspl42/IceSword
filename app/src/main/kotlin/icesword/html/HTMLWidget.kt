@@ -43,6 +43,12 @@ interface HTMLWidgetB<out W : HTMLWidget> {
             override fun build(tillDetach: Till): W = widget
         }
 
+        fun <W : HTMLWidget> createTillDetach(
+            create: (tillDetach: Till) -> HTMLWidgetB<W>,
+        ): HTMLWidgetB<W> = object : HTMLWidgetB<W> {
+            override fun build(tillDetach: Till): W = create(tillDetach).build(tillDetach)
+        }
+
         fun <W : HTMLWidget> build(widget: Cell<HTMLWidgetB<W>?>, tillDetach: Till): Cell<W?> =
             widget.mapTillNext(tillDetach) { elementB, tillNext ->
                 elementB?.build(tillNext)

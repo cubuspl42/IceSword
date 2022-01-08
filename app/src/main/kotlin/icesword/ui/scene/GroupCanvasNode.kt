@@ -6,19 +6,20 @@ import icesword.frp.dynamic_list.changesUnits
 import icesword.frp.dynamic_list.mergeBy
 import icesword.frp.mergeWith
 import icesword.geometry.IntRect
+import icesword.ui.CanvasNode
 import org.w3c.dom.CanvasRenderingContext2D
 
 open class GroupCanvasNode(
     private val children: DynamicList<CanvasNode>,
 ) : CanvasNode {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
-        ctx.save()
-
         children.volatileContentView.forEach {
-            it.draw(ctx = ctx, windowRect = windowRect)
-        }
+            ctx.save()
 
-        ctx.restore()
+            it.draw(ctx = ctx, windowRect = windowRect)
+
+            ctx.restore()
+        }
     }
 
     override val onDirty: Stream<Unit> =

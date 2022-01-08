@@ -27,6 +27,7 @@ import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
 import icesword.html.linkSvgChildren
 import icesword.tileRect
+import icesword.ui.CanvasNode
 import icesword.ui.EntityMoveDragController
 import kotlinx.css.Color
 import kotlinx.css.Cursor

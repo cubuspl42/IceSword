@@ -8,6 +8,7 @@ import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.tileTopLeftCorner
+import icesword.ui.CanvasNode
 import org.w3c.dom.CENTER
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.CanvasTextAlign

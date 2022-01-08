@@ -21,6 +21,7 @@ import icesword.html.createSvgGroup
 import icesword.html.createSvgPolygon
 import icesword.html.createSvgRect
 import icesword.html.createSvgSwitch
+import icesword.ui.CanvasNode
 import icesword.ui.setupMoveController
 import kotlinx.css.Color
 import kotlinx.css.Cursor

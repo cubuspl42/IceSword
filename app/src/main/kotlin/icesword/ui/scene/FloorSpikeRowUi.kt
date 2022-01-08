@@ -9,6 +9,7 @@ import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
+import icesword.ui.CanvasNode
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement

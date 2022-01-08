@@ -4,6 +4,7 @@ import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.mapNotNull
 import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.html.createSvgGroupDl
+import icesword.ui.CanvasNode
 import org.w3c.dom.svg.SVGElement
 
 open class GroupNode(

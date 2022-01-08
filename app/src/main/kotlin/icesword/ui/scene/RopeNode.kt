@@ -2,6 +2,7 @@ package icesword.ui.scene
 
 import icesword.editor.Editor
 import icesword.editor.entities.Rope
+import icesword.ui.CanvasNode
 import org.w3c.dom.svg.SVGElement
 
 class RopeNode(

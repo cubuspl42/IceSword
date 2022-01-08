@@ -2,41 +2,38 @@ package icesword.ui.scene
 
 import icesword.EditorTextureBank
 import icesword.RezTextureBank
-import icesword.html.createHTMLElementRaw
-import icesword.html.createSvgGroup
-import icesword.html.createSvgRoot
-import icesword.html.linkSvgChildren
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
-import icesword.frp.MutCell
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.changesUnits
 import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.mapTillRemoved
-import icesword.frp.reactTill
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import icesword.html.createHTMLElementRaw
+import icesword.html.createSvgGroup
 import icesword.html.createSvgGroupDl
+import icesword.html.createSvgRoot
+import icesword.html.linkSvgChildren
+import icesword.html.resolve
 import icesword.loadImageBitmap
+import icesword.ui.CanvasNode
+import icesword.ui.createCanvasView
 import kotlinx.browser.document
-import kotlinx.browser.window
 import kotlinx.css.BackgroundRepeat
 import kotlinx.css.px
 import org.w3c.dom.CanvasRenderingContext2D
-import org.w3c.dom.DOMRect
-import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.ImageBitmap
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
-import kotlin.math.roundToInt
 
 
 data class Texture(
@@ -89,18 +86,6 @@ data class Texture(
 class Tileset(
     val tileTextures: Map<Int, Texture>,
 )
-
-interface CanvasNode {
-    companion object {
-        fun ofSingle(node: Cell<CanvasNode?>): CanvasNode = GroupCanvasNode(
-            children = DynamicList.ofSingle(node),
-        )
-    }
-
-    fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect)
-
-    val onDirty: Stream<Unit>
-}
 
 class NoopCanvasNode : CanvasNode {
     override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
@@ -206,40 +191,13 @@ class Layer(
             )
         )
 
-//    fun buildOverlayRoot(
-//        svg: SVGSVGElement,
-//        viewport: HTMLElement,
-//        tillDetach: Till,
-//    ): SVGElement = createSvgGroup(
-//        svg = svg,
-//        translate = transform,
-//        tillDetach = tillDetach,
-//    ).also { root ->
-//        root.setAttribute("class", "layerOverlay")
-//
-//        val buildOverlayElements = this.buildOverlayElements
-//
-//        val overlayElements1 = if (buildOverlayElements != null) {
-//            buildOverlayElements(svg)
-//        } else DynamicSet.of(emptySet())
-//
-//        val overlayElements2 = hybridNodes.mapNotNull {
-//            it.buildOverlayElement(
-//                context = HybridNode.OverlayBuildContext(
-//                    svg = svg,
-//                    viewport = viewport,
-//                    viewTransform = viewTransform,
-//                    tillDetach = tillDetach,
-//                )
-//            )
-//        }
-//
-//        linkSvgChildren(
-//            element = root,
-//            children = DynamicSet.union2(overlayElements1, overlayElements2),
-//            till = tillDetach,
-//        )
-//    }
+    fun asCanvasNode() = object : CanvasNode {
+        override fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect) {
+            this@Layer.draw(ctx = ctx, viewportRect = windowRect)
+        }
+
+        override val onDirty: Stream<Unit> = this@Layer.onDirty
+    }
 
     fun buildOverlayRoot(
         svg: SVGSVGElement,
@@ -314,19 +272,6 @@ fun scene(
     tillDetach: Till,
     builder: (SceneContext) -> Scene,
 ): HTMLElement {
-    fun createSceneCanvas(): HTMLCanvasElement {
-        val canvas = document.createElement("canvas") as HTMLCanvasElement
-
-        canvas.apply {
-            width = 1024
-            height = 1024
-
-            className = "scene-canvas"
-        }
-
-        return canvas
-    }
-
     fun createSceneOverlay(scene: Scene): SVGElement {
         val overlay = createSvgRoot(
             tillDetach = tillDetach,
@@ -365,76 +310,22 @@ fun scene(
         return builder(context)
     }
 
-    fun buildDirtyFlag(scene: Scene): MutCell<Boolean> {
-        val isDirty = MutCell(true)
-
-        val onDirty = Stream.merge(scene.layers.map { it.onDirty })
-
-        onDirty.reactTill(tillDetach) {
-            isDirty.set(true)
-        }
-
-        return isDirty
-    }
-
     val scene = buildScene()
-
-    val canvas = createSceneCanvas()
-
-    val sceneOverlay = createSceneOverlay(scene)
-
-    val isDirty = buildDirtyFlag(scene)
-
-    val ctx = canvas.getContext("2d").unsafeCast<CanvasRenderingContext2D>()
 
     val layers = scene.layers
 
-    fun resizeCanvasIfNeeded() {
-        val rectSize = canvas.getBoundingClientRect().size
-
-        if (canvas.size != rectSize) {
-            canvas.size = rectSize
-            isDirty.set(true)
-        }
-    }
-
-    fun drawScene() {
-        val viewportRect = canvas.size.toRect()
-
-        ctx.resetTransform()
-
-        ctx.clearRect(
-            x = viewportRect.xMin.toDouble(),
-            y = viewportRect.yMin.toDouble(),
-            w = viewportRect.width.toDouble(),
-            h = viewportRect.height.toDouble(),
+    val canvas = createCanvasView(
+        root = GroupCanvasNode(
+            children = DynamicList.of(
+                layers.map { it.asCanvasNode() },
+            ),
         )
+    ).build(tillDetach = tillDetach)
 
-        layers.forEach {
-            ctx.resetTransform()
-            it.draw(ctx, viewportRect = viewportRect)
-        }
-    }
+    val canvasElement = canvas.resolve()
 
-    fun handleAnimationFrame() {
-        resizeCanvasIfNeeded()
-
-        if (isDirty.sample()) {
-            drawScene()
-            isDirty.set(false)
-        }
-    }
-
-    fun requestAnimationFrames() {
-        window.requestAnimationFrame {
-            if (!tillDetach.wasReached()) {
-                handleAnimationFrame()
-                requestAnimationFrames()
-            }
-        }
-    }
-
-    requestAnimationFrames()
+    // FIXME: Make overlay visible (why its size is 0?)
+    val sceneOverlay = createSceneOverlay(scene)
 
     val root = createHTMLElementRaw("div").apply {
         className = "scene"
@@ -448,7 +339,7 @@ fun scene(
         }
 
         appendChild(
-            canvas.apply {
+            canvasElement.apply {
                 style.apply {
                     setProperty("grid-column", "1")
                     setProperty("grid-row", "1")
@@ -471,19 +362,3 @@ fun scene(
 
     return root
 }
-
-private val DOMRect.size: IntSize
-    get() = IntSize(
-        this.width.roundToInt(),
-        this.height.roundToInt(),
-    )
-
-private var HTMLCanvasElement.size: IntSize
-    get() = IntSize(
-        this.width,
-        this.height,
-    )
-    set(value) {
-        this.width = value.width
-        this.height = value.height
-    }

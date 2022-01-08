@@ -3,6 +3,7 @@ package icesword.ui.scene
 import icesword.editor.DynamicWapSprite
 import icesword.editor.Editor
 import icesword.editor.entities.Entity
+import icesword.ui.CanvasNode
 import org.w3c.dom.svg.SVGElement
 
 class EntityWapSpriteNode(

@@ -115,7 +115,7 @@ fun createStyledHtmlElement(
 
 fun createHTMLElement(
     tagName: String,
-    children: DynamicList<Node>,
+    children: DynamicList<Node>? = null,
     style: DynamicStyleDeclaration? = null,
     tillDetach: Till,
 ): HTMLElement {
@@ -123,19 +123,22 @@ fun createHTMLElement(
 
     style?.linkTo(element.style, tillDetach)
 
-    linkNodeChildrenDl(
-        element = element,
-        children = children,
-        till = tillDetach,
-    )
+    children?.let {
+        linkNodeChildrenDl(
+            element = element,
+            children = it,
+            till = tillDetach,
+        )
+    }
 
     return element
 }
 
 fun createHTMLWidget(
     tagName: String,
-    children: DynamicList<HTMLWidget>? = null,
+    attrs: GenericElementAttrs? = null,
     style: DynamicStyleDeclaration? = null,
+    children: DynamicList<HTMLWidget>? = null,
     tillDetach: Till,
 ): HTMLWidget {
     val element = createHTMLElement(
@@ -146,19 +149,26 @@ fun createHTMLWidget(
         tillDetach = tillDetach,
     )
 
+    attrs?.linkTo(
+        element = element,
+        tillDetach = tillDetach,
+    )
+
     return HTMLWidget.of(element)
 }
 
 fun createHTMLWidgetB(
     tagName: String,
+    attrs: GenericElementAttrs? = null,
     style: DynamicStyleDeclaration? = null,
-    children: DynamicList<HTMLWidgetB<*>>,
+    children: DynamicList<HTMLWidgetB<*>>? = null,
 ) = object : HTMLWidgetB<HTMLWidget> {
     override fun build(tillDetach: Till): HTMLWidget =
         createHTMLWidget(
             tagName = tagName,
-            children = HTMLWidgetB.buildDl(children, tillDetach),
+            attrs = attrs,
             style = style,
+            children = children?.let { HTMLWidgetB.buildDl(it, tillDetach) },
             tillDetach = tillDetach,
         )
 }

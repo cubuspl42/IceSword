@@ -12,6 +12,7 @@ import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.createSvgCircle
+import icesword.ui.CanvasNode
 import icesword.ui.EntityMoveDragController
 import kotlinx.css.Color
 import kotlinx.css.Cursor

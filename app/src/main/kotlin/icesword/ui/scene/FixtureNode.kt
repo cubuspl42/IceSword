@@ -5,6 +5,7 @@ import icesword.editor.entities.Fixture
 import icesword.editor.entities.FixtureProduct
 import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.staticListOf
+import icesword.ui.CanvasNode
 import org.w3c.dom.svg.SVGElement
 
 class FixtureNode(

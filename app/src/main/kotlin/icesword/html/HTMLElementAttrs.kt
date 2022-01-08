@@ -1,10 +1,30 @@
 package icesword.html
 
 import icesword.frp.Cell
+import icesword.frp.DynamicMap
 import icesword.frp.Till
 import icesword.frp.map
 import icesword.frp.reactTill
 import org.w3c.dom.HTMLElement
+
+data class GenericElementAttrs(
+    val attrs: DynamicMap<String, String>,
+) {
+    fun linkTo(
+        element: HTMLElement,
+        tillDetach: Till,
+    ) {
+        attrs.changes.reactTill(tillDetach) { change ->
+            change.added.forEach { (qualifiedName, value) ->
+                element.setAttribute(qualifiedName, value)
+            }
+
+            change.removed.forEach { qualifiedName ->
+                element.removeAttribute(qualifiedName)
+            }
+        }
+    }
+}
 
 data class HTMLElementAttrs(
     val draggable: Cell<Boolean>? = null,

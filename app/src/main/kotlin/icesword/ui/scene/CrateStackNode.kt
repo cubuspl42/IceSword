@@ -4,6 +4,7 @@ import icesword.editor.entities.CrateStack
 import icesword.editor.Editor
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.map
+import icesword.ui.CanvasNode
 import org.w3c.dom.svg.SVGElement
 
 class CrateStackNode(
