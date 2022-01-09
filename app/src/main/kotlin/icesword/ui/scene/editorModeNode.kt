@@ -15,7 +15,8 @@ import icesword.frp.switchMapNested
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.createSvgRectR
 import icesword.html.createSvgSwitch
-import icesword.ui.asHybridNode
+import icesword.ui.scene.base.HybridNode
+import icesword.ui.scene.base.hybridCanvasNode
 import kotlinx.css.Color
 import kotlinx.css.PointerEvents
 import org.w3c.dom.svg.SVGElement

@@ -20,6 +20,7 @@ import icesword.html.createSvgGroup
 import icesword.html.createWrapper
 import icesword.html.resolve
 import icesword.ui.CanvasNode
+import icesword.ui.scene.base.HybridNode
 import kotlinx.css.Align
 import kotlinx.css.px
 import org.w3c.dom.HTMLElement

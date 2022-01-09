@@ -20,6 +20,7 @@ import icesword.editor.entities.VerticalElevator
 import icesword.editor.entities.WapObject
 import icesword.editor.entities.Warp
 import icesword.geometry.DynamicTransform
+import icesword.ui.scene.base.HybridNode
 
 fun createEntityNode(
     rezIndex: RezIndex,

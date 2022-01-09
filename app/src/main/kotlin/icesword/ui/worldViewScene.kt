@@ -13,7 +13,6 @@ import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.switchMapNotNull
-import icesword.ui.scene.EntityStyle
 import icesword.ui.scene.FloorSpikeRowNode
 import icesword.ui.scene.KnotMeshUi
 import icesword.ui.scene.Layer
@@ -31,7 +30,7 @@ import icesword.ui.scene.createKnotMeshOverlayElement
 import icesword.ui.scene.createStartPointOverlayElement
 import icesword.ui.scene.createVerticalElevatorOverlayElement
 import icesword.ui.scene.createWapObjectOverlayElement
-import icesword.ui.scene.overlayNode
+import icesword.ui.scene.base.hybridOverlayNode
 import org.w3c.dom.HTMLElement
 
 
@@ -116,7 +115,7 @@ fun buildWorldViewScene(
                 }
             ),
             staticListOf(
-                overlayNode { svg ->
+                hybridOverlayNode { svg ->
                     createStartPointOverlayElement(
                         editor = editor,
                         svg = svg,
@@ -128,7 +127,7 @@ fun buildWorldViewScene(
                 }
             ),
             world.wapObjects.internalOrder.mapTillRemoved(tillAbort = tillDetach) { wapObject, tillRemoved ->
-                overlayNode { svg ->
+                hybridOverlayNode { svg ->
                     createWapObjectOverlayElement(
                         editor = editor,
                         svg = svg,
@@ -140,7 +139,7 @@ fun buildWorldViewScene(
                 }
             },
             world.horizontalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
-                overlayNode { svg ->
+                hybridOverlayNode { svg ->
                     createHorizontalElevatorOverlayElement(
                         editor = editor,
                         svg = svg,
@@ -152,7 +151,7 @@ fun buildWorldViewScene(
                 }
             },
             world.verticalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
-                overlayNode { svg ->
+                hybridOverlayNode { svg ->
                     createVerticalElevatorOverlayElement(
                         editor = editor,
                         svg = svg,
@@ -164,7 +163,7 @@ fun buildWorldViewScene(
                 }
             },
             world.floorSpikeRows.internalOrder.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, tillRemoved ->
-                overlayNode { svg ->
+                hybridOverlayNode { svg ->
                     createFloorSpikeRowOverlayElement(
                         editor = editor,
                         svg = svg,
@@ -179,7 +178,7 @@ fun buildWorldViewScene(
             DynamicList.ofSingle(
                 editor.knotSelectMode.switchMapNotNull {
                     it.selectMode.areaSelectingMode.mapNested { areaSelectingMode ->
-                        overlayNode { svg ->
+                        hybridOverlayNode { svg ->
                             createAreaSelectionOverlayElement(
                                 svg = svg,
                                 viewTransform = dynamicViewTransform,
@@ -207,7 +206,7 @@ fun buildWorldViewScene(
             },
         ),
         hybridContentOverlayNodes = world.knotMeshes.internalOrder.mapTillRemoved(tillAbort = tillDetach) { knotMesh, tillRemoved ->
-            overlayNode { svg ->
+            hybridOverlayNode { svg ->
                 createKnotMeshOverlayElement(
                     svg = svg,
                     editor = editor,

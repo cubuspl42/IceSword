@@ -16,7 +16,7 @@ import icesword.html.HTMLWidgetB
 import icesword.html.alsoTillDetach
 import icesword.html.createCanvas
 import icesword.ui.scene.GroupCanvasNode
-import icesword.ui.scene.HybridNode
+import icesword.ui.scene.base.HybridNode
 import icesword.ui.scene.setTransformT
 import kotlinx.browser.window
 import org.w3c.dom.CanvasRenderingContext2D

@@ -26,6 +26,7 @@ import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
 import icesword.html.onMouseDrag
 import icesword.ui.CanvasNode
+import icesword.ui.scene.base.HybridNode
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents

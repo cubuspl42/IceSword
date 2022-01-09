@@ -3,6 +3,7 @@ package icesword.ui.scene
 import icesword.editor.entities.CrumblingPeg
 import icesword.editor.Editor
 import icesword.ui.CanvasNode
+import icesword.ui.scene.base.HybridNode
 import org.w3c.dom.svg.SVGElement
 
 class CrumblingPegNode(
