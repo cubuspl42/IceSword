@@ -135,6 +135,11 @@ abstract class HybridNode {
     }
 }
 
+fun hybridCanvasNode(build: (HybridNode.CanvasNodeBuildContext) -> CanvasNode): HybridNode = object : HybridNode() {
+    override fun buildCanvasNode(context: CanvasNodeBuildContext): CanvasNode =
+        build(context)
+}
+
 fun overlayNode(build: (svg: SVGSVGElement) -> SVGElement): HybridNode = object : HybridNode() {
     override fun buildOverlayElement(context: OverlayBuildContext): SVGElement =
         build(context.svg)

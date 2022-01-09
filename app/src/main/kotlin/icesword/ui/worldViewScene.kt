@@ -48,18 +48,6 @@ fun buildWorldViewScene(
 
     val dynamicViewTransform = editor.camera.transform
 
-    val wapObjectPreviewNode =
-        editor.wapObjectAlikeInsertionMode.switchMapNotNull { insertionMode ->
-            insertionMode.wapObjectPreview.mapNested {
-                WapSpriteNode(
-                    editorTextureBank = editorTextureBank,
-                    textureBank = textureBank,
-                    wapSprite = it,
-                    alpha = EntityStyle.previewAlpha,
-                ).asHybridNode()
-            }
-        }
-
     val backFoil = createBackFoilOverlayElement(
         editor = editor,
         viewport = viewport,
@@ -112,9 +100,6 @@ fun buildWorldViewScene(
                     floorSpikeRow = floorSpikeRow,
                 ).asHybridNode()
             },
-            DynamicList.ofSingle(
-                element = wapObjectPreviewNode,
-            ),
             world.entities.internalOrder.mapNotNull {
                 createEntityNode(
                     rezIndex = rezIndex,
@@ -124,6 +109,7 @@ fun buildWorldViewScene(
                     entity = it
                 )
             },
+            // hybridNodes / editor mode
             DynamicList.ofSingle(
                 editor.editorMode.map {
                     createEditorModeModeNode(editorMode = it)
@@ -189,6 +175,7 @@ fun buildWorldViewScene(
                     )
                 }
             },
+            // hybridNodes / editor mode
             DynamicList.ofSingle(
                 editor.knotSelectMode.switchMapNotNull {
                     it.selectMode.areaSelectingMode.mapNested { areaSelectingMode ->

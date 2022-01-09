@@ -7,6 +7,7 @@ import icesword.editor.modes.KnotPaintMode
 import icesword.editor.entities.knotRect
 import icesword.editor.modes.ElasticInsertionMode
 import icesword.editor.modes.FixtureInsertionMode
+import icesword.editor.modes.WapObjectAlikeInsertionMode
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.map
 import icesword.frp.mapNested
@@ -14,6 +15,7 @@ import icesword.frp.switchMapNested
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.createSvgRectR
 import icesword.html.createSvgSwitch
+import icesword.ui.asHybridNode
 import kotlinx.css.Color
 import kotlinx.css.PointerEvents
 import org.w3c.dom.svg.SVGElement
@@ -24,6 +26,8 @@ fun createEditorModeModeNode(
     is EditPathElevatorMode -> EditPathElevatorModeNode(editorMode)
     is KnotPaintMode -> KnotPaintModeNode(editorMode)
     is EntitySelectMode -> EntitySelectModeNode(entitySelectMode = editorMode)
+    // TODO: Display the preview WAP object in the same Z axis as existing WAP objects
+    is WapObjectAlikeInsertionMode -> buildElasticInsertionModeNode(insertionMode = editorMode)
     is ElasticInsertionMode -> buildElasticInsertionModeNode(elasticInsertionMode = editorMode)
     is FixtureInsertionMode -> buildFixtureInsertionModeNode(fixtureInsertionMode = editorMode)
     else -> null
@@ -97,6 +101,21 @@ class EntitySelectModeNode(
         )
     }
 }
+
+fun buildElasticInsertionModeNode(
+    insertionMode: WapObjectAlikeInsertionMode,
+) = HybridNode.ofSingle(
+    insertionMode.wapObjectPreview.mapNested {
+        hybridCanvasNode { context ->
+            WapSpriteNode(
+                editorTextureBank = context.editorTextureBank,
+                textureBank = context.textureBank,
+                wapSprite = it,
+                alpha = EntityStyle.previewAlpha,
+            )
+        }
+    },
+)
 
 fun buildElasticInsertionModeNode(
     elasticInsertionMode: ElasticInsertionMode,
