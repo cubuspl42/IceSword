@@ -142,26 +142,34 @@ class Layer(
     editorTextureBank: EditorTextureBank,
     textureBank: RezTextureBank,
     private val viewTransform: DynamicTransform,
-    nodes: DynamicSet<CanvasNode>? = null,
     private val buildOverlayElements: BuildOverlayElements? = null,
     private val hybridNodes: DynamicList<HybridNode> = DynamicList.empty(),
     private val hybridNodesUi: DynamicList<HybridNode> = DynamicList.empty(),
     tillDetach: Till,
 ) {
-    private val canvasNode = CanvasNode.transform(
-        children = DynamicList.concat(
-            nodes?.internalOrder ?: DynamicList.empty(),
-            hybridNodes.mapTillRemoved(tillDetach) { hybridNode, _ ->
-                hybridNode.buildCanvasNode(
+    private val canvasNode = run {
+        fun buildCanvasNodes(hybridNodes: DynamicList<HybridNode>): DynamicList<CanvasNode> =
+            hybridNodes.mapTillRemoved(tillDetach) { it, _ ->
+                it.buildCanvasNode(
                     context = HybridNode.CanvasNodeBuildContext(
                         editorTextureBank = editorTextureBank,
                         textureBank = textureBank,
-                    )
+                    ),
                 )
-            },
-        ),
-        viewTransform = viewTransform,
-    )
+            }
+
+        CanvasNode.group(
+            children = DynamicList.concat(
+                staticListOf(
+                    CanvasNode.transform(
+                        children = buildCanvasNodes(hybridNodes),
+                        viewTransform = viewTransform,
+                    ),
+                ),
+                buildCanvasNodes(hybridNodesUi),
+            ),
+        )
+    }
 
     fun asCanvasNode() = canvasNode
 

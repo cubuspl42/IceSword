@@ -313,33 +313,20 @@ fun worldView(
                     }
                 ),
             ),
-            tillDetach = tillDetach,
-        )
-
-        val planeUiLayer = Layer(
-            editorTextureBank = editor.editorTextureBank,
-            textureBank = textureBank,
-            viewTransform = DynamicTransform.identity,
-            nodes = DynamicSet.union(
-                DynamicSet.of(
-                    setOf(
-                        DynamicSet.of(
-                            setOf(
-                                StartPointUi(
-                                    viewTransform = dynamicViewTransform,
-                                    startPoint = world.startPointEntity,
-                                ),
-                            )
-                        ),
-                        world.knotMeshes.mapTillRemoved(tillAbort = tillDetach) { knotMesh, _ ->
-                            KnotMeshUi(
-                                editor = editor,
-                                viewTransform = dynamicViewTransform,
-                                knotMesh = knotMesh,
-                            )
-                        },
-                    ),
+            hybridNodesUi = DynamicList.concat(
+                staticListOf(
+                    StartPointUi(
+                        viewTransform = dynamicViewTransform,
+                        startPoint = world.startPointEntity,
+                    ).asHybridNode(),
                 ),
+                world.knotMeshes.internalOrder.mapTillRemoved(tillAbort = tillDetach) { knotMesh, _ ->
+                    KnotMeshUi(
+                        editor = editor,
+                        viewTransform = dynamicViewTransform,
+                        knotMesh = knotMesh,
+                    ).asHybridNode()
+                },
             ),
             tillDetach = tillDetach,
         )
@@ -353,7 +340,6 @@ fun worldView(
                     layers = listOf(
                         backFoilLayer,
                         planeLayer,
-                        planeUiLayer,
                     ),
                     buildOverlayElements = { svg ->
                         DynamicSet.union(

@@ -101,6 +101,12 @@ interface CanvasNode {
             children = DynamicList.ofSingle(node),
         )
 
+        fun group(
+            children: DynamicList<CanvasNode>,
+        ): CanvasNode = GroupCanvasNode(
+            children = children,
+        )
+
         fun transform(
             node: CanvasNode,
             viewTransform: DynamicTransform,
@@ -124,7 +130,7 @@ interface CanvasNode {
             children: DynamicList<CanvasNode>,
             viewTransform: DynamicTransform,
         ): CanvasNode = transform(
-            node = GroupCanvasNode(
+            node = CanvasNode.group(
                 children = children,
             ),
             viewTransform = viewTransform,
