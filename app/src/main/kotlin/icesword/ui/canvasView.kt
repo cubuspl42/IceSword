@@ -131,7 +131,23 @@ interface CanvasNode {
         )
     }
 
-    fun draw(ctx: CanvasRenderingContext2D, windowRect: IntRect)
+    /**
+     * @param windowRect viewport rectangle transformed to the source coordinate
+     * system, i.e. the system that the coordinates passed to rendering context
+     * methods are expressed in.
+     *
+     * Can be used for optimizing out some rendering calls if it's obvious that
+     * an element has no chance of being even partially included in the
+     * viewport.
+     *
+     * All [CanvasNode] implementations that have children and apply
+     * transformations to the rendering context need to make this invariant
+     * hold.
+     */
+    fun draw(
+        ctx: CanvasRenderingContext2D,
+        windowRect: IntRect,
+    )
 
     val onDirty: Stream<Unit>
 }
