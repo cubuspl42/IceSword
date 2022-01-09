@@ -140,13 +140,11 @@ fun overlayNode(build: (svg: SVGSVGElement) -> SVGElement): HybridNode = object 
         build(context.svg)
 }
 
-typealias BuildOverlayElements = (SVGSVGElement) -> DynamicList<SVGElement>
-
 class Layer(
     editorTextureBank: EditorTextureBank,
     textureBank: RezTextureBank,
     private val viewTransform: DynamicTransform,
-    private val buildOverlayElements: BuildOverlayElements? = null,
+    private val backFoil: SVGElement,
     private val hybridNodes: DynamicList<HybridNode> = DynamicList.empty(),
     // Hybrid nodes that have un-transformed (viewport-space) CanvasNode. Overlay node is ignored.
     private val hybridViewportCanvasNodes: DynamicList<HybridNode> = DynamicList.empty(),
@@ -200,19 +198,8 @@ class Layer(
         // An overlay that applies view transform on the group level, so its
         // children are mostly fixed relatively to the group.
         fun buildFixedOverlay(): SVGElement {
-            val buildOverlayElements = this.buildOverlayElements
-
-            val extraOverlayElements = if (buildOverlayElements != null) {
-                buildOverlayElements(svg)
-            } else DynamicList.empty()
-
-            val hybridContentOverlayElements =
+            val overlayElements =
                 buildOverlayElements(hybridContentOverlayNodes)
-
-            val overlayElements = DynamicList.concat(
-                extraOverlayElements,
-                hybridContentOverlayElements,
-            )
 
             return createSvgGroupDl(
                 svg = svg,
@@ -221,7 +208,6 @@ class Layer(
                 tillDetach = tillDetach,
             )
         }
-
 
         // An overlay that does not apply view transform on the group level,
         // leaving it to its children. Effectively, it means that children are
@@ -238,12 +224,13 @@ class Layer(
             }
         }
 
-        return createSvgGroup(
+        return createSvgGroupDl(
             svg = svg,
-            children = DynamicSet.of(setOf(
+            children = staticListOf(
+                backFoil,
                 buildFixedOverlay(),
                 buildAdjustingOverlay(),
-            )),
+            ),
             tillDetach = tillDetach,
         )
     }

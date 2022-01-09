@@ -13,7 +13,6 @@ import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.switchMapNotNull
-import icesword.geometry.DynamicTransform
 import icesword.ui.scene.EntityStyle
 import icesword.ui.scene.FloorSpikeRowNode
 import icesword.ui.scene.KnotMeshUi
@@ -61,19 +60,9 @@ fun buildWorldViewScene(
             }
         }
 
-    val backFoilLayer = Layer(
-        editorTextureBank = editor.editorTextureBank,
-        textureBank = textureBank,
-        viewTransform = DynamicTransform.identity,
-        buildOverlayElements = {
-            staticListOf(
-                createBackFoilOverlayElement(
-                    editor = editor,
-                    viewport = viewport,
-                    tillDetach = tillDetach,
-                ),
-            )
-        },
+    val backFoil = createBackFoilOverlayElement(
+        editor = editor,
+        viewport = viewport,
         tillDetach = tillDetach,
     )
 
@@ -88,6 +77,7 @@ fun buildWorldViewScene(
         editorTextureBank = editor.editorTextureBank,
         textureBank = textureBank,
         viewTransform = dynamicViewTransform,
+        backFoil = backFoil,
         hybridNodes = DynamicList.concat(
             staticListOf(
                 TileLayer(
@@ -245,9 +235,6 @@ fun buildWorldViewScene(
     )
 
     return Scene(
-        layers = listOf(
-            backFoilLayer,
-            planeLayer,
-        ),
+        layers = listOf(planeLayer),
     )
 }
