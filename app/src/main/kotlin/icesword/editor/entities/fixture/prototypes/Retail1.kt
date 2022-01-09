@@ -3,7 +3,9 @@ package icesword.editor.entities.fixture.prototypes
 import icesword.editor.MetaTile
 import icesword.editor.entities.WapObjectPropsData
 import icesword.geometry.IntVec2
+import kotlinx.serialization.Serializable
 
+@Serializable
 object Retail1NicheTorch : FixturePrototype() {
     override val localWapObjects: List<WapObjectPropsData> = listOf(
         WapObjectPropsData(
@@ -21,6 +23,7 @@ object Retail1NicheTorch : FixturePrototype() {
     )
 }
 
+@Serializable
 object Retail1DoorRight : FixturePrototype() {
     override val localMetaTiles: Map<IntVec2, MetaTile> = mapOf(
         IntVec2(0, 0) to MetaTile(401), IntVec2(1, 0) to MetaTile(402),

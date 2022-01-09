@@ -1,7 +1,9 @@
 package icesword.editor.entities.fixture.prototypes
 
 import icesword.editor.entities.WapObjectPropsData
+import kotlinx.serialization.Serializable
 
+@Serializable
 object Retail5WallCover : FixturePrototype() {
     override val localWapObjects: List<WapObjectPropsData> = listOf(
         WapObjectPropsData(

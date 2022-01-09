@@ -5,7 +5,9 @@ import icesword.editor.entities.WapObjectPropsData
 import icesword.editor.retails.Retail2
 import icesword.editor.retails.Retail2.MetaTiles.Tower
 import icesword.geometry.IntVec2
+import kotlinx.serialization.Serializable
 
+@Serializable
 object Retail2TowerCannonLeft : FixturePrototype() {
     override val localWapObjects: List<WapObjectPropsData> = listOf(
         WapObjectPropsData(
@@ -25,6 +27,7 @@ object Retail2TowerCannonLeft : FixturePrototype() {
     )
 }
 
+@Serializable
 object Retail2TowerCannonRight : FixturePrototype() {
     override val localWapObjects: List<WapObjectPropsData> = listOf(
         WapObjectPropsData(
@@ -44,6 +47,7 @@ object Retail2TowerCannonRight : FixturePrototype() {
     )
 }
 
+@Serializable
 object Retail2TowerWindow : FixturePrototype() {
     override val localMetaTiles: Map<IntVec2, MetaTile> = mapOf(
         IntVec2(0, 0) to Tower.window
