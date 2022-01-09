@@ -80,6 +80,8 @@ fun createCanvasView(root: CanvasNode): HTMLWidgetB<*> {
             }
         }
 
+        drawScene()
+
         requestAnimationFrames()
     }
 }

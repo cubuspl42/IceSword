@@ -16,7 +16,6 @@ import icesword.editor.modes.KnotPaintMode
 import icesword.editor.modes.StampInsertionMode
 import icesword.editor.modes.WapObjectAlikeInsertionMode
 import icesword.frp.Cell
-import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.asStream
@@ -27,7 +26,6 @@ import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNested
-import icesword.frp.mapTillRemoved
 import icesword.frp.reactDynamicNotNullTill
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
@@ -69,10 +67,11 @@ import icesword.ui.scene.createEntityNode
 import icesword.ui.scene.createFloorSpikeRowOverlayElement
 import icesword.ui.scene.createHorizontalElevatorOverlayElement
 import icesword.ui.scene.createKnotMeshOverlayElement
+import icesword.ui.scene.createScene
 import icesword.ui.scene.createStartPointOverlayElement
 import icesword.ui.scene.createVerticalElevatorOverlayElement
 import icesword.ui.scene.createWapObjectOverlayElement
-import icesword.ui.scene.createScene
+import icesword.ui.scene.overlayNode
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.MouseEvent
@@ -225,14 +224,12 @@ fun worldView(
             textureBank = textureBank,
             viewTransform = DynamicTransform.identity,
             buildOverlayElements = {
-                DynamicSet.of(
-                    setOf(
-                        createBackFoilOverlayElement(
-                            editor = editor,
-                            viewport = this,
-                            tillDetach = tillDetach,
-                        ),
-                    )
+                staticListOf(
+                    createBackFoilOverlayElement(
+                        editor = editor,
+                        viewport = this,
+                        tillDetach = tillDetach,
+                    ),
                 )
             },
             tillDetach = tillDetach,
@@ -249,18 +246,6 @@ fun worldView(
             editorTextureBank = editor.editorTextureBank,
             textureBank = textureBank,
             viewTransform = dynamicViewTransform,
-            buildOverlayElements = { svg ->
-                world.knotMeshes.mapTillRemoved(tillAbort = tillDetach) { knotMesh, tillRemoved ->
-                    createKnotMeshOverlayElement(
-                        svg = svg,
-                        editor = editor,
-                        knotMesh = knotMesh,
-                        viewport = this,
-                        viewTransform = dynamicViewTransform,
-                        tillDetach = tillRemoved,
-                    )
-                }
-            },
             hybridNodes = DynamicList.concat(
                 staticListOf(
                     TileLayer(
@@ -312,8 +297,82 @@ fun worldView(
                         createEditorModeModeNode(editorMode = it)
                     }
                 ),
+                staticListOf(
+                    overlayNode { svg ->
+                        createStartPointOverlayElement(
+                            editor = editor,
+                            svg = svg,
+                            startPoint = world.startPointEntity,
+                            viewport = this,
+                            viewTransform = dynamicViewTransform,
+                            tillDetach = tillDetach,
+                        )
+                    }
+                ),
+                world.wapObjects.internalOrder.mapTillRemoved(tillAbort = tillDetach) { wapObject, tillRemoved ->
+                    overlayNode { svg ->
+                        createWapObjectOverlayElement(
+                            editor = editor,
+                            svg = svg,
+                            viewport = this,
+                            viewTransform = dynamicViewTransform,
+                            wapObject = wapObject,
+                            tillDetach = tillRemoved,
+                        )
+                    }
+                },
+                world.horizontalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
+                    overlayNode { svg ->
+                        createHorizontalElevatorOverlayElement(
+                            editor = editor,
+                            svg = svg,
+                            viewport = this,
+                            viewTransform = dynamicViewTransform,
+                            elevator = elevator,
+                            tillDetach = tillRemoved,
+                        )
+                    }
+                },
+                world.verticalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
+                    overlayNode { svg ->
+                        createVerticalElevatorOverlayElement(
+                            editor = editor,
+                            svg = svg,
+                            viewport = this,
+                            viewTransform = dynamicViewTransform,
+                            elevator = elevator,
+                            tillDetach = tillRemoved,
+                        )
+                    }
+                },
+                world.floorSpikeRows.internalOrder.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, tillRemoved ->
+                    overlayNode { svg ->
+                        createFloorSpikeRowOverlayElement(
+                            editor = editor,
+                            svg = svg,
+                            viewport = this,
+                            viewTransform = dynamicViewTransform,
+                            floorSpikeRow = floorSpikeRow,
+                            tillDetach = tillRemoved,
+                        )
+                    }
+                },
+                DynamicList.ofSingle(
+                    editor.knotSelectMode.switchMapNotNull {
+                        it.selectMode.areaSelectingMode.mapNested { areaSelectingMode ->
+                            overlayNode { svg ->
+                                createAreaSelectionOverlayElement(
+                                    svg = svg,
+                                    viewTransform = dynamicViewTransform,
+                                    areaSelectingMode = areaSelectingMode,
+                                    tillDetach = tillDetach,
+                                )
+                            }
+                        }
+                    }
+                ),
             ),
-            hybridNodesUi = DynamicList.concat(
+            hybridViewportCanvasNodes = DynamicList.concat(
                 staticListOf(
                     StartPointUi(
                         viewTransform = dynamicViewTransform,
@@ -328,6 +387,18 @@ fun worldView(
                     ).asHybridNode()
                 },
             ),
+            hybridContentOverlayNodes = world.knotMeshes.internalOrder.mapTillRemoved(tillAbort = tillDetach) { knotMesh, tillRemoved ->
+                overlayNode { svg ->
+                    createKnotMeshOverlayElement(
+                        svg = svg,
+                        editor = editor,
+                        knotMesh = knotMesh,
+                        viewport = this,
+                        viewTransform = dynamicViewTransform,
+                        tillDetach = tillRemoved,
+                    )
+                }
+            },
             tillDetach = tillDetach,
         )
 
@@ -341,78 +412,6 @@ fun worldView(
                         backFoilLayer,
                         planeLayer,
                     ),
-                    buildOverlayElements = { svg ->
-                        DynamicSet.union(
-                            DynamicSet.of(
-                                setOf(
-                                    DynamicSet.of(
-                                        setOf(
-                                            createStartPointOverlayElement(
-                                                editor = editor,
-                                                svg = svg,
-                                                startPoint = world.startPointEntity,
-                                                viewport = this,
-                                                viewTransform = dynamicViewTransform,
-                                                tillDetach = tillDetach,
-                                            ),
-                                        ),
-                                    ),
-                                    world.wapObjects.mapTillRemoved(tillAbort = tillDetach) { wapObject, tillRemoved ->
-                                        createWapObjectOverlayElement(
-                                            editor = editor,
-                                            svg = svg,
-                                            viewport = this,
-                                            viewTransform = dynamicViewTransform,
-                                            wapObject = wapObject,
-                                            tillDetach = tillRemoved,
-                                        )
-                                    },
-                                    world.horizontalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
-                                        createHorizontalElevatorOverlayElement(
-                                            editor = editor,
-                                            svg = svg,
-                                            viewport = this,
-                                            viewTransform = dynamicViewTransform,
-                                            elevator = elevator,
-                                            tillDetach = tillRemoved,
-                                        )
-                                    },
-                                    world.verticalElevators.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
-                                        createVerticalElevatorOverlayElement(
-                                            editor = editor,
-                                            svg = svg,
-                                            viewport = this,
-                                            viewTransform = dynamicViewTransform,
-                                            elevator = elevator,
-                                            tillDetach = tillRemoved,
-                                        )
-                                    },
-                                    world.floorSpikeRows.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, tillRemoved ->
-                                        createFloorSpikeRowOverlayElement(
-                                            editor = editor,
-                                            svg = svg,
-                                            viewport = this,
-                                            viewTransform = dynamicViewTransform,
-                                            floorSpikeRow = floorSpikeRow,
-                                            tillDetach = tillRemoved,
-                                        )
-                                    },
-                                    DynamicSet.ofSingle(
-                                        editor.knotSelectMode.switchMapNotNull {
-                                            it.selectMode.areaSelectingMode.mapNested { areaSelectingMode ->
-                                                createAreaSelectionOverlayElement(
-                                                    svg = svg,
-                                                    viewTransform = dynamicViewTransform,
-                                                    areaSelectingMode = areaSelectingMode,
-                                                    tillDetach = tillDetach,
-                                                )
-                                            }
-                                        }
-                                    ),
-                                ),
-                            ),
-                        )
-                    },
                 )
             }.buildElement(tillDetach),
         )

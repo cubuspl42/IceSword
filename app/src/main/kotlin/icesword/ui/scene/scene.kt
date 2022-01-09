@@ -18,7 +18,6 @@ import icesword.html.HTMLWidgetB
 import icesword.html.createSvgGroup
 import icesword.html.createSvgGroupDl
 import icesword.html.createSvgRoot
-import icesword.html.linkSvgChildren
 import icesword.loadImageBitmap
 import icesword.ui.CanvasNode
 import icesword.ui.createCanvasView
@@ -136,7 +135,12 @@ abstract class HybridNode {
     }
 }
 
-typealias BuildOverlayElements = (SVGSVGElement) -> DynamicSet<SVGElement>
+fun overlayNode(build: (svg: SVGSVGElement) -> SVGElement): HybridNode = object : HybridNode() {
+    override fun buildOverlayElement(context: OverlayBuildContext): SVGElement =
+        build(context.svg)
+}
+
+typealias BuildOverlayElements = (SVGSVGElement) -> DynamicList<SVGElement>
 
 class Layer(
     editorTextureBank: EditorTextureBank,
@@ -144,7 +148,10 @@ class Layer(
     private val viewTransform: DynamicTransform,
     private val buildOverlayElements: BuildOverlayElements? = null,
     private val hybridNodes: DynamicList<HybridNode> = DynamicList.empty(),
-    private val hybridNodesUi: DynamicList<HybridNode> = DynamicList.empty(),
+    // Hybrid nodes that have un-transformed (viewport-space) CanvasNode. Overlay node is ignored.
+    private val hybridViewportCanvasNodes: DynamicList<HybridNode> = DynamicList.empty(),
+    // Hybrid nodes that have transformed (plane-space) overlay node. Canvas node is ignored.
+    private val hybridContentOverlayNodes: DynamicList<HybridNode> = DynamicList.empty(),
     tillDetach: Till,
 ) {
     private val canvasNode = run {
@@ -166,7 +173,7 @@ class Layer(
                         viewTransform = viewTransform,
                     ),
                 ),
-                buildCanvasNodes(hybridNodesUi),
+                buildCanvasNodes(hybridViewportCanvasNodes),
             ),
         )
     }
@@ -178,16 +185,36 @@ class Layer(
         viewport: HTMLElement,
         tillDetach: Till,
     ): SVGElement {
+        fun buildOverlayElements(hybridNodes: DynamicList<HybridNode>): DynamicList<SVGElement> =
+            hybridNodes.mapTillRemoved(tillDetach) { it, tillRemoved ->
+                it.buildOverlayElement(
+                    context = HybridNode.OverlayBuildContext(
+                        svg = svg,
+                        viewport = viewport,
+                        viewTransform = viewTransform,
+                        tillDetach = tillRemoved,
+                    )
+                )
+            }
+
         // An overlay that applies view transform on the group level, so its
         // children are mostly fixed relatively to the group.
         fun buildFixedOverlay(): SVGElement {
             val buildOverlayElements = this.buildOverlayElements
 
-            val overlayElements = if (buildOverlayElements != null) {
+            val extraOverlayElements = if (buildOverlayElements != null) {
                 buildOverlayElements(svg)
-            } else DynamicSet.of(emptySet())
+            } else DynamicList.empty()
 
-            return createSvgGroup(
+            val hybridContentOverlayElements =
+                buildOverlayElements(hybridContentOverlayNodes)
+
+            val overlayElements = DynamicList.concat(
+                extraOverlayElements,
+                hybridContentOverlayElements,
+            )
+
+            return createSvgGroupDl(
                 svg = svg,
                 transform = viewTransform,
                 children = overlayElements,
@@ -200,20 +227,11 @@ class Layer(
         // leaving it to its children. Effectively, it means that children are
         // in the screen space.
         fun buildAdjustingOverlay(): SVGElement {
-            val overlayElements2 = hybridNodes.mapTillRemoved(tillDetach) { it, tillRemoved ->
-                it.buildOverlayElement(
-                    context = HybridNode.OverlayBuildContext(
-                        svg = svg,
-                        viewport = viewport,
-                        viewTransform = viewTransform,
-                        tillDetach = tillRemoved,
-                    )
-                )
-            }
+            val overlayElements = buildOverlayElements(hybridNodes)
 
             return createSvgGroupDl(
                 svg = svg,
-                children = overlayElements2,
+                children = overlayElements,
                 tillDetach = tillDetach,
             ).apply {
                 classList.add("adjustingOverlay")
@@ -231,20 +249,14 @@ class Layer(
     }
 }
 
-class SceneContext {
-//    fun createTexture(image: Image): Texture =
-//        Texture(image)
-}
-
 class Scene(
     val layers: List<Layer>,
-    val buildOverlayElements: BuildOverlayElements,
 )
 
 fun createScene(
     viewport: HTMLElement,
     tillDetach: Till,
-    builder: (SceneContext) -> Scene,
+    builder: () -> Scene,
 ): HTMLWidgetB<*> {
     fun createSceneOverlay(scene: Scene): SVGSVGElement {
         val overlay = createSvgRoot(
@@ -261,28 +273,12 @@ fun createScene(
             )
         }
 
-        val topOverlayElements = scene.buildOverlayElements(overlay)
-
-        val topOverlay = createSvgGroup(
-            svg = overlay,
-            translate = Cell.constant(IntVec2.ZERO),
-            tillDetach = tillDetach,
-        ).apply {
-            setAttribute("class", "topOverlay")
-            linkSvgChildren(this, topOverlayElements, till = tillDetach)
-        }
-
         layersOverlays.forEach(overlay::appendChild)
-        overlay.appendChild(topOverlay)
 
         return overlay
     }
 
-    fun buildScene(): Scene {
-        val context = SceneContext()
-
-        return builder(context)
-    }
+    fun buildScene(): Scene = builder()
 
     val scene = buildScene()
 
