@@ -39,6 +39,7 @@ import icesword.html.KeyPressedState
 import icesword.html.MouseButton
 import icesword.html.MousePosition
 import icesword.html.MousePressedGesture
+import icesword.html.buildElement
 import icesword.html.calculateRelativePosition
 import icesword.html.clientPosition
 import icesword.html.createHTMLElementRaw
@@ -69,7 +70,7 @@ import icesword.ui.scene.createKnotMeshOverlayElement
 import icesword.ui.scene.createStartPointOverlayElement
 import icesword.ui.scene.createVerticalElevatorOverlayElement
 import icesword.ui.scene.createWapObjectOverlayElement
-import icesword.ui.scene.scene
+import icesword.ui.scene.createScene
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.events.MouseEvent
@@ -352,7 +353,7 @@ fun worldView(
         )
 
         appendChild(
-            scene(
+            createScene(
                 viewport = this,
                 tillDetach = tillDetach,
             ) {
@@ -435,7 +436,7 @@ fun worldView(
                         )
                     },
                 )
-            },
+            }.buildElement(tillDetach),
         )
     }
 }

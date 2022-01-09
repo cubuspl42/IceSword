@@ -10,21 +10,23 @@ import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.changesUnits
 import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.mapTillRemoved
+import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.units
 import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
-import icesword.html.createHTMLElementRaw
+import icesword.html.HTMLWidget
+import icesword.html.HTMLWidgetB
 import icesword.html.createSvgGroup
 import icesword.html.createSvgGroupDl
 import icesword.html.createSvgRoot
 import icesword.html.linkSvgChildren
-import icesword.html.resolve
 import icesword.loadImageBitmap
 import icesword.ui.CanvasNode
 import icesword.ui.createCanvasView
+import icesword.ui.createStackWb
 import kotlinx.browser.document
 import kotlinx.css.BackgroundRepeat
 import kotlinx.css.px
@@ -267,12 +269,12 @@ class Scene(
     val buildOverlayElements: BuildOverlayElements,
 )
 
-fun scene(
+fun createScene(
     viewport: HTMLElement,
     tillDetach: Till,
     builder: (SceneContext) -> Scene,
-): HTMLElement {
-    fun createSceneOverlay(scene: Scene): SVGElement {
+): HTMLWidgetB<*> {
+    fun createSceneOverlay(scene: Scene): SVGSVGElement {
         val overlay = createSvgRoot(
             tillDetach = tillDetach,
         ).apply {
@@ -320,45 +322,16 @@ fun scene(
                 layers.map { it.asCanvasNode() },
             ),
         )
-    ).build(tillDetach = tillDetach)
+    )
 
-    val canvasElement = canvas.resolve()
-
-    // FIXME: Make overlay visible (why its size is 0?)
     val sceneOverlay = createSceneOverlay(scene)
 
-    val root = createHTMLElementRaw("div").apply {
-        className = "scene"
-
-        style.apply {
-            display = "grid"
-
-            setProperty("grid-template-columns", "minmax(0, 1fr)")
-            setProperty("grid-template-rows", "minmax(0, 1fr)")
-            setProperty("place-items", "stretch")
-        }
-
-        appendChild(
-            canvasElement.apply {
-                style.apply {
-                    setProperty("grid-column", "1")
-                    setProperty("grid-row", "1")
-                    zIndex = "0"
-                }
-            },
+    val root = createStackWb(
+        children = staticListOf(
+            canvas,
+            HTMLWidget.of(sceneOverlay),
         )
-
-        appendChild(
-            sceneOverlay.apply {
-                style.apply {
-                    setProperty("grid-column", "1")
-                    setProperty("grid-row", "1")
-
-                    zIndex = "1"
-                }
-            }
-        )
-    }
+    )
 
     return root
 }

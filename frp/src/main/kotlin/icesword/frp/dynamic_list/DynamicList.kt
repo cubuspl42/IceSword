@@ -158,6 +158,10 @@ fun <E, R> DynamicList<E>.map(
     content = this.content.map { it.map(transform) },
 )
 
+fun <E> DynamicList<E>.withIndex(): DynamicList<IndexedValue<E>> = ContentDynamicList(
+    content = this.content.map { it.withIndex().toList() },
+)
+
 fun <E, R> DynamicList<E>.mapIndexed(
     transform: (index: Int, element: E) -> R,
 ): DynamicList<R> = ContentDynamicList(
@@ -191,6 +195,13 @@ fun <A, R> DynamicList<A>.mapTillRemoved(
         content.map { transform(it, tillNext) }
     },
 )
+
+fun <A, R> DynamicList<A>.mapTillRemovedIndexed(
+    tillAbort: Till,
+    transform: (index: Int, element: A, tillRemoved: Till) -> R,
+): DynamicList<R> = this.withIndex().mapTillRemoved(tillAbort) { indexedElement, tillRemoved ->
+    transform(indexedElement.index, indexedElement.value, tillRemoved)
+}
 
 fun <E, R> DynamicList<E>.zipWithNext(
     transform: (a: E, b: E) -> R,
