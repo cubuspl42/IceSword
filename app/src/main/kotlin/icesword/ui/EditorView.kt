@@ -49,7 +49,6 @@ fun editorView(
             worldView(
                 rezIndex = rezIndex,
                 textureBank = textureBank,
-                dialogOverlay = dialogOverlay,
                 editor = editor,
                 tillDetach = tillDetach,
             ).apply {

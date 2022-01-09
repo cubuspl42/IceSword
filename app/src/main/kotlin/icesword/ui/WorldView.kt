@@ -4,7 +4,6 @@ package icesword.ui
 import icesword.RezIndex
 import icesword.RezTextureBank
 import icesword.TILE_SIZE
-import icesword.buildTileset
 import icesword.editor.Editor
 import icesword.editor.Tool
 import icesword.editor.modes.BasicInsertionMode
@@ -19,10 +18,6 @@ import icesword.frp.Cell
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.asStream
-import icesword.frp.dynamic_list.DynamicList
-import icesword.frp.dynamic_list.mapNotNull
-import icesword.frp.dynamic_list.mapTillRemoved
-import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNested
@@ -30,10 +25,8 @@ import icesword.frp.reactDynamicNotNullTill
 import icesword.frp.reactTill
 import icesword.frp.reactTillNext
 import icesword.frp.switchMap
-import icesword.frp.switchMapNotNull
 import icesword.frp.tillNext
 import icesword.frp.units
-import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
 import icesword.html.KeyPressedState
 import icesword.html.MouseButton
@@ -52,43 +45,17 @@ import icesword.html.onWheel
 import icesword.html.trackKeyPressedState
 import icesword.html.trackMousePosition
 import icesword.html.trackMousePressed
-import icesword.ui.scene.EntityStyle
-import icesword.ui.scene.FloorSpikeRowNode
-import icesword.ui.scene.KnotMeshUi
-import icesword.ui.scene.Layer
-import icesword.ui.scene.Scene
-import icesword.ui.scene.StartPointUi
-import icesword.ui.scene.TileLayer
-import icesword.ui.scene.WapSpriteNode
-import icesword.ui.scene.createAreaSelectionOverlayElement
-import icesword.ui.scene.createBackFoilOverlayElement
-import icesword.ui.scene.createEditorModeModeNode
-import icesword.ui.scene.createEntityNode
-import icesword.ui.scene.createFloorSpikeRowOverlayElement
-import icesword.ui.scene.createHorizontalElevatorOverlayElement
-import icesword.ui.scene.createKnotMeshOverlayElement
 import icesword.ui.scene.createScene
-import icesword.ui.scene.createStartPointOverlayElement
-import icesword.ui.scene.createVerticalElevatorOverlayElement
-import icesword.ui.scene.createWapObjectOverlayElement
-import icesword.ui.scene.overlayNode
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
-import org.w3c.dom.events.MouseEvent
-import kotlin.math.roundToInt
 
 
 fun worldView(
     rezIndex: RezIndex,
     textureBank: RezTextureBank,
-    dialogOverlay: DialogOverlay,
     editor: Editor,
     tillDetach: Till,
 ): HTMLElement {
-    val editorTextureBank = editor.editorTextureBank
-
-    val world = editor.world
-
     val root = createHTMLElementRaw("div").apply {
         className = "worldView"
         tabIndex = 0
@@ -205,200 +172,11 @@ fun worldView(
     }
 
     return root.apply {
-        val dynamicViewTransform = editor.camera.transform
-
-        val wapObjectPreviewNode =
-            editor.wapObjectAlikeInsertionMode.switchMapNotNull { insertionMode ->
-                insertionMode.wapObjectPreview.mapNested {
-                    WapSpriteNode(
-                        editorTextureBank = editorTextureBank,
-                        textureBank = textureBank,
-                        wapSprite = it,
-                        alpha = EntityStyle.previewAlpha,
-                    ).asHybridNode()
-                }
-            }
-
-        val backFoilLayer = Layer(
-            editorTextureBank = editor.editorTextureBank,
+        val scene = buildWorldViewScene(
+            rezIndex = rezIndex,
             textureBank = textureBank,
-            viewTransform = DynamicTransform.identity,
-            buildOverlayElements = {
-                staticListOf(
-                    createBackFoilOverlayElement(
-                        editor = editor,
-                        viewport = this,
-                        tillDetach = tillDetach,
-                    ),
-                )
-            },
-            tillDetach = tillDetach,
-        )
-
-        val tileset = textureBank.buildTileset(
-            rezIndex = editor.rezIndex,
-            retail = editor.retail,
-        )
-
-        val editorTilesView = editor.buildEditorTilesView()
-
-        val planeLayer = Layer(
-            editorTextureBank = editor.editorTextureBank,
-            textureBank = textureBank,
-            viewTransform = dynamicViewTransform,
-            hybridNodes = DynamicList.concat(
-                staticListOf(
-                    TileLayer(
-                        tileset = tileset,
-                        tiles = editorTilesView,
-                    ).asHybridNode(),
-                ),
-                world.wapObjects.internalOrder.mapTillRemoved(tillAbort = tillDetach) { wapObject, _ ->
-                    WapSpriteNode(
-                        editorTextureBank = editorTextureBank,
-                        textureBank = textureBank,
-                        wapSprite = wapObject.sprite,
-                    ).asHybridNode()
-                },
-                world.horizontalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
-                    WapSpriteNode(
-                        editorTextureBank = editorTextureBank,
-                        textureBank = textureBank,
-                        wapSprite = elevator.wapSprite,
-                    ).asHybridNode()
-                },
-                world.verticalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
-                    WapSpriteNode(
-                        editorTextureBank = editorTextureBank,
-                        textureBank = textureBank,
-                        wapSprite = elevator.wapSprite,
-                    ).asHybridNode()
-                },
-                world.floorSpikeRows.internalOrder.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, _ ->
-                    FloorSpikeRowNode(
-                        textureBank = textureBank,
-                        floorSpikeRow = floorSpikeRow,
-                    ).asHybridNode()
-                },
-                DynamicList.ofSingle(
-                    element = wapObjectPreviewNode,
-                ),
-                world.entities.internalOrder.mapNotNull {
-                    createEntityNode(
-                        rezIndex = rezIndex,
-                        textureBank = textureBank,
-                        editor = editor,
-                        viewTransform = dynamicViewTransform,
-                        entity = it
-                    )
-                },
-                DynamicList.ofSingle(
-                    editor.editorMode.map {
-                        createEditorModeModeNode(editorMode = it)
-                    }
-                ),
-                staticListOf(
-                    overlayNode { svg ->
-                        createStartPointOverlayElement(
-                            editor = editor,
-                            svg = svg,
-                            startPoint = world.startPointEntity,
-                            viewport = this,
-                            viewTransform = dynamicViewTransform,
-                            tillDetach = tillDetach,
-                        )
-                    }
-                ),
-                world.wapObjects.internalOrder.mapTillRemoved(tillAbort = tillDetach) { wapObject, tillRemoved ->
-                    overlayNode { svg ->
-                        createWapObjectOverlayElement(
-                            editor = editor,
-                            svg = svg,
-                            viewport = this,
-                            viewTransform = dynamicViewTransform,
-                            wapObject = wapObject,
-                            tillDetach = tillRemoved,
-                        )
-                    }
-                },
-                world.horizontalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
-                    overlayNode { svg ->
-                        createHorizontalElevatorOverlayElement(
-                            editor = editor,
-                            svg = svg,
-                            viewport = this,
-                            viewTransform = dynamicViewTransform,
-                            elevator = elevator,
-                            tillDetach = tillRemoved,
-                        )
-                    }
-                },
-                world.verticalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
-                    overlayNode { svg ->
-                        createVerticalElevatorOverlayElement(
-                            editor = editor,
-                            svg = svg,
-                            viewport = this,
-                            viewTransform = dynamicViewTransform,
-                            elevator = elevator,
-                            tillDetach = tillRemoved,
-                        )
-                    }
-                },
-                world.floorSpikeRows.internalOrder.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, tillRemoved ->
-                    overlayNode { svg ->
-                        createFloorSpikeRowOverlayElement(
-                            editor = editor,
-                            svg = svg,
-                            viewport = this,
-                            viewTransform = dynamicViewTransform,
-                            floorSpikeRow = floorSpikeRow,
-                            tillDetach = tillRemoved,
-                        )
-                    }
-                },
-                DynamicList.ofSingle(
-                    editor.knotSelectMode.switchMapNotNull {
-                        it.selectMode.areaSelectingMode.mapNested { areaSelectingMode ->
-                            overlayNode { svg ->
-                                createAreaSelectionOverlayElement(
-                                    svg = svg,
-                                    viewTransform = dynamicViewTransform,
-                                    areaSelectingMode = areaSelectingMode,
-                                    tillDetach = tillDetach,
-                                )
-                            }
-                        }
-                    }
-                ),
-            ),
-            hybridViewportCanvasNodes = DynamicList.concat(
-                staticListOf(
-                    StartPointUi(
-                        viewTransform = dynamicViewTransform,
-                        startPoint = world.startPointEntity,
-                    ).asHybridNode(),
-                ),
-                world.knotMeshes.internalOrder.mapTillRemoved(tillAbort = tillDetach) { knotMesh, _ ->
-                    KnotMeshUi(
-                        editor = editor,
-                        viewTransform = dynamicViewTransform,
-                        knotMesh = knotMesh,
-                    ).asHybridNode()
-                },
-            ),
-            hybridContentOverlayNodes = world.knotMeshes.internalOrder.mapTillRemoved(tillAbort = tillDetach) { knotMesh, tillRemoved ->
-                overlayNode { svg ->
-                    createKnotMeshOverlayElement(
-                        svg = svg,
-                        editor = editor,
-                        knotMesh = knotMesh,
-                        viewport = this,
-                        viewTransform = dynamicViewTransform,
-                        tillDetach = tillRemoved,
-                    )
-                }
-            },
+            editor = editor,
+            viewport = this,
             tillDetach = tillDetach,
         )
 
@@ -407,12 +185,7 @@ fun worldView(
                 viewport = this,
                 tillDetach = tillDetach,
             ) {
-                Scene(
-                    layers = listOf(
-                        backFoilLayer,
-                        planeLayer,
-                    ),
-                )
+                scene
             }.buildElement(tillDetach),
         )
     }
@@ -651,12 +424,6 @@ fun setupStampInsertionModeController(
     )
 }
 
-private fun MouseEvent.relativePosition(origin: HTMLElement): IntVec2 {
-    val rect = origin.getBoundingClientRect()
-    val originPosition = IntVec2(rect.x.roundToInt(), rect.y.roundToInt())
-    return this.clientPosition - originPosition
-}
-
 class MouseDrag(
     val clientPosition: Cell<IntVec2>,
     val relativePosition: Cell<IntVec2>,
@@ -687,5 +454,4 @@ class MouseDrag(
             )
         }
     }
-
 }
