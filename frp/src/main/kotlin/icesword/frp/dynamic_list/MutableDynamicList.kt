@@ -2,6 +2,7 @@ package icesword.frp.dynamic_list
 
 import icesword.frp.Cell
 import icesword.frp.MutCell
+import icesword.frp.Stream
 import icesword.frp.update
 import icesword.utils.updated
 
@@ -9,6 +10,8 @@ class MutableDynamicList<A>(
     initialContent: List<A>,
 ) : DynamicList<A> {
     private val mutableContent = MutCell(initialContent.toList())
+
+    private val diffedContent = DynamicList.diff(mutableContent)
 
     override val content: Cell<List<A>>
         get() = mutableContent
@@ -48,4 +51,10 @@ class MutableDynamicList<A>(
     fun replaceContent(newContent: List<A>) {
         mutableContent.set(newContent)
     }
+
+    override val changes: Stream<ListChange<A>>
+        get() = diffedContent.changes
+
+    override val volatileIdentifiedContentView: List<DynamicList.IdentifiedElement<A>>
+        get() = diffedContent.volatileIdentifiedContentView
 }

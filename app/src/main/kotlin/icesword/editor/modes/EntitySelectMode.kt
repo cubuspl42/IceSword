@@ -3,7 +3,6 @@ package icesword.editor.modes
 import icesword.editor.Editor
 import icesword.editor.EditorMode
 import icesword.editor.entities.Entity
-import icesword.editor.indexOfOrNull
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.CellLoop
@@ -19,6 +18,7 @@ import icesword.geometry.IntLineSeg
 import icesword.geometry.IntRect
 import icesword.geometry.IntSize
 import icesword.geometry.IntVec2
+import icesword.indexOfOrNull
 
 
 class EntitySelectMode(

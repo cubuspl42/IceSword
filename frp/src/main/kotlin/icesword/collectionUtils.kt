@@ -122,3 +122,11 @@ inline fun <reified R> Collection<*>.asFullOfInstances(): List<R>? {
     return if (result.size == this.size) result
     else null
 }
+
+fun <T> Iterable<T>.indexOfOrNull(element: T?): Int? {
+    val i = this.indexOf(element)
+    return when {
+        i >= 0 -> i
+        else -> null
+    }
+}

@@ -2,20 +2,52 @@ package icesword.frp.dynamic_list
 
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
-import icesword.frp.DynamicSet
 import icesword.frp.Stream
-import icesword.frp.Till
 import icesword.frp.divertMap
-import icesword.frp.hold
+import icesword.frp.dynamic_list.DynamicList.IdentifiedElement
 import icesword.frp.map
-import icesword.frp.mapNotNull
-import icesword.frp.mapTillNext
 import icesword.frp.switchMap
-import icesword.frp.units
-import icesword.frp.values
+import icesword.indexOfOrNull
 
 interface DynamicList<out E> {
+    /**
+     * Element of a list with an additional identity, which makes all elements
+     * present in a specific list, at a specific time, distinguishable from each
+     * other.
+     *
+     * There are no additional guarantees about the uniqueness of that
+     * identity, especially between elements of a given list which weren't
+     * present in that list at the same time or between elements of different
+     * lists.
+     *
+     * The nature of the identity can differ between lists being results of
+     * different operators.
+     *
+     * The [equals] and [hashCode] methods of this interface refer to the
+     * additional identity described above.
+     */
+    interface IdentifiedElement<out E> {
+        val element: E
+
+        override fun equals(other: Any?): Boolean
+
+        override fun hashCode(): Int
+    }
+
     companion object {
+        fun <E /* : Eq */> identifyByOrder(list: List<E>): List<IdentifiedElement<E>> {
+            val elementCounter = CounterMap<E>()
+
+            return list.map {
+                val oldCount = elementCounter.increaseCount(it)
+
+                OrderIdentifiedElement(
+                    element = it,
+                    order = oldCount,
+                )
+            }
+        }
+
         fun <E> of(list: List<E>): DynamicList<E> =
             DynamicList.diff(content = constant(list))
 
@@ -28,7 +60,7 @@ interface DynamicList<out E> {
             list.content.divertMap { Stream.merge(it) }
 
         fun <E> diff(content: Cell<List<E>>): DynamicList<E> =
-            ContentDynamicList(content = content)
+            DiffDynamicList(content = content)
 
         fun <E> diff(content: Cell<DynamicList<E>>): DynamicList<E> =
             DynamicList.diff(content = content.switchMap { it.content })
@@ -58,164 +90,158 @@ interface DynamicList<out E> {
             DynamicList.diff(constant(emptyList()))
     }
 
+    val changes: Stream<ListChange<E>>
+
     val content: Cell<List<E>>
+
+    val volatileIdentifiedContentView: List<IdentifiedElement<E>>
 
     // May be view, may be copy
     val volatileContentView: List<E>
         get() = content.sample()
 }
 
+data class OrderIdentifiedElement<E>(
+    override val element: E,
+    val order: Int,
+) : IdentifiedElement<E>
+
+
 fun <E> staticListOf(vararg elements: E): DynamicList<E> =
     DynamicList.of(elements.toList())
-
-class ContentDynamicList<out E>(
-    override val content: Cell<List<E>>,
-) : DynamicList<E> {
-    override val volatileContentView: List<E>
-        get() = content.sample()
-}
-
-fun <E> DynamicList<E>.changesUnits(): Stream<Unit> =
-    content.values().units()
 
 val <E> DynamicList<E>.size: Cell<Int>
     get() = content.map { it.size }
 
-fun <E> DynamicList<E>.sampleContent(): List<E> =
-    volatileContentView.toList()
+data class ListChange<out E>(
+    val added: Set<AddedElement<E>>,
+    val removed: Set<RemovedElement<E>>,
+    val reordered: Set<ReorderedElement<E>>,
+) {
+    data class AddedElement<out E>(
+        /**
+         * Index at which the added element is inserted.
+         *
+         * Insertion index is in range from 0 (push-front) to list size (push-back).
+         */
+        val indexAfter: Int,
+        /**
+         * The element being added.
+         */
+        val addedElement: IdentifiedElement<E>,
+    )
 
-fun <E : Any> DynamicList<E>.first(): Cell<E> =
-    this.content.map { it.first() }
+    data class RemovedElement<out E>(
+        /**
+         * Index at which the removed element was present at the moment of removal.
+         */
+        val indexBefore: Int,
+        /**
+         * The element being removed.
+         */
+        val removedElement: IdentifiedElement<E>,
+    )
 
-fun <E : Any> DynamicList<E>.last(): Cell<E> =
-    this.content.map { it.last() }
+    data class ReorderedElement<out E>(
+        /**
+         * Index at which the removed element was present at the moment of removal.
+         */
+        val indexBefore: Int,
+        /**
+         *
+         */
+        val indexAfter: Int,
+        /**
+         * The element being reordered.
+         */
+        val reorderedElement: IdentifiedElement<E>,
+    )
 
-fun <E : Any> DynamicList<E>.firstOrNull(): Cell<E?> =
-    this.content.map { it.firstOrNull() }
+    companion object {
+        fun <E> diff(
+            oldList: List<E>,
+            newList: List<E>,
+        ): ListChange<E> {
+            val oldListIdentified = DynamicList.identifyByOrder(oldList)
+            val newListIdentified = DynamicList.identifyByOrder(newList)
 
-fun <E> DynamicList<E>.firstOrNull(predicate: (E) -> Boolean): Cell<E?> =
-    this.content.map { it.firstOrNull(predicate) }
+            val added: Set<AddedElement<E>> =
+                newListIdentified.mapIndexedNotNull { indexNew, newIdentifiedElement ->
+                    if (newIdentifiedElement !in oldListIdentified)
+                        AddedElement(
+                            indexAfter = indexNew,
+                            addedElement = newIdentifiedElement,
+                        )
+                    else null
+                }.toSet()
 
-fun <E : Any> DynamicList<E>.firstOrNullDynamic(predicate: (E) -> Cell<Boolean>): Cell<E?> =
-    this.fuseBy { element ->
-        predicate(element).map { flag -> element.takeIf { flag } }
-    }.filterNotNull().firstOrNull()
+            val removed: Set<RemovedElement<E>> =
+                oldListIdentified.mapIndexedNotNull { indexOld, oldIdentifiedElement ->
+                    if (oldIdentifiedElement !in newListIdentified)
+                        RemovedElement(
+                            indexBefore = indexOld,
+                            removedElement = oldIdentifiedElement,
+                        )
+                    else null
+                }.toSet()
 
-fun <E : Any> DynamicList<E?>.firstNotNullOrNull(): Cell<E?> = filterNotNull().firstOrNull()
+            val reordered: Set<ReorderedElement<E>> =
+                newListIdentified.mapIndexedNotNull { indexNew, newIdentifiedElement ->
+                    oldListIdentified.indexOfOrNull(newIdentifiedElement)?.let { indexOld ->
+                        if (indexOld != indexNew) ReorderedElement(
+                            indexBefore = indexOld,
+                            indexAfter = indexNew,
+                            reorderedElement = newIdentifiedElement,
+                        ) else null
+                    }
+                }.toSet()
 
-fun <E> DynamicList<Cell<E>>.fuse(): DynamicList<E> =
-    DynamicList.fuse(this)
-
-fun <E, R> DynamicList<E>.fuseBy(transform: (E) -> Cell<R>): DynamicList<R> =
-    this.map(transform).fuse()
-
-fun <A : Any> DynamicList<A?>.filterNotNull(): DynamicList<A> =
-    DynamicList.diff(content = this.content.map { it.filterNotNull() })
-
-fun <E : Any> DynamicList<Cell<E?>>.fuseNotNull(): DynamicList<E> =
-    this.fuse().filterNotNull()
-
-fun <E> DynamicList<E>.concatWith(other: DynamicList<E>): DynamicList<E> =
-    DynamicList.concat(listOf(this, other))
-
-fun <E : Any> DynamicList<E>.drop(n: Int): DynamicList<E> =
-    DynamicList.diff(content = this.content.map { it.drop(n) })
-
-fun <E> DynamicList<E>.indexOf(element: E): Cell<Int?> =
-    content.map { content ->
-        val i = content.indexOf(element)
-        if (i >= 0) i else null
+            return ListChange(
+                added = added,
+                removed = removed,
+                reordered = reordered,
+            )
+        }
     }
 
-fun <E> DynamicList<E>.get(index: Int, till: Till): Cell<E> {
-    val steps = content.values().mapNotNull { it.getOrNull(index) }
-    val initialValue = this.volatileContentView[index]
-    return steps.hold(initialValue, till)
 }
 
-fun <E> DynamicList<E>.getOrNull(index: Int): Cell<E?> =
-    content.map { content -> content.getOrNull(index) }
+fun <E> ListChange<E>.applyTo(
+    oldContent: List<IdentifiedElement<E>>,
+): List<IdentifiedElement<E>> {
+    val newSize = oldContent.size + added.size - removed.size
+    val newContent = MutableList<IdentifiedElement<E>?>(newSize) { null }
 
-fun <E> DynamicList<E>.withAppended(element: Cell<E>): DynamicList<E> =
-    DynamicList.diff(
-        content = Cell.map2(
-            content,
-            element,
-        ) { content, element ->
-            content + element
-        },
-    )
+    added.forEach {
+        newContent[it.indexAfter] = it.addedElement
+    }
 
-fun <E> DynamicList<E>.lastNow(): E =
-    volatileContentView.last()
+    reordered.forEach {
+        newContent[it.indexAfter] = it.reorderedElement
+    }
 
-fun <E> DynamicList<E>.toDynamicSet(): DynamicSet<E> =
-    DynamicSet.diff(this.content.map { it.toSet() })
-
-fun <E, R> DynamicList<E>.map(
-    transform: (element: E) -> R,
-): DynamicList<R> = DynamicList.diff(
-    content = this.content.map { it.map(transform) },
-)
-
-fun <E> DynamicList<E>.withIndex(): DynamicList<IndexedValue<E>> = DynamicList.diff(
-    content = this.content.map { it.withIndex().toList() },
-)
-
-fun <E, R> DynamicList<E>.mapIndexed(
-    transform: (index: Int, element: E) -> R,
-): DynamicList<R> = DynamicList.diff(
-    content = this.content.map { it.mapIndexed(transform) },
-)
-
-fun <E, R> DynamicList<E>.mapIndexedDynamic(
-    till: Till,
-    transform: (index: Int, element: Cell<E>) -> R,
-): DynamicList<R> = DynamicList.diff(
-    content = this.size.mapTillNext(till) { size, tillNext ->
-        (0 until size).map { index -> transform(index, this.get(index, tillNext)) }
-    },
-)
-
-fun <E, R : Any> DynamicList<E>.mapNotNull(
-    transform: (element: E) -> R?,
-): DynamicList<R> = DynamicList.diff(
-    content = this.content.map { it.mapNotNull(transform) },
-)
-
-fun <E, R> DynamicList<E>.mergeBy(
-    transform: (element: E) -> Stream<R>,
-): Stream<R> = DynamicList.merge(this.map(transform))
-
-fun <A, R> DynamicList<A>.mapTillRemoved(
-    tillAbort: Till,
-    transform: (element: A, tillRemoved: Till) -> R,
-): DynamicList<R> = DynamicList.diff(
-    content = this.content.mapTillNext(tillAbort) { content, tillNext ->
-        content.map { transform(it, tillNext) }
-    },
-)
-
-fun <A, R> DynamicList<A>.mapTillRemovedIndexed(
-    tillAbort: Till,
-    transform: (index: Int, element: A, tillRemoved: Till) -> R,
-): DynamicList<R> = this.withIndex().mapTillRemoved(tillAbort) { indexedElement, tillRemoved ->
-    transform(indexedElement.index, indexedElement.value, tillRemoved)
+    return newContent.mapIndexed { index, it -> it ?: oldContent[index] }
 }
 
-fun <E, R> DynamicList<E>.zipWithNext(
-    transform: (a: E, b: E) -> R,
-): DynamicList<R> =
-    DynamicList.diff(
-        content = this.content.map { content ->
-            content.zipWithNext(transform)
+private class CounterMap<A> {
+    private val map = mutableMapOf<A, Int>()
+
+    private fun getCount(a: A) =
+        map.getOrElse(a) { 0 }
+
+    fun increaseCount(a: A): Int {
+        val oldCount = getCount(a)
+        map[a] = oldCount + 1
+        return oldCount
+    }
+
+    private fun decreaseCount(a: A) {
+        val oldCount = map.getOrElse(a) { throw IllegalStateException() }
+
+        if (oldCount == 0) {
+            map.remove(a)
+        } else {
+            map[a] = oldCount - 1
         }
-    )
-
-fun <E> DynamicList<E>.toSet(): DynamicSet<E> =
-    DynamicSet.diff(
-        content = this.content.map { it.toSet() },
-    )
-
-fun <S, T : S> DynamicList<T>.reduce(operation: (acc: S, T) -> S): Cell<S> =
-    this.content.map { content -> content.reduce(operation) }
+    }
+}

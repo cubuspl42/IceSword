@@ -704,14 +704,6 @@ class Editor(
     }
 }
 
-fun <T> Iterable<T>.indexOfOrNull(element: T?): Int? {
-    val i = this.indexOf(element)
-    return when {
-        i >= 0 -> i
-        else -> null
-    }
-}
-
 @Serializable
 data class ProjectData(
     val world: WorldData,
