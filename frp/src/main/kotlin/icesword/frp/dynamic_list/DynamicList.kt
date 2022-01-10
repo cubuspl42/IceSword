@@ -17,10 +17,10 @@ import icesword.frp.values
 interface DynamicList<out E> {
     companion object {
         fun <E> of(list: List<E>): DynamicList<E> =
-            ContentDynamicList(content = constant(list))
+            DynamicList.diff(content = constant(list))
 
         fun <E : Any> ofSingle(element: Cell<E?>): DynamicList<E> =
-            ContentDynamicList(
+            DynamicList.diff(
                 content = element.map { it?.let(::listOf) ?: emptyList() },
             )
 
@@ -31,22 +31,22 @@ interface DynamicList<out E> {
             ContentDynamicList(content = content)
 
         fun <E> diff(content: Cell<DynamicList<E>>): DynamicList<E> =
-            ContentDynamicList(content = content.switchMap { it.content })
+            DynamicList.diff(content = content.switchMap { it.content })
 
         fun <E> fuse(content: DynamicList<Cell<E>>): DynamicList<E> =
-            ContentDynamicList(
+            DynamicList.diff(
                 content = content.content.switchMap { cells ->
                     Cell.traverse(cells) { it }
                 },
             )
 
         fun <E> fuse(content: List<Cell<E>>): DynamicList<E> =
-            ContentDynamicList(
+            DynamicList.diff(
                 content = Cell.traverse(content) { it },
             )
 
         fun <E> concat(lists: Iterable<DynamicList<E>>): DynamicList<E> =
-            ContentDynamicList(
+            DynamicList.diff(
                 content = Cell.traverse(lists) { dl -> dl.content }
                     .map { ls: List<List<E>> -> ls.flatten() },
             )
@@ -55,7 +55,7 @@ interface DynamicList<out E> {
             concat(lists.toList())
 
         fun <E> empty(): DynamicList<E> =
-            ContentDynamicList(constant(emptyList()))
+            DynamicList.diff(constant(emptyList()))
     }
 
     val content: Cell<List<E>>
@@ -110,7 +110,7 @@ fun <E, R> DynamicList<E>.fuseBy(transform: (E) -> Cell<R>): DynamicList<R> =
     this.map(transform).fuse()
 
 fun <A : Any> DynamicList<A?>.filterNotNull(): DynamicList<A> =
-    ContentDynamicList(content = this.content.map { it.filterNotNull() })
+    DynamicList.diff(content = this.content.map { it.filterNotNull() })
 
 fun <E : Any> DynamicList<Cell<E?>>.fuseNotNull(): DynamicList<E> =
     this.fuse().filterNotNull()
@@ -119,7 +119,7 @@ fun <E> DynamicList<E>.concatWith(other: DynamicList<E>): DynamicList<E> =
     DynamicList.concat(listOf(this, other))
 
 fun <E : Any> DynamicList<E>.drop(n: Int): DynamicList<E> =
-    ContentDynamicList(content = this.content.map { it.drop(n) })
+    DynamicList.diff(content = this.content.map { it.drop(n) })
 
 fun <E> DynamicList<E>.indexOf(element: E): Cell<Int?> =
     content.map { content ->
@@ -137,7 +137,7 @@ fun <E> DynamicList<E>.getOrNull(index: Int): Cell<E?> =
     content.map { content -> content.getOrNull(index) }
 
 fun <E> DynamicList<E>.withAppended(element: Cell<E>): DynamicList<E> =
-    ContentDynamicList(
+    DynamicList.diff(
         content = Cell.map2(
             content,
             element,
@@ -154,24 +154,24 @@ fun <E> DynamicList<E>.toDynamicSet(): DynamicSet<E> =
 
 fun <E, R> DynamicList<E>.map(
     transform: (element: E) -> R,
-): DynamicList<R> = ContentDynamicList(
+): DynamicList<R> = DynamicList.diff(
     content = this.content.map { it.map(transform) },
 )
 
-fun <E> DynamicList<E>.withIndex(): DynamicList<IndexedValue<E>> = ContentDynamicList(
+fun <E> DynamicList<E>.withIndex(): DynamicList<IndexedValue<E>> = DynamicList.diff(
     content = this.content.map { it.withIndex().toList() },
 )
 
 fun <E, R> DynamicList<E>.mapIndexed(
     transform: (index: Int, element: E) -> R,
-): DynamicList<R> = ContentDynamicList(
+): DynamicList<R> = DynamicList.diff(
     content = this.content.map { it.mapIndexed(transform) },
 )
 
 fun <E, R> DynamicList<E>.mapIndexedDynamic(
     till: Till,
     transform: (index: Int, element: Cell<E>) -> R,
-): DynamicList<R> = ContentDynamicList(
+): DynamicList<R> = DynamicList.diff(
     content = this.size.mapTillNext(till) { size, tillNext ->
         (0 until size).map { index -> transform(index, this.get(index, tillNext)) }
     },
@@ -179,7 +179,7 @@ fun <E, R> DynamicList<E>.mapIndexedDynamic(
 
 fun <E, R : Any> DynamicList<E>.mapNotNull(
     transform: (element: E) -> R?,
-): DynamicList<R> = ContentDynamicList(
+): DynamicList<R> = DynamicList.diff(
     content = this.content.map { it.mapNotNull(transform) },
 )
 
@@ -190,7 +190,7 @@ fun <E, R> DynamicList<E>.mergeBy(
 fun <A, R> DynamicList<A>.mapTillRemoved(
     tillAbort: Till,
     transform: (element: A, tillRemoved: Till) -> R,
-): DynamicList<R> = ContentDynamicList(
+): DynamicList<R> = DynamicList.diff(
     content = this.content.mapTillNext(tillAbort) { content, tillNext ->
         content.map { transform(it, tillNext) }
     },
@@ -206,7 +206,7 @@ fun <A, R> DynamicList<A>.mapTillRemovedIndexed(
 fun <E, R> DynamicList<E>.zipWithNext(
     transform: (a: E, b: E) -> R,
 ): DynamicList<R> =
-    ContentDynamicList(
+    DynamicList.diff(
         content = this.content.map { content ->
             content.zipWithNext(transform)
         }
