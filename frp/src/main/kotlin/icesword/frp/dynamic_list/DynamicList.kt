@@ -4,16 +4,19 @@ import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Stream
 import icesword.frp.divertMap
-import icesword.frp.dynamic_list.DynamicList.IdentifiedElement
 import icesword.frp.map
 import icesword.frp.switchMap
-import icesword.indexOfOrNull
 
 interface DynamicList<out E> {
+    data class IdentifiedElement<out E>(
+        val element: E,
+        val identity: ElementIdentity,
+    )
+
     /**
-     * Element of a list with an additional identity, which makes all elements
-     * present in a specific list, at a specific time, distinguishable from each
-     * other.
+     * An additional identity of an element of the list, which makes all
+     * elements present in a specific list distinguishable from all the other
+     * elements present in that list at the same time.
      *
      * There are no additional guarantees about the uniqueness of that
      * identity, especially between elements of a given list which weren't
@@ -22,13 +25,8 @@ interface DynamicList<out E> {
      *
      * The nature of the identity can differ between lists being results of
      * different operators.
-     *
-     * The [equals] and [hashCode] methods of this interface refer to the
-     * additional identity described above.
      */
-    interface IdentifiedElement<out E> {
-        val element: E
-
+    interface ElementIdentity {
         override fun equals(other: Any?): Boolean
 
         override fun hashCode(): Int
@@ -41,9 +39,12 @@ interface DynamicList<out E> {
             return list.map {
                 val oldCount = elementCounter.increaseCount(it)
 
-                OrderIdentifiedElement(
+                IdentifiedElement(
                     element = it,
-                    order = oldCount,
+                    identity = OrderIdentity(
+                        element = it,
+                        order = oldCount,
+                    ),
                 )
             }
         }
@@ -101,127 +102,16 @@ interface DynamicList<out E> {
         get() = content.sample()
 }
 
-data class OrderIdentifiedElement<E>(
-    override val element: E,
+data class OrderIdentity<E>(
+    val element: E,
     val order: Int,
-) : IdentifiedElement<E>
-
+) : DynamicList.ElementIdentity
 
 fun <E> staticListOf(vararg elements: E): DynamicList<E> =
     DynamicList.of(elements.toList())
 
 val <E> DynamicList<E>.size: Cell<Int>
     get() = content.map { it.size }
-
-data class ListChange<out E>(
-    val added: Set<AddedElement<E>>,
-    val removed: Set<RemovedElement<E>>,
-    val reordered: Set<ReorderedElement<E>>,
-) {
-    data class AddedElement<out E>(
-        /**
-         * Index at which the added element is inserted.
-         *
-         * Insertion index is in range from 0 (push-front) to list size (push-back).
-         */
-        val indexAfter: Int,
-        /**
-         * The element being added.
-         */
-        val addedElement: IdentifiedElement<E>,
-    )
-
-    data class RemovedElement<out E>(
-        /**
-         * Index at which the removed element was present at the moment of removal.
-         */
-        val indexBefore: Int,
-        /**
-         * The element being removed.
-         */
-        val removedElement: IdentifiedElement<E>,
-    )
-
-    data class ReorderedElement<out E>(
-        /**
-         * Index at which the removed element was present at the moment of removal.
-         */
-        val indexBefore: Int,
-        /**
-         *
-         */
-        val indexAfter: Int,
-        /**
-         * The element being reordered.
-         */
-        val reorderedElement: IdentifiedElement<E>,
-    )
-
-    companion object {
-        fun <E> diff(
-            oldList: List<E>,
-            newList: List<E>,
-        ): ListChange<E> {
-            val oldListIdentified = DynamicList.identifyByOrder(oldList)
-            val newListIdentified = DynamicList.identifyByOrder(newList)
-
-            val added: Set<AddedElement<E>> =
-                newListIdentified.mapIndexedNotNull { indexNew, newIdentifiedElement ->
-                    if (newIdentifiedElement !in oldListIdentified)
-                        AddedElement(
-                            indexAfter = indexNew,
-                            addedElement = newIdentifiedElement,
-                        )
-                    else null
-                }.toSet()
-
-            val removed: Set<RemovedElement<E>> =
-                oldListIdentified.mapIndexedNotNull { indexOld, oldIdentifiedElement ->
-                    if (oldIdentifiedElement !in newListIdentified)
-                        RemovedElement(
-                            indexBefore = indexOld,
-                            removedElement = oldIdentifiedElement,
-                        )
-                    else null
-                }.toSet()
-
-            val reordered: Set<ReorderedElement<E>> =
-                newListIdentified.mapIndexedNotNull { indexNew, newIdentifiedElement ->
-                    oldListIdentified.indexOfOrNull(newIdentifiedElement)?.let { indexOld ->
-                        if (indexOld != indexNew) ReorderedElement(
-                            indexBefore = indexOld,
-                            indexAfter = indexNew,
-                            reorderedElement = newIdentifiedElement,
-                        ) else null
-                    }
-                }.toSet()
-
-            return ListChange(
-                added = added,
-                removed = removed,
-                reordered = reordered,
-            )
-        }
-    }
-
-}
-
-fun <E> ListChange<E>.applyTo(
-    oldContent: List<IdentifiedElement<E>>,
-): List<IdentifiedElement<E>> {
-    val newSize = oldContent.size + added.size - removed.size
-    val newContent = MutableList<IdentifiedElement<E>?>(newSize) { null }
-
-    added.forEach {
-        newContent[it.indexAfter] = it.addedElement
-    }
-
-    reordered.forEach {
-        newContent[it.indexAfter] = it.reorderedElement
-    }
-
-    return newContent.mapIndexed { index, it -> it ?: oldContent[index] }
-}
 
 private class CounterMap<A> {
     private val map = mutableMapOf<A, Int>()

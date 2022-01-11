@@ -153,11 +153,11 @@ class DiffTest {
         val e40id0v1 = identifiedContent1[3]
         val e50id0v1 = identifiedContent1[4]
 
-        assertTrue { e10id0v1.element == 10 }
-        assertTrue { e20id0v1.element == 20 }
-        assertTrue { e30id0v1.element == 30 }
-        assertTrue { e40id0v1.element == 40 }
-        assertTrue { e50id0v1.element == 50 }
+        assertEquals(expected = 10, actual = e10id0v1.element)
+        assertEquals(expected = 20, actual = e20id0v1.element)
+        assertEquals(expected = 30, actual = e30id0v1.element)
+        assertEquals(expected = 40, actual = e40id0v1.element)
+        assertEquals(expected = 50, actual = e50id0v1.element)
 
         // When
 
@@ -181,13 +181,13 @@ class DiffTest {
         val e40id0v2 = identifiedContent2[4]
         val e50id0v2 = identifiedContent2[5]
 
-        assertTrue { e10id0v2.element == 10 && e10id0v1 == e10id0v2 }
-        assertTrue { e20id0v2.element == 20 && e20id0v1 == e20id0v2 }
-        assertTrue { e30id0v2.element == 30 && e30id0v1 == e30id0v2 }
-        assertTrue { e40id0v2.element == 40 && e40id0v1 == e40id0v2 }
-        assertTrue { e50id0v2.element == 50 && e50id0v1 == e50id0v2 }
+        assertEquals(expected = e10id0v1, actual = e10id0v2)
+        assertEquals(expected = e20id0v1, actual = e20id0v2)
+        assertEquals(expected = e30id0v1, actual = e30id0v2)
+        assertEquals(expected = e40id0v1, actual = e40id0v2)
+        assertEquals(expected = e50id0v1, actual = e50id0v2)
 
-        assertTrue { e20id1v1.element == 20 }
+        assertEquals(expected = 20, actual = e20id1v1.element)
 
         assertTrue {
             listOf(e10id0v2, e20id0v2, e30id0v2, e40id0v2, e50id0v2)
@@ -249,11 +249,11 @@ class DiffTest {
         val e40id0v1 = identifiedContent1[3]
         val e50id0v1 = identifiedContent1[4]
 
-        assertTrue { e10id0v1.element == 10 }
-        assertTrue { e20id0v1.element == 20 }
-        assertTrue { e30id0v1.element == 30 }
-        assertTrue { e40id0v1.element == 40 }
-        assertTrue { e50id0v1.element == 50 }
+        assertEquals(expected = 10, actual = e10id0v1.element)
+        assertEquals(expected = 20, actual = e20id0v1.element)
+        assertEquals(expected = 30, actual = e30id0v1.element)
+        assertEquals(expected = 40, actual = e40id0v1.element)
+        assertEquals(expected = 50, actual = e50id0v1.element)
 
         // When
 
@@ -277,13 +277,13 @@ class DiffTest {
         val e30id0v2 = identifiedContent2[4]
         val e10id0v2 = identifiedContent2[5]
 
-        assertTrue { e10id0v2.element == 10 && e10id0v1 == e10id0v2 }
-        assertTrue { e20id0v2.element == 20 && e20id0v1 == e20id0v2 }
-        assertTrue { e30id0v2.element == 30 && e30id0v1 == e30id0v2 }
-        assertTrue { e40id0v2.element == 40 && e40id0v1 == e40id0v2 }
-        assertTrue { e50id0v2.element == 50 && e50id0v1 == e50id0v2 }
+        assertEquals(expected = e10id0v1, actual = e10id0v2)
+        assertEquals(expected = e20id0v1, actual = e20id0v2)
+        assertEquals(expected = e30id0v1, actual = e30id0v2)
+        assertEquals(expected = e40id0v1, actual = e40id0v2)
+        assertEquals(expected = e50id0v1, actual = e50id0v2)
 
-        assertTrue { e60id0v1.element == 60 }
+        assertEquals(expected = 60, actual = e60id0v1.element)
 
         assertTrue {
             listOf(e10id0v2, e20id0v2, e30id0v2, e40id0v2, e50id0v2)
@@ -354,11 +354,11 @@ class DiffTest {
         val e40id0v1 = identifiedContent1[3]
         val e50id0v1 = identifiedContent1[4]
 
-        assertTrue { e10id0v1.element == 10 }
-        assertTrue { e20id0v1.element == 20 }
-        assertTrue { e30id0v1.element == 30 }
-        assertTrue { e40id0v1.element == 40 }
-        assertTrue { e50id0v1.element == 50 }
+        assertEquals(expected = 10, actual = e10id0v1.element)
+        assertEquals(expected = 20, actual = e20id0v1.element)
+        assertEquals(expected = 30, actual = e30id0v1.element)
+        assertEquals(expected = 40, actual = e40id0v1.element)
+        assertEquals(expected = 50, actual = e50id0v1.element)
 
         // When
 
@@ -379,9 +379,9 @@ class DiffTest {
         val e30id0v2 = identifiedContent2[1]
         val e50id0v2 = identifiedContent2[2]
 
-        assertTrue { e10id0v2.element == 10 && e10id0v1 == e10id0v2 }
-        assertTrue { e30id0v2.element == 30 && e30id0v1 == e30id0v2 }
-        assertTrue { e50id0v2.element == 50 && e50id0v1 == e50id0v2 }
+        assertEquals(expected = e10id0v1, actual = e10id0v2)
+        assertEquals(expected = e30id0v1, actual = e30id0v2)
+        assertEquals(expected = e50id0v1, actual = e50id0v2)
 
         assertMatchesExclusivelyOrdered(
             list = changes,
@@ -438,11 +438,11 @@ class DiffTest {
         val e40id0v1 = identifiedContent1[3]
         val e50id0v1 = identifiedContent1[4]
 
-        assertTrue { e10id0v1.element == 10 }
-        assertTrue { e20id0v1.element == 20 }
-        assertTrue { e30id0v1.element == 30 }
-        assertTrue { e40id0v1.element == 40 }
-        assertTrue { e50id0v1.element == 50 }
+        assertEquals(expected = 10, actual = e10id0v1.element)
+        assertEquals(expected = 20, actual = e20id0v1.element)
+        assertEquals(expected = 30, actual = e30id0v1.element)
+        assertEquals(expected = 40, actual = e40id0v1.element)
+        assertEquals(expected = 50, actual = e50id0v1.element)
 
         // When
 
@@ -519,11 +519,11 @@ class DiffTest {
         val e40id0v1 = identifiedContent1[3]
         val e50id0v1 = identifiedContent1[4]
 
-        assertTrue { e10id0v1.element == 10 }
-        assertTrue { e20id0v1.element == 20 }
-        assertTrue { e30id0v1.element == 30 }
-        assertTrue { e40id0v1.element == 40 }
-        assertTrue { e50id0v1.element == 50 }
+        assertEquals(expected = 10, actual = e10id0v1.element)
+        assertEquals(expected = 20, actual = e20id0v1.element)
+        assertEquals(expected = 30, actual = e30id0v1.element)
+        assertEquals(expected = 40, actual = e40id0v1.element)
+        assertEquals(expected = 50, actual = e50id0v1.element)
 
         // When
 
@@ -546,11 +546,11 @@ class DiffTest {
         val e30id0v2 = identifiedContent2[3]
         val e40id0v2 = identifiedContent2[4]
 
-        assertTrue { e10id0v2.element == 10 && e10id0v1 == e10id0v2 }
-        assertTrue { e20id0v2.element == 20 && e20id0v1 == e20id0v2 }
-        assertTrue { e30id0v2.element == 30 && e30id0v1 == e30id0v2 }
-        assertTrue { e40id0v2.element == 40 && e40id0v1 == e40id0v2 }
-        assertTrue { e50id0v2.element == 50 && e50id0v1 == e50id0v2 }
+        assertEquals(expected = e10id0v1, actual = e10id0v2)
+        assertEquals(expected = e20id0v1, actual = e20id0v2)
+        assertEquals(expected = e30id0v1, actual = e30id0v2)
+        assertEquals(expected = e40id0v1, actual = e40id0v2)
+        assertEquals(expected = e50id0v1, actual = e50id0v2)
 
         assertMatchesExclusivelyOrdered(
             list = changes,
