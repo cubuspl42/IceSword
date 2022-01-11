@@ -12,6 +12,7 @@ import icesword.frp.Till
 import icesword.frp.Tilled
 import icesword.frp.divertMap
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.diff
 import icesword.frp.dynamic_list.firstNotNullOrNull
 import icesword.frp.dynamic_list.firstOrNullDynamic
 import icesword.frp.dynamic_list.fuseBy

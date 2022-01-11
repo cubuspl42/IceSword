@@ -1,19 +1,25 @@
 package icesword.frp.dynamic_list
 
-import icesword.frp.Cell
 import icesword.frp.Stream
+import icesword.frp.dynamic_list.DynamicList.IdentifiedElement
 import icesword.frp.map
 
-class MapDynamicList<E /* : Eq<E> */>(
-    override val content: Cell<List<E>>,
-) : InstantiatingDynamicList<E>() {
-    override fun buildContent(): MutableList<DynamicList.IdentifiedElement<E>> =
-        identifyByOrder(content.sample()).toMutableList()
+fun <E, R> DynamicList<E>.map(transform: (element: E) -> R): DynamicList<R> =
+    MapDynamicList(
+        source = this,
+        transform = transform,
+    )
 
-    override fun buildChanges(): Stream<ListChange<E>> = content.changes.map { valueChange ->
-        val oldContent: List<E> = valueChange.oldValue
-        val newContent: List<E> = valueChange.newValue
+private class MapDynamicList<E, R>(
+    private val source: DynamicList<E>,
+    private val transform: (E) -> R,
+) : InstantiatingDynamicList<R>() {
+    override fun buildContent(): MutableList<IdentifiedElement<R>> =
+        source.volatileIdentifiedContentView.map {
+            it.map(transform)
+        }.toMutableList()
 
-        ListChange.diff(oldContent, newContent)
+    override fun buildChanges(): Stream<ListChange<R>> = source.changes.map { change ->
+        change.map(transform)
     }
 }

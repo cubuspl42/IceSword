@@ -4,6 +4,7 @@ import frpjs.Hash
 import icesword.collections.DefaultSetFactory
 import icesword.collections.FastSetFactory
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.diff
 import icesword.frp.dynamic_map.DynamicSetAssociateWith
 import icesword.frp.dynamic_set.AdjustDynamicSet
 import icesword.frp.dynamic_set.DiffDynamicSet

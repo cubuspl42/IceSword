@@ -84,12 +84,6 @@ fun <E> DynamicList<E>.lastNow(): E =
 fun <E> DynamicList<E>.toDynamicSet(): DynamicSet<E> =
     DynamicSet.Companion.diff(this.content.map { it.toSet() })
 
-fun <E, R> DynamicList<E>.map(
-    transform: (element: E) -> R,
-): DynamicList<R> = DynamicList.Companion.diff(
-    content = this.content.map { it.map(transform) },
-)
-
 fun <E> DynamicList<E>.withIndex(): DynamicList<IndexedValue<E>> = DynamicList.Companion.diff(
     content = this.content.map { it.withIndex().toList() },
 )

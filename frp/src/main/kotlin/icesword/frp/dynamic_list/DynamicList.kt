@@ -33,7 +33,6 @@ interface DynamicList<out E> {
     }
 
     companion object {
-
         fun <E> of(list: List<E>): DynamicList<E> =
             DynamicList.diff(content = constant(list))
 
@@ -44,12 +43,6 @@ interface DynamicList<out E> {
 
         fun <E> merge(list: DynamicList<Stream<E>>): Stream<E> =
             list.content.divertMap { Stream.merge(it) }
-
-        fun <E> diff(content: Cell<List<E>>): DynamicList<E> =
-            DiffDynamicList(content = content)
-
-        fun <E> diff(content: Cell<DynamicList<E>>): DynamicList<E> =
-            DynamicList.diff(content = content.switchMap { it.content })
 
         fun <E> fuse(content: DynamicList<Cell<E>>): DynamicList<E> =
             DynamicList.diff(
@@ -87,8 +80,14 @@ interface DynamicList<out E> {
         get() = content.sample()
 }
 
-fun <E> staticListOf(vararg elements: E): DynamicList<E> =
-    DynamicList.of(elements.toList())
+fun <E, R> DynamicList.IdentifiedElement<E>.map(transform: (E) -> R) =
+    DynamicList.IdentifiedElement(
+        element = transform(this.element),
+        identity = this.identity,
+    )
 
 val <E> DynamicList<E>.size: Cell<Int>
     get() = content.map { it.size }
+
+fun <E> staticListOf(vararg elements: E): DynamicList<E> =
+    DynamicList.of(elements.toList())

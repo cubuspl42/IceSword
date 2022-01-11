@@ -1,6 +1,7 @@
 package icesword.frp
 
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.diff
 
 interface Cell<out A> : Behavior<A> {
     override fun sample(): A
@@ -81,7 +82,7 @@ fun <A, B : Any> Cell<A>.switchMapOrNull(transform: (A) -> Cell<B?>?): Cell<B?> 
     this.switchMap { transform(it) ?: Cell.constant(null) }
 
 fun <A, B> Cell<A>.diffMap(transform: (A) -> List<B>): DynamicList<B> =
-    DynamicList.diff(map(transform))
+    DynamicList.diff(this.map(transform))
 
 fun <A : Any, B> Cell<A?>.switchMapNested(transform: (A) -> Cell<B>?): Cell<B?> =
     this.mapNested(transform).switch()

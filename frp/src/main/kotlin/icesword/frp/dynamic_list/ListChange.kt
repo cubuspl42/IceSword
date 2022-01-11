@@ -92,8 +92,32 @@ data class ListChange<out E>(
             )
         }
     }
-
 }
+
+fun <E, R> ListChange.AddedElement<E>.map(transform: (E) -> R) =
+    ListChange.AddedElement(
+        indexAfter = this.indexAfter,
+        addedElement = this.addedElement.map(transform),
+    )
+
+fun <E, R> ListChange.RemovedElement<E>.map(transform: (E) -> R) =
+    ListChange.RemovedElement(
+        indexBefore = this.indexBefore,
+        removedElement = this.removedElement.map(transform),
+    )
+
+fun <E, R> ListChange.ReorderedElement<E>.map(transform: (E) -> R) =
+    ListChange.ReorderedElement(
+        indexBefore = this.indexBefore,
+        indexAfter = this.indexAfter,
+        reorderedElement = this.reorderedElement.map(transform),
+    )
+
+fun <E, R> ListChange<E>.map(transform: (E) -> R) = ListChange(
+    added = this.added.map { it.map(transform) }.toSet(),
+    removed = this.removed.map { it.map(transform) }.toSet(),
+    reordered = this.reordered.map { it.map(transform) }.toSet(),
+)
 
 fun <E> ListChange<E>.applyTo(
     oldContent: List<DynamicList.IdentifiedElement<E>>,

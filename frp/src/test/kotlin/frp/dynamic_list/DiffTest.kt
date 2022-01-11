@@ -4,11 +4,11 @@ import icesword.frp.Cell
 import icesword.frp.MutCell
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.ListChange
+import icesword.frp.dynamic_list.diff
 import icesword.frp.dynamic_list.sampleContent
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlin.test.fail
 
 class DiffTest {
     @Test
@@ -587,41 +587,5 @@ class DiffTest {
                 )
             }
         )
-    }
-
-}
-
-private fun <T> assertMatchesExclusivelyOrdered(
-    list: List<T>,
-    assertions: List<(T) -> Unit>,
-) {
-    assertEquals(list.size, assertions.size, "List size is ${list.size}, expected ${assertions.size}")
-
-    assertions.forEachIndexed { index, assertion ->
-        try {
-            assertion(list[index])
-        } catch (e: Exception) {
-            println("(Exception when processing assertion for element at index ${index})")
-            throw e
-        }
-    }
-}
-
-private fun <T> assertMatchesExclusivelyUnordered(
-    collection: Collection<T>,
-    matchers: Set<(T) -> Boolean>,
-) {
-    assertEquals(
-        expected = matchers.size,
-        actual = collection.size,
-        message = "Collection size is ${collection.size}, expected ${matchers.size}",
-    )
-
-    matchers.forEachIndexed { index, matcher ->
-        val matchCount = collection.count { matcher(it) }
-
-        if (matchCount != 1) {
-            fail("Exactly one matcher should match element at index $index, but there were $matchCount matches.")
-        }
     }
 }
