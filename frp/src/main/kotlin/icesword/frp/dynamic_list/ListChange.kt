@@ -51,8 +51,8 @@ data class ListChange<out E>(
             oldList: List<E>,
             newList: List<E>,
         ): ListChange<E> {
-            val oldListIdentified = DynamicList.identifyByOrder(oldList)
-            val newListIdentified = DynamicList.identifyByOrder(newList)
+            val oldListIdentified = identifyByOrder(oldList)
+            val newListIdentified = identifyByOrder(newList)
 
             val added: Set<AddedElement<E>> =
                 newListIdentified.mapIndexedNotNull { indexNew, newIdentifiedElement ->

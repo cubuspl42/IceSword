@@ -8,7 +8,7 @@ class DiffDynamicList<E /* : Eq<E> */>(
     override val content: Cell<List<E>>,
 ) : InstantiatingDynamicList<E>() {
     override fun buildContent(): MutableList<DynamicList.IdentifiedElement<E>> =
-        DynamicList.identifyByOrder(content.sample()).toMutableList()
+        identifyByOrder(content.sample()).toMutableList()
 
     override fun buildChanges(): Stream<ListChange<E>> = content.changes.map { valueChange ->
         val oldContent: List<E> = valueChange.oldValue
