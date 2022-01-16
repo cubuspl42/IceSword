@@ -12,9 +12,11 @@ fun <T> assertMatchesExclusivelyOrdered(
     assertions.forEachIndexed { index, assertion ->
         try {
             assertion(list[index])
-        } catch (e: Exception) {
-            println("(Exception when processing assertion for element at index ${index})")
-            throw e
+        } catch (e: AssertionError) {
+            throw AssertionError(
+                message = "At index $index: ${e.message}",
+                cause = e,
+            )
         }
     }
 }

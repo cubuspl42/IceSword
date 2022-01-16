@@ -4,10 +4,13 @@ import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
+import icesword.frp.dynamic_list.DynamicList.IdentifiedElement
+import icesword.frp.filter
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNotNull
 import icesword.frp.mapTillNext
+import icesword.frp.tillNext
 import icesword.frp.units
 import icesword.frp.values
 
@@ -116,11 +119,24 @@ fun <E, R> DynamicList<E>.mergeBy(
 fun <A, R> DynamicList<A>.mapTillRemoved(
     tillAbort: Till,
     transform: (element: A, tillRemoved: Till) -> R,
-): DynamicList<R> = DynamicList.Companion.diff(
-    content = this.content.mapTillNext(tillAbort) { content, tillNext ->
-        content.map { transform(it, tillNext) }
-    },
-)
+): DynamicList<R> = this.transform(tillAbort) { element, identity ->
+    val tillRemoved = this.changes.filter { listChange ->
+        listChange.removed.any {
+            it.removedElement.identity == identity
+        }
+    }.tillNext(orTill = tillAbort)
+
+    transform(element, tillRemoved)
+}
+
+
+fun <A, R> DynamicList<A>.transform(
+    tillAbort: Till,
+    transform: (element: A, identity: DynamicList.ElementIdentity) -> R,
+): DynamicList<R> {
+    TODO()
+}
+
 
 fun <A, R> DynamicList<A>.mapTillRemovedIndexed(
     tillAbort: Till,
