@@ -18,7 +18,7 @@ fun <E> DynamicList.Companion.diff(content: Cell<DynamicList<E>>): DynamicList<E
     DynamicList.diff(content = content.switchMap { it.content })
 
 private class DiffDynamicList<E /* : Eq<E> */>(
-    val identifiedContent: Cell<List<IdentifiedElement<E>>>,
+    override val identifiedContent: Cell<List<IdentifiedElement<E>>>,
 ) : InstantiatingDynamicList<E>() {
     override val content: Cell<List<E>> = identifiedContent.map { identifiedContentNow ->
         identifiedContentNow.map { it.element }

@@ -19,11 +19,6 @@ import icesword.frp.dynamic_set.MemorizedDynamicSet
 import icesword.frp.dynamic_set.MutableValidatedDynamicSet
 import icesword.frp.dynamic_set.ValidatedDynamicSet
 
-data class KeyIdentity<K>(
-    // A unique key
-    val key: K,
-) : DynamicList.ElementIdentity
-
 interface DynamicSet<out A> {
     companion object {
         fun <A> of(content: Set<A>): DynamicSet<A> =

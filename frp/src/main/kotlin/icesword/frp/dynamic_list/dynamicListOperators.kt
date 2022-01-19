@@ -4,6 +4,7 @@ import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.Stream
 import icesword.frp.Till
+import icesword.frp.dynamic_list.DynamicList.IdentifiedElement
 import icesword.frp.hold
 import icesword.frp.map
 import icesword.frp.mapNotNull
@@ -42,7 +43,15 @@ fun <E, R> DynamicList<E>.fuseBy(transform: (E) -> Cell<R>): DynamicList<R> =
     this.map(transform).fuse()
 
 fun <A : Any> DynamicList<A?>.filterNotNull(): DynamicList<A> =
-    DynamicList.Companion.diff(content = this.content.map { it.filterNotNull() })
+    DynamicList.Companion.diffIdentified(
+        identifiedContent = this.identifiedContent.map { identifiedContentNow ->
+            identifiedContentNow.mapNotNull { identifiedElement: IdentifiedElement<A?> ->
+                identifiedElement.element?.let { element ->
+                    identifiedElement.map { element }
+                }
+            }
+        },
+    )
 
 fun <E : Any> DynamicList<Cell<E?>>.fuseNotNull(): DynamicList<E> =
     this.fuse().filterNotNull()
@@ -51,7 +60,9 @@ fun <E> DynamicList<E>.concatWith(other: DynamicList<E>): DynamicList<E> =
     DynamicList.concat(listOf(this, other))
 
 fun <E : Any> DynamicList<E>.drop(n: Int): DynamicList<E> =
-    DynamicList.Companion.diff(content = this.content.map { it.drop(n) })
+    DynamicList.Companion.diffIdentified(
+        identifiedContent = this.identifiedContent.map { it.drop(n) },
+    )
 
 fun <E> DynamicList<E>.indexOf(element: E): Cell<Int?> =
     content.map { content ->
@@ -84,14 +95,24 @@ fun <E> DynamicList<E>.lastNow(): E =
 fun <E> DynamicList<E>.toDynamicSet(): DynamicSet<E> =
     DynamicSet.Companion.diff(this.content.map { it.toSet() })
 
-fun <E> DynamicList<E>.withIndex(): DynamicList<IndexedValue<E>> = DynamicList.Companion.diff(
-    content = this.content.map { it.withIndex().toList() },
+fun <E> DynamicList<E>.withIndex(): DynamicList<IndexedValue<E>> = DynamicList.Companion.diffIdentified(
+    identifiedContent = this.identifiedContent.map { identifiedContentNow ->
+        identifiedContentNow.mapIndexed { index, identifiedElement ->
+            identifiedElement.map {
+                IndexedValue(index = index, value = identifiedElement.element)
+            }
+        }
+    },
 )
 
 fun <E, R> DynamicList<E>.mapIndexed(
     transform: (index: Int, element: E) -> R,
-): DynamicList<R> = DynamicList.Companion.diff(
-    content = this.content.map { it.mapIndexed(transform) },
+): DynamicList<R> = DynamicList.Companion.diffIdentified(
+    identifiedContent = this.identifiedContent.map { identifiedContentNow ->
+        identifiedContentNow.mapIndexed { index, identifiedElement ->
+            identifiedElement.map { element -> transform(index, element) }
+        }
+    },
 )
 
 fun <E, R> DynamicList<E>.mapIndexedDynamic(
@@ -105,8 +126,14 @@ fun <E, R> DynamicList<E>.mapIndexedDynamic(
 
 fun <E, R : Any> DynamicList<E>.mapNotNull(
     transform: (element: E) -> R?,
-): DynamicList<R> = DynamicList.Companion.diff(
-    content = this.content.map { it.mapNotNull(transform) },
+): DynamicList<R> = DynamicList.Companion.diffIdentified(
+    identifiedContent = this.identifiedContent.map { identifiedContentNow ->
+        identifiedContentNow.mapNotNull { identifiedElement ->
+            transform(identifiedElement.element)?.let { transformedElement ->
+                identifiedElement.map { transformedElement }
+            }
+        }
+    },
 )
 
 fun <E, R> DynamicList<E>.mergeBy(

@@ -2,6 +2,9 @@ package icesword.frp.dynamic_list
 
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
+import icesword.frp.IndexedIdentity
+import icesword.frp.KeyIdentity
+import icesword.frp.RawCell
 import icesword.frp.Stream
 import icesword.frp.divertMap
 import icesword.frp.map
@@ -37,29 +40,47 @@ interface DynamicList<out E> {
             DynamicList.diff(content = constant(list))
 
         fun <E : Any> ofSingle(element: Cell<E?>): DynamicList<E> =
-            DynamicList.diff(
-                content = element.map { it?.let(::listOf) ?: emptyList() },
+            DynamicList.diffIdentified(
+                identifiedContent = element.map { elementOrNull ->
+                    listOfNotNull(
+                        elementOrNull?.let { element ->
+                            IdentifiedElement(
+                                element = element,
+                                // FIXME: Glitch-prone
+                                identity = ReferenceIdentity.allocate(),
+                            )
+                        },
+                    )
+                },
             )
 
         fun <E> merge(list: DynamicList<Stream<E>>): Stream<E> =
             list.content.divertMap { Stream.merge(it) }
 
         fun <E> fuse(content: DynamicList<Cell<E>>): DynamicList<E> =
-            DynamicList.diff(
-                content = content.content.switchMap { cells ->
-                    Cell.traverse(cells) { it }
+            DynamicList.diffIdentified(
+                identifiedContent = content.identifiedContent.switchMap { identifiedCells ->
+                    Cell.traverse(identifiedCells) { identifiedCell ->
+                        identifiedCell.element.map { valueNow -> identifiedCell.map { valueNow } }
+                    }
                 },
             )
 
-        fun <E> fuse(content: List<Cell<E>>): DynamicList<E> =
-            DynamicList.diff(
-                content = Cell.traverse(content) { it },
-            )
-
         fun <E> concat(lists: Iterable<DynamicList<E>>): DynamicList<E> =
-            DynamicList.diff(
-                content = Cell.traverse(lists) { dl -> dl.content }
-                    .map { ls: List<List<E>> -> ls.flatten() },
+            DynamicList.diffIdentified(
+                identifiedContent = Cell.traverse(lists.withIndex()) { (index, dynamicList) ->
+                    dynamicList.identifiedContent.map { identifiedContentNow ->
+                        identifiedContentNow.map { identifiedElement ->
+                            IdentifiedElement(
+                                element = identifiedElement.element,
+                                identity = IndexedIdentity(
+                                    index = index,
+                                    identity = identifiedElement.identity,
+                                )
+                            )
+                        }
+                    }
+                }.map { it.flatten() },
             )
 
         fun <E> concat(vararg lists: DynamicList<E>): DynamicList<E> =
@@ -70,6 +91,12 @@ interface DynamicList<out E> {
     }
 
     val changes: Stream<ListChange<E>>
+
+    val identifiedContent: Cell<List<IdentifiedElement<E>>>
+        get() = RawCell(
+            { volatileIdentifiedContentView.toList() },
+            changes.map { volatileIdentifiedContentView.toList() },
+        )
 
     val content: Cell<List<E>>
 
