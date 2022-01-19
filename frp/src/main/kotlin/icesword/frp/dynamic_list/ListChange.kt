@@ -127,17 +127,21 @@ data class ListChange<out E>(
         )
     }
 
-    val pushedInElements: Set<IdentifiedElement<E>>
-        get() = pushIns.flatMap { it.pushedInElements }.toSet()
+    val pushedInElements: Set<IdentifiedElement<E>> by lazy {
+        pushIns.flatMap { it.pushedInElements }.toSet()
+    }
 
-    val pulledOutElements: Set<IdentifiedElement<E>>
-        get() = pullOuts.map { it.pulledOutElement }.toSet()
+    val pulledOutElements: Set<IdentifiedElement<E>> by lazy {
+        pullOuts.map { it.pulledOutElement }.toSet()
+    }
 
-    val addedElements: Set<IdentifiedElement<E>>
-        get() = pushedInElements - pulledOutElements
+    val addedElements: Set<IdentifiedElement<E>> by lazy {
+        pushedInElements - pulledOutElements
+    }
 
-    val removedElements: Set<IdentifiedElement<E>>
-        get() = pulledOutElements - pushedInElements
+    val removedElements: Set<IdentifiedElement<E>> by lazy {
+        pulledOutElements - pushedInElements
+    }
 }
 
 fun <E> ListChange<E>.unionWith(
