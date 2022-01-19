@@ -8,16 +8,17 @@ import icesword.frp.Subscription
 import icesword.frp.map
 
 abstract class InstantiatingDynamicList<E> : DynamicList<E> {
-    private var mutableContent: List<DynamicList.IdentifiedElement<E>>? = null
+    private var mutableContent: MutableList<DynamicList.IdentifiedElement<E>>? = null
 
     override val changes: Stream<ListChange<E>> = NotifyingStream(
         start = { notifier ->
-            mutableContent = buildContent()
+            val instanceMutableContent = buildContent()
+            mutableContent = instanceMutableContent
 
             val changes = buildChanges()
 
             val changesSubscription = changes.subscribe {
-                mutableContent = it.applyTo(mutableContent!!).toMutableList()
+                it.applyTo(instanceMutableContent)
                 notifier.notify(it)
             }
 

@@ -23,3 +23,22 @@ private class MapDynamicList<E, R>(
         change.map(transform)
     }
 }
+
+private fun <E, R> ListChange<E>.map(transform: (E) -> R): ListChange<R> =
+    ListChange(
+        pushIns = pushIns.map { it.map(transform) }.toSet(),
+        pullOuts = pullOuts.map { it.map(transform) }.toSet(),
+    )
+
+private fun <E, R> ListChange.PushIn<E>.map(transform: (E) -> R): ListChange.PushIn<R> =
+    ListChange.PushIn(
+        indexBefore = indexBefore,
+        indexAfter = indexAfter,
+        pushedInElements = pushedInElements.map { it.map(transform) },
+    )
+
+private fun <E, R> ListChange.PullOut<E>.map(transform: (E) -> R): ListChange.PullOut<R> =
+    ListChange.PullOut(
+        indexBefore = indexBefore,
+        pulledOutElement = pulledOutElement.map(transform),
+    )

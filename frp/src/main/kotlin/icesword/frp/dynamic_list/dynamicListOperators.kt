@@ -121,8 +121,8 @@ fun <A, R> DynamicList<A>.mapTillRemoved(
     transform: (element: A, tillRemoved: Till) -> R,
 ): DynamicList<R> = this.transform(tillAbort) { element, identity ->
     val tillRemoved = this.changes.filter { listChange ->
-        listChange.removed.any {
-            it.removedElement.identity == identity
+        listChange.removedElements.any {
+            it.identity == identity
         }
     }.tillNext(orTill = tillAbort)
 

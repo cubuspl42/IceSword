@@ -1,18 +1,18 @@
 package frp.dynamic_list
 
 import icesword.frp.dynamic_list.DynamicList
-import icesword.frp.dynamic_list.ListMinimalChange
+import icesword.frp.dynamic_list.ListChange
 import icesword.frp.dynamic_list.OrderIdentity
 import icesword.frp.dynamic_list.applyTo
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ListMinimalChangeTest {
+class ListChangeTest {
     @Test
     fun testDiffNoop() {
         // When
 
-        val change = ListMinimalChange.diff(
+        val change = ListChange.diff(
             oldList = listOf(10, 20, 30),
             newList = listOf(10, 20, 30),
         )
@@ -20,7 +20,7 @@ class ListMinimalChangeTest {
         // Then
 
         assertEquals(
-            expected = ListMinimalChange(
+            expected = ListChange(
                 pushIns = emptySet(),
                 pullOuts = emptySet(),
             ),
@@ -32,7 +32,7 @@ class ListMinimalChangeTest {
     fun testDiffAddedOnly() {
         // When
 
-        val change = ListMinimalChange.diff(
+        val change = ListChange.diff(
             oldList = listOf(10, 20, 30, 40, 50),
             newList = listOf(10, 60, 60, 70, 20, 30, 80, 90, 40, 50),
         )
@@ -40,9 +40,9 @@ class ListMinimalChangeTest {
         // Then
 
         assertEquals(
-            expected = ListMinimalChange(
+            expected = ListChange(
                 pushIns = setOf(
-                    ListMinimalChange.PushIn(
+                    ListChange.PushIn(
                         indexBefore = 1,
                         indexAfter = 1,
                         pushedInElements = listOf(
@@ -60,7 +60,7 @@ class ListMinimalChangeTest {
                             ),
                         ),
                     ),
-                    ListMinimalChange.PushIn(
+                    ListChange.PushIn(
                         indexBefore = 3,
                         indexAfter = 6,
                         pushedInElements = listOf(
@@ -85,7 +85,7 @@ class ListMinimalChangeTest {
     fun testDiffRemovedOnly() {
         // When
 
-        val change = ListMinimalChange.diff(
+        val change = ListChange.diff(
             oldList = listOf(10, 20, 30, 40, 50),
             newList = listOf(10, 30, 50),
         )
@@ -93,17 +93,17 @@ class ListMinimalChangeTest {
         // Then
 
         assertEquals(
-            expected = ListMinimalChange(
+            expected = ListChange(
                 pushIns = emptySet(),
                 pullOuts = setOf(
-                    ListMinimalChange.PullOut(
+                    ListChange.PullOut(
                         indexBefore = 1,
                         pulledOutElement = DynamicList.IdentifiedElement(
                             element = 20,
                             identity = OrderIdentity(20, 0),
                         ),
                     ),
-                    ListMinimalChange.PullOut(
+                    ListChange.PullOut(
                         indexBefore = 3,
                         pulledOutElement = DynamicList.IdentifiedElement(
                             element = 40,
@@ -120,7 +120,7 @@ class ListMinimalChangeTest {
     fun testDiffMixed() {
         // When
 
-        val change = ListMinimalChange.diff(
+        val change = ListChange.diff(
             oldList = listOf(10, 20, 30, 40, 50, 60, 70),
             newList = listOf(10, 80, 90, 80, 30, 100, 60, 70, 110, 50),
         )
@@ -128,9 +128,9 @@ class ListMinimalChangeTest {
         // Then
 
         assertEquals(
-            expected = ListMinimalChange(
+            expected = ListChange(
                 pushIns = setOf(
-                    ListMinimalChange.PushIn(
+                    ListChange.PushIn(
                         indexBefore = 1,
                         indexAfter = 1,
                         pushedInElements = listOf(
@@ -148,7 +148,7 @@ class ListMinimalChangeTest {
                             ),
                         ),
                     ),
-                    ListMinimalChange.PushIn(
+                    ListChange.PushIn(
                         indexBefore = 3,
                         indexAfter = 5,
                         pushedInElements = listOf(
@@ -172,28 +172,28 @@ class ListMinimalChangeTest {
                     ),
                 ),
                 pullOuts = setOf(
-                    ListMinimalChange.PullOut(
+                    ListChange.PullOut(
                         indexBefore = 1,
                         pulledOutElement = DynamicList.IdentifiedElement(
                             element = 20,
                             identity = OrderIdentity(20, 0),
                         ),
                     ),
-                    ListMinimalChange.PullOut(
+                    ListChange.PullOut(
                         indexBefore = 3,
                         pulledOutElement = DynamicList.IdentifiedElement(
                             element = 40,
                             identity = OrderIdentity(40, 0),
                         ),
                     ),
-                    ListMinimalChange.PullOut(
+                    ListChange.PullOut(
                         indexBefore = 5,
                         pulledOutElement = DynamicList.IdentifiedElement(
                             element = 60,
                             identity = OrderIdentity(60, 0),
                         ),
                     ),
-                    ListMinimalChange.PullOut(
+                    ListChange.PullOut(
                         indexBefore = 6,
                         pulledOutElement = DynamicList.IdentifiedElement(
                             element = 70,
@@ -210,7 +210,7 @@ class ListMinimalChangeTest {
     fun testDiffMixed2() {
         // When
 
-        val change = ListMinimalChange.diff(
+        val change = ListChange.diff(
             oldList = listOf(10, 20, 30, 40, 50, 60, 70),
             newList = listOf(10, 20, 35, 38, 45, 48, 55, 60, 70),
         )
@@ -218,9 +218,9 @@ class ListMinimalChangeTest {
         // Then
 
         assertEquals(
-            expected = ListMinimalChange(
+            expected = ListChange(
                 pushIns = setOf(
-                    ListMinimalChange.PushIn(
+                    ListChange.PushIn(
                         indexBefore = 2,
                         indexAfter = 2,
                         pushedInElements = listOf(
@@ -248,21 +248,21 @@ class ListMinimalChangeTest {
                     ),
                 ),
                 pullOuts = setOf(
-                    ListMinimalChange.PullOut(
+                    ListChange.PullOut(
                         indexBefore = 2,
                         pulledOutElement = DynamicList.IdentifiedElement(
                             element = 30,
                             identity = OrderIdentity(30, 0),
                         ),
                     ),
-                    ListMinimalChange.PullOut(
+                    ListChange.PullOut(
                         indexBefore = 3,
                         pulledOutElement = DynamicList.IdentifiedElement(
                             element = 40,
                             identity = OrderIdentity(40, 0),
                         ),
                     ),
-                    ListMinimalChange.PullOut(
+                    ListChange.PullOut(
                         indexBefore = 4,
                         pulledOutElement = DynamicList.IdentifiedElement(
                             element = 50,
@@ -279,9 +279,9 @@ class ListMinimalChangeTest {
     fun testAddedRemovedElements() {
         // When
 
-        val change = ListMinimalChange(
+        val change = ListChange(
             pushIns = setOf(
-                ListMinimalChange.PushIn(
+                ListChange.PushIn(
                     indexBefore = 0,
                     indexAfter = 0,
                     pushedInElements = listOf(
@@ -296,7 +296,7 @@ class ListMinimalChangeTest {
                         ),
                     ),
                 ),
-                ListMinimalChange.PushIn(
+                ListChange.PushIn(
                     indexBefore = 10,
                     indexAfter = 13,
                     pushedInElements = listOf(
@@ -308,7 +308,7 @@ class ListMinimalChangeTest {
                         ),
                     ),
                 ),
-                ListMinimalChange.PushIn(
+                ListChange.PushIn(
                     indexBefore = 20,
                     indexAfter = 25,
                     pushedInElements = listOf(
@@ -322,31 +322,31 @@ class ListMinimalChangeTest {
                 ),
             ),
             pullOuts = setOf(
-                ListMinimalChange.PullOut(
+                ListChange.PullOut(
                     indexBefore = 4,
                     pulledOutElement = DynamicList.IdentifiedElement(
                         element = 20, identity = OrderIdentity(element = 20, order = 0),
                     ),
                 ),
-                ListMinimalChange.PullOut(
+                ListChange.PullOut(
                     indexBefore = 5,
                     pulledOutElement = DynamicList.IdentifiedElement(
                         element = 40, identity = OrderIdentity(element = 40, order = 0),
                     ),
                 ),
-                ListMinimalChange.PullOut(
+                ListChange.PullOut(
                     indexBefore = 6,
                     pulledOutElement = DynamicList.IdentifiedElement(
                         element = 25, identity = OrderIdentity(element = 25, order = 0),
                     ),
                 ),
-                ListMinimalChange.PullOut(
+                ListChange.PullOut(
                     indexBefore = 7,
                     pulledOutElement = DynamicList.IdentifiedElement(
                         element = 10, identity = OrderIdentity(element = 10, order = 0),
                     ),
                 ),
-                ListMinimalChange.PullOut(
+                ListChange.PullOut(
                     indexBefore = 15,
                     pulledOutElement = DynamicList.IdentifiedElement(
                         element = 45, identity = OrderIdentity(element = 45, order = 0),
@@ -413,9 +413,9 @@ class ListMinimalChangeTest {
             ),
         )
 
-        val change = ListMinimalChange(
+        val change = ListChange(
             pushIns = setOf(
-                ListMinimalChange.PushIn(
+                ListChange.PushIn(
                     indexBefore = 0,
                     indexAfter = -1,
                     pushedInElements = listOf(
@@ -430,7 +430,7 @@ class ListMinimalChangeTest {
                         ),
                     ),
                 ),
-                ListMinimalChange.PushIn(
+                ListChange.PushIn(
                     indexBefore = 3,
                     indexAfter = -1,
                     pushedInElements = listOf(
@@ -444,19 +444,19 @@ class ListMinimalChangeTest {
                 ),
             ),
             pullOuts = setOf(
-                ListMinimalChange.PullOut(
+                ListChange.PullOut(
                     indexBefore = 1,
                     pulledOutElement = DynamicList.IdentifiedElement(
                         element = 30, identity = OrderIdentity(element = 30, order = 0),
                     ),
                 ),
-                ListMinimalChange.PullOut(
+                ListChange.PullOut(
                     indexBefore = 3,
                     pulledOutElement = DynamicList.IdentifiedElement(
                         element = 50, identity = OrderIdentity(element = 50, order = 0),
                     ),
                 ),
-                ListMinimalChange.PullOut(
+                ListChange.PullOut(
                     indexBefore = 5,
                     pulledOutElement = DynamicList.IdentifiedElement(
                         element = 70, identity = OrderIdentity(element = 70, order = 0),
