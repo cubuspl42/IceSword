@@ -138,3 +138,50 @@ fun <E> ListMinimalChange<E>.unionWith(
     pushIns = this.pushIns + other.pushIns,
     pullOuts = this.pullOuts + other.pullOuts,
 )
+
+fun <E> ListMinimalChange<E>.applyTo(
+    mutableContent: MutableList<DynamicList.IdentifiedElement<E>>,
+) {
+    val pushInsSorted = pushIns.sortedBy { it.indexBefore }
+    val pullOutsSorted = pullOuts.sortedBy { it.indexBefore }
+
+    var pullOutIndex = 0
+    var shift = 0
+
+    fun performPullOutIteration(toIndex: Int) {
+        while (true) {
+            val nextRemove = pullOutsSorted.getOrNull(pullOutIndex) ?: break
+
+            if (nextRemove.indexBefore >= toIndex) break
+
+            val removedElement = mutableContent.removeAt(nextRemove.indexBefore + shift)
+
+            if (nextRemove.pulledOutElement != removedElement) {
+                throw IllegalStateException()
+            }
+
+            shift -= 1
+            pullOutIndex += 1
+        }
+    }
+
+    fun performPushInIteration(
+        pushIn: ListMinimalChange.PushIn<E>,
+    ) {
+        val indexAfter = pushIn.indexBefore + shift
+
+        mutableContent.addAll(
+            index = indexAfter,
+            elements = pushIn.pushedInElements,
+        )
+
+        shift += pushIn.pushedInElements.size
+    }
+
+    pushInsSorted.forEach { pushIn ->
+        performPullOutIteration(toIndex = pushIn.indexBefore)
+        performPushInIteration(pushIn = pushIn)
+    }
+
+    performPullOutIteration(mutableContent.size)
+}

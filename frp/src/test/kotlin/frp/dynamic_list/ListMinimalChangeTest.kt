@@ -3,6 +3,7 @@ package frp.dynamic_list
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.ListMinimalChange
 import icesword.frp.dynamic_list.OrderIdentity
+import icesword.frp.dynamic_list.applyTo
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -384,6 +385,120 @@ class ListMinimalChangeTest {
                 ),
             ),
             actual = change.removedElements,
+        )
+    }
+
+    @Test
+    fun testApplyTo() {
+        // Given
+
+        val mutableContent = mutableListOf(
+            DynamicList.IdentifiedElement(
+                element = 20, identity = OrderIdentity(20, 0),
+            ),
+            DynamicList.IdentifiedElement(
+                element = 30, identity = OrderIdentity(30, 0),
+            ),
+            DynamicList.IdentifiedElement(
+                element = 40, identity = OrderIdentity(40, 0),
+            ),
+            DynamicList.IdentifiedElement(
+                element = 50, identity = OrderIdentity(50, 0),
+            ),
+            DynamicList.IdentifiedElement(
+                element = 60, identity = OrderIdentity(60, 0),
+            ),
+            DynamicList.IdentifiedElement(
+                element = 70, identity = OrderIdentity(70, 0),
+            ),
+        )
+
+        val change = ListMinimalChange(
+            pushIns = setOf(
+                ListMinimalChange.PushIn(
+                    indexBefore = 0,
+                    indexAfter = -1,
+                    pushedInElements = listOf(
+                        DynamicList.IdentifiedElement(
+                            element = 10, identity = OrderIdentity(10, 0),
+                        ),
+                        DynamicList.IdentifiedElement(
+                            element = 11, identity = OrderIdentity(11, 0),
+                        ),
+                        DynamicList.IdentifiedElement(
+                            element = 12, identity = OrderIdentity(12, 0),
+                        ),
+                    ),
+                ),
+                ListMinimalChange.PushIn(
+                    indexBefore = 3,
+                    indexAfter = -1,
+                    pushedInElements = listOf(
+                        DynamicList.IdentifiedElement(
+                            element = 41, identity = OrderIdentity(41, 0),
+                        ),
+                        DynamicList.IdentifiedElement(
+                            element = 20, identity = OrderIdentity(20, 1),
+                        ),
+                    ),
+                ),
+            ),
+            pullOuts = setOf(
+                ListMinimalChange.PullOut(
+                    indexBefore = 1,
+                    pulledOutElement = DynamicList.IdentifiedElement(
+                        element = 30, identity = OrderIdentity(element = 30, order = 0),
+                    ),
+                ),
+                ListMinimalChange.PullOut(
+                    indexBefore = 3,
+                    pulledOutElement = DynamicList.IdentifiedElement(
+                        element = 50, identity = OrderIdentity(element = 50, order = 0),
+                    ),
+                ),
+                ListMinimalChange.PullOut(
+                    indexBefore = 5,
+                    pulledOutElement = DynamicList.IdentifiedElement(
+                        element = 70, identity = OrderIdentity(element = 70, order = 0),
+                    ),
+                ),
+            ),
+        )
+
+        // When
+
+        change.applyTo(mutableContent)
+
+        // Then
+
+        assertEquals(
+            expected = listOf(
+                DynamicList.IdentifiedElement(
+                    element = 10, identity = OrderIdentity(10, 0),
+                ),
+                DynamicList.IdentifiedElement(
+                    element = 11, identity = OrderIdentity(11, 0),
+                ),
+                DynamicList.IdentifiedElement(
+                    element = 12, identity = OrderIdentity(12, 0),
+                ),
+                DynamicList.IdentifiedElement(
+                    element = 20, identity = OrderIdentity(20, 0),
+                ),
+                DynamicList.IdentifiedElement(
+                    element = 40, identity = OrderIdentity(40, 0),
+                ),
+                DynamicList.IdentifiedElement(
+                    element = 41, identity = OrderIdentity(41, 0),
+                ),
+                DynamicList.IdentifiedElement(
+                    element = 20, identity = OrderIdentity(20, 1),
+                ),
+                DynamicList.IdentifiedElement(
+                    element = 60, identity = OrderIdentity(60, 0),
+                ),
+            ),
+            actual = mutableContent,
         )
     }
 }
