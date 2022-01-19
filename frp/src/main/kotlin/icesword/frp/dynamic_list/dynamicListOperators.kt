@@ -129,14 +129,12 @@ fun <A, R> DynamicList<A>.mapTillRemoved(
     transform(element, tillRemoved)
 }
 
-
 fun <A, R> DynamicList<A>.transform(
     tillAbort: Till,
     transform: (element: A, identity: DynamicList.ElementIdentity) -> R,
 ): DynamicList<R> {
     TODO()
 }
-
 
 fun <A, R> DynamicList<A>.mapTillRemovedIndexed(
     tillAbort: Till,

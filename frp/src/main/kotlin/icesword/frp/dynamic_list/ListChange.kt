@@ -140,8 +140,15 @@ fun <E> ListChange<E>.unionWith(
 )
 
 fun <E> ListChange<E>.applyTo(
-    mutableContent: MutableList<DynamicList.IdentifiedElement<E>>,
+    mutableContent: MutableList<IdentifiedElement<E>>,
 ) {
+    if (
+        pushIns.any { it.indexBefore !in mutableContent.indices } ||
+        pullOuts.any { it.indexBefore !in mutableContent.indices }
+    ) {
+        throw IndexOutOfBoundsException("List change refers to indices out of content bounds")
+    }
+
     val pushInsSorted = pushIns.sortedBy { it.indexBefore }
     val pullOutsSorted = pullOuts.sortedBy { it.indexBefore }
 
