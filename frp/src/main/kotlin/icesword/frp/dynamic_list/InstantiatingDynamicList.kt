@@ -12,23 +12,28 @@ abstract class InstantiatingDynamicList<E> : DynamicList<E> {
 
     override val changes: Stream<ListChange<E>> = NotifyingStream(
         start = { notifier ->
-            val instanceMutableContent = buildContent()
-            mutableContent = instanceMutableContent
-
             val changes = buildChanges()
 
-            val changesSubscription = changes.subscribe {
-                it.applyTo(instanceMutableContent)
-                notifier.notify(it)
-            }
-
-            object : Subscription {
-                override fun unsubscribe() {
-                    changesSubscription.unsubscribe()
-
-                    mutableContent = null
+            object {
+                val changesSubscription = changes.subscribe {
+                    it.applyTo(instanceMutableContent)
+                    notifier.notify(it)
                 }
-            }
+
+                val instanceMutableContent = buildContent()
+
+                val subscription = object : Subscription {
+                    override fun unsubscribe() {
+                        changesSubscription.unsubscribe()
+
+                        mutableContent = null
+                    }
+                }
+
+                init {
+                    mutableContent = instanceMutableContent
+                }
+            }.subscription
         }
     )
 

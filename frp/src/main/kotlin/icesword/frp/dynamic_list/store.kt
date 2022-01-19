@@ -10,8 +10,8 @@ import icesword.frp.mapTill
 
 @BehaviorComputation
 fun <E> DynamicList.Companion.store(
-    initialIdentifiedContent: List<DynamicList.IdentifiedElement<E>>,
-    buildChanges: (contentView: List<DynamicList.IdentifiedElement<E>>) -> Stream<ListChange<E>>,
+    initialIdentifiedContent: () -> List<DynamicList.IdentifiedElement<E>>,
+    buildChanges: (contentView: () -> List<DynamicList.IdentifiedElement<E>>) -> Stream<ListChange<E>>,
     tillFreeze: Till,
 ): DynamicList<E> =
     StoreDynamicList(
@@ -21,19 +21,19 @@ fun <E> DynamicList.Companion.store(
     )
 
 class StoreDynamicList<E>(
-    initialIdentifiedContent: List<DynamicList.IdentifiedElement<E>>,
-    buildChanges: (contentView: List<DynamicList.IdentifiedElement<E>>) -> Stream<ListChange<E>>,
+    initialIdentifiedContent: () -> List<DynamicList.IdentifiedElement<E>>,
+    buildChanges: (contentView: () -> List<DynamicList.IdentifiedElement<E>>) -> Stream<ListChange<E>>,
     tillFreeze: Till,
 ) : DynamicList<E> {
-    private var mutableContent: MutableList<DynamicList.IdentifiedElement<E>> =
-        initialIdentifiedContent.toMutableList()
-
-    override val changes: Stream<ListChange<E>> = buildChanges(mutableContent)
+    override val changes: Stream<ListChange<E>> = buildChanges { mutableContent }
         .mapTill(tillFreeze) { change ->
             change.apply {
                 applyTo(mutableContent)
             }
         }
+
+    private var mutableContent: MutableList<DynamicList.IdentifiedElement<E>> =
+        initialIdentifiedContent().toMutableList()
 
     override val content: Cell<List<E>>
         get() = RawCell(

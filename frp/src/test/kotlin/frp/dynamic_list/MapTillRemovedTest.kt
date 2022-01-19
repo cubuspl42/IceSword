@@ -71,7 +71,7 @@ class MapTillRemovedTest {
         val sourceChanges = StreamSink<ListChange<Int>>()
 
         val source = DynamicList.store(
-            listOf(e10, e20, e30, e40),
+           initialIdentifiedContent = { listOf(e10, e20, e30, e40) },
             buildChanges = { sourceChanges },
             tillFreeze = Till.never,
         )

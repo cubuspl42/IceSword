@@ -15,12 +15,14 @@ fun <E, R> DynamicList<E>.processOf(
     transform: (element: E) -> R,
 ): DynamicList<R> =
     DynamicList.store(
-        initialIdentifiedContent = volatileIdentifiedContentView.map {
-            it.map(transform)
+        initialIdentifiedContent = {
+            volatileIdentifiedContentView.map {
+                it.map(transform)
+            }
         },
         buildChanges = { contentView ->
             changes.map { change ->
-                change.processOf(contentView, transform)
+                change.processOf(contentView(), transform)
             }
         },
         tillFreeze = tillFreeze,

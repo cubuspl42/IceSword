@@ -68,7 +68,7 @@ class ProcessOfTest {
         val sourceChanges = StreamSink<ListChange<Int>>()
 
         val source = DynamicList.store(
-            initialIdentifiedContent = listOf(e10, e20, e30, e40, e50, e60, e70),
+            initialIdentifiedContent = { listOf(e10, e20, e30, e40, e50, e60, e70) },
             buildChanges = { sourceChanges },
             tillFreeze = Till.never,
         )
