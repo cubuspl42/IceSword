@@ -151,7 +151,7 @@ fun <E> ListChange<E>.applyTo(
     mutableContent: MutableList<IdentifiedElement<E>>,
 ) {
     if (
-        pushIns.any { it.indexBefore !in mutableContent.indices } ||
+        pushIns.any { it.indexBefore !in 0..mutableContent.size } ||
         pullOuts.any { it.indexBefore !in mutableContent.indices }
     ) {
         throw IndexOutOfBoundsException("List change refers to indices out of content bounds")

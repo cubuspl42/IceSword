@@ -1,6 +1,7 @@
 package frp.dynamic_list
 
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.DynamicList.IdentifiedElement
 import icesword.frp.dynamic_list.ListChange
 import icesword.frp.dynamic_list.OrderIdentity
 import icesword.frp.dynamic_list.applyTo
@@ -46,15 +47,15 @@ class ListChangeTest {
                         indexBefore = 1,
                         indexAfter = 1,
                         pushedInElements = listOf(
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 60,
                                 OrderIdentity(60, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 60,
                                 OrderIdentity(60, 1),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 70,
                                 OrderIdentity(70, 0),
                             ),
@@ -64,11 +65,11 @@ class ListChangeTest {
                         indexBefore = 3,
                         indexAfter = 6,
                         pushedInElements = listOf(
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 80,
                                 OrderIdentity(80, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 90,
                                 OrderIdentity(90, 0),
                             ),
@@ -98,14 +99,14 @@ class ListChangeTest {
                 pullOuts = setOf(
                     ListChange.PullOut(
                         indexBefore = 1,
-                        pulledOutElement = DynamicList.IdentifiedElement(
+                        pulledOutElement = IdentifiedElement(
                             element = 20,
                             identity = OrderIdentity(20, 0),
                         ),
                     ),
                     ListChange.PullOut(
                         indexBefore = 3,
-                        pulledOutElement = DynamicList.IdentifiedElement(
+                        pulledOutElement = IdentifiedElement(
                             element = 40,
                             identity = OrderIdentity(40, 0),
                         ),
@@ -134,15 +135,15 @@ class ListChangeTest {
                         indexBefore = 1,
                         indexAfter = 1,
                         pushedInElements = listOf(
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 80,
                                 OrderIdentity(80, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 90,
                                 OrderIdentity(90, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 80,
                                 OrderIdentity(80, 1),
                             ),
@@ -152,19 +153,19 @@ class ListChangeTest {
                         indexBefore = 3,
                         indexAfter = 5,
                         pushedInElements = listOf(
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 100,
                                 OrderIdentity(100, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 60,
                                 OrderIdentity(60, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 70,
                                 OrderIdentity(70, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 110,
                                 OrderIdentity(110, 0),
                             ),
@@ -174,28 +175,28 @@ class ListChangeTest {
                 pullOuts = setOf(
                     ListChange.PullOut(
                         indexBefore = 1,
-                        pulledOutElement = DynamicList.IdentifiedElement(
+                        pulledOutElement = IdentifiedElement(
                             element = 20,
                             identity = OrderIdentity(20, 0),
                         ),
                     ),
                     ListChange.PullOut(
                         indexBefore = 3,
-                        pulledOutElement = DynamicList.IdentifiedElement(
+                        pulledOutElement = IdentifiedElement(
                             element = 40,
                             identity = OrderIdentity(40, 0),
                         ),
                     ),
                     ListChange.PullOut(
                         indexBefore = 5,
-                        pulledOutElement = DynamicList.IdentifiedElement(
+                        pulledOutElement = IdentifiedElement(
                             element = 60,
                             identity = OrderIdentity(60, 0),
                         ),
                     ),
                     ListChange.PullOut(
                         indexBefore = 6,
-                        pulledOutElement = DynamicList.IdentifiedElement(
+                        pulledOutElement = IdentifiedElement(
                             element = 70,
                             identity = OrderIdentity(70, 0),
                         ),
@@ -224,23 +225,23 @@ class ListChangeTest {
                         indexBefore = 2,
                         indexAfter = 2,
                         pushedInElements = listOf(
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 35,
                                 OrderIdentity(35, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 38,
                                 OrderIdentity(38, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 45,
                                 OrderIdentity(45, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 48,
                                 OrderIdentity(48, 0),
                             ),
-                            DynamicList.IdentifiedElement(
+                            IdentifiedElement(
                                 element = 55,
                                 OrderIdentity(55, 0),
                             ),
@@ -250,21 +251,21 @@ class ListChangeTest {
                 pullOuts = setOf(
                     ListChange.PullOut(
                         indexBefore = 2,
-                        pulledOutElement = DynamicList.IdentifiedElement(
+                        pulledOutElement = IdentifiedElement(
                             element = 30,
                             identity = OrderIdentity(30, 0),
                         ),
                     ),
                     ListChange.PullOut(
                         indexBefore = 3,
-                        pulledOutElement = DynamicList.IdentifiedElement(
+                        pulledOutElement = IdentifiedElement(
                             element = 40,
                             identity = OrderIdentity(40, 0),
                         ),
                     ),
                     ListChange.PullOut(
                         indexBefore = 4,
-                        pulledOutElement = DynamicList.IdentifiedElement(
+                        pulledOutElement = IdentifiedElement(
                             element = 50,
                             identity = OrderIdentity(50, 0),
                         ),
@@ -285,13 +286,13 @@ class ListChangeTest {
                     indexBefore = 0,
                     indexAfter = 0,
                     pushedInElements = listOf(
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 10, identity = OrderIdentity(10, 0),
                         ),
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 20, identity = OrderIdentity(20, 0),
                         ),
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 30, identity = OrderIdentity(30, 0),
                         ),
                     ),
@@ -300,10 +301,10 @@ class ListChangeTest {
                     indexBefore = 10,
                     indexAfter = 13,
                     pushedInElements = listOf(
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 40, identity = OrderIdentity(40, 0),
                         ),
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 10, identity = OrderIdentity(10, 1),
                         ),
                     ),
@@ -312,10 +313,10 @@ class ListChangeTest {
                     indexBefore = 20,
                     indexAfter = 25,
                     pushedInElements = listOf(
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 50, identity = OrderIdentity(50, 0),
                         ),
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 60, identity = OrderIdentity(60, 1),
                         ),
                     ),
@@ -324,31 +325,31 @@ class ListChangeTest {
             pullOuts = setOf(
                 ListChange.PullOut(
                     indexBefore = 4,
-                    pulledOutElement = DynamicList.IdentifiedElement(
+                    pulledOutElement = IdentifiedElement(
                         element = 20, identity = OrderIdentity(element = 20, order = 0),
                     ),
                 ),
                 ListChange.PullOut(
                     indexBefore = 5,
-                    pulledOutElement = DynamicList.IdentifiedElement(
+                    pulledOutElement = IdentifiedElement(
                         element = 40, identity = OrderIdentity(element = 40, order = 0),
                     ),
                 ),
                 ListChange.PullOut(
                     indexBefore = 6,
-                    pulledOutElement = DynamicList.IdentifiedElement(
+                    pulledOutElement = IdentifiedElement(
                         element = 25, identity = OrderIdentity(element = 25, order = 0),
                     ),
                 ),
                 ListChange.PullOut(
                     indexBefore = 7,
-                    pulledOutElement = DynamicList.IdentifiedElement(
+                    pulledOutElement = IdentifiedElement(
                         element = 10, identity = OrderIdentity(element = 10, order = 0),
                     ),
                 ),
                 ListChange.PullOut(
                     indexBefore = 15,
-                    pulledOutElement = DynamicList.IdentifiedElement(
+                    pulledOutElement = IdentifiedElement(
                         element = 45, identity = OrderIdentity(element = 45, order = 0),
                     ),
                 ),
@@ -359,16 +360,16 @@ class ListChangeTest {
 
         assertEquals(
             expected = setOf(
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 30, identity = OrderIdentity(30, 0),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 10, identity = OrderIdentity(10, 1),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 50, identity = OrderIdentity(50, 0),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 60, identity = OrderIdentity(60, 1),
                 ),
             ),
@@ -377,10 +378,10 @@ class ListChangeTest {
 
         assertEquals(
             expected = setOf(
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 25, identity = OrderIdentity(element = 25, order = 0),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 45, identity = OrderIdentity(element = 45, order = 0),
                 ),
             ),
@@ -393,22 +394,22 @@ class ListChangeTest {
         // Given
 
         val mutableContent = mutableListOf(
-            DynamicList.IdentifiedElement(
+            IdentifiedElement(
                 element = 20, identity = OrderIdentity(20, 0),
             ),
-            DynamicList.IdentifiedElement(
+            IdentifiedElement(
                 element = 30, identity = OrderIdentity(30, 0),
             ),
-            DynamicList.IdentifiedElement(
+            IdentifiedElement(
                 element = 40, identity = OrderIdentity(40, 0),
             ),
-            DynamicList.IdentifiedElement(
+            IdentifiedElement(
                 element = 50, identity = OrderIdentity(50, 0),
             ),
-            DynamicList.IdentifiedElement(
+            IdentifiedElement(
                 element = 60, identity = OrderIdentity(60, 0),
             ),
-            DynamicList.IdentifiedElement(
+            IdentifiedElement(
                 element = 70, identity = OrderIdentity(70, 0),
             ),
         )
@@ -419,13 +420,13 @@ class ListChangeTest {
                     indexBefore = 0,
                     indexAfter = -1,
                     pushedInElements = listOf(
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 10, identity = OrderIdentity(10, 0),
                         ),
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 11, identity = OrderIdentity(11, 0),
                         ),
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 12, identity = OrderIdentity(12, 0),
                         ),
                     ),
@@ -434,10 +435,10 @@ class ListChangeTest {
                     indexBefore = 3,
                     indexAfter = -1,
                     pushedInElements = listOf(
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 41, identity = OrderIdentity(41, 0),
                         ),
-                        DynamicList.IdentifiedElement(
+                        IdentifiedElement(
                             element = 20, identity = OrderIdentity(20, 1),
                         ),
                     ),
@@ -446,19 +447,19 @@ class ListChangeTest {
             pullOuts = setOf(
                 ListChange.PullOut(
                     indexBefore = 1,
-                    pulledOutElement = DynamicList.IdentifiedElement(
+                    pulledOutElement = IdentifiedElement(
                         element = 30, identity = OrderIdentity(element = 30, order = 0),
                     ),
                 ),
                 ListChange.PullOut(
                     indexBefore = 3,
-                    pulledOutElement = DynamicList.IdentifiedElement(
+                    pulledOutElement = IdentifiedElement(
                         element = 50, identity = OrderIdentity(element = 50, order = 0),
                     ),
                 ),
                 ListChange.PullOut(
                     indexBefore = 5,
-                    pulledOutElement = DynamicList.IdentifiedElement(
+                    pulledOutElement = IdentifiedElement(
                         element = 70, identity = OrderIdentity(element = 70, order = 0),
                     ),
                 ),
@@ -473,29 +474,66 @@ class ListChangeTest {
 
         assertEquals(
             expected = listOf(
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 10, identity = OrderIdentity(10, 0),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 11, identity = OrderIdentity(11, 0),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 12, identity = OrderIdentity(12, 0),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 20, identity = OrderIdentity(20, 0),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 40, identity = OrderIdentity(40, 0),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 41, identity = OrderIdentity(41, 0),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 20, identity = OrderIdentity(20, 1),
                 ),
-                DynamicList.IdentifiedElement(
+                IdentifiedElement(
                     element = 60, identity = OrderIdentity(60, 0),
+                ),
+            ),
+            actual = mutableContent,
+        )
+    }
+
+    @Test
+    fun testApplyToEmpty() {
+        // Given
+
+        val mutableContent = mutableListOf<IdentifiedElement<Int>>()
+
+        val change = ListChange(
+            pushIns = setOf(
+                ListChange.PushIn(
+                    indexBefore = 0,
+                    indexAfter = 0,
+                    pushedInElements = listOf(
+                        IdentifiedElement(
+                            element = 10, identity = OrderIdentity(10, 0),
+                        ),
+                    ),
+                ),
+            ),
+            pullOuts = emptySet(),
+        )
+
+        // When
+
+        change.applyTo(mutableContent)
+
+        // Then
+
+        assertEquals(
+            expected = listOf(
+                IdentifiedElement(
+                    element = 10, identity = OrderIdentity(10, 0),
                 ),
             ),
             actual = mutableContent,
