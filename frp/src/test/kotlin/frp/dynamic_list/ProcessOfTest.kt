@@ -26,14 +26,14 @@ class ProcessOfTest {
         val e40 = source.volatileIdentifiedContentView[3]
         val e50 = source.volatileIdentifiedContentView[4]
 
-        val ca = MutCell("a");
+        val ca = MutCell("a")
 
         // When the transform function samples something
 
         val result = source.processOf(Till.never) { ca.sample() + it.toString() }
 
         // And that thing changes after the operator invocation
-        ca.set("b");
+        ca.set("b")
 
         // Then it should be observed that the original value was sampled for
         // initial content
@@ -73,7 +73,7 @@ class ProcessOfTest {
             tillFreeze = Till.never,
         )
 
-        val ca = MutCell("a");
+        val ca = MutCell("a")
 
         // When
 
