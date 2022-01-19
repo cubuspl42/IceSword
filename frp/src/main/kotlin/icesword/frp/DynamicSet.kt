@@ -4,7 +4,7 @@ import frpjs.Hash
 import icesword.collections.DefaultSetFactory
 import icesword.collections.FastSetFactory
 import icesword.frp.dynamic_list.DynamicList
-import icesword.frp.dynamic_list.diff
+import icesword.frp.dynamic_list.diffIdentified
 import icesword.frp.dynamic_map.DynamicSetAssociateWith
 import icesword.frp.dynamic_set.AdjustDynamicSet
 import icesword.frp.dynamic_set.DiffDynamicSet
@@ -18,6 +18,11 @@ import icesword.frp.dynamic_set.MapTillRemovedDynamicSet
 import icesword.frp.dynamic_set.MemorizedDynamicSet
 import icesword.frp.dynamic_set.MutableValidatedDynamicSet
 import icesword.frp.dynamic_set.ValidatedDynamicSet
+
+data class KeyIdentity<K>(
+    // A unique key
+    val key: K,
+) : DynamicList.ElementIdentity
 
 interface DynamicSet<out A> {
     companion object {
@@ -79,10 +84,16 @@ interface DynamicSet<out A> {
     // Elements of this set in order that is used by the underlying data structure. It is not meaningful and can be
     // considered arbitrary. This is appropriate when one wants to convert a set to a list and doesn't care about the
     // actual order.
-    // TODO: Create a first-class identified internal order
     val internalOrder: DynamicList<A>
-        get() = DynamicList.diff(
-            content = this.content.map { it.toList() },
+        get() = DynamicList.diffIdentified(
+            identifiedContent = this.content.map { contentNow ->
+                contentNow.map {
+                    DynamicList.IdentifiedElement(
+                        element = it,
+                        identity = KeyIdentity(it),
+                    )
+                }
+            },
         )
 
     fun containsNow(a: @UnsafeVariance A): Boolean {

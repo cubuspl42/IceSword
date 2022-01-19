@@ -32,91 +32,99 @@ data class ListChange<out E>(
             val oldListIdentified = identifyByOrder(oldList)
             val newListIdentified = identifyByOrder(newList)
 
-            return object {
-                fun buildChangeSkippingEqual(
-                    oldListIdentified: List<IdentifiedElement<E>>,
-                    oldShift: Int,
-                    newListIdentified: List<IdentifiedElement<E>>,
-                    newShift: Int,
-                ): ListChange<E> {
-                    val leadingEqualElementCount = oldListIdentified.zip(newListIdentified)
-                        .takeWhile { (oldElement, newElement) -> oldElement == newElement }
-                        .count()
-
-                    return buildChangeToBoundary(
-                        oldListIdentified = oldListIdentified.drop(leadingEqualElementCount),
-                        oldShift = oldShift + leadingEqualElementCount,
-                        newListIdentified = newListIdentified.drop(leadingEqualElementCount),
-                        newShift = newShift + leadingEqualElementCount,
-                    )
-                }
-
-                fun buildChangeToBoundary(
-                    oldListIdentified: List<IdentifiedElement<E>>,
-                    oldShift: Int,
-                    newListIdentified: List<IdentifiedElement<E>>,
-                    newShift: Int,
-                ): ListChange<E> {
-                    fun buildChange(
-                        oldBoundaryIndex: Int,
-                        newBoundaryIndex: Int,
-                    ): ListChange<E> {
-                        val pullOuts = oldListIdentified.withIndex().toList()
-                            .slice(0 until oldBoundaryIndex)
-                            .map { (index, element) ->
-                                PullOut(
-                                    indexBefore = oldShift + index,
-                                    pulledOutElement = element,
-                                )
-                            }
-                            .toSet()
-
-                        val pushInOrNull = newListIdentified.toList()
-                            .slice(0 until newBoundaryIndex)
-                            .takeIf { it.isNotEmpty() }?.let { pushedInElements ->
-                                PushIn(
-                                    indexBefore = oldShift,
-                                    indexAfter = newShift,
-                                    pushedInElements = pushedInElements,
-                                )
-                            }
-
-                        return ListChange(
-                            pushIns = setOfNotNull(pushInOrNull),
-                            pullOuts = pullOuts,
-                        )
-                    }
-
-                    return oldListIdentified
-                        .withIndex()
-                        .firstNotNullOfOrNull { (oldIndex, element) ->
-                            newListIdentified.indexOfOrNull(element)?.let { newIndex ->
-                                Pair(oldIndex, newIndex)
-                            }
-                        }?.let { (oldBoundaryIndex, newBoundaryIndex) ->
-                            buildChange(
-                                oldBoundaryIndex = oldBoundaryIndex,
-                                newBoundaryIndex = newBoundaryIndex,
-                            ).unionWith(
-                                buildChangeSkippingEqual(
-                                    oldListIdentified = oldListIdentified.drop(oldBoundaryIndex),
-                                    oldShift = oldShift + oldBoundaryIndex,
-                                    newListIdentified = newListIdentified.drop(newBoundaryIndex),
-                                    newShift = newShift + newBoundaryIndex,
-                                ),
-                            )
-                        } ?: buildChange(
-                        oldBoundaryIndex = oldListIdentified.size,
-                        newBoundaryIndex = newListIdentified.size,
-                    )
-                }
-            }.buildChangeSkippingEqual(
+            return diffIdentified(
                 oldListIdentified = oldListIdentified,
-                oldShift = 0,
                 newListIdentified = newListIdentified,
-                newShift = 0,
             )
         }
+
+        fun <E> diffIdentified(
+            oldListIdentified: List<IdentifiedElement<E>>,
+            newListIdentified: List<IdentifiedElement<E>>,
+        ): ListChange<E> = object {
+            fun buildChangeSkippingEqual(
+                oldListIdentified: List<IdentifiedElement<E>>,
+                oldShift: Int,
+                newListIdentified: List<IdentifiedElement<E>>,
+                newShift: Int,
+            ): ListChange<E> {
+                val leadingEqualElementCount = oldListIdentified.zip(newListIdentified)
+                    .takeWhile { (oldElement, newElement) -> oldElement == newElement }
+                    .count()
+
+                return buildChangeToBoundary(
+                    oldListIdentified = oldListIdentified.drop(leadingEqualElementCount),
+                    oldShift = oldShift + leadingEqualElementCount,
+                    newListIdentified = newListIdentified.drop(leadingEqualElementCount),
+                    newShift = newShift + leadingEqualElementCount,
+                )
+            }
+
+            fun buildChangeToBoundary(
+                oldListIdentified: List<IdentifiedElement<E>>,
+                oldShift: Int,
+                newListIdentified: List<IdentifiedElement<E>>,
+                newShift: Int,
+            ): ListChange<E> {
+                fun buildChange(
+                    oldBoundaryIndex: Int,
+                    newBoundaryIndex: Int,
+                ): ListChange<E> {
+                    val pullOuts = oldListIdentified.withIndex().toList()
+                        .slice(0 until oldBoundaryIndex)
+                        .map { (index, element) ->
+                            PullOut(
+                                indexBefore = oldShift + index,
+                                pulledOutElement = element,
+                            )
+                        }
+                        .toSet()
+
+                    val pushInOrNull = newListIdentified.toList()
+                        .slice(0 until newBoundaryIndex)
+                        .takeIf { it.isNotEmpty() }?.let { pushedInElements ->
+                            PushIn(
+                                indexBefore = oldShift,
+                                indexAfter = newShift,
+                                pushedInElements = pushedInElements,
+                            )
+                        }
+
+                    return ListChange(
+                        pushIns = setOfNotNull(pushInOrNull),
+                        pullOuts = pullOuts,
+                    )
+                }
+
+                return oldListIdentified
+                    .withIndex()
+                    .firstNotNullOfOrNull { (oldIndex, element) ->
+                        newListIdentified.indexOfOrNull(element)?.let { newIndex ->
+                            Pair(oldIndex, newIndex)
+                        }
+                    }?.let { (oldBoundaryIndex, newBoundaryIndex) ->
+                        buildChange(
+                            oldBoundaryIndex = oldBoundaryIndex,
+                            newBoundaryIndex = newBoundaryIndex,
+                        ).unionWith(
+                            buildChangeSkippingEqual(
+                                oldListIdentified = oldListIdentified.drop(oldBoundaryIndex),
+                                oldShift = oldShift + oldBoundaryIndex,
+                                newListIdentified = newListIdentified.drop(newBoundaryIndex),
+                                newShift = newShift + newBoundaryIndex,
+                            ),
+                        )
+                    } ?: buildChange(
+                    oldBoundaryIndex = oldListIdentified.size,
+                    newBoundaryIndex = newListIdentified.size,
+                )
+            }
+        }.buildChangeSkippingEqual(
+            oldListIdentified = oldListIdentified,
+            oldShift = 0,
+            newListIdentified = newListIdentified,
+            newShift = 0,
+        )
     }
 
     val pushedInElements: Set<IdentifiedElement<E>>
@@ -163,8 +171,8 @@ fun <E> ListChange<E>.applyTo(
 
             val removedElement = mutableContent.removeAt(nextRemove.indexBefore + shift)
 
-            if (nextRemove.pulledOutElement != removedElement) {
-                throw IllegalStateException()
+            if (nextRemove.pulledOutElement.identity != removedElement.identity) {
+                throw IllegalStateException("Removed element doesn't have the expected identity")
             }
 
             shift -= 1
