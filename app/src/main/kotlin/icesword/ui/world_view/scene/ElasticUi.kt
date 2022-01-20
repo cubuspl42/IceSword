@@ -1,5 +1,7 @@
 package icesword.ui.world_view.scene
 
+import icesword.EditorTextureBank
+import icesword.RezTextureBank
 import icesword.ui.world_view.MouseDrag
 import icesword.TILE_SIZE
 import icesword.editor.Editor
@@ -11,6 +13,7 @@ import icesword.editor.Tool
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
+import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
@@ -28,6 +31,7 @@ import icesword.html.onMouseDrag
 import icesword.ui.CanvasNode
 import icesword.ui.world_view.EntityNode
 import icesword.ui.world_view.EntityNodeB
+import icesword.ui.world_view.WapNode
 import icesword.ui.world_view.scene.base.HybridNode
 import kotlinx.css.Color
 import kotlinx.css.Cursor
@@ -36,36 +40,17 @@ import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement
 
-class ElasticNode(
-    editor: Editor,
-    elastic: Elastic,
-) : GroupNode(
-    children = staticListOf(
-        ElasticProductNode(
-            elasticProduct = elastic.product,
-            alpha = 1.0,
-        ),
-        ElasticOverlayNode(
-            editor = editor,
-            elastic = elastic,
-        ),
-    )
-)
-
 fun createElasticNode(elastic: Elastic): EntityNodeB = object : EntityNodeB {
     override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
         EntityNode(
-            hybridNode = GroupNode(
-                children = staticListOf(
-                    ElasticProductNode(
-                        elasticProduct = elastic.product,
-                        alpha = 1.0,
-                    ),
-                    ElasticOverlayNode(
-                        editor = editor,
-                        elastic = elastic,
-                    ),
-                ),
+            wapNodes = createElasticProductWapNodes(
+                editorTextureBank = editorTextureBank,
+                textureBank = textureBank,
+                elasticProduct = elastic.product,
+            ),
+            overlayNode = ElasticOverlayNode(
+                editor = editor,
+                elastic = elastic,
             ),
         )
     }
@@ -78,14 +63,28 @@ class ElasticProductNode(
     override fun buildCanvasNode(
         context: CanvasNodeBuildContext,
     ): CanvasNode = GroupCanvasNode(
-        children = elasticProduct.wapObjectSprites.map {
+        children = elasticProduct.wapObjectSprites.map { wapSprite ->
             WapSpriteNode(
                 editorTextureBank = context.editorTextureBank,
                 textureBank = context.textureBank,
-                wapSprite = it,
+                wapSprite = wapSprite,
                 alpha = alpha,
             )
         }
+    )
+}
+
+fun createElasticProductWapNodes(
+    editorTextureBank: EditorTextureBank,
+    textureBank: RezTextureBank,
+    elasticProduct: ElasticProduct,
+    alpha: Double = 1.0,
+): DynamicList<WapNode> = elasticProduct.wapObjectSprites.map { wapSprite ->
+    WapNode.fromWapSprite(
+        editorTextureBank = editorTextureBank,
+        textureBank = textureBank,
+        wapSprite = wapSprite,
+        alpha = alpha,
     )
 }
 

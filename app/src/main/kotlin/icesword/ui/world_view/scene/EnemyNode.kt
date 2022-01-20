@@ -24,6 +24,7 @@ import icesword.html.resolve
 import icesword.ui.CanvasNode
 import icesword.ui.world_view.EntityNode
 import icesword.ui.world_view.EntityNodeB
+import icesword.ui.world_view.WapNode
 import icesword.ui.world_view.scene.base.HybridNode
 import kotlinx.css.Align
 import kotlinx.css.px
@@ -36,14 +37,6 @@ class EnemyNode(
     private val editor: Editor,
     private val enemy: Enemy,
 ) : HybridNode() {
-    override fun buildCanvasNode(
-        context: CanvasNodeBuildContext,
-    ): CanvasNode = WapSpriteNode(
-        editorTextureBank = editor.editorTextureBank,
-        textureBank = context.textureBank,
-        wapSprite = enemy.wapSprite,
-    )
-
     override fun buildOverlayElement(
         context: HybridNode.OverlayBuildContext,
     ): SVGElement = context.run {
@@ -132,7 +125,14 @@ class EnemyNode(
 fun createEnemyNode(enemy: Enemy): EntityNodeB = object : EntityNodeB {
     override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
         EntityNode(
-            hybridNode = EnemyNode(
+            wapNodes = staticListOf(
+                WapNode.fromWapSprite(
+                    editorTextureBank = editorTextureBank,
+                    textureBank = textureBank,
+                    wapSprite = enemy.wapSprite,
+                )
+            ),
+            overlayNode = EnemyNode(
                 rezIndex = rezIndex,
                 textureBank = textureBank,
                 editor = editor,

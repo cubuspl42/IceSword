@@ -10,9 +10,6 @@ import icesword.ui.world_view.scene.base.HybridNode
 
 class EntityNode(
     val wapNodes: DynamicList<WapNode> = DynamicList.empty(),
-    // The "deprecated" one
-    val hybridNode: HybridNode? = null,
-    // The new one
     val overlayNode: HybridNode? = null,
     val hybridViewportCanvasNode: HybridNode? = null,
     val hybridContentOverlayNode: HybridNode? = null,

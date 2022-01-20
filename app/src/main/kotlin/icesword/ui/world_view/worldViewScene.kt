@@ -88,7 +88,7 @@ fun buildWorldViewScene(
                 ).asHybridNode(),
             ),
             hybridWapNodes,
-            entityNodes.mapNotNull { it.overlayNode ?: it.hybridNode },
+            entityNodes.mapNotNull { it.overlayNode },
             DynamicList.ofSingle(
                 editor.editorMode.map {
                     createEditorModeModeNode(editorMode = it)

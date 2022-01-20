@@ -3,13 +3,16 @@
 package icesword.editor.entities
 
 import icesword.RezIndex
+import icesword.editor.DynamicWapSprite
 import icesword.editor.IntVec2Serializer
 import icesword.editor.calculateWapSpriteBounds
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype.FloorSpikePrototype
 import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.MutCell
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
+import icesword.frp.dynamic_list.diff
 import icesword.frp.dynamic_list.lastNow
 import icesword.frp.map
 import icesword.geometry.IntRect
@@ -24,6 +27,8 @@ class FloorSpikeRow(
     initialSpikeConfigs: List<FloorSpikeConfig>,
 ) : Entity(), WapObjectExportable {
     companion object {
+        const val zOrder: Int = 0
+
         fun load(
             rezIndex: RezIndex,
             data: FloorSpikeRowData,
@@ -57,6 +62,7 @@ class FloorSpikeRow(
         val config: FloorSpikeConfig,
         val position: IntVec2,
         val bounds: IntRect,
+        val wapSprite: DynamicWapSprite,
     )
 
     data class OutputRow(
@@ -79,7 +85,12 @@ class FloorSpikeRow(
                 bounds = calculateWapSpriteBounds(
                     imageMetadata = spikeImageMetadata,
                     position = position,
-                )
+                ),
+                wapSprite = DynamicWapSprite.fromImageMetadata(
+                    imageMetadata = spikeImageMetadata,
+                    position = constant(position),
+                    z = constant(FloorSpikeRow.zOrder),
+                ),
             )
 
             val gapWidth = 4
@@ -101,7 +112,7 @@ class FloorSpikeRow(
             initialPosition = initialPosition,
         )
 
-    override val zOrder: Cell<Int> = Cell.constant(0)
+    override val zOrder: Cell<Int> = constant(0)
 
     private val _spikeConfigs = MutableDynamicList(
         initialContent = initialSpikeConfigs,
@@ -120,6 +131,9 @@ class FloorSpikeRow(
             ),
         )
     }
+
+    val outputSpikes: DynamicList<OutputSpike> =
+        DynamicList.diff(outputRow.map { it.spikes })
 
     fun addSpike() {
         val lastConfig = _spikeConfigs.lastNow()
@@ -153,6 +167,7 @@ class FloorSpikeRow(
             FloorSpikePrototype.wwdObjectPrototype.copy(
                 x = position.x,
                 y = position.y,
+                z = FloorSpikeRow.zOrder,
                 speed = config.startDelayMillis.sample(),
                 speedX = config.timeOnMillis.sample(),
                 speedY = config.timeOffMillis.sample(),

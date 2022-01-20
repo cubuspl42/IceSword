@@ -27,6 +27,7 @@ import icesword.ui.world_view.scene.base.HybridNode
 import icesword.ui.setupMoveController
 import icesword.ui.world_view.EntityNode
 import icesword.ui.world_view.EntityNodeB
+import icesword.ui.world_view.WapNode
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import org.w3c.dom.svg.SVGElement
@@ -65,7 +66,14 @@ class PathElevatorNode(
 fun createPathElevatorNode(pathElevator: PathElevator): EntityNodeB = object : EntityNodeB {
     override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
         EntityNode(
-            hybridNode = PathElevatorNode(
+            wapNodes = pathElevator.path.steps.map {
+                WapNode.fromWapSprite(
+                    editorTextureBank = editor.editorTextureBank,
+                    textureBank = context.textureBank,
+                    wapSprite = it.wapSprite,
+                )
+            },
+            overlayNode = PathElevatorNode(
                 editor = editor,
                 pathElevator = pathElevator,
             ),
@@ -153,14 +161,6 @@ class PathElevatorStepNode(
     private val pathElevator: PathElevator,
     private val step: PathElevatorStep,
 ) : HybridNode() {
-    override fun buildCanvasNode(
-        context: CanvasNodeBuildContext,
-    ): CanvasNode = WapSpriteNode(
-        editorTextureBank = editor.editorTextureBank,
-        textureBank = context.textureBank,
-        wapSprite = step.wapSprite,
-    )
-
     override fun buildOverlayElement(
         context: HybridNode.OverlayBuildContext,
     ): SVGElement = context.run {

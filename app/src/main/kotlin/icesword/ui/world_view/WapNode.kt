@@ -16,12 +16,14 @@ data class WapNode(
             editorTextureBank: EditorTextureBank,
             textureBank: RezTextureBank,
             wapSprite: DynamicWapSprite,
+            alpha: Double = 1.0,
         ): WapNode = WapNode(
             zOrder = wapSprite.zOrder,
             canvasNode = WapSpriteNode(
                 editorTextureBank = editorTextureBank,
                 textureBank = textureBank,
                 wapSprite = wapSprite,
+                alpha = alpha,
             ),
         )
     }

@@ -12,7 +12,7 @@ fun createStartPointNode(
 ): EntityNodeB = object : EntityNodeB {
     override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
         EntityNode(
-            hybridNode = object : HybridNode() {
+            overlayNode = object : HybridNode() {
                 override fun buildOverlayElement(context: OverlayBuildContext): SVGElement =
                     context.run {
                         createStartPointOverlayElement(
