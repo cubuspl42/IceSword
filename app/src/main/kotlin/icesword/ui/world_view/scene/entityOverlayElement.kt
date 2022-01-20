@@ -1,10 +1,10 @@
 package icesword.ui.world_view.scene
 
-import icesword.RezTextureBank
 import icesword.RezIndex
+import icesword.RezTextureBank
+import icesword.editor.Editor
 import icesword.editor.entities.CrateStack
 import icesword.editor.entities.CrumblingPeg
-import icesword.editor.Editor
 import icesword.editor.entities.Elastic
 import icesword.editor.entities.Enemy
 import icesword.editor.entities.Entity
@@ -20,6 +20,7 @@ import icesword.editor.entities.VerticalElevator
 import icesword.editor.entities.WapObject
 import icesword.editor.entities.Warp
 import icesword.geometry.DynamicTransform
+import icesword.ui.world_view.buildHybridNode
 import icesword.ui.world_view.scene.base.HybridNode
 
 fun createEntityNode(
@@ -29,49 +30,42 @@ fun createEntityNode(
     viewTransform: DynamicTransform,
     entity: Entity,
 ): HybridNode? = when (entity) {
-    is Elastic -> ElasticNode(
-        editor = editor,
+    is Elastic -> createElasticNode(
         elastic = entity,
     )
     is HorizontalElevator -> null
     is VerticalElevator -> null
-    is Enemy -> EnemyNode(
-        rezIndex = rezIndex,
-        textureBank = textureBank,
-        editor = editor,
+    is Enemy -> createEnemyNode(
         enemy = entity,
     )
     is FloorSpikeRow -> null
     is KnotMesh -> null
     is StartPoint -> null
     is WapObject -> null
-    is PathElevator -> PathElevatorNode(
-        editor = editor,
+    is PathElevator -> createPathElevatorNode(
         pathElevator = entity,
     )
-    is Rope -> RopeNode(
-        editor = editor,
+    is Rope -> createRopeNode(
         rope = entity,
     )
-    is CrateStack -> CrateStackNode(
-        editor = editor,
+    is CrateStack -> createCrateStackNode(
         crateStack = entity,
     )
-    is CrumblingPeg -> CrumblingPegNode(
-        editor = editor,
+    is CrumblingPeg -> createCrumblingPegNode(
         crumblingPeg = entity,
     )
-    is TogglePeg -> TogglePegNode(
-        editor = editor,
+    is TogglePeg -> createTogglePegNode(
         togglePeg = entity,
     )
-    is Warp -> EntityWapSpriteNode(
-        editor = editor,
-        entity = entity,
-        wapSprite = entity.wapSprite,
+    is Warp -> createWarpNode(
+        warp = entity,
     )
-    is Fixture -> FixtureNode(
-        editor = editor,
+    is Fixture -> createFixtureNode(
         fixture = entity,
     )
-}
+}?.buildHybridNode(
+    rezIndex = rezIndex,
+    textureBank = textureBank,
+    editor = editor,
+    viewTransform = viewTransform,
+)

@@ -2,6 +2,7 @@ package icesword.ui.world_view.scene
 
 import icesword.editor.modes.EditPathElevatorMode
 import icesword.editor.Editor
+import icesword.editor.entities.Enemy
 import icesword.editor.entities.PathElevator
 import icesword.editor.entities.PathElevatorEdge
 import icesword.editor.entities.PathElevatorStep
@@ -24,6 +25,8 @@ import icesword.html.createSvgSwitch
 import icesword.ui.CanvasNode
 import icesword.ui.world_view.scene.base.HybridNode
 import icesword.ui.setupMoveController
+import icesword.ui.world_view.EntityNode
+import icesword.ui.world_view.EntityNodeB
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import org.w3c.dom.svg.SVGElement
@@ -59,6 +62,16 @@ class PathElevatorNode(
     }
 }
 
+fun createPathElevatorNode(pathElevator: PathElevator): EntityNodeB = object : EntityNodeB {
+    override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
+        EntityNode(
+            hybridNode = PathElevatorNode(
+                editor = editor,
+                pathElevator = pathElevator,
+            ),
+        )
+    }
+}
 
 private fun createStepArrow(
     context: HybridNode.OverlayBuildContext,

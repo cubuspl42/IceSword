@@ -6,6 +6,8 @@ import icesword.editor.entities.FixtureProduct
 import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.staticListOf
 import icesword.ui.CanvasNode
+import icesword.ui.world_view.EntityNode
+import icesword.ui.world_view.EntityNodeB
 import icesword.ui.world_view.scene.base.HybridNode
 import org.w3c.dom.svg.SVGElement
 
@@ -24,6 +26,19 @@ class FixtureNode(
         ),
     )
 )
+
+fun createFixtureNode(
+    fixture: Fixture,
+): EntityNodeB = object : EntityNodeB {
+    override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
+        EntityNode(
+            hybridNode = FixtureNode(
+                editor = editor,
+                fixture = fixture,
+            ),
+        )
+    }
+}
 
 class FixtureProductNode(
     private val fixtureProduct: FixtureProduct,

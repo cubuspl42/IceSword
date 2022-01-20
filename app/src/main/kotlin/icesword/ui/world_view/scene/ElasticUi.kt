@@ -26,6 +26,8 @@ import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
 import icesword.html.onMouseDrag
 import icesword.ui.CanvasNode
+import icesword.ui.world_view.EntityNode
+import icesword.ui.world_view.EntityNodeB
 import icesword.ui.world_view.scene.base.HybridNode
 import kotlinx.css.Color
 import kotlinx.css.Cursor
@@ -49,6 +51,25 @@ class ElasticNode(
         ),
     )
 )
+
+fun createElasticNode(elastic: Elastic): EntityNodeB = object : EntityNodeB {
+    override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
+        EntityNode(
+            hybridNode = GroupNode(
+                children = staticListOf(
+                    ElasticProductNode(
+                        elasticProduct = elastic.product,
+                        alpha = 1.0,
+                    ),
+                    ElasticOverlayNode(
+                        editor = editor,
+                        elastic = elastic,
+                    ),
+                ),
+            ),
+        )
+    }
+}
 
 class ElasticProductNode(
     private val elasticProduct: ElasticProduct,

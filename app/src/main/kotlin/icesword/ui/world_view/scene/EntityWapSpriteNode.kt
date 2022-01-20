@@ -3,7 +3,11 @@ package icesword.ui.world_view.scene
 import icesword.editor.DynamicWapSprite
 import icesword.editor.Editor
 import icesword.editor.entities.Entity
+import icesword.editor.entities.TogglePeg
+import icesword.editor.entities.Warp
 import icesword.ui.CanvasNode
+import icesword.ui.world_view.EntityNode
+import icesword.ui.world_view.EntityNodeB
 import icesword.ui.world_view.scene.base.HybridNode
 import org.w3c.dom.svg.SVGElement
 
@@ -35,3 +39,25 @@ class EntityWapSpriteNode(
         )
     }
 }
+
+private fun createEntityWapSpriteNode(
+    entity: Entity,
+    wapSprite: DynamicWapSprite,
+): EntityNodeB = object : EntityNodeB {
+    override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
+        EntityNode(
+            hybridNode = EntityWapSpriteNode(
+                editor = editor,
+                entity = entity,
+                wapSprite = wapSprite,
+            ),
+        )
+    }
+}
+
+fun createWarpNode(
+    warp: Warp,
+): EntityNodeB = createEntityWapSpriteNode(
+    entity = warp,
+    wapSprite = warp.wapSprite,
+)

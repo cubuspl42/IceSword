@@ -5,10 +5,12 @@ import icesword.RezIndex
 import icesword.editor.Editor
 import icesword.editor.entities.Enemy
 import icesword.editor.PickupKind
+import icesword.editor.entities.Elastic
 import icesword.frp.Cell
 import icesword.frp.DynamicSet
 import icesword.frp.Till
 import icesword.frp.dynamic_list.map
+import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
@@ -20,6 +22,8 @@ import icesword.html.createSvgGroup
 import icesword.html.createWrapper
 import icesword.html.resolve
 import icesword.ui.CanvasNode
+import icesword.ui.world_view.EntityNode
+import icesword.ui.world_view.EntityNodeB
 import icesword.ui.world_view.scene.base.HybridNode
 import kotlinx.css.Align
 import kotlinx.css.px
@@ -121,6 +125,19 @@ class EnemyNode(
                 pickupsPreview,
             )),
             tillDetach = tillDetach,
+        )
+    }
+}
+
+fun createEnemyNode(enemy: Enemy): EntityNodeB = object : EntityNodeB {
+    override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
+        EntityNode(
+            hybridNode = EnemyNode(
+                rezIndex = rezIndex,
+                textureBank = textureBank,
+                editor = editor,
+                enemy = enemy,
+            ),
         )
     }
 }

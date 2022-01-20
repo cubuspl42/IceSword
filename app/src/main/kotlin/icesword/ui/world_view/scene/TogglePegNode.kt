@@ -1,8 +1,11 @@
 package icesword.ui.world_view.scene
 
 import icesword.editor.Editor
+import icesword.editor.entities.CrumblingPeg
 import icesword.editor.entities.TogglePeg
 import icesword.ui.CanvasNode
+import icesword.ui.world_view.EntityNode
+import icesword.ui.world_view.EntityNodeB
 import icesword.ui.world_view.scene.base.HybridNode
 import org.w3c.dom.svg.SVGElement
 
@@ -30,6 +33,19 @@ class TogglePegNode(
             entity = togglePeg,
             viewBoundingBox = viewTransform.transform(boundingBox),
             tillDetach = tillDetach,
+        )
+    }
+}
+
+fun createTogglePegNode(
+    togglePeg: TogglePeg,
+): EntityNodeB = object : EntityNodeB {
+    override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
+        EntityNode(
+            hybridNode = TogglePegNode(
+                editor = editor,
+                togglePeg = togglePeg,
+            ),
         )
     }
 }
