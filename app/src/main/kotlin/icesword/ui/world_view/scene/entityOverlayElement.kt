@@ -1,5 +1,6 @@
 package icesword.ui.world_view.scene
 
+import icesword.EditorTextureBank
 import icesword.RezIndex
 import icesword.RezTextureBank
 import icesword.editor.Editor
@@ -26,6 +27,7 @@ import icesword.ui.world_view.scene.base.HybridNode
 fun createEntityNode(
     rezIndex: RezIndex,
     textureBank: RezTextureBank,
+    editorTextureBank: EditorTextureBank,
     editor: Editor,
     viewTransform: DynamicTransform,
     entity: Entity,
@@ -33,15 +35,23 @@ fun createEntityNode(
     is Elastic -> createElasticNode(
         elastic = entity,
     )
-    is HorizontalElevator -> null
-    is VerticalElevator -> null
+    is HorizontalElevator -> createHorizontalElevatorNode(
+        elevator = entity,
+    )
+    is VerticalElevator -> createVerticalElevatorNode(
+        elevator = entity,
+    )
     is Enemy -> createEnemyNode(
         enemy = entity,
     )
-    is FloorSpikeRow -> null
+    is FloorSpikeRow -> createFloorSpikeRowNode(
+        floorSpikeRow = entity,
+    )
     is KnotMesh -> null
     is StartPoint -> null
-    is WapObject -> null
+    is WapObject -> createWapObjectNode(
+        wapObject = entity,
+    )
     is PathElevator -> createPathElevatorNode(
         pathElevator = entity,
     )
@@ -66,6 +76,7 @@ fun createEntityNode(
 }?.buildHybridNode(
     rezIndex = rezIndex,
     textureBank = textureBank,
+    editorTextureBank = editorTextureBank,
     editor = editor,
     viewTransform = viewTransform,
 )

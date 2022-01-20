@@ -6,6 +6,7 @@ import icesword.editor.Editor
 import icesword.editor.entities.Entity
 import icesword.editor.entities.WapObject
 import icesword.editor.DynamicWapSprite
+import icesword.editor.entities.Fixture
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.map
@@ -15,6 +16,9 @@ import icesword.frp.values
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntRect
 import icesword.ui.CanvasNode
+import icesword.ui.asHybridNode
+import icesword.ui.world_view.EntityNode
+import icesword.ui.world_view.EntityNodeB
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement

@@ -73,37 +73,11 @@ fun buildWorldViewScene(
                     tiles = editorTilesView,
                 ).asHybridNode(),
             ),
-            world.wapObjects.internalOrder.mapTillRemoved(tillAbort = tillDetach) { wapObject, _ ->
-                WapSpriteNode(
-                    editorTextureBank = editorTextureBank,
-                    textureBank = textureBank,
-                    wapSprite = wapObject.sprite,
-                ).asHybridNode()
-            },
-            world.horizontalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
-                WapSpriteNode(
-                    editorTextureBank = editorTextureBank,
-                    textureBank = textureBank,
-                    wapSprite = elevator.wapSprite,
-                ).asHybridNode()
-            },
-            world.verticalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, _ ->
-                WapSpriteNode(
-                    editorTextureBank = editorTextureBank,
-                    textureBank = textureBank,
-                    wapSprite = elevator.wapSprite,
-                ).asHybridNode()
-            },
-            world.floorSpikeRows.internalOrder.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, _ ->
-                FloorSpikeRowNode(
-                    textureBank = textureBank,
-                    floorSpikeRow = floorSpikeRow,
-                ).asHybridNode()
-            },
             world.entities.internalOrder.mapNotNull {
                 createEntityNode(
                     rezIndex = rezIndex,
                     textureBank = textureBank,
+                    editorTextureBank = editorTextureBank,
                     editor = editor,
                     viewTransform = dynamicViewTransform,
                     entity = it
@@ -127,54 +101,6 @@ fun buildWorldViewScene(
                     )
                 }
             ),
-            world.wapObjects.internalOrder.mapTillRemoved(tillAbort = tillDetach) { wapObject, tillRemoved ->
-                hybridOverlayNode { svg ->
-                    createWapObjectOverlayElement(
-                        editor = editor,
-                        svg = svg,
-                        viewport = viewport,
-                        viewTransform = dynamicViewTransform,
-                        wapObject = wapObject,
-                        tillDetach = tillRemoved,
-                    )
-                }
-            },
-            world.horizontalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
-                hybridOverlayNode { svg ->
-                    createHorizontalElevatorOverlayElement(
-                        editor = editor,
-                        svg = svg,
-                        viewport = viewport,
-                        viewTransform = dynamicViewTransform,
-                        elevator = elevator,
-                        tillDetach = tillRemoved,
-                    )
-                }
-            },
-            world.verticalElevators.internalOrder.mapTillRemoved(tillAbort = tillDetach) { elevator, tillRemoved ->
-                hybridOverlayNode { svg ->
-                    createVerticalElevatorOverlayElement(
-                        editor = editor,
-                        svg = svg,
-                        viewport = viewport,
-                        viewTransform = dynamicViewTransform,
-                        elevator = elevator,
-                        tillDetach = tillRemoved,
-                    )
-                }
-            },
-            world.floorSpikeRows.internalOrder.mapTillRemoved(tillAbort = tillDetach) { floorSpikeRow, tillRemoved ->
-                hybridOverlayNode { svg ->
-                    createFloorSpikeRowOverlayElement(
-                        editor = editor,
-                        svg = svg,
-                        viewport = viewport,
-                        viewTransform = dynamicViewTransform,
-                        floorSpikeRow = floorSpikeRow,
-                        tillDetach = tillRemoved,
-                    )
-                }
-            },
             // hybridNodes / editor mode
             DynamicList.ofSingle(
                 editor.knotSelectMode.switchMapNotNull {
