@@ -8,7 +8,6 @@ import icesword.editor.DynamicWapSprite
 import icesword.editor.IntVec2Serializer
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
-import icesword.frp.Cell.Companion.constant
 import icesword.frp.MutCell
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
@@ -30,6 +29,7 @@ class Warp(
     rezIndex: RezIndex,
     private val prototype: WarpPrototype,
     initialPosition: IntVec2,
+    initialZOrder: Int,
     initialTargetPosition: IntVec2,
 ) : Entity(),
     WapObjectExportable {
@@ -67,12 +67,12 @@ class Warp(
     companion object {
         fun load(
             rezIndex: RezIndex,
-            retail: Retail,
             data: WarpData,
         ): Warp = Warp(
             rezIndex = rezIndex,
             prototype = data.prototype,
             initialPosition = data.position,
+            initialZOrder = data.zOrder,
             initialTargetPosition = data.targetPosition,
         )
     }
@@ -91,10 +91,8 @@ class Warp(
         initialPosition = initialPosition,
     )
 
-    override val zOrder: Cell<Int> = constant(0)
-
     override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
-        initialZOrder = 0,
+        initialZOrder = initialZOrder,
     )
 
     val wapSprite = DynamicWapSprite.fromImageSet(
@@ -115,6 +113,7 @@ class Warp(
 
     override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
+        val zOrder = asZOrderedEntity.zOrder.sample()
         val targetPosition = targetPosition.sample()
 
         return WapObjectPropsData(
@@ -122,6 +121,7 @@ class Warp(
             imageSet = "GAME_WARP",
             x = position.x,
             y = position.y,
+            z = zOrder,
             i = -1,
             speedX = targetPosition.x,
             speedY = targetPosition.y,
@@ -134,5 +134,6 @@ class Warp(
 data class WarpData(
     val prototype: WarpPrototype,
     val position: IntVec2,
+    val zOrder: Int = 0,
     val targetPosition: IntVec2,
 ) : EntityData()

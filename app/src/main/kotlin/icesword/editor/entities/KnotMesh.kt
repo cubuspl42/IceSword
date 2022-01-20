@@ -131,8 +131,6 @@ class KnotMesh(
         initialTileOffset = initialTileOffset,
     )
 
-    override val zOrder: Cell<Int> = Cell.constant(0)
-
     val tileOffset: Cell<IntVec2> =
         entityPosition.tileOffset
 

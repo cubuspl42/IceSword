@@ -120,6 +120,7 @@ sealed interface InsertionPrototype {
             rezIndex = context.rezIndex,
             prototype = ropePrototype,
             initialPosition = context.insertionWorldPoint,
+            initialZOrder = 0,
             initialSwingDurationMs = 1500,
         )
     }
@@ -135,6 +136,7 @@ sealed interface InsertionPrototype {
             rezIndex = context.rezIndex,
             prototype = crateStackPrototype,
             initialPosition = context.insertionWorldPoint,
+            initialZOrder = 0,
             initialPickups = listOf(PickupKind.TreasureCoins),
         )
     }
@@ -168,6 +170,7 @@ sealed interface InsertionPrototype {
             retail = context.retail,
             prototype = togglePegPrototype,
             initialPosition = context.insertionWorldPoint,
+            initialZOrder = 0,
             initialTimeOnMs = 1500,
             initialTimeOffMs = 1500,
             initialDelayMs = 0,
@@ -185,6 +188,7 @@ sealed interface InsertionPrototype {
             rezIndex = context.rezIndex,
             prototype = warpPrototype,
             initialPosition = context.insertionWorldPoint,
+            initialZOrder = 0,
             initialTargetPosition = context.insertionWorldPoint,
         )
     }
@@ -406,6 +410,7 @@ class HorizontalElevatorInsertionMode(
         rezIndex = rezIndex,
         prototype = insertionPrototype.elevatorPrototype,
         initialPosition = insertionWorldPoint,
+        initialZOrder = 0,
         initialRelativeMovementRange = HorizontalRange(
             minX = -rangeRadius,
             maxX = +rangeRadius,
@@ -453,6 +458,7 @@ class VerticalElevatorInsertionMode(
         rezIndex = rezIndex,
         prototype = insertionPrototype.elevatorPrototype,
         initialPosition = insertionWorldPoint,
+        initialZOrder = 0,
         initialRelativeMovementRange = VerticalRange(
             minY = -rangeRadius,
             maxY = +rangeRadius,
@@ -515,6 +521,7 @@ class EnemyInsertionMode(
                 rezIndex = rezIndex,
                 wapObjectPrototype = insertionPrototype.wapObjectPrototype,
                 initialPosition = insertionWorldPoint,
+                initialZOrder = 0,
                 initialRelativeMovementRange = HorizontalRange(-128, 128),
                 initialPickups = emptyList(),
             )

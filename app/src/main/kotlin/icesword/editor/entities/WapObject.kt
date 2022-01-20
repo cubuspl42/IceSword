@@ -62,8 +62,6 @@ class WapObject(
 
     val props = WapObjectProps(initialProps = initialProps)
 
-    override val zOrder: Cell<Int> = props.z
-
     override val asZOrderedEntity: ZOrderedEntity = object : ZOrderedEntity {
         override val zOrder: Cell<Int>
             get() = props.z

@@ -35,6 +35,7 @@ class CrateStack(
     rezIndex: RezIndex,
     prototype: CrateStackPrototype,
     initialPosition: IntVec2,
+    initialZOrder: Int,
     initialPickups: List<PickupKind>,
 ) : Entity(),
     WapObjectExportable {
@@ -56,6 +57,7 @@ class CrateStack(
                 rezIndex = rezIndex,
                 prototype = CrateStackPrototype(retail = retail),
                 initialPosition = data.position,
+                initialZOrder = data.zOrder,
                 initialPickups = data.pickups.take(pickupCountLimit),
             )
     }
@@ -138,10 +140,8 @@ class CrateStack(
             initialPosition = initialPosition,
         )
 
-    override val zOrder: Cell<Int> = constant(1000)
-
     override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
-        initialZOrder = 0,
+        initialZOrder = initialZOrder,
     )
 
     private fun buildCrates(
@@ -195,6 +195,7 @@ class CrateStack(
 
     override fun toEntityData(): CrateStackData = CrateStackData(
         position = position.sample(),
+        zOrder = asZOrderedEntity.zOrder.sample(),
         pickups = pickups.sampleContent(),
     )
 
@@ -214,10 +215,12 @@ class CrateStack(
 
         val position = position.sample()
         val pickups = pickups.volatileContentView
+        val zOrder = asZOrderedEntity.zOrder.sample()
 
         return crateObjectPrototype.copy(
             x = position.x,
             y = position.y,
+            z = zOrder,
             userRect1 = encodePickups(
                 pickup4 = pickups.getOrNull(0),
                 pickup1 = pickups.getOrNull(1),
@@ -238,5 +241,6 @@ class CrateStack(
 @SerialName("CrateStack")
 data class CrateStackData(
     val position: IntVec2,
+    val zOrder: Int = 0,
     val pickups: List<PickupKind> = emptyList(),
 ) : EntityData()

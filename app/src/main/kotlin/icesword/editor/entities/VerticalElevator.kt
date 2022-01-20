@@ -48,11 +48,13 @@ class VerticalElevator(
     rezIndex: RezIndex,
     prototype: ElevatorPrototype,
     initialPosition: IntVec2,
+    initialZOrder: Int,
     initialRelativeMovementRange: VerticalRange,
 ) : Elevator<VerticalRange>(
     rezIndex = rezIndex,
     prototype = prototype,
     initialPosition = initialPosition,
+    initialZOrder = initialZOrder,
     initialRelativeMovementRange = initialRelativeMovementRange,
 ), WapObjectExportable {
 
@@ -66,12 +68,14 @@ class VerticalElevator(
                 rezIndex = rezIndex,
                 prototype = retail.elevatorPrototype,
                 initialPosition = data.position,
+                initialZOrder = data.zOrder,
                 initialRelativeMovementRange = data.relativeMovementRange,
             )
     }
 
     fun toData(): VerticalElevatorData = VerticalElevatorData(
         position = entityPosition.position.sample(),
+        zOrder = asZOrderedEntity.zOrder.sample(),
         relativeMovementRange = movementRange.relativeMovementRange.sample(),
     )
 
@@ -89,5 +93,6 @@ class VerticalElevator(
 @Serializable
 data class VerticalElevatorData(
     val position: IntVec2,
+    val zOrder: Int = 0,
     val relativeMovementRange: VerticalRange = VerticalRange.ZERO,
 )

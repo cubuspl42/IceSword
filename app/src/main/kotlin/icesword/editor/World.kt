@@ -41,7 +41,9 @@ import icesword.editor.entities.WarpData
 import icesword.editor.retails.Retail
 import icesword.frp.DynamicSet
 import icesword.frp.MutableDynamicSet
+import icesword.frp.Till
 import icesword.frp.filterType
+import icesword.frp.pin
 import icesword.geometry.IntVec2
 import icesword.tileAtPoint
 import icesword.wwd.Wwd
@@ -219,7 +221,7 @@ class World(
                         is CrateStackData -> CrateStack.load(rezIndex = rezIndex, retail = retail, data = it)
                         is CrumblingPegData -> CrumblingPeg.load(rezIndex = rezIndex, retail = retail, data = it)
                         is TogglePegData -> TogglePeg.load(rezIndex = rezIndex, retail = retail, data = it)
-                        is WarpData -> Warp.load(rezIndex = rezIndex, retail = retail, data = it)
+                        is WarpData -> Warp.load(rezIndex = rezIndex, data = it)
                         is FixtureData -> Fixture.load(rezIndex = rezIndex, retail = retail, data = it)
                     }
                 }.toSet()
@@ -437,6 +439,14 @@ class World(
         this.tiles.changes.subscribe { change ->
 //            println("World.tiles change: $change")
         } // FIXME
+
+        wapObjects.pin(till = Till.never)
+
+        horizontalElevators.pin(till = Till.never)
+
+        verticalElevators.pin(till = Till.never)
+
+        floorSpikeRows.pin(till = Till.never)
     }
 }
 

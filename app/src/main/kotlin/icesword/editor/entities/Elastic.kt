@@ -122,8 +122,6 @@ class Elastic(
 
     override val entityPosition = BoundsEntityPosition()
 
-    override val zOrder: Cell<Int> = Cell.constant(0)
-
     fun resizeTopLeft(deltaTileCoord: Cell<IntVec2>, till: Till) = resize(
         deltaTileCoord = deltaTileCoord,
         sampleTileCoord = IntRect::topLeft,

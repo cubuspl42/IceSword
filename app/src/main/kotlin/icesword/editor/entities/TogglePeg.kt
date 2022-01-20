@@ -27,6 +27,7 @@ class TogglePeg(
     retail: Retail,
     private val prototype: TogglePegPrototype,
     initialPosition: IntVec2,
+    initialZOrder: Int,
     initialTimeOnMs: Int,
     initialTimeOffMs: Int,
     initialDelayMs: Int,
@@ -43,6 +44,7 @@ class TogglePeg(
             retail = retail,
             prototype = data.prototype,
             initialPosition = data.position,
+            initialZOrder = data.zOrder,
             initialTimeOnMs = data.timeOnMs,
             initialTimeOffMs = data.timeOffMs,
             initialDelayMs = data.delayMs,
@@ -83,10 +85,8 @@ class TogglePeg(
         initialPosition = initialPosition,
     )
 
-    override val zOrder: Cell<Int> = Cell.constant(0)
-
     override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
-        initialZOrder = 0,
+        initialZOrder = initialZOrder,
     )
 
     val wapSprite = DynamicWapSprite.fromImageSet(
@@ -112,6 +112,7 @@ class TogglePeg(
 
     override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
+        val zOrder = asZOrderedEntity.zOrder.sample()
         val timeOnMs = timeOnMs.sample()
         val timeOffMs = timeOffMs.sample()
         val delayMs = delayMs.sample()
@@ -121,6 +122,7 @@ class TogglePeg(
             imageSet = prototype.shortImageSetId,
             x = position.x,
             y = position.y,
+            z = zOrder,
             i = -1,
             speedX = timeOnMs,
             speedY = timeOffMs,
@@ -134,6 +136,7 @@ class TogglePeg(
 data class TogglePegData(
     val prototype: TogglePegPrototype,
     val position: IntVec2,
+    val zOrder: Int = 0,
     val timeOnMs: Int,
     val timeOffMs: Int,
     val delayMs: Int,

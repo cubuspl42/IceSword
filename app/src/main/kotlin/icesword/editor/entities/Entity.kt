@@ -10,8 +10,6 @@ sealed class Entity {
 
     val position: Cell<IntVec2> by lazy { entityPosition.position }
 
-    abstract val zOrder: Cell<Int>
-
     fun setPosition(newPosition: IntVec2) {
         entityPosition.setPosition(newPosition)
     }

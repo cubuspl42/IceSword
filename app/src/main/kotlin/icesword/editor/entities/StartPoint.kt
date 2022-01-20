@@ -14,8 +14,6 @@ class StartPoint(
         initialPosition = initialPosition,
     )
 
-    override val zOrder: Cell<Int> = Cell.constant(0)
-
     override fun isSelectableIn(area: IntRect): Boolean {
         val hitBox = IntRect.fromCenter(
             center = position.sample(),

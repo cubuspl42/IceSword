@@ -112,8 +112,6 @@ class FloorSpikeRow(
             initialPosition = initialPosition,
         )
 
-    override val zOrder: Cell<Int> = constant(0)
-
     private val _spikeConfigs = MutableDynamicList(
         initialContent = initialSpikeConfigs,
     )

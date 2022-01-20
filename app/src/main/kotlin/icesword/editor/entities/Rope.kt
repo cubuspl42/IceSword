@@ -26,6 +26,7 @@ class Rope(
     rezIndex: RezIndex,
     prototype: RopePrototype,
     initialPosition: IntVec2,
+    initialZOrder: Int,
     initialSwingDurationMs: Int,
 ) :
     Entity(),
@@ -46,6 +47,7 @@ class Rope(
                 rezIndex = rezIndex,
                 prototype = RopePrototype(retail = retail),
                 initialPosition = data.position,
+                initialZOrder = data.zOrder,
                 initialSwingDurationMs = data.swingDurationMs,
             )
     }
@@ -55,10 +57,8 @@ class Rope(
             initialPosition = initialPosition,
         )
 
-    override val zOrder: Cell<Int> = Cell.constant(0)
-
     override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
-        initialZOrder = 0,
+        initialZOrder = initialZOrder,
     )
 
     val wapSprite = DynamicWapSprite.fromImageSet(
@@ -104,5 +104,6 @@ class Rope(
 @SerialName("Rope")
 data class RopeData(
     val position: IntVec2,
+    val zOrder: Int = 0,
     val swingDurationMs: Int,
 ) : EntityData()

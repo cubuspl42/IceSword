@@ -25,6 +25,7 @@ class Enemy(
     rezIndex: RezIndex,
     private val wapObjectPrototype: WapObjectPrototype,
     initialPosition: IntVec2,
+    initialZOrder: Int,
     initialRelativeMovementRange: HorizontalRange,
     initialPickups: List<PickupKind>,
 ) : Entity(),
@@ -41,6 +42,7 @@ class Enemy(
                 rezIndex = rezIndex,
                 wapObjectPrototype = data.objectPrototype,
                 initialPosition = data.position,
+                initialZOrder = data.zOrder,
                 initialRelativeMovementRange = data.relativeMovementRange,
                 initialPickups = data.pickups.take(pickupCountLimit),
             )
@@ -67,10 +69,8 @@ class Enemy(
             initialPosition = initialPosition,
         )
 
-    override val zOrder: Cell<Int> = Cell.constant(4000)
-
     override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
-        initialZOrder = 0,
+        initialZOrder = initialZOrder,
     )
 
     val imageSetId = wapObjectPrototype.imageSetId
@@ -114,6 +114,7 @@ class Enemy(
         )
 
         val position = position.sample()
+        val zOrder = asZOrderedEntity.zOrder.sample()
         val movementRange = movementRange.relativeMovementRange.sample()
         val globalMovementRange = movementRange.translate(position)
         val pickups = pickups.volatileContentView
@@ -121,6 +122,7 @@ class Enemy(
         return wapObjectPrototype.wwdObjectPrototype.copy(
             x = position.x,
             y = position.y,
+            z = zOrder,
             rangeRect = Rectangle.zero.copy(
                 left = globalMovementRange.minX,
                 right = globalMovementRange.maxX,
@@ -147,6 +149,7 @@ class Enemy(
 data class EnemyData(
     val objectPrototype: WapObjectPrototype,
     val position: IntVec2,
+    val zOrder: Int = 0,
     val relativeMovementRange: HorizontalRange = HorizontalRange.ZERO,
     val pickups: List<PickupKind> = emptyList(),
 ) : EntityData()

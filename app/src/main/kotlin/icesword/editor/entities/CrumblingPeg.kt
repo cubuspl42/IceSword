@@ -65,8 +65,6 @@ class CrumblingPeg(
         initialPosition = initialPosition,
     )
 
-    override val zOrder: Cell<Int> = Cell.constant(1000)
-
     val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = expandImageSetId(

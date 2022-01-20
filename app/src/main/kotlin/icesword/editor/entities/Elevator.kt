@@ -22,6 +22,7 @@ sealed class Elevator<Range : AxisRange<Range>>(
     rezIndex: RezIndex,
     private val prototype: ElevatorPrototype,
     initialPosition: IntVec2,
+    initialZOrder: Int,
     initialRelativeMovementRange: Range,
 ) :
     Entity(),
@@ -32,10 +33,8 @@ sealed class Elevator<Range : AxisRange<Range>>(
             initialPosition = initialPosition,
         )
 
-    override val zOrder: Cell<Int> = Cell.constant(2000)
-
     final override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
-        initialZOrder = 0,
+        initialZOrder = initialZOrder,
     )
 
     val wapSprite = DynamicWapSprite.fromImageSet(
@@ -68,10 +67,12 @@ sealed class Elevator<Range : AxisRange<Range>>(
 
     final override fun exportWapObject(): Wwd.Object_ {
         val position = position.sample()
+        val zOrder = asZOrderedEntity.zOrder.sample()
 
         return prototype.wwdObjectPrototype.copy(
             x = position.x,
             y = position.y,
+            z = zOrder,
             rangeRect = exportElevatorRangeRect(),
         )
     }
