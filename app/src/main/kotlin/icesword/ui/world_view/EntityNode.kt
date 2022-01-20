@@ -8,7 +8,9 @@ import icesword.geometry.DynamicTransform
 import icesword.ui.world_view.scene.base.HybridNode
 
 class EntityNode(
-    val hybridNode: HybridNode,
+    val hybridNode: HybridNode? = null,
+    val hybridViewportCanvasNode: HybridNode? = null,
+    val hybridContentOverlayNode: HybridNode? = null,
 )
 
 interface EntityNodeB {
@@ -21,22 +23,4 @@ interface EntityNodeB {
     )
 
     fun build(context: BuildContext): EntityNode
-
 }
-
-fun EntityNodeB.buildHybridNode(
-    rezIndex: RezIndex,
-    textureBank: RezTextureBank,
-    editorTextureBank: EditorTextureBank,
-    editor: Editor,
-    viewTransform: DynamicTransform,
-): HybridNode =
-    build(
-        EntityNodeB.BuildContext(
-            rezIndex = rezIndex,
-            textureBank = textureBank,
-            editorTextureBank = editorTextureBank,
-            editor = editor,
-            viewTransform = viewTransform,
-        ),
-    ).hybridNode

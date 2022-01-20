@@ -7,31 +7,22 @@ import icesword.buildTileset
 import icesword.editor.Editor
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.concatWith
 import icesword.frp.dynamic_list.mapNotNull
-import icesword.frp.dynamic_list.mapTillRemoved
+import icesword.frp.dynamic_list.processOf
 import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.switchMapNotNull
 import icesword.ui.asHybridNode
-import icesword.ui.world_view.scene.FloorSpikeRowNode
-import icesword.ui.world_view.scene.KnotMeshUi
 import icesword.ui.world_view.scene.Layer
 import icesword.ui.world_view.scene.Scene
-import icesword.ui.world_view.scene.StartPointUi
 import icesword.ui.world_view.scene.TileLayer
-import icesword.ui.world_view.scene.WapSpriteNode
+import icesword.ui.world_view.scene.base.hybridOverlayNode
 import icesword.ui.world_view.scene.createAreaSelectionOverlayElement
 import icesword.ui.world_view.scene.createBackFoilOverlayElement
 import icesword.ui.world_view.scene.createEditorModeModeNode
 import icesword.ui.world_view.scene.createEntityNode
-import icesword.ui.world_view.scene.createFloorSpikeRowOverlayElement
-import icesword.ui.world_view.scene.createHorizontalElevatorOverlayElement
-import icesword.ui.world_view.scene.createKnotMeshOverlayElement
-import icesword.ui.world_view.scene.createStartPointOverlayElement
-import icesword.ui.world_view.scene.createVerticalElevatorOverlayElement
-import icesword.ui.world_view.scene.createWapObjectOverlayElement
-import icesword.ui.world_view.scene.base.hybridOverlayNode
 import org.w3c.dom.HTMLElement
 
 
@@ -46,7 +37,7 @@ fun buildWorldViewScene(
 
     val world = editor.world
 
-    val dynamicViewTransform = editor.camera.transform
+    val viewTransform = editor.camera.transform
 
     val backFoil = createBackFoilOverlayElement(
         editor = editor,
@@ -61,10 +52,25 @@ fun buildWorldViewScene(
 
     val editorTilesView = editor.buildEditorTilesView()
 
+    val entityNodes: DynamicList<EntityNode> =
+        world.entities.internalOrder
+            .concatWith(staticListOf(world.startPointEntity))
+            .processOf(tillDetach) {
+                createEntityNode(entity = it).build(
+                    EntityNodeB.BuildContext(
+                        rezIndex = rezIndex,
+                        textureBank = textureBank,
+                        editorTextureBank = editorTextureBank,
+                        editor = editor,
+                        viewTransform = viewTransform,
+                    ),
+                )
+            }
+
     val planeLayer = Layer(
         editorTextureBank = editor.editorTextureBank,
         textureBank = textureBank,
-        viewTransform = dynamicViewTransform,
+        viewTransform = viewTransform,
         backFoil = backFoil,
         hybridNodes = DynamicList.concat(
             staticListOf(
@@ -73,42 +79,19 @@ fun buildWorldViewScene(
                     tiles = editorTilesView,
                 ).asHybridNode(),
             ),
-            world.entities.internalOrder.mapNotNull {
-                createEntityNode(
-                    rezIndex = rezIndex,
-                    textureBank = textureBank,
-                    editorTextureBank = editorTextureBank,
-                    editor = editor,
-                    viewTransform = dynamicViewTransform,
-                    entity = it
-                )
-            },
-            // hybridNodes / editor mode
+            entityNodes.mapNotNull { it.hybridNode },
             DynamicList.ofSingle(
                 editor.editorMode.map {
                     createEditorModeModeNode(editorMode = it)
                 }
             ),
-            staticListOf(
-                hybridOverlayNode { svg ->
-                    createStartPointOverlayElement(
-                        editor = editor,
-                        svg = svg,
-                        startPoint = world.startPointEntity,
-                        viewport = viewport,
-                        viewTransform = dynamicViewTransform,
-                        tillDetach = tillDetach,
-                    )
-                }
-            ),
-            // hybridNodes / editor mode
             DynamicList.ofSingle(
                 editor.knotSelectMode.switchMapNotNull {
                     it.selectMode.areaSelectingMode.mapNested { areaSelectingMode ->
                         hybridOverlayNode { svg ->
                             createAreaSelectionOverlayElement(
                                 svg = svg,
-                                viewTransform = dynamicViewTransform,
+                                viewTransform = viewTransform,
                                 areaSelectingMode = areaSelectingMode,
                                 tillDetach = tillDetach,
                             )
@@ -117,33 +100,8 @@ fun buildWorldViewScene(
                 }
             ),
         ),
-        hybridViewportCanvasNodes = DynamicList.concat(
-            staticListOf(
-                StartPointUi(
-                    viewTransform = dynamicViewTransform,
-                    startPoint = world.startPointEntity,
-                ).asHybridNode(),
-            ),
-            world.knotMeshes.internalOrder.mapTillRemoved(tillAbort = tillDetach) { knotMesh, _ ->
-                KnotMeshUi(
-                    editor = editor,
-                    viewTransform = dynamicViewTransform,
-                    knotMesh = knotMesh,
-                ).asHybridNode()
-            },
-        ),
-        hybridContentOverlayNodes = world.knotMeshes.internalOrder.mapTillRemoved(tillAbort = tillDetach) { knotMesh, tillRemoved ->
-            hybridOverlayNode { svg ->
-                createKnotMeshOverlayElement(
-                    svg = svg,
-                    editor = editor,
-                    knotMesh = knotMesh,
-                    viewport = viewport,
-                    viewTransform = dynamicViewTransform,
-                    tillDetach = tillRemoved,
-                )
-            }
-        },
+        hybridViewportCanvasNodes = entityNodes.mapNotNull { it.hybridViewportCanvasNode },
+        hybridContentOverlayNodes = entityNodes.mapNotNull { it.hybridContentOverlayNode },
         tillDetach = tillDetach,
     )
 

@@ -1,9 +1,5 @@
 package icesword.ui.world_view.scene
 
-import icesword.EditorTextureBank
-import icesword.RezIndex
-import icesword.RezTextureBank
-import icesword.editor.Editor
 import icesword.editor.entities.CrateStack
 import icesword.editor.entities.CrumblingPeg
 import icesword.editor.entities.Elastic
@@ -20,18 +16,11 @@ import icesword.editor.entities.TogglePeg
 import icesword.editor.entities.VerticalElevator
 import icesword.editor.entities.WapObject
 import icesword.editor.entities.Warp
-import icesword.geometry.DynamicTransform
-import icesword.ui.world_view.buildHybridNode
-import icesword.ui.world_view.scene.base.HybridNode
+import icesword.ui.world_view.EntityNodeB
 
 fun createEntityNode(
-    rezIndex: RezIndex,
-    textureBank: RezTextureBank,
-    editorTextureBank: EditorTextureBank,
-    editor: Editor,
-    viewTransform: DynamicTransform,
     entity: Entity,
-): HybridNode? = when (entity) {
+): EntityNodeB = when (entity) {
     is Elastic -> createElasticNode(
         elastic = entity,
     )
@@ -47,8 +36,12 @@ fun createEntityNode(
     is FloorSpikeRow -> createFloorSpikeRowNode(
         floorSpikeRow = entity,
     )
-    is KnotMesh -> null
-    is StartPoint -> null
+    is KnotMesh -> createKnotMeshNode(
+        knotMesh = entity,
+    )
+    is StartPoint -> createStartPointNode(
+        startPoint = entity,
+    )
     is WapObject -> createWapObjectNode(
         wapObject = entity,
     )
@@ -73,10 +66,4 @@ fun createEntityNode(
     is Fixture -> createFixtureNode(
         fixture = entity,
     )
-}?.buildHybridNode(
-    rezIndex = rezIndex,
-    textureBank = textureBank,
-    editorTextureBank = editorTextureBank,
-    editor = editor,
-    viewTransform = viewTransform,
-)
+}
