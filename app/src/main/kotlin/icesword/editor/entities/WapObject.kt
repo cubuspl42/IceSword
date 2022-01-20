@@ -64,6 +64,15 @@ class WapObject(
 
     override val zOrder: Cell<Int> = props.z
 
+    override val asZOrderedEntity: ZOrderedEntity = object : ZOrderedEntity {
+        override val zOrder: Cell<Int>
+            get() = props.z
+
+        override fun setZOrder(newZOrder: Int) {
+            props.z.set(newZOrder)
+        }
+    }
+
     val sprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = expandImageSetId(

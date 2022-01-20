@@ -1,10 +1,19 @@
 package icesword.editor
 
 import icesword.editor.entities.CrumblingPeg
+import icesword.editor.entities.Entity
 
-sealed interface SelectionContext
+interface SelectionContext
 
-interface SingleKnotMeshSelectionContext : SelectionContext {
+interface SingleEntitySelectionContext : SelectionContext {
+    val entity: Entity
+}
+
+data class SimpleSingleEntitySelectionContext(
+    override val entity: Entity,
+) : SingleEntitySelectionContext
+
+interface SingleKnotMeshSelectionContext : SingleEntitySelectionContext {
     fun enterKnotSelectMode()
 
     fun enterKnotBrushMode()
@@ -14,38 +23,38 @@ interface MultipleKnotMeshesSelectionContext : SelectionContext {
     fun mergeKnotMeshes()
 }
 
-interface PathElevatorSelectionContext : SelectionContext {
+interface PathElevatorSelectionContext : SingleEntitySelectionContext {
     fun enterEditPathElevatorMode()
 }
 
-interface EnemySelectionContext : SelectionContext {
+interface EnemySelectionContext : SingleEntitySelectionContext {
     fun editPickups()
 }
 
-interface FloorSpikeRowSelectionContext : SelectionContext {
+interface FloorSpikeRowSelectionContext : SingleEntitySelectionContext {
     fun editSpikes()
 }
 
-interface RopeSelectionContext : SelectionContext {
+interface RopeSelectionContext : SingleEntitySelectionContext {
     fun editSpeed()
 }
 
-interface CrateStackSelectionContext : SelectionContext {
+interface CrateStackSelectionContext : SingleEntitySelectionContext {
     fun editPickups()
 }
 
-interface WapObjectSelectionContext : SelectionContext {
+interface WapObjectSelectionContext : SingleEntitySelectionContext {
     fun editProperties()
 }
 
-data class CrumblingPegSelectionContext(
-    val crumblingPeg: CrumblingPeg,
-) : SelectionContext
+interface CrumblingPegSelectionContext : SingleEntitySelectionContext {
+    override val entity: CrumblingPeg
+}
 
-interface TogglePegSelectionContext : SelectionContext {
+interface TogglePegSelectionContext : SingleEntitySelectionContext {
     fun editTiming()
 }
 
-interface WarpSelectionContext : SelectionContext {
+interface WarpSelectionContext : SingleEntitySelectionContext {
     fun editTarget()
 }

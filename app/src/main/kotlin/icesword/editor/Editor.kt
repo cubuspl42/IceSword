@@ -10,20 +10,16 @@ import icesword.TILE_SIZE
 import icesword.asFullOfInstances
 import icesword.editor.entities.CrateStack
 import icesword.editor.entities.CrumblingPeg
-import icesword.editor.entities.Elastic
 import icesword.editor.entities.Enemy
 import icesword.editor.entities.Entity
 import icesword.editor.entities.EntityTilePosition
 import icesword.editor.entities.Fixture
 import icesword.editor.entities.FloorSpikeRow
-import icesword.editor.entities.HorizontalElevator
 import icesword.editor.entities.KnotMesh
 import icesword.editor.entities.KnotPrototype
 import icesword.editor.entities.PathElevator
 import icesword.editor.entities.Rope
-import icesword.editor.entities.StartPoint
 import icesword.editor.entities.TogglePeg
-import icesword.editor.entities.VerticalElevator
 import icesword.editor.entities.WapObject
 import icesword.editor.entities.Warp
 import icesword.editor.entities.move
@@ -398,34 +394,39 @@ class Editor(
     val selectionContext: Cell<SelectionContext?> = buildSingleEntitySelectionContext()
         .orElse(buildMultiEntitySelectionContext())
 
-    private fun buildSingleEntitySelectionContext() = selectedEntity.map { selectedEntity ->
+    private fun buildSingleEntitySelectionContext() = selectedEntity.mapNested { selectedEntity ->
         when (selectedEntity) {
-            null -> null
             is PathElevator -> object : PathElevatorSelectionContext {
+                override val entity: PathElevator = selectedEntity
+
                 override fun enterEditPathElevatorMode() {
                     this@Editor.enterEditPathElevatorMode()
                 }
             }
             is FloorSpikeRow -> object : FloorSpikeRowSelectionContext {
+                override val entity: FloorSpikeRow = selectedEntity
+
                 override fun editSpikes() {
                     _editFloorSpikeRowSpikes.send(selectedEntity)
                 }
             }
             is WapObject -> object : WapObjectSelectionContext {
+                override val entity: WapObject = selectedEntity
+
                 override fun editProperties() {
                     _editWapObjectProperties.send(selectedEntity)
                 }
             }
-            is HorizontalElevator -> null
-            is VerticalElevator -> null
             is Enemy -> object : EnemySelectionContext {
+                override val entity: Enemy = selectedEntity
+
                 override fun editPickups() {
                     _editEnemyPickups.send(selectedEntity)
                 }
             }
-            is StartPoint -> null
-            is Elastic -> null
             is KnotMesh -> object : SingleKnotMeshSelectionContext {
+                override val entity: KnotMesh = selectedEntity
+
                 override fun enterKnotSelectMode() {
                     this@Editor.enterKnotSelectMode()
                 }
@@ -437,29 +438,40 @@ class Editor(
                 }
             }
             is Rope -> object : RopeSelectionContext {
+                override val entity: Rope = selectedEntity
+
                 override fun editSpeed() {
                     _editRopeSpeed.send(selectedEntity)
                 }
             }
             is CrateStack -> object : CrateStackSelectionContext {
+                override val entity: CrateStack = selectedEntity
+
                 override fun editPickups() {
                     _editCrateStackPickups.send(selectedEntity)
                 }
             }
-            is CrumblingPeg -> CrumblingPegSelectionContext(
-                crumblingPeg = selectedEntity,
-            )
+            is CrumblingPeg -> object : CrumblingPegSelectionContext {
+                override val entity: CrumblingPeg = selectedEntity
+            }
             is TogglePeg -> object : TogglePegSelectionContext {
+                override val entity: TogglePeg = selectedEntity
+
                 override fun editTiming() {
                     _editTogglePegTiming.send(selectedEntity)
                 }
             }
             is Warp -> object : WarpSelectionContext {
+                override val entity: Warp = selectedEntity
+
                 override fun editTarget() {
                     _editWarpTarget.send(selectedEntity)
                 }
             }
             is Fixture -> null
+            else -> SimpleSingleEntitySelectionContext(
+                entity = selectedEntity,
+            )
         }
     }
 

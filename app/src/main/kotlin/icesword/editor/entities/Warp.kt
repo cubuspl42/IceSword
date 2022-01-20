@@ -77,7 +77,6 @@ class Warp(
         )
     }
 
-
     private val _targetPosition = MutCell(
         initialValue = initialTargetPosition,
     )
@@ -94,10 +93,15 @@ class Warp(
 
     override val zOrder: Cell<Int> = constant(0)
 
+    override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
+        initialZOrder = 0,
+    )
+
     val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = prototype.imageSetId,
         position = position,
+        z = asZOrderedEntity.zOrder,
     )
 
     override fun isSelectableIn(area: IntRect): Boolean =

@@ -47,7 +47,7 @@ class CrumblingPeg(
         )
     }
 
-    val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
+    override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
         initialZOrder = initialZOrder,
     )
 
@@ -74,6 +74,7 @@ class CrumblingPeg(
             shortImageSetId = prototype.shortImageSetId,
         ),
         position = position,
+        z = asZOrderedEntity.zOrder,
     )
 
     override fun isSelectableIn(area: IntRect): Boolean =

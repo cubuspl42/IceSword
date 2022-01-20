@@ -3,26 +3,27 @@ package icesword.ui
 import icesword.editor.App
 import icesword.editor.CrateStackSelectionContext
 import icesword.editor.CrumblingPegSelectionContext
-import icesword.editor.modes.EditPathElevatorMode
 import icesword.editor.Editor
 import icesword.editor.EditorMode
 import icesword.editor.EnemySelectionContext
-import icesword.editor.modes.KnotSelectMode
-import icesword.editor.modes.EntitySelectMode
 import icesword.editor.FloorSpikeRowSelectionContext
 import icesword.editor.KnotBrush
-import icesword.editor.modes.KnotBrushMode
 import icesword.editor.MultipleKnotMeshesSelectionContext
-import icesword.editor.SingleKnotMeshSelectionContext
-import icesword.editor.entities.PathElevatorPath
 import icesword.editor.PathElevatorSelectionContext
 import icesword.editor.RopeSelectionContext
 import icesword.editor.SelectionContext
+import icesword.editor.SingleEntitySelectionContext
+import icesword.editor.SingleKnotMeshSelectionContext
 import icesword.editor.TogglePegSelectionContext
 import icesword.editor.Tool
 import icesword.editor.WapObjectSelectionContext
 import icesword.editor.WarpSelectionContext
+import icesword.editor.entities.PathElevatorPath
 import icesword.editor.entities.ZOrderedEntity
+import icesword.editor.modes.EditPathElevatorMode
+import icesword.editor.modes.EntitySelectMode
+import icesword.editor.modes.KnotBrushMode
+import icesword.editor.modes.KnotSelectMode
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.dynamic_list.size
@@ -113,12 +114,14 @@ fun createEditorToolBar(
         )
     ).buildElement(tillDetach)
 
-    val selectionModeButtonsRow = editor.selectionContext.mapTillNext(tillDetach) { it, tillNext ->
-        createSelectionModeButtonsRow(
-            editor = editor,
-            selectionContext = it,
-            tillDetach = tillNext,
-        )
+    val selectionModeButtonsRow = editor.selectionContext.mapTillNext(tillDetach) { selectionContextOrNull, tillNext ->
+        selectionContextOrNull?.let { selectionContext ->
+            createSelectionButtonsRow(
+                editor = editor,
+                selectionContext = selectionContext,
+                tillDetach = tillNext,
+            )
+        }
     }
 
     val contextualButtonsRow = editor.editorMode.mapTillNext(tillDetach) { it, tillNext ->
@@ -167,13 +170,12 @@ fun createEditorToolBar(
 }
 
 
-fun createSelectionModeButtonsRow(
+fun createSelectionButtonsRow(
     editor: Editor,
-    selectionContext: SelectionContext?,
+    selectionContext: SelectionContext,
     tillDetach: Till,
-): HTMLElement? {
-    val htmlWidgetB = when (selectionContext) {
-        null -> null
+): HTMLElement {
+    val entitySpecificRow: HTMLWidgetB<*>? = when (selectionContext) {
         is SingleKnotMeshSelectionContext -> HTMLWidget.of(
             createSingleKnotMeshSelectionModeButtonsRow(
                 editor = editor,
@@ -186,8 +188,7 @@ fun createSelectionModeButtonsRow(
                 selectionContext = selectionContext,
                 tillDetach = tillDetach,
             )
-        is PathElevatorSelectionContext,
-        -> HTMLWidget.of(
+        is PathElevatorSelectionContext -> HTMLWidget.of(
             createPathElevatorSelectionModeButtonsRow(
                 editor = editor,
                 pathElevatorSelectionMode = selectionContext,
@@ -218,9 +219,18 @@ fun createSelectionModeButtonsRow(
         is WarpSelectionContext -> createWarpSelectionModeButtonsRow(
             selectionMode = selectionContext,
         )
+        else -> null
     }
 
-    return htmlWidgetB?.buildElement(tillDetach = tillDetach)
+    val zOrderInput = if (selectionContext is SingleEntitySelectionContext) {
+        val zOrderedEntity = selectionContext.entity.asZOrderedEntity
+        zOrderedEntity?.let(::createZOrderInput)
+    } else null
+
+    return createRow(
+        horizontalGap = 8.px,
+        children = listOfNotNull(entitySpecificRow) + listOfNotNull(zOrderInput),
+    ).buildElement(tillDetach = tillDetach)
 }
 
 fun createEditorModeButtonsRow(
@@ -476,7 +486,7 @@ fun createCrateStackSelectionModeButtonsRow(
 fun createCrumblingPegSelectionModeToolRow(
     selectionMode: CrumblingPegSelectionContext,
 ): HTMLWidgetB<*> {
-    val crumblingPeg = selectionMode.crumblingPeg
+    val crumblingPeg = selectionMode.entity
 
     val canRespawnButton = createButtonWb(
         child = createTextWb(
@@ -489,7 +499,6 @@ fun createCrumblingPegSelectionModeToolRow(
     return createRow(
         children = listOf(
             canRespawnButton,
-            createZOrderInput(zOrderedEntity = crumblingPeg.asZOrderedEntity),
         ),
         horizontalGap = 8.px,
     )

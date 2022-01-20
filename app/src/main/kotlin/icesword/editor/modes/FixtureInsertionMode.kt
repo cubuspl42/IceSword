@@ -7,6 +7,7 @@ import icesword.editor.entities.Fixture
 import icesword.editor.entities.FixtureProduct
 import icesword.editor.modes.InsertionPrototype.FixtureInsertionPrototype
 import icesword.editor.retails.Retail
+import icesword.frp.Cell
 import icesword.frp.map
 import icesword.frp.staticSetOf
 import icesword.frp.unionWith

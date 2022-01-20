@@ -85,6 +85,10 @@ class TogglePeg(
 
     override val zOrder: Cell<Int> = Cell.constant(0)
 
+    override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
+        initialZOrder = 0,
+    )
+
     val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = expandImageSetId(
@@ -92,6 +96,7 @@ class TogglePeg(
             shortImageSetId = prototype.shortImageSetId,
         ),
         position = position,
+        z = asZOrderedEntity.zOrder,
     )
 
     override fun isSelectableIn(area: IntRect): Boolean =

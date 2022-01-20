@@ -54,25 +54,6 @@ class DynamicWapSprite(
     val wapSprite: Cell<WapSprite>,
 ) {
     companion object {
-//        fun fromWapObjectProps(
-//            rezIndex: RezIndex,
-//            retail: Retail,
-//            props: Cell<WapObjectPropsData?>,
-//        ): DynamicWapSprite = fromImageSetDynamic(
-//            rezIndex = rezIndex,
-//            imageSetId = props.map { propsData ->
-//                propsData?.let {
-//                    expandImageSetId(
-//                        retail = retail,
-//                        shortImageSetId = it.imageSet,
-//                    )
-//                } ?: ImageSetId.empty
-//            },
-//            position = props.map {
-//                IntVec2(it.x, it.y)
-//            }
-//        )
-
         fun fromImageSet(
             rezIndex: RezIndex,
             imageSetId: ImageSetId,

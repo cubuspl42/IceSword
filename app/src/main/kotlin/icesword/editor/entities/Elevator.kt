@@ -34,10 +34,15 @@ sealed class Elevator<Range : AxisRange<Range>>(
 
     override val zOrder: Cell<Int> = Cell.constant(2000)
 
+    final override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
+        initialZOrder = 0,
+    )
+
     val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = prototype.elevatorImageSetId,
         position = entityPosition.position,
+        z = asZOrderedEntity.zOrder,
     )
 
     val movementRange = EntityMovementRangeMixin(

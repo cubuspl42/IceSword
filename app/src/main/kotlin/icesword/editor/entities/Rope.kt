@@ -57,10 +57,15 @@ class Rope(
 
     override val zOrder: Cell<Int> = Cell.constant(0)
 
+    override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
+        initialZOrder = 0,
+    )
+
     val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = prototype.imageSetId,
         position = entityPosition.position,
+        z = asZOrderedEntity.zOrder,
     )
 
     private val _swingDurationMs = MutCell(initialSwingDurationMs)

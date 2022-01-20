@@ -69,12 +69,17 @@ class Enemy(
 
     override val zOrder: Cell<Int> = Cell.constant(4000)
 
+    override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
+        initialZOrder = 0,
+    )
+
     val imageSetId = wapObjectPrototype.imageSetId
 
     val wapSprite = DynamicWapSprite.fromImageSet(
         rezIndex = rezIndex,
         imageSetId = imageSetId,
         position = entityPosition.position,
+        z = asZOrderedEntity.zOrder,
     )
 
     val movementRange = EntityMovementRangeMixin(

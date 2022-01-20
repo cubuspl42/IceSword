@@ -34,6 +34,8 @@ sealed class Entity {
         }
     }
 
+    open val asZOrderedEntity: ZOrderedEntity? = null
+
     open fun toEntityData(): EntityData? = null
 }
 

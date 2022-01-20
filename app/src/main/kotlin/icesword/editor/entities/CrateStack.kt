@@ -140,6 +140,10 @@ class CrateStack(
 
     override val zOrder: Cell<Int> = constant(1000)
 
+    override val asZOrderedEntity: ZOrderedEntity = SimpleZOrderedEntity(
+        initialZOrder = 0,
+    )
+
     private fun buildCrates(
         size: Int,
         position: IntVec2,
@@ -153,6 +157,7 @@ class CrateStack(
             wapSprite = DynamicWapSprite.fromImageMetadata(
                 imageMetadata = crateImageMetadata,
                 position = constant(position),
+                z = asZOrderedEntity.zOrder,
             ),
         )
 
