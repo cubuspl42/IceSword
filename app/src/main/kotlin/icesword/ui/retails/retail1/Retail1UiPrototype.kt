@@ -26,6 +26,7 @@ import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
 import icesword.ui.createInsertFixtureButton
+import icesword.ui.createPreviewImage
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -78,8 +79,7 @@ object Retail1UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "Crate stack",
-            imagePath = "images/CLAW/LEVEL1/IMAGES/CRATES/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL1/IMAGES/CRATES/FRAME001.png"),
             insertionPrototype = InsertionPrototype.CrateStackInsertionPrototype(
                 crateStackPrototype = CrateStackPrototype(retail = retail),
             ),
@@ -87,8 +87,7 @@ object Retail1UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "",
-            imagePath = "images/CLAW/LEVEL1/IMAGES/CRUMBLINGPEG/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL1/IMAGES/CRUMBLINGPEG/FRAME001.png"),
             insertionPrototype = CrumblingPegInsertionPrototype(
                 crumblingPegPrototype = Retail1.crumblingPegPrototype,
             ),
@@ -96,8 +95,7 @@ object Retail1UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "",
-            imagePath = "images/CLAW/LEVEL1/IMAGES/PEG/FRAME001.png",
+            child = createPreviewImage(imagePath =  "images/CLAW/LEVEL1/IMAGES/PEG/FRAME001.png"),
             insertionPrototype = InsertionPrototype.TogglePegInsertionPrototype(
                 togglePegPrototype = Retail1.togglePegPrototype,
             ),
@@ -105,8 +103,7 @@ object Retail1UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "Elevator (horizontal)",
-            imagePath = "images/CLAW/LEVEL1/IMAGES/ELEVATORS/1.png",
+            child = createPreviewImage(imagePath =  "images/CLAW/LEVEL1/IMAGES/ELEVATORS/1.png"),
             insertionPrototype = InsertionPrototype.HorizontalElevatorInsertionPrototype(
                 elevatorPrototype = retail.elevatorPrototype,
             ),
@@ -114,8 +111,7 @@ object Retail1UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "Elevator (vertical)",
-            imagePath = "images/CLAW/LEVEL1/IMAGES/ELEVATORS/1.png",
+            child = createPreviewImage(imagePath =  "images/CLAW/LEVEL1/IMAGES/ELEVATORS/1.png"),
             insertionPrototype = InsertionPrototype.VerticalElevatorInsertionPrototype(
                 elevatorPrototype = retail.elevatorPrototype,
             ),
@@ -123,8 +119,7 @@ object Retail1UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "Elevator (path)",
-            imagePath = "images/CLAW/LEVEL1/IMAGES/ELEVATORS/1.png",
+            child = createPreviewImage(imagePath =  "images/CLAW/LEVEL1/IMAGES/ELEVATORS/1.png"),
             insertionPrototype = InsertionPrototype.PathElevatorInsertionPrototype(
                 elevatorPrototype = retail.elevatorPrototype,
             ),

@@ -24,8 +24,7 @@ fun createInsertElasticButton(
 
     return createInsertEntityButton(
         editor = editor,
-        text = text,
-        imagePath = imagePath,
+        child = createPreviewImage(imagePath = imagePath),
         insertionPrototype = InsertionPrototype.ElasticInsertionPrototype(
             elasticPrototype = prototype,
             retail = retail,
@@ -41,8 +40,7 @@ fun createInsertFixtureButton(
     tillDetach: Till,
 ): HTMLElement = createInsertEntityButton(
     editor = editor,
-    text = "Fixture",
-    imagePath = imagePath,
+    child = createPreviewImage(imagePath = imagePath),
     insertionPrototype = InsertionPrototype.FixtureInsertionPrototype(
         fixturePrototype = prototype,
     ),
@@ -60,8 +58,7 @@ fun createInsertKnotMeshButton(
 
     return createInsertEntityButton(
         editor = editor,
-        text = text,
-        imagePath = imagePath,
+        child = createPreviewImage(imagePath = imagePath),
         insertionPrototype = InsertionPrototype.KnotMeshInsertionPrototype(
             knotPrototype = knotPrototype,
         ),
@@ -78,8 +75,7 @@ fun createInsertWapObjectButton(
 ): HTMLElement =
     createInsertEntityButton(
         editor = editor,
-        text = text,
-        imagePath = imagePath,
+        child = createPreviewImage(imagePath = imagePath),
         insertionPrototype = InsertionPrototype.WapObjectInsertionPrototype(
             wapObjectPrototype = wapObjectPrototype,
         ),
@@ -95,8 +91,7 @@ fun createInsertEnemyButton(
 ): HTMLElement =
     createInsertEntityButton(
         editor = editor,
-        text = "$text [enemy]",
-        imagePath = imagePath,
+        child = createPreviewImage(imagePath = imagePath),
         insertionPrototype = InsertionPrototype.EnemyInsertionPrototype(
             wapObjectPrototype = wapObjectPrototype,
         ),
@@ -105,16 +100,15 @@ fun createInsertEnemyButton(
 
 fun createInsertEntityButton(
     editor: Editor,
-    text: String,
-    imagePath: String,
     insertionPrototype: InsertionPrototype,
+    child: HTMLWidgetB<*>,
     tillDetach: Till,
 ): HTMLElement =
-    createImageSelectButton(
+    createCustomSelectButton(
         value = insertionPrototype,
-        imagePath = imagePath,
         selected = editor.insertionMode.map { it?.insertionPrototype },
         select = { editor.enterInsertionMode(it) },
+        child = child,
     ).build(tillDetach = tillDetach).element
 
 fun createKnotPaintButton(
@@ -122,9 +116,9 @@ fun createKnotPaintButton(
     imagePath: String,
     knotPrototype: KnotPrototype,
 ): HTMLWidgetB<*> =
-    createImageSelectButton(
+    createCustomSelectButton(
         value = knotPrototype,
-        imagePath = imagePath,
         selected = editor.selectedKnotPrototype,
         select = { editor.enterKnotPaintMode(knotPrototype) },
+        child = createPreviewImage(imagePath),
     )

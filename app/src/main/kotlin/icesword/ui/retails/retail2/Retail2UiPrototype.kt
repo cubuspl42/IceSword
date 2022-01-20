@@ -26,6 +26,7 @@ import icesword.editor.entities.wap_object.prototype.Retail2SoldierPrototype
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
 import icesword.ui.createInsertFixtureButton
+import icesword.ui.createPreviewImage
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -52,8 +53,7 @@ object Retail2UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "",
-            imagePath = "images/CLAW/LEVEL2/IMAGES/PEGSLIDER/FRAME001.png",
+            child = createPreviewImage(imagePath =  "images/CLAW/LEVEL2/IMAGES/PEGSLIDER/FRAME001.png"),
             insertionPrototype = InsertionPrototype.TogglePegInsertionPrototype(
                 togglePegPrototype = Retail2.togglePegPrototype,
             ),

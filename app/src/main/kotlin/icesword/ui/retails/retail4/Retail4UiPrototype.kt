@@ -15,6 +15,7 @@ import icesword.editor.entities.elastic.prototype.Retail4WoodenPlatformPrototype
 import icesword.editor.retails.Retail4
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
+import icesword.ui.createPreviewImage
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -27,8 +28,7 @@ object Retail4UiPrototype : RetailUiPrototype {
     ): List<HTMLElement> = listOf(
         createInsertEntityButton(
             editor = editor,
-            text = "",
-            imagePath = "images/CLAW/LEVEL4/IMAGES/CRUMBLINGBUSH/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL4/IMAGES/CRUMBLINGBUSH/FRAME001.png"),
             insertionPrototype = CrumblingPegInsertionPrototype(
                 crumblingPegPrototype = Retail4.crumblingPegPrototype,
             ),

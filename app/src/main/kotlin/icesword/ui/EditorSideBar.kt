@@ -67,8 +67,7 @@ private fun createInsertSection(
     val staticInsertionButtons = listOf(
         createInsertEntityButton(
             editor = editor,
-            text = "WAP32 object",
-            imagePath = "images/wapObject.png",
+            child = createPreviewImage("images/wapObject.png"),
             insertionPrototype = InsertionPrototype.WapObjectInsertionPrototype.Empty,
             tillDetach = tillDetach,
         ),
@@ -274,8 +273,7 @@ private fun createInsertSection(
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "",
-            imagePath = "images/CLAW/GAME/IMAGES/WARP/FRAME001.png",
+            child = createPreviewImage("images/CLAW/GAME/IMAGES/WARP/FRAME001.png"),
             insertionPrototype = WarpInsertionPrototype(
                 warpPrototype = Warp.HorizontalWarpPrototype,
             ),
@@ -283,8 +281,7 @@ private fun createInsertSection(
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "",
-            imagePath = "images/CLAW/GAME/IMAGES/VERTWARP/FRAME001.png",
+            child = createPreviewImage("images/CLAW/GAME/IMAGES/VERTWARP/FRAME001.png"),
             insertionPrototype = WarpInsertionPrototype(
                 warpPrototype = Warp.VerticalWarpPrototype,
             ),
@@ -292,8 +289,7 @@ private fun createInsertSection(
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "",
-            imagePath = "images/CLAW/GAME/IMAGES/BOSSWARP/BOSSWARP1.png",
+            child = createPreviewImage("images/CLAW/GAME/IMAGES/BOSSWARP/BOSSWARP1.png"),
             insertionPrototype = WarpInsertionPrototype(
                 warpPrototype = Warp.BossWarpPrototype,
             ),

@@ -22,6 +22,7 @@ import icesword.editor.entities.wap_object.prototype.Retail3PowderKeg
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
+import icesword.ui.createPreviewImage
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement
 
@@ -90,8 +91,7 @@ object Retail3UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "Rope",
-            imagePath = "images/CLAW/LEVEL3/IMAGES/ROPE/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL3/IMAGES/ROPE/FRAME001.png"),
             insertionPrototype = InsertionPrototype.RopeInsertionPrototype(
                 ropePrototype = RopePrototype(retail = retail),
             ),
@@ -99,8 +99,7 @@ object Retail3UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "Crate stack",
-            imagePath = "images/CLAW/LEVEL3/IMAGES/CRATES/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL3/IMAGES/CRATES/FRAME001.png"),
             insertionPrototype = InsertionPrototype.CrateStackInsertionPrototype(
                 crateStackPrototype = CrateStackPrototype(retail = retail),
             ),
@@ -108,8 +107,7 @@ object Retail3UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "",
-            imagePath = "images/CLAW/LEVEL3/IMAGES/CRUMBLINPEG1/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL3/IMAGES/CRUMBLINPEG1/FRAME001.png"),
             insertionPrototype = InsertionPrototype.CrumblingPegInsertionPrototype(
                 crumblingPegPrototype = Retail3.lightCrumblingPegPrototype,
             ),
@@ -117,8 +115,7 @@ object Retail3UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "",
-            imagePath = "images/CLAW/LEVEL3/IMAGES/CRUMBLINPEG2/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL3/IMAGES/CRUMBLINPEG2/FRAME001.png"),
             insertionPrototype = InsertionPrototype.CrumblingPegInsertionPrototype(
                 crumblingPegPrototype = Retail3.darkCrumblingPegPrototype,
             ),
@@ -126,8 +123,7 @@ object Retail3UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "Elevator (horizontal)",
-            imagePath = "images/CLAW/LEVEL3/IMAGES/ELEVATOR1/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL3/IMAGES/ELEVATOR1/FRAME001.png"),
             insertionPrototype = InsertionPrototype.HorizontalElevatorInsertionPrototype(
                 elevatorPrototype = retail.elevatorPrototype,
             ),
@@ -135,8 +131,7 @@ object Retail3UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "Elevator (vertical)",
-            imagePath = "images/CLAW/LEVEL3/IMAGES/ELEVATOR1/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL3/IMAGES/ELEVATOR1/FRAME001.png"),
             insertionPrototype = InsertionPrototype.VerticalElevatorInsertionPrototype(
                 elevatorPrototype = retail.elevatorPrototype,
             ),
@@ -144,8 +139,7 @@ object Retail3UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "Elevator (path)",
-            imagePath = "images/CLAW/LEVEL3/IMAGES/ELEVATOR1/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL3/IMAGES/ELEVATOR1/FRAME001.png"),
             insertionPrototype = InsertionPrototype.PathElevatorInsertionPrototype(
                 elevatorPrototype = retail.elevatorPrototype,
             ),
@@ -153,8 +147,7 @@ object Retail3UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            text = "Floor spike row",
-            imagePath = "images/CLAW/LEVEL3/IMAGES/FLOORSPIKES1/FRAME001.png",
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL3/IMAGES/FLOORSPIKES1/FRAME001.png"),
             insertionPrototype = InsertionPrototype.FloorSpikeInsertionPrototype,
             tillDetach = tillDetach,
         ),
