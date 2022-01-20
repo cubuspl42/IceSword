@@ -11,6 +11,7 @@ import icesword.editor.calculateWapSpriteBounds
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
+import icesword.frp.diffMap
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.MutableDynamicList
 import icesword.frp.dynamic_list.sampleContent
@@ -176,6 +177,9 @@ class CrateStack(
             ),
         )
     }
+
+    val outputCrates: DynamicList<OutputCrate> =
+        outputStack.diffMap { it.crates }
 
     val boundingBox = outputStack.map { stack ->
         IntRect.enclosing(rects = stack.crates.map { it.bounds })

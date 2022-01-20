@@ -71,6 +71,7 @@ class WapObject(
             shortImageSetId = initialProps.imageSet,
         ),
         position = position,
+        z = props.z,
     )
 
     override fun isSelectableIn(area: IntRect): Boolean {

@@ -5,6 +5,7 @@ import icesword.RezTextureBank
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.concat
 import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.frp.dynamic_list.staticListOf
 import icesword.geometry.DynamicTransform

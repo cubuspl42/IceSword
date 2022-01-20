@@ -66,25 +66,6 @@ interface DynamicList<out E> {
                 },
             )
 
-        fun <E> concat(lists: Iterable<DynamicList<E>>): DynamicList<E> =
-            DynamicList.diffIdentified(
-                identifiedContent = Cell.traverse(lists.withIndex()) { (index, dynamicList) ->
-                    dynamicList.identifiedContent.map { identifiedContentNow ->
-                        identifiedContentNow.map { identifiedElement ->
-                            IdentifiedElement(
-                                element = identifiedElement.element,
-                                identity = IndexedIdentity(
-                                    index = index,
-                                    identity = identifiedElement.identity,
-                                )
-                            )
-                        }
-                    }
-                }.map { it.flatten() },
-            )
-
-        fun <E> concat(vararg lists: DynamicList<E>): DynamicList<E> =
-            concat(lists.toList())
 
         fun <E> empty(): DynamicList<E> =
             DynamicList.diff(constant(emptyList()))

@@ -12,3 +12,8 @@ data class IndexedIdentity(
     val index: Int,
     val identity: DynamicList.ElementIdentity,
 ) : DynamicList.ElementIdentity
+
+data class NestedIdentity(
+    val outerIdentity: DynamicList.ElementIdentity,
+    val innerIdentity: DynamicList.ElementIdentity,
+) : DynamicList.ElementIdentity

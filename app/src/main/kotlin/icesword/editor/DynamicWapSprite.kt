@@ -16,11 +16,13 @@ import kotlinx.serialization.UseSerializers
 data class WapSprite(
     val boundingBox: IntRect,
     val imageMetadata: ImageMetadata?,
+    val zOrder: Int = 0,
 ) {
     companion object {
         fun fromImageMetadata(
             imageMetadata: ImageMetadata,
             position: IntVec2,
+            z: Int = 0,
         ): WapSprite {
             val boundingBox: IntRect = calculateWapSpriteBounds(
                 imageMetadata = imageMetadata,
@@ -30,14 +32,19 @@ data class WapSprite(
             return WapSprite(
                 boundingBox = boundingBox,
                 imageMetadata = imageMetadata,
+                zOrder = z,
             )
         }
 
-        fun placeholder(position: IntVec2): WapSprite {
+        fun placeholder(
+            position: IntVec2,
+            z: Int = 0,
+        ): WapSprite {
             val size = IntSize(32, 32)
             return WapSprite(
                 boundingBox = size.toRect(position - size.div(2).toVec2()),
                 imageMetadata = null,
+                zOrder = z,
             )
         }
     }
@@ -71,30 +78,35 @@ class DynamicWapSprite(
             imageSetId: ImageSetId,
             position: Cell<IntVec2>,
             i: Int = -1,
+            z: Cell<Int> = Cell.constant(0),
         ): DynamicWapSprite = fromImageSetDynamic(
             rezIndex = rezIndex,
             imageSetId = Cell.constant(imageSetId),
             position = position,
-            i = i
+            i = i,
+            z = z,
         )
 
-        fun fromImageSetDynamic(
+        private fun fromImageSetDynamic(
             rezIndex: RezIndex,
             imageSetId: Cell<ImageSetId>,
             position: Cell<IntVec2>,
             i: Int,
+            z: Cell<Int> = Cell.constant(0),
         ): DynamicWapSprite =
-            imageSetId.map { imageSetId ->
+            imageSetId.map { imageSetIdNow ->
                 rezIndex.getImageMetadata(
-                    imageSetId = imageSetId,
+                    imageSetId = imageSetIdNow,
                     i = i,
                 )?.let { imageMetadata ->
                     fromImageMetadata(
                         imageMetadata = imageMetadata,
                         position = position,
+                        z = z,
                     )
                 } ?: placeholder(
                     position = position,
+                    z = z,
                 )
             }.switch()
 
@@ -102,27 +114,35 @@ class DynamicWapSprite(
         fun fromImageMetadata(
             imageMetadata: ImageMetadata,
             position: Cell<IntVec2>,
+            z: Cell<Int> = Cell.constant(0),
         ): DynamicWapSprite = DynamicWapSprite(
-            wapSprite = position.map {
+            wapSprite = Cell.map2(position, z) { positionNow, zNow ->
                 WapSprite.fromImageMetadata(
                     imageMetadata = imageMetadata,
-                    position = it,
+                    position = positionNow,
+                    z = zNow,
                 )
-            },
+            }
         )
 
         private fun placeholder(
             position: Cell<IntVec2>,
+            z: Cell<Int> = Cell.constant(0),
         ): DynamicWapSprite = DynamicWapSprite(
-            wapSprite = position.map {
-                WapSprite.placeholder(position = it)
-            },
+            wapSprite = Cell.map2(position, z) { positionNow, zNow ->
+                WapSprite.placeholder(
+                    position = positionNow,
+                    z = zNow,
+                )
+            }
         )
     }
 
     val boundingBox: Cell<IntRect> = wapSprite.map { it.boundingBox }
 
     val imageMetadata: Cell<ImageMetadata?> = wapSprite.map { it.imageMetadata }
+
+    val zOrder = wapSprite.map { it.zOrder }
 
     val center = boundingBox.map { it.center }
 

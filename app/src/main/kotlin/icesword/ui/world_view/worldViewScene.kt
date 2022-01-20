@@ -7,9 +7,13 @@ import icesword.buildTileset
 import icesword.editor.Editor
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.concat
+import icesword.frp.dynamic_list.concatOf
 import icesword.frp.dynamic_list.concatWith
+import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.mapNotNull
 import icesword.frp.dynamic_list.processOf
+import icesword.frp.dynamic_list.sortedByDynamic
 import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
 import icesword.frp.mapNested
@@ -67,6 +71,10 @@ fun buildWorldViewScene(
                 )
             }
 
+    val hybridWapNodes = entityNodes.concatOf { it.wapNodes }
+        .sortedByDynamic { it.effectiveZOrder }
+        .map { it.canvasNode.asHybridNode() }
+
     val planeLayer = Layer(
         editorTextureBank = editor.editorTextureBank,
         textureBank = textureBank,
@@ -79,7 +87,8 @@ fun buildWorldViewScene(
                     tiles = editorTilesView,
                 ).asHybridNode(),
             ),
-            entityNodes.mapNotNull { it.hybridNode },
+            hybridWapNodes,
+            entityNodes.mapNotNull { it.overlayNode ?: it.hybridNode },
             DynamicList.ofSingle(
                 editor.editorMode.map {
                     createEditorModeModeNode(editorMode = it)

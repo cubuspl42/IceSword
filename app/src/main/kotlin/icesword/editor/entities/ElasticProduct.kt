@@ -6,6 +6,7 @@ import icesword.editor.DynamicWapSprite
 import icesword.editor.MetaTileCluster
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.DynamicMap
 import icesword.frp.diffMap
 import icesword.frp.dynamic_list.DynamicList
@@ -65,5 +66,6 @@ fun produceWapObjectSprites(
         ),
         position = pixelOffset.map { it + localWapObject.position },
         i = localWapObject.i,
+        z = constant(localWapObject.z),
     )
 }
