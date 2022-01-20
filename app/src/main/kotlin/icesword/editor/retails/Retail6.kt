@@ -6,6 +6,8 @@ import icesword.editor.entities.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
+import icesword.editor.entities.ElevatorPrototype
+import icesword.editor.entities.encode
 import icesword.editor.entities.knot_mesh.KnotStructurePattern
 import icesword.editor.entities.knot_mesh.MetaTilePattern1x1
 import icesword.editor.entities.knot_mesh.StructureConcavePattern
@@ -23,6 +25,7 @@ import icesword.editor.retails.Retail6.MetaTiles.TunnelBricksFloor
 import icesword.editor.retails.Retail6.MetaTiles.TunnelPlateFloor
 import icesword.editor.retails.Retail6.MetaTiles.TunnelTube
 import icesword.editor.retails.Retail6.MetaTiles.WhiteHouse
+import icesword.wwd.Wwd
 
 private val bricksPattern = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
@@ -593,5 +596,15 @@ object Retail6 : Retail(naturalIndex = 6) {
     val crumblingPegPrototype = CrumblingPegPrototype(
         imageSetId = ImageSetId(fullyQualifiedId = "LEVEL6_IMAGES_BREAKINGLEDGE"),
         shortImageSetId = "LEVEL_BREAKINGLEDGE",
+    )
+
+    override val elevatorPrototype = ElevatorPrototype(
+        elevatorImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL6_IMAGES_GRILLELEVATOR",
+        ),
+        wwdObjectPrototype = Wwd.Object_.empty().copy(
+            logic = encode("Elevator"),
+            imageSet = encode("LEVEL_GRILLELEVATOR"),
+        ),
     )
 }

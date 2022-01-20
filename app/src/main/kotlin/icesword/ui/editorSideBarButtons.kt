@@ -7,9 +7,21 @@ import icesword.editor.entities.KnotPrototype
 import icesword.editor.entities.fixture.prototypes.FixturePrototype
 import icesword.editor.retails.Retail
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
+import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
+import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
+import icesword.html.BorderStyleDeclaration
+import icesword.html.DynamicStyleDeclaration
 import icesword.html.HTMLWidgetB
+import icesword.html.createTextWb
+import icesword.html.createWrapperWb
+import icesword.ui.retails.retail1.Retail1UiPrototype
+import kotlinx.css.Align
+import kotlinx.css.Color
+import kotlinx.css.pt
+import kotlinx.css.px
 import org.w3c.dom.HTMLElement
 
 fun createInsertElasticButton(
@@ -122,3 +134,80 @@ fun createKnotPaintButton(
         select = { editor.enterKnotPaintMode(knotPrototype) },
         child = createPreviewImage(imagePath),
     )
+
+fun createElevatorButton(
+    editor: Editor,
+    insertionPrototype: InsertionPrototype,
+    imagePath: String,
+    description: String,
+    tillDetach: Till,
+): HTMLElement =
+    createInsertEntityButton(
+        editor = editor,
+        insertionPrototype = insertionPrototype,
+        child = createStackWb(
+            alignItems = Align.end,
+            children = staticListOf(
+                createPreviewImage(imagePath),
+                createWrapperWb(
+                    style = DynamicStyleDeclaration(
+                        fontSize = constant(10.pt),
+                        backgroundColor = constant(Color.gray.withAlpha(0.5)),
+                        border = BorderStyleDeclaration(
+                            radius = constant(4.px),
+                        ),
+                    ),
+                    child = constant(
+                        createTextWb(text = constant(description)),
+                    ),
+                ),
+            ),
+        ),
+        tillDetach = tillDetach,
+    )
+
+fun createAllElevatorButtons(
+    editor: Editor,
+    retail: Retail,
+    tillDetach: Till,
+): List<HTMLElement> {
+    val elevatorPrototype = retail.elevatorPrototype
+    val imageSetId = elevatorPrototype.elevatorImageSetId
+
+    val imageMetadata = editor.rezIndex.getImageMetadata(
+        imageSetId = imageSetId,
+        i = -1,
+    ) ?: throw RuntimeException("Can't find elevator image: $imageSetId")
+
+    val imagePath = getRezPngPath(imageMetadata)
+
+    return listOf(
+        createElevatorButton(
+            editor = editor,
+            imagePath = imagePath,
+            description = "HORIZ.",
+            insertionPrototype = InsertionPrototype.HorizontalElevatorInsertionPrototype(
+                elevatorPrototype = elevatorPrototype,
+            ),
+            tillDetach = tillDetach,
+        ),
+        createElevatorButton(
+            editor = editor,
+            imagePath = imagePath,
+            description = "VERT.",
+            insertionPrototype = InsertionPrototype.VerticalElevatorInsertionPrototype(
+                elevatorPrototype = elevatorPrototype,
+            ),
+            tillDetach = tillDetach,
+        ),
+        createElevatorButton(
+            editor = editor,
+            imagePath = imagePath,
+            description = "PATH",
+            insertionPrototype = InsertionPrototype.PathElevatorInsertionPrototype(
+                elevatorPrototype = elevatorPrototype,
+            ),
+            tillDetach = tillDetach,
+        ),
+    )
+}

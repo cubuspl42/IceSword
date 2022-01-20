@@ -7,7 +7,9 @@ import icesword.editor.entities.KnotPrototype
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
+import icesword.editor.entities.ElevatorPrototype
 import icesword.editor.entities.TogglePegPrototype
+import icesword.editor.entities.encode
 import icesword.editor.entities.knot_mesh.KnotStructurePattern
 import icesword.editor.entities.knot_mesh.MetaTilePattern1x1
 import icesword.editor.entities.knot_mesh.MetaTilePattern2x1
@@ -21,6 +23,7 @@ import icesword.editor.retails.Retail5.MetaTiles.MetalPlatform
 import icesword.editor.retails.Retail5.MetaTiles.Rock
 import icesword.editor.retails.Retail5.MetaTiles.Spikes
 import icesword.editor.retails.Retail5.MetaTiles.Wall
+import icesword.wwd.Wwd
 
 private val rockPattern = object : KnotStructurePattern(
     convexPattern = StructureConvexPattern(
@@ -293,5 +296,15 @@ object Retail5 : Retail(naturalIndex = 5) {
     val togglePegPrototype = TogglePegPrototype(
         imageSetId = ImageSetId(fullyQualifiedId = "LEVEL5_IMAGES_SLIDAWAYPLANK"),
         shortImageSetId = "LEVEL_SLIDAWAYPLANK",
+    )
+
+    override val elevatorPrototype = ElevatorPrototype(
+        elevatorImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL5_IMAGES_ELEVATOR",
+        ),
+        wwdObjectPrototype = Wwd.Object_.empty().copy(
+            logic = encode("Elevator"),
+            imageSet = encode("LEVEL_ELEVATOR"),
+        ),
     )
 }

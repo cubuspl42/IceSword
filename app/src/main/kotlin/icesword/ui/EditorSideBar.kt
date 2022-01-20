@@ -297,10 +297,18 @@ private fun createInsertSection(
         ),
     )
 
-    val children = staticInsertionButtons + retailUiPrototype.buildInsertionButtons(
+    val elevatorButtons = createAllElevatorButtons(
         editor = editor,
+        retail = retailUiPrototype.retail,
         tillDetach = tillDetach,
     )
+
+    val children = staticInsertionButtons +
+            elevatorButtons +
+            retailUiPrototype.buildInsertionButtons(
+                editor = editor,
+                tillDetach = tillDetach,
+            )
 
     return createTitledSection(
         title = "Insert...",

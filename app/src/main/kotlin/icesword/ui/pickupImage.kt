@@ -1,5 +1,6 @@
 package icesword.ui
 
+import icesword.ImageMetadata
 import icesword.RezIndex
 import icesword.editor.PickupKind
 import icesword.frp.Cell.Companion.constant
@@ -19,7 +20,7 @@ fun createPickupImage(
         i = -1,
     )!!
 
-    val imagePath = "images/CLAW/${imageMetadata.pidPath.path.removeSuffix(".PID")}.png"
+    val imagePath = getRezPngPath(imageMetadata)
 
     return HTMLWidget.of(
         createWrapper(
@@ -41,3 +42,6 @@ fun createPickupImage(
         },
     )
 }
+
+fun getRezPngPath(imageMetadata: ImageMetadata): String =
+    "images/CLAW/${imageMetadata.pidPath.path.removeSuffix(".PID")}.png"

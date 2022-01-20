@@ -42,6 +42,7 @@ data class BorderStyleDeclaration(
     val style: Cell<BorderStyle?>? = null,
     val color: Cell<Color?>? = null,
     val width: Cell<LinearDimension?>? = null,
+    val radius: Cell<LinearDimension?>? = null,
 ) {
     fun linkTo(
         style: CSSStyleDeclaration,
@@ -67,6 +68,13 @@ data class BorderStyleDeclaration(
             property = width?.map { it?.toString() },
             till = tillDetach,
         )
+
+        linkProperty(
+            style = style,
+            propertyName = "border-radius",
+            property = radius?.map { it?.toString() },
+            till = tillDetach,
+        )
     }
 }
 
@@ -80,6 +88,7 @@ data class DynamicStyleDeclaration(
     val marginBlock: Cell<LinearDimension>? = null,
     val padding: Cell<LinearDimension>? = null,
     val paddingString: Cell<String>? = null,
+    val fontSize: Cell<LinearDimension>? = null,
     val fontFamily: Cell<String>? = null,
     val fontWeight: Cell<FontWeight?>? = null,
     val flexDirection: Cell<FlexDirection>? = null,
@@ -149,6 +158,13 @@ data class DynamicStyleDeclaration(
             style = style,
             propertyName = "padding",
             property = paddingString,
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "font-size",
+            property = fontSize?.map { it.toString() },
             till = tillDetach,
         )
 

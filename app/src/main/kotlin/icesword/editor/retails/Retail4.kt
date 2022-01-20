@@ -7,11 +7,14 @@ import icesword.editor.ForwardTileGenerator
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
+import icesword.editor.entities.ElevatorPrototype
 import icesword.editor.entities.elastic.ElasticLinearPattern
 import icesword.editor.entities.elastic.ElasticLinearPatternOrientation
 import icesword.editor.entities.elastic.LinearMetaTilePattern
+import icesword.editor.entities.encode
 import icesword.editor.retails.Retail4.MetaTiles.NaturalPlatform
 import icesword.editor.retails.Retail4.MetaTiles.Tree
+import icesword.wwd.Wwd
 
 val retail4TreeLog = ElasticLinearPattern(
     startingPattern = LinearMetaTilePattern(
@@ -129,5 +132,15 @@ object Retail4 : Retail(naturalIndex = 4) {
     val crumblingPegPrototype = CrumblingPegPrototype(
         imageSetId = ImageSetId(fullyQualifiedId = "LEVEL4_IMAGES_CRUMBLINGBUSH"),
         shortImageSetId = "LEVEL_CRUMBLINGBUSH",
+    )
+
+    override val elevatorPrototype = ElevatorPrototype(
+        elevatorImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL4_IMAGES_ELEVATOR",
+        ),
+        wwdObjectPrototype = Wwd.Object_.empty().copy(
+            logic = encode("Elevator"),
+            imageSet = encode("LEVEL_ELEVATOR"),
+        ),
     )
 }

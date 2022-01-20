@@ -46,12 +46,13 @@ fun createStackLayout(children: List<HTMLElement>): HTMLElement =
 
 fun createStackWb(
     children: DynamicList<HTMLWidgetB<*>>,
+    alignItems: Align? = null,
 ): HTMLWidgetB<HTMLWidget> = object : HTMLWidgetB<HTMLWidget> {
     override fun build(tillDetach: Till): HTMLWidget = createHTMLWidgetB(
         tagName = "div",
         style = DynamicStyleDeclaration(
             display = Cell.constant(Display.grid),
-            alignItems = Cell.constant(Align.stretch),
+            alignItems = Cell.constant(alignItems ?: Align.stretch),
             justifyItems = Cell.constant(Align.stretch),
         ),
         children = HTMLWidgetB.buildDl(children, tillDetach).mapTillRemovedIndexed(tillDetach) { index, child, _ ->

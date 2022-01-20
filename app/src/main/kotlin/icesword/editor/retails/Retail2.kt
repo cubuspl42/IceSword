@@ -4,13 +4,16 @@ import icesword.ImageSetId
 import icesword.editor.MetaTile
 import icesword.editor.TileGenerator
 import icesword.editor.TileGeneratorContext
+import icesword.editor.entities.ElevatorPrototype
 import icesword.editor.entities.TogglePegPrototype
 import icesword.editor.entities.elastic.ElasticLinearPattern
 import icesword.editor.entities.elastic.ElasticLinearPatternOrientation
 import icesword.editor.entities.elastic.LinearMetaTilePattern
+import icesword.editor.entities.encode
 import icesword.editor.retails.Retail2.MetaTiles
 import icesword.editor.retails.Retail2.MetaTiles.SinglePile
 import icesword.editor.retails.Retail2.MetaTiles.Tower
+import icesword.wwd.Wwd
 
 val retail2PlatformPattern = ElasticLinearPattern(
     startingPattern = LinearMetaTilePattern(
@@ -247,5 +250,15 @@ object Retail2 : Retail(naturalIndex = 2) {
     val togglePegPrototype = TogglePegPrototype(
         imageSetId = ImageSetId(fullyQualifiedId = "LEVEL2_IMAGES_PEGSLIDER"),
         shortImageSetId = "LEVEL_PEGSLIDER",
+    )
+
+    override val elevatorPrototype = ElevatorPrototype(
+        elevatorImageSetId = ImageSetId(
+            fullyQualifiedId = "LEVEL2_IMAGES_ELEVATOR",
+        ),
+        wwdObjectPrototype = Wwd.Object_.empty().copy(
+            logic = encode("Elevator"),
+            imageSet = encode("LEVEL_ELEVATOR"),
+        ),
     )
 }

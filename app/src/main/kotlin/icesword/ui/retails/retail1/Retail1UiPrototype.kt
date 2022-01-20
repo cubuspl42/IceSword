@@ -25,6 +25,7 @@ import icesword.editor.entities.wap_object.prototype.SoldierPrototype
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
+import icesword.ui.createElevatorButton
 import icesword.ui.createInsertFixtureButton
 import icesword.ui.createPreviewImage
 import icesword.ui.retails.RetailUiPrototype
@@ -95,33 +96,9 @@ object Retail1UiPrototype : RetailUiPrototype {
         ),
         createInsertEntityButton(
             editor = editor,
-            child = createPreviewImage(imagePath =  "images/CLAW/LEVEL1/IMAGES/PEG/FRAME001.png"),
+            child = createPreviewImage(imagePath = "images/CLAW/LEVEL1/IMAGES/PEG/FRAME001.png"),
             insertionPrototype = InsertionPrototype.TogglePegInsertionPrototype(
                 togglePegPrototype = Retail1.togglePegPrototype,
-            ),
-            tillDetach = tillDetach,
-        ),
-        createInsertEntityButton(
-            editor = editor,
-            child = createPreviewImage(imagePath =  "images/CLAW/LEVEL1/IMAGES/ELEVATORS/1.png"),
-            insertionPrototype = InsertionPrototype.HorizontalElevatorInsertionPrototype(
-                elevatorPrototype = retail.elevatorPrototype,
-            ),
-            tillDetach = tillDetach,
-        ),
-        createInsertEntityButton(
-            editor = editor,
-            child = createPreviewImage(imagePath =  "images/CLAW/LEVEL1/IMAGES/ELEVATORS/1.png"),
-            insertionPrototype = InsertionPrototype.VerticalElevatorInsertionPrototype(
-                elevatorPrototype = retail.elevatorPrototype,
-            ),
-            tillDetach = tillDetach,
-        ),
-        createInsertEntityButton(
-            editor = editor,
-            child = createPreviewImage(imagePath =  "images/CLAW/LEVEL1/IMAGES/ELEVATORS/1.png"),
-            insertionPrototype = InsertionPrototype.PathElevatorInsertionPrototype(
-                elevatorPrototype = retail.elevatorPrototype,
             ),
             tillDetach = tillDetach,
         ),
