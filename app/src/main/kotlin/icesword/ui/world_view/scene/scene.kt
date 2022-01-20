@@ -1,4 +1,4 @@
-package icesword.ui.scene
+package icesword.ui.world_view.scene
 
 import icesword.EditorTextureBank
 import icesword.RezTextureBank
@@ -19,7 +19,7 @@ import icesword.loadImageBitmap
 import icesword.ui.CanvasNode
 import icesword.ui.createCanvasView
 import icesword.ui.createStackWb
-import icesword.ui.scene.base.HybridNode
+import icesword.ui.world_view.scene.base.HybridNode
 import kotlinx.browser.document
 import kotlinx.css.BackgroundRepeat
 import kotlinx.css.px

@@ -1,9 +1,9 @@
-package icesword.ui.scene
+package icesword.ui.world_view.scene
 
 import icesword.editor.Editor
 import icesword.editor.entities.TogglePeg
 import icesword.ui.CanvasNode
-import icesword.ui.scene.base.HybridNode
+import icesword.ui.world_view.scene.base.HybridNode
 import org.w3c.dom.svg.SVGElement
 
 class TogglePegNode(

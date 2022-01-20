@@ -1,4 +1,4 @@
-package icesword.ui
+package icesword.ui.world_view
 
 
 import icesword.RezIndex
@@ -13,24 +13,25 @@ import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.switchMapNotNull
-import icesword.ui.scene.FloorSpikeRowNode
-import icesword.ui.scene.KnotMeshUi
-import icesword.ui.scene.Layer
-import icesword.ui.scene.Scene
-import icesword.ui.scene.StartPointUi
-import icesword.ui.scene.TileLayer
-import icesword.ui.scene.WapSpriteNode
-import icesword.ui.scene.createAreaSelectionOverlayElement
-import icesword.ui.scene.createBackFoilOverlayElement
-import icesword.ui.scene.createEditorModeModeNode
-import icesword.ui.scene.createEntityNode
-import icesword.ui.scene.createFloorSpikeRowOverlayElement
-import icesword.ui.scene.createHorizontalElevatorOverlayElement
-import icesword.ui.scene.createKnotMeshOverlayElement
-import icesword.ui.scene.createStartPointOverlayElement
-import icesword.ui.scene.createVerticalElevatorOverlayElement
-import icesword.ui.scene.createWapObjectOverlayElement
-import icesword.ui.scene.base.hybridOverlayNode
+import icesword.ui.asHybridNode
+import icesword.ui.world_view.scene.FloorSpikeRowNode
+import icesword.ui.world_view.scene.KnotMeshUi
+import icesword.ui.world_view.scene.Layer
+import icesword.ui.world_view.scene.Scene
+import icesword.ui.world_view.scene.StartPointUi
+import icesword.ui.world_view.scene.TileLayer
+import icesword.ui.world_view.scene.WapSpriteNode
+import icesword.ui.world_view.scene.createAreaSelectionOverlayElement
+import icesword.ui.world_view.scene.createBackFoilOverlayElement
+import icesword.ui.world_view.scene.createEditorModeModeNode
+import icesword.ui.world_view.scene.createEntityNode
+import icesword.ui.world_view.scene.createFloorSpikeRowOverlayElement
+import icesword.ui.world_view.scene.createHorizontalElevatorOverlayElement
+import icesword.ui.world_view.scene.createKnotMeshOverlayElement
+import icesword.ui.world_view.scene.createStartPointOverlayElement
+import icesword.ui.world_view.scene.createVerticalElevatorOverlayElement
+import icesword.ui.world_view.scene.createWapObjectOverlayElement
+import icesword.ui.world_view.scene.base.hybridOverlayNode
 import org.w3c.dom.HTMLElement
 
 

@@ -1,9 +1,9 @@
-package icesword.ui.scene
+package icesword.ui.world_view.scene
 
 import icesword.editor.entities.CrumblingPeg
 import icesword.editor.Editor
 import icesword.ui.CanvasNode
-import icesword.ui.scene.base.HybridNode
+import icesword.ui.world_view.scene.base.HybridNode
 import org.w3c.dom.svg.SVGElement
 
 class CrumblingPegNode(

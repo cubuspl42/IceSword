@@ -1,4 +1,4 @@
-package icesword.ui.scene
+package icesword.ui.world_view.scene
 
 import icesword.RezTextureBank
 import icesword.RezIndex
@@ -20,7 +20,7 @@ import icesword.html.createSvgGroup
 import icesword.html.createWrapper
 import icesword.html.resolve
 import icesword.ui.CanvasNode
-import icesword.ui.scene.base.HybridNode
+import icesword.ui.world_view.scene.base.HybridNode
 import kotlinx.css.Align
 import kotlinx.css.px
 import org.w3c.dom.HTMLElement

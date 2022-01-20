@@ -1,4 +1,4 @@
-package icesword.ui.scene
+package icesword.ui.world_view.scene
 
 import icesword.editor.modes.EditPathElevatorMode
 import icesword.editor.Editor
@@ -22,7 +22,7 @@ import icesword.html.createSvgPolygon
 import icesword.html.createSvgRect
 import icesword.html.createSvgSwitch
 import icesword.ui.CanvasNode
-import icesword.ui.scene.base.HybridNode
+import icesword.ui.world_view.scene.base.HybridNode
 import icesword.ui.setupMoveController
 import kotlinx.css.Color
 import kotlinx.css.Cursor

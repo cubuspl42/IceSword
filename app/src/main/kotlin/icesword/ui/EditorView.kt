@@ -8,6 +8,7 @@ import icesword.editor.Editor
 import icesword.frp.Till
 import icesword.frp.reactTill
 import icesword.ui.retails.RetailUiPrototype
+import icesword.ui.world_view.worldView
 import org.w3c.dom.HTMLElement
 
 

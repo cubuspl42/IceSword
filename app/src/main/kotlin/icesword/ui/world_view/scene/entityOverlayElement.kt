@@ -1,4 +1,4 @@
-package icesword.ui.scene
+package icesword.ui.world_view.scene
 
 import icesword.RezTextureBank
 import icesword.RezIndex
@@ -20,7 +20,7 @@ import icesword.editor.entities.VerticalElevator
 import icesword.editor.entities.WapObject
 import icesword.editor.entities.Warp
 import icesword.geometry.DynamicTransform
-import icesword.ui.scene.base.HybridNode
+import icesword.ui.world_view.scene.base.HybridNode
 
 fun createEntityNode(
     rezIndex: RezIndex,

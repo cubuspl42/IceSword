@@ -1,4 +1,4 @@
-package icesword.ui.scene
+package icesword.ui.world_view.scene
 
 import icesword.editor.Editor
 import icesword.editor.entities.Fixture
@@ -6,7 +6,7 @@ import icesword.editor.entities.FixtureProduct
 import icesword.frp.dynamic_list.map
 import icesword.frp.dynamic_list.staticListOf
 import icesword.ui.CanvasNode
-import icesword.ui.scene.base.HybridNode
+import icesword.ui.world_view.scene.base.HybridNode
 import org.w3c.dom.svg.SVGElement
 
 class FixtureNode(

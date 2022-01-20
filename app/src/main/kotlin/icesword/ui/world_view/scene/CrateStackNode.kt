@@ -1,4 +1,4 @@
-package icesword.ui.scene
+package icesword.ui.world_view.scene
 
 import icesword.editor.entities.CrateStack
 import icesword.editor.Editor
@@ -6,7 +6,7 @@ import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.diff
 import icesword.frp.map
 import icesword.ui.CanvasNode
-import icesword.ui.scene.base.HybridNode
+import icesword.ui.world_view.scene.base.HybridNode
 import org.w3c.dom.svg.SVGElement
 
 class CrateStackNode(

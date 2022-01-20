@@ -8,6 +8,7 @@ import icesword.editor.Tool
 import icesword.frp.*
 import icesword.geometry.DynamicTransform
 import icesword.geometry.IntVec2
+import icesword.ui.world_view.MouseDrag
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 

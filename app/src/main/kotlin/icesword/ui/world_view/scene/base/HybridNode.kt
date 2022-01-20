@@ -1,4 +1,4 @@
-package icesword.ui.scene.base
+package icesword.ui.world_view.scene.base
 
 import icesword.EditorTextureBank
 import icesword.RezTextureBank
@@ -9,8 +9,8 @@ import icesword.frp.dynamic_list.DynamicList
 import icesword.geometry.DynamicTransform
 import icesword.html.createSvgGroup
 import icesword.ui.CanvasNode
-import icesword.ui.scene.GroupNode
-import icesword.ui.scene.NoopCanvasNode
+import icesword.ui.world_view.scene.GroupNode
+import icesword.ui.world_view.scene.NoopCanvasNode
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.svg.SVGElement
 import org.w3c.dom.svg.SVGSVGElement

@@ -15,9 +15,9 @@ import icesword.geometry.IntSize
 import icesword.html.HTMLWidgetB
 import icesword.html.alsoTillDetach
 import icesword.html.createCanvas
-import icesword.ui.scene.GroupCanvasNode
-import icesword.ui.scene.base.HybridNode
-import icesword.ui.scene.setTransformT
+import icesword.ui.world_view.scene.GroupCanvasNode
+import icesword.ui.world_view.scene.base.HybridNode
+import icesword.ui.world_view.scene.setTransformT
 import kotlinx.browser.window
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.DOMRect

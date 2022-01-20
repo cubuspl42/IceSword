@@ -1,6 +1,6 @@
-package icesword.ui.scene
+package icesword.ui.world_view.scene
 
-import icesword.ui.MouseDrag
+import icesword.ui.world_view.MouseDrag
 import icesword.TILE_SIZE
 import icesword.editor.Editor
 import icesword.editor.entities.Elastic
@@ -26,7 +26,7 @@ import icesword.html.createSvgGroup
 import icesword.html.createSvgRect
 import icesword.html.onMouseDrag
 import icesword.ui.CanvasNode
-import icesword.ui.scene.base.HybridNode
+import icesword.ui.world_view.scene.base.HybridNode
 import kotlinx.css.Color
 import kotlinx.css.Cursor
 import kotlinx.css.PointerEvents

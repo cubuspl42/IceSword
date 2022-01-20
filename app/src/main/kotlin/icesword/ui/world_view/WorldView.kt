@@ -1,4 +1,4 @@
-package icesword.ui
+package icesword.ui.world_view
 
 
 import icesword.RezIndex
@@ -45,7 +45,7 @@ import icesword.html.onWheel
 import icesword.html.trackKeyPressedState
 import icesword.html.trackMousePosition
 import icesword.html.trackMousePressed
-import icesword.ui.scene.createScene
+import icesword.ui.world_view.scene.createScene
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 

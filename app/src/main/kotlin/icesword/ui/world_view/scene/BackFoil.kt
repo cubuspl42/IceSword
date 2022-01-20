@@ -1,4 +1,4 @@
-package icesword.ui.scene
+package icesword.ui.world_view.scene
 
 import icesword.editor.Editor
 import icesword.editor.modes.KnotSelectMode
