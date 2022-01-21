@@ -12,6 +12,7 @@ import icesword.frp.map
 import icesword.html.ColumnStyleDeclaration
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.FlexStyleDeclaration
+import icesword.html.FontFamily
 import icesword.html.HTMLWidget
 import icesword.html.buildElement
 import icesword.html.createColumnDl
@@ -71,6 +72,7 @@ fun editorSideBar(
             style = DynamicStyleDeclaration(
                 backgroundColor = constant(Color("#b1b1b1")),
                 padding = constant(8.px),
+                fontFamily = constant(FontFamily.sansSerif),
             ),
             columnStyle = ColumnStyleDeclaration(
                 verticalGap = constant(4.px),
@@ -415,7 +417,7 @@ private fun createTitledSection(
             createHeading4(text = title).apply {
                 style.apply {
                     margin = "0"
-                    fontFamily = "sans-serif"
+                    fontFamily = FontFamily.sansSerif
                 }
             }
         )

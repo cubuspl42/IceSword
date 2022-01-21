@@ -8,6 +8,7 @@ import icesword.frp.dynamic_list.mapIndexed
 import icesword.frp.units
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.FlexStyleDeclaration
+import icesword.html.FontFamily
 import icesword.html.HTMLButton
 import icesword.html.HTMLWidgetB
 import icesword.html.createButtonWb
@@ -128,7 +129,7 @@ fun createEditEnemyDialog(
             style = DynamicStyleDeclaration(
                 backgroundColor = constant(Color("#d1d1d1")),
                 paddingString = constant("16px"),
-                fontFamily = constant("sans-serif"),
+                fontFamily = constant(FontFamily.sansSerif),
             ),
             flexStyle = FlexStyleDeclaration(
                 alignItems = constant(Align.center),

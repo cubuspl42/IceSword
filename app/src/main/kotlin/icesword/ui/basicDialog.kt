@@ -9,6 +9,7 @@ import icesword.frp.update
 import icesword.geometry.IntRect
 import icesword.html.DynamicStyleDeclaration
 import icesword.html.FlexStyleDeclaration
+import icesword.html.FontFamily
 import icesword.html.GridStyleDeclaration
 import icesword.html.HTMLWidget
 import icesword.html.HTMLWidgetB
@@ -37,7 +38,7 @@ fun createBasicDialog(
         style = DynamicStyleDeclaration(
             backgroundColor = Cell.constant(Color("#d1d1d1")),
             paddingString = Cell.constant("16px"),
-            fontFamily = Cell.constant("sans-serif"),
+            fontFamily = Cell.constant(FontFamily.sansSerif),
         ),
         flexStyle = FlexStyleDeclaration(
             alignItems = Cell.constant(Align.center),

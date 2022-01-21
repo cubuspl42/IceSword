@@ -2,6 +2,7 @@ package icesword.ui
 
 import icesword.html.createHTMLElementRaw
 import icesword.editor.LoadingWorldProcess
+import icesword.html.FontFamily
 import icesword.html.HTMLWidget
 import icesword.html.HTMLWidgetB
 import kotlinx.browser.document
@@ -14,7 +15,7 @@ fun createCreatingNewProjectDialog(): HTMLWidgetB<*> =
             style.apply {
                 backgroundColor = "#d1d1d1"
                 padding = "16px"
-                fontFamily = "sans-serif"
+                fontFamily = FontFamily.sansSerif
             }
 
             appendChild(
@@ -34,7 +35,7 @@ fun createLoadingWorldDialog(
         style.apply {
             backgroundColor = "#d1d1d1"
             padding = "16px"
-            fontFamily = "sans-serif"
+            fontFamily = FontFamily.sansSerif
         }
 
         appendChild(

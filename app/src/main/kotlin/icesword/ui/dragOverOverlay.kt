@@ -10,6 +10,7 @@ import icesword.frp.map
 import icesword.frp.mapNotNull
 import icesword.frp.mergeWith
 import icesword.frp.reactTill
+import icesword.html.FontFamily
 import icesword.html.createHTMLElementRaw
 import icesword.html.linkChild
 import icesword.html.linkProperty
@@ -155,7 +156,7 @@ private fun createDragoverPreview(): HTMLElement {
         appendChild(
             createHTMLElementRaw("p").apply {
                 style.apply {
-                    fontFamily = "sans-serif"
+                    fontFamily = FontFamily.sansSerif
                     color = "white"
                     setProperty("pointer-events", "none")
                 }

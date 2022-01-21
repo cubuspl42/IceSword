@@ -7,6 +7,7 @@ import icesword.frp.StreamSink
 import icesword.frp.Till
 import icesword.frp.dynamic_list.mapTillRemoved
 import icesword.html.DynamicStyleDeclaration
+import icesword.html.FontFamily
 import icesword.html.HTMLWidget
 import icesword.html.HTMLWidgetB
 import icesword.html.createButton
@@ -123,7 +124,7 @@ private fun createEditFloorSpikeRowDialog(
         style = DynamicStyleDeclaration(
             backgroundColor = Cell.constant(Color("#d1d1d1")),
             paddingString = Cell.constant("16px"),
-            fontFamily = Cell.constant("sans-serif"),
+            fontFamily = Cell.constant(FontFamily.sansSerif),
         ),
         verticalGap = 8.px,
         children = listOf(
