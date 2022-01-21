@@ -1,8 +1,8 @@
 package icesword.ui.retails.retail6
 
-import icesword.ui.createInsertElasticButton
-import icesword.ui.createInsertEntityButton
-import icesword.ui.createKnotPaintButton
+import icesword.ui.side_bar.createInsertElasticButton
+import icesword.ui.side_bar.createInsertEntityButton
+import icesword.ui.side_bar.createKnotPaintButton
 import icesword.editor.Editor
 import icesword.editor.modes.InsertionPrototype
 import icesword.editor.entities.KnotPrototype
@@ -20,12 +20,11 @@ import icesword.editor.entities.elastic.prototype.Retail6TunnelTubeCoverGapProto
 import icesword.editor.entities.elastic.prototype.Retail6TunnelTubeCoverPrototype
 import icesword.editor.entities.elastic.prototype.Retail6TunnelTubePrototype
 import icesword.editor.entities.elastic.prototype.Retail6WhiteHousePrototype
-import icesword.editor.entities.fixture.prototypes.Retail2TowerWindow
 import icesword.editor.entities.fixture.prototypes.Retail6ShutterWindow
 import icesword.editor.retails.Retail6
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
-import icesword.ui.createInsertFixtureButton
+import icesword.ui.side_bar.createInsertFixtureButton
 import icesword.ui.createPreviewImage
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement

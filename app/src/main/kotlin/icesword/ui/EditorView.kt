@@ -16,6 +16,7 @@ import icesword.ui.edit_dialogs.createTogglePegDialog
 import icesword.ui.edit_dialogs.createWapObjectDialog
 import icesword.ui.edit_dialogs.createWarpDialog
 import icesword.ui.retails.RetailUiPrototype
+import icesword.ui.side_bar.editorSideBar
 import icesword.ui.world_view.worldView
 import org.w3c.dom.HTMLElement
 

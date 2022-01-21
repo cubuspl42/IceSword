@@ -1,9 +1,9 @@
 package icesword.ui.retails.retail2
 
-import icesword.ui.createInsertElasticButton
-import icesword.ui.createInsertEnemyButton
-import icesword.ui.createInsertEntityButton
-import icesword.ui.createInsertWapObjectButton
+import icesword.ui.side_bar.createInsertElasticButton
+import icesword.ui.side_bar.createInsertEnemyButton
+import icesword.ui.side_bar.createInsertEntityButton
+import icesword.ui.side_bar.createInsertWapObjectButton
 import icesword.editor.Editor
 import icesword.editor.modes.InsertionPrototype
 import icesword.editor.entities.elastic.prototype.Retail2DoublePilePrototype
@@ -12,7 +12,6 @@ import icesword.editor.entities.elastic.prototype.Retail2PlatformPrototype
 import icesword.editor.entities.elastic.prototype.Retail2SinglePilePrototype
 import icesword.editor.entities.elastic.prototype.Retail2TowerPrototype
 import icesword.editor.entities.elastic.prototype.Retail2TowerTopPrototype
-import icesword.editor.entities.fixture.prototypes.Retail1DoorRight
 import icesword.editor.entities.fixture.prototypes.Retail2TowerCannonLeft
 import icesword.editor.entities.fixture.prototypes.Retail2TowerCannonRight
 import icesword.editor.entities.fixture.prototypes.Retail2TowerWindow
@@ -25,7 +24,7 @@ import icesword.editor.entities.wap_object.prototype.Retail2PowderKeg
 import icesword.editor.entities.wap_object.prototype.Retail2SoldierPrototype
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
-import icesword.ui.createInsertFixtureButton
+import icesword.ui.side_bar.createInsertFixtureButton
 import icesword.ui.createPreviewImage
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement

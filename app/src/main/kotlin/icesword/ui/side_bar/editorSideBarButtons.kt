@@ -1,4 +1,4 @@
-package icesword.ui
+package icesword.ui.side_bar
 
 import icesword.editor.Editor
 import icesword.editor.entities.elastic.prototype.ElasticPrototype
@@ -7,7 +7,6 @@ import icesword.editor.entities.KnotPrototype
 import icesword.editor.entities.fixture.prototypes.FixturePrototype
 import icesword.editor.retails.Retail
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
-import icesword.frp.Cell
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.dynamic_list.staticListOf
@@ -17,7 +16,10 @@ import icesword.html.DynamicStyleDeclaration
 import icesword.html.HTMLWidgetB
 import icesword.html.createTextWb
 import icesword.html.createWrapperWb
-import icesword.ui.retails.retail1.Retail1UiPrototype
+import icesword.ui.createCustomSelectButton
+import icesword.ui.createPreviewImage
+import icesword.ui.createStackWb
+import icesword.ui.getRezPngPath
 import kotlinx.css.Align
 import kotlinx.css.Color
 import kotlinx.css.pt

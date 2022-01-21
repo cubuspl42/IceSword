@@ -1,10 +1,10 @@
 package icesword.ui.retails.retail1
 
-import icesword.ui.createInsertElasticButton
-import icesword.ui.createInsertEnemyButton
-import icesword.ui.createInsertEntityButton
-import icesword.ui.createInsertWapObjectButton
-import icesword.ui.createKnotPaintButton
+import icesword.ui.side_bar.createInsertElasticButton
+import icesword.ui.side_bar.createInsertEnemyButton
+import icesword.ui.side_bar.createInsertEntityButton
+import icesword.ui.side_bar.createInsertWapObjectButton
+import icesword.ui.side_bar.createKnotPaintButton
 import icesword.editor.entities.elastic.prototype.Retail1ColumnPrototype
 import icesword.editor.entities.CrateStackPrototype
 import icesword.editor.Editor
@@ -25,8 +25,7 @@ import icesword.editor.entities.wap_object.prototype.SoldierPrototype
 import icesword.editor.entities.wap_object.prototype.WapObjectPrototype
 import icesword.frp.Till
 import icesword.html.HTMLWidgetB
-import icesword.ui.createElevatorButton
-import icesword.ui.createInsertFixtureButton
+import icesword.ui.side_bar.createInsertFixtureButton
 import icesword.ui.createPreviewImage
 import icesword.ui.retails.RetailUiPrototype
 import org.w3c.dom.HTMLElement

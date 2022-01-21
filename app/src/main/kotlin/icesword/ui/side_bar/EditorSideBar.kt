@@ -1,4 +1,4 @@
-package icesword.ui
+package icesword.ui.side_bar
 
 import icesword.editor.Editor
 import icesword.editor.entities.Warp
@@ -11,24 +11,19 @@ import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.map
 import icesword.html.ColumnStyleDeclaration
 import icesword.html.DynamicStyleDeclaration
-import icesword.html.FlexStyleDeclaration
 import icesword.html.FontFamily
 import icesword.html.HTMLWidget
 import icesword.html.buildElement
-import icesword.html.createColumnDl
-import icesword.html.createColumnWb
 import icesword.html.createColumnWbDl
 import icesword.html.createGrid
 import icesword.html.createHTMLElementRaw
 import icesword.html.createHeading4
-import icesword.html.createTextWb
 import icesword.html.createWrappedTextWb
-import icesword.html.createWrapperWb
 import icesword.html.resolve
+import icesword.ui.createPreviewImage
 import icesword.ui.retails.RetailUiPrototype
 import kotlinx.css.Align
 import kotlinx.css.Color
-import kotlinx.css.FlexDirection
 import kotlinx.css.JustifyContent
 import kotlinx.css.Overflow
 import kotlinx.css.px
