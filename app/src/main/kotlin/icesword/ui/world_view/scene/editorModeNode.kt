@@ -7,6 +7,7 @@ import icesword.editor.modes.KnotPaintMode
 import icesword.editor.entities.knotRect
 import icesword.editor.modes.ElasticInsertionMode
 import icesword.editor.modes.FixtureInsertionMode
+import icesword.editor.modes.PickWarpTargetMode
 import icesword.editor.modes.WapObjectAlikeInsertionMode
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.map
@@ -31,6 +32,7 @@ fun createEditorModeModeNode(
     is WapObjectAlikeInsertionMode -> buildElasticInsertionModeNode(insertionMode = editorMode)
     is ElasticInsertionMode -> buildElasticInsertionModeNode(elasticInsertionMode = editorMode)
     is FixtureInsertionMode -> buildFixtureInsertionModeNode(fixtureInsertionMode = editorMode)
+    is PickWarpTargetMode -> createPickWarpTargetModeNode(pickWarpTargetMode = editorMode)
     else -> null
 }
 

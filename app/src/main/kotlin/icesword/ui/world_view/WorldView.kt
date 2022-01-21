@@ -12,6 +12,7 @@ import icesword.editor.modes.EntitySelectMode
 import icesword.editor.modes.InsertWapObjectCommand
 import icesword.editor.modes.KnotBrushMode
 import icesword.editor.modes.KnotPaintMode
+import icesword.editor.modes.PickWarpTargetMode
 import icesword.editor.modes.StampInsertionMode
 import icesword.editor.modes.WapObjectAlikeInsertionMode
 import icesword.frp.Cell
@@ -145,6 +146,12 @@ fun worldView(
             is WapObjectAlikeInsertionMode -> setupWapObjectAlikeInsertionModeController(
                 editor = editor,
                 insertionMode = mode,
+                root = root,
+                tillDetach = tillNext,
+            )
+            is PickWarpTargetMode -> setupPickWarpTargetModeController(
+                editor = editor,
+                pickWarpTargetMode = mode,
                 root = root,
                 tillDetach = tillNext,
             )
@@ -433,6 +440,28 @@ fun setupStampInsertionModeController(
         insertionMode = stampInsertionMode,
         root = root,
         tillDetach = tillDetach,
+    )
+}
+
+fun setupPickWarpTargetModeController(
+    editor: Editor,
+    root: HTMLElement,
+    pickWarpTargetMode: PickWarpTargetMode,
+    tillDetach: Till,
+) {
+    pickWarpTargetMode.closeInputLoop(
+        inputState = root.trackMousePosition(tillDetach).map { mousePosition ->
+            when (mousePosition) {
+                is MousePosition.Over -> object : PickWarpTargetMode.PickerOverInputState {
+                    override val pickerWorldPosition: Cell<IntVec2> =
+                        editor.camera.transformToWorld(mousePosition.relativePosition)
+
+                    override val pick: Stream<Unit> =
+                        root.onMouseDown(MouseButton.Primary).units()
+                }
+                MousePosition.Out -> PickWarpTargetMode.PickerOutInputState
+            }
+        }
     )
 }
 

@@ -47,6 +47,7 @@ import icesword.editor.modes.KnotMeshInsertionMode
 import icesword.editor.modes.KnotPaintMode
 import icesword.editor.modes.KnotSelectMode
 import icesword.editor.modes.PathElevatorInsertionMode
+import icesword.editor.modes.PickWarpTargetMode
 import icesword.editor.modes.SimpleWapObjectAlikeInsertionMode
 import icesword.editor.modes.VerticalElevatorInsertionMode
 import icesword.editor.modes.WapObjectAlikeInsertionMode
@@ -66,6 +67,7 @@ import icesword.frp.map
 import icesword.frp.mapNested
 import icesword.frp.mapTillNext
 import icesword.frp.orElse
+import icesword.frp.reactTill
 import icesword.frp.switchMapNested
 import icesword.frp.switchMapOrNull
 import icesword.frp.update
@@ -311,6 +313,19 @@ class Editor(
         )
     }
 
+    private fun enterPickWarpTargetMode(warp: Warp) {
+        enterModeTilled(
+            object : Tilled<PickWarpTargetMode> {
+                override fun build(till: Till) = PickWarpTargetMode(
+                    warp = warp,
+                    tillExit = till,
+                ).also { mode ->
+                    mode.exit.reactTill(till) { enterSelectMode() }
+                }
+            }
+        )
+    }
+
     val editorMode: Cell<EditorMode> = _editorMode
         .mapTillNext(tillFreeze = tillDispose) { tilled, tillNext ->
             tilled.build(till = tillNext)
@@ -482,6 +497,10 @@ class Editor(
 
                 override fun editTarget() {
                     _editWarpTarget.send(selectedEntity)
+                }
+
+                override fun pickTarget() {
+                    enterPickWarpTargetMode(selectedEntity)
                 }
             }
             is Fixture -> null

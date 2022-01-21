@@ -24,6 +24,7 @@ import icesword.editor.modes.EditPathElevatorMode
 import icesword.editor.modes.EntitySelectMode
 import icesword.editor.modes.KnotBrushMode
 import icesword.editor.modes.KnotSelectMode
+import icesword.editor.modes.PickWarpTargetMode
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
 import icesword.frp.dynamic_list.size
@@ -217,6 +218,7 @@ fun createSelectionButtonsRow(
             selectionMode = selectionContext,
         )
         is WarpSelectionContext -> createWarpSelectionModeButtonsRow(
+            editor = editor,
             selectionMode = selectionContext,
         )
         else -> null
@@ -559,18 +561,33 @@ fun createWapObjectSelectionModeButtonsRow(
 }
 
 fun createWarpSelectionModeButtonsRow(
+    editor: Editor,
     selectionMode: WarpSelectionContext,
 ): HTMLWidgetB<*> {
-    val editTimingButton = createTextButtonWb(
+    val editTargetButton = createTextButtonWb(
         text = "Edit target",
         onPressed = {
             selectionMode.editTarget()
         },
     )
 
+    val pickTargetButton = object : HTMLWidgetB<HTMLWidget> {
+        override fun build(tillDetach: Till): HTMLWidget = HTMLWidget.of(
+            createModeButton<PickWarpTargetMode>(
+                editor = editor,
+                name = "Pick target",
+                enterMode = {
+                    selectionMode.pickTarget()
+                },
+                tillDetach = tillDetach,
+            )
+        )
+    }
+
     return createRow(
         children = listOf(
-            editTimingButton,
+            editTargetButton,
+            pickTargetButton,
         ),
     )
 }

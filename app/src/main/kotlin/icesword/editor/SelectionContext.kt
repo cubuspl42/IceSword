@@ -57,4 +57,6 @@ interface TogglePegSelectionContext : SingleEntitySelectionContext {
 
 interface WarpSelectionContext : SingleEntitySelectionContext {
     fun editTarget()
+
+    fun pickTarget()
 }
