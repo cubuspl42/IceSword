@@ -5,6 +5,7 @@ import icesword.editor.CrateStackSelectionContext
 import icesword.editor.CrumblingPegSelectionContext
 import icesword.editor.Editor
 import icesword.editor.EditorMode
+import icesword.editor.ElevatorSelectionContext
 import icesword.editor.EnemySelectionContext
 import icesword.editor.FloorSpikeRowSelectionContext
 import icesword.editor.KnotBrush
@@ -220,6 +221,9 @@ fun createSelectionButtonsRow(
         is WarpSelectionContext -> createWarpSelectionModeButtonsRow(
             editor = editor,
             selectionMode = selectionContext,
+        )
+        is ElevatorSelectionContext -> createElevatorSelectionContextButtonsRow(
+            selectionContext = selectionContext,
         )
         else -> null
     }
@@ -588,6 +592,23 @@ fun createWarpSelectionModeButtonsRow(
         children = listOf(
             editTargetButton,
             pickTargetButton,
+        ),
+    )
+}
+
+fun createElevatorSelectionContextButtonsRow(
+    selectionContext: ElevatorSelectionContext,
+): HTMLWidgetB<*> {
+    val editProperties = createTextButtonWb(
+        text = "Edit properties",
+        onPressed = {
+            selectionContext.editProperties()
+        },
+    )
+
+    return createRow(
+        children = listOf(
+            editProperties,
         ),
     )
 }

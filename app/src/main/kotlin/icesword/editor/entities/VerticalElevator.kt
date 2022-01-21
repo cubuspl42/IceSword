@@ -50,12 +50,14 @@ class VerticalElevator(
     initialPosition: IntVec2,
     initialZOrder: Int,
     initialRelativeMovementRange: VerticalRange,
+    props: ElevatorProps,
 ) : Elevator<VerticalRange>(
     rezIndex = rezIndex,
     prototype = prototype,
     initialPosition = initialPosition,
     initialZOrder = initialZOrder,
     initialRelativeMovementRange = initialRelativeMovementRange,
+    props = props,
 ), WapObjectExportable {
 
     companion object {
@@ -70,6 +72,7 @@ class VerticalElevator(
                 initialPosition = data.position,
                 initialZOrder = data.zOrder,
                 initialRelativeMovementRange = data.relativeMovementRange,
+                props = ElevatorProps.load(data.props),
             )
     }
 
@@ -95,4 +98,5 @@ data class VerticalElevatorData(
     val position: IntVec2,
     val zOrder: Int = 0,
     val relativeMovementRange: VerticalRange = VerticalRange.ZERO,
+    val props: ElevatorPropsData = ElevatorPropsData.default,
 )

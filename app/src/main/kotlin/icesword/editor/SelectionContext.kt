@@ -23,6 +23,10 @@ interface MultipleKnotMeshesSelectionContext : SelectionContext {
     fun mergeKnotMeshes()
 }
 
+interface ElevatorSelectionContext : SingleEntitySelectionContext {
+    fun editProperties()
+}
+
 interface PathElevatorSelectionContext : SingleEntitySelectionContext {
     fun enterEditPathElevatorMode()
 }

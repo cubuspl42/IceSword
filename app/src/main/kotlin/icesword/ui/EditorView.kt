@@ -152,4 +152,12 @@ private fun setupEditDialogController(
             )
         )
     }
+
+    editor.editElevatorProperties.reactTill(tillDetach) { elevator ->
+        dialogOverlay.showDialog(
+            dialog = createElevatorDialog(
+                elevator = elevator,
+            )
+        )
+    }
 }

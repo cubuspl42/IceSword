@@ -14,6 +14,9 @@ import icesword.editor.entities.CrumblingPegPrototype
 import icesword.editor.entities.Elastic
 import icesword.editor.entities.ElasticProduct
 import icesword.editor.entities.Elevator
+import icesword.editor.entities.ElevatorMovementCondition
+import icesword.editor.entities.ElevatorMovementPattern
+import icesword.editor.entities.ElevatorProps
 import icesword.editor.entities.ElevatorPrototype
 import icesword.editor.entities.Enemy
 import icesword.editor.entities.Entity
@@ -414,7 +417,11 @@ class HorizontalElevatorInsertionMode(
         initialRelativeMovementRange = HorizontalRange(
             minX = -rangeRadius,
             maxX = +rangeRadius,
-        )
+        ),
+        props = ElevatorProps(
+            initialMovementCondition = ElevatorMovementCondition.MovesAlways,
+            initialMovementPattern = ElevatorMovementPattern.TwoWay,
+        ),
     )
 }
 
@@ -462,7 +469,11 @@ class VerticalElevatorInsertionMode(
         initialRelativeMovementRange = VerticalRange(
             minY = -rangeRadius,
             maxY = +rangeRadius,
-        )
+        ),
+        props = ElevatorProps(
+            initialMovementCondition = ElevatorMovementCondition.MovesAlways,
+            initialMovementPattern = ElevatorMovementPattern.TwoWay,
+        ),
     )
 }
 

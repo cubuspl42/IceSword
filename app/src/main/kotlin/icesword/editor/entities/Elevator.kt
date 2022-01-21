@@ -7,10 +7,12 @@ import icesword.RezIndex
 import icesword.editor.DynamicWapSprite
 import icesword.editor.IntVec2Serializer
 import icesword.frp.Cell
+import icesword.frp.MutCell
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
 import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.Wwd
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
 data class ElevatorPrototype(
@@ -18,12 +20,71 @@ data class ElevatorPrototype(
     val wwdObjectPrototype: Wwd.Object_,
 )
 
+enum class ElevatorMovementCondition {
+    // It always moves (standard)
+    MovesAlways,
+
+    // Moving only when the player is standing on it
+    MovesWithPlayer,
+
+    // Moving only when the player is not standing on it
+    MovesWithoutPlayer,
+
+    // Starts to move once the player stands on it for the first time
+    MovesOnceTriggered,
+}
+
+enum class ElevatorMovementPattern {
+    // It moves from the start point to the end point and stops
+    OneWay,
+
+    // It repeatedly moves from the start point to the end point and comes back
+    TwoWay,
+}
+
+class ElevatorProps(
+    initialMovementCondition: ElevatorMovementCondition,
+    initialMovementPattern: ElevatorMovementPattern,
+) {
+    companion object {
+        fun load(data: ElevatorPropsData) = ElevatorProps(
+            initialMovementCondition = data.movementCondition,
+            initialMovementPattern = data.movementPattern,
+        )
+    }
+
+    val movementCondition: MutCell<ElevatorMovementCondition> =
+        MutCell(initialMovementCondition)
+
+    val movementPattern: MutCell<ElevatorMovementPattern> =
+        MutCell(initialMovementPattern)
+
+    fun toData() = ElevatorPropsData(
+        movementCondition = movementCondition.sample(),
+        movementPattern = movementPattern.sample(),
+    )
+}
+
+@Serializable
+data class ElevatorPropsData(
+    val movementCondition: ElevatorMovementCondition,
+    val movementPattern: ElevatorMovementPattern,
+) {
+    companion object {
+        val default = ElevatorPropsData(
+            movementCondition = ElevatorMovementCondition.MovesAlways,
+            movementPattern = ElevatorMovementPattern.TwoWay,
+        )
+    }
+}
+
 sealed class Elevator<Range : AxisRange<Range>>(
     rezIndex: RezIndex,
     private val prototype: ElevatorPrototype,
     initialPosition: IntVec2,
     initialZOrder: Int,
     initialRelativeMovementRange: Range,
+    val props: ElevatorProps,
 ) :
     Entity(),
     WapObjectExportable {

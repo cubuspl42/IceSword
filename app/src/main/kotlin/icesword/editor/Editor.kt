@@ -10,6 +10,7 @@ import icesword.TILE_SIZE
 import icesword.asFullOfInstances
 import icesword.editor.entities.CrateStack
 import icesword.editor.entities.CrumblingPeg
+import icesword.editor.entities.Elevator
 import icesword.editor.entities.Enemy
 import icesword.editor.entities.Entity
 import icesword.editor.entities.EntityTilePosition
@@ -422,6 +423,11 @@ class Editor(
     val editWarpTarget: Stream<Warp>
         get() = _editWarpTarget
 
+    private val _editElevatorProperties = StreamSink<Elevator<*>>()
+
+    val editElevatorProperties: Stream<Elevator<*>>
+        get() = _editElevatorProperties
+
     val selectionContext: Cell<SelectionContext?> = buildSingleEntitySelectionContext()
         .orElse(buildMultiEntitySelectionContext())
 
@@ -504,6 +510,13 @@ class Editor(
                 }
             }
             is Fixture -> null
+            is Elevator<*> -> object : ElevatorSelectionContext {
+                override val entity: Elevator<*> = selectedEntity
+
+                override fun editProperties() {
+                    _editElevatorProperties.send(selectedEntity)
+                }
+            }
             else -> SimpleSingleEntitySelectionContext(
                 entity = selectedEntity,
             )
