@@ -7,6 +7,14 @@ import icesword.html.createHTMLElementRaw
 import icesword.editor.Editor
 import icesword.frp.Till
 import icesword.frp.reactTill
+import icesword.ui.edit_dialogs.createEditCrateStackDialog
+import icesword.ui.edit_dialogs.createEditEnemyDialog
+import icesword.ui.edit_dialogs.createEditFloorSpikeRowDialogWb
+import icesword.ui.edit_dialogs.createEditRopeDialog
+import icesword.ui.edit_dialogs.createElevatorDialog
+import icesword.ui.edit_dialogs.createTogglePegDialog
+import icesword.ui.edit_dialogs.createWapObjectDialog
+import icesword.ui.edit_dialogs.createWarpDialog
 import icesword.ui.retails.RetailUiPrototype
 import icesword.ui.world_view.worldView
 import org.w3c.dom.HTMLElement

@@ -1,4 +1,4 @@
-package icesword.ui
+package icesword.ui.edit_dialogs
 
 import icesword.frp.Cell
 import icesword.frp.MutCell
@@ -21,6 +21,7 @@ import icesword.html.createTextButtonWb
 import icesword.html.createTextInput
 import icesword.html.flatMap
 import icesword.html.map
+import icesword.ui.Dialog
 import kotlinx.css.Align
 import kotlinx.css.Color
 import kotlinx.css.px

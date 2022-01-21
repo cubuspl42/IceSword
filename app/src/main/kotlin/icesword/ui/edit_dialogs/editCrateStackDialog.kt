@@ -1,4 +1,4 @@
-package icesword.ui
+package icesword.ui.edit_dialogs
 
 import icesword.RezIndex
 import icesword.RezTextureBank
@@ -49,6 +49,8 @@ import icesword.html.map
 import icesword.html.onDragGestureStart
 import icesword.html.onDragStart
 import icesword.html.trackDraggingState
+import icesword.ui.Dialog
+import icesword.ui.createPickupImage
 import icesword.withReplaced
 import icesword.withSwapped
 import kotlinx.css.Align

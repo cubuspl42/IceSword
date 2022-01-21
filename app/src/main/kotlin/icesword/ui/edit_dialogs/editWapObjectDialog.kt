@@ -1,4 +1,4 @@
-package icesword.ui
+package icesword.ui.edit_dialogs
 
 import icesword.editor.entities.WapObject
 import icesword.frp.Cell.Companion.constant
@@ -7,6 +7,7 @@ import icesword.html.HTMLWidgetB
 import icesword.html.createColumnWb
 import icesword.html.createHeading4Wb
 import icesword.html.createRow
+import icesword.ui.Dialog
 import kotlinx.css.px
 
 fun createWapObjectDialog(

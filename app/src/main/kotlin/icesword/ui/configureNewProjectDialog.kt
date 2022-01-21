@@ -23,6 +23,7 @@ import icesword.html.HTMLWidgetB
 import icesword.html.createColumnWb
 import icesword.html.createHeading4Wb
 import icesword.html.createTextButtonWb
+import icesword.ui.edit_dialogs.createBasicDialog
 import kotlinx.css.px
 
 fun createConfigureNewProjectDialog(

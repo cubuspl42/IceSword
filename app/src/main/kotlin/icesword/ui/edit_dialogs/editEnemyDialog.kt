@@ -1,4 +1,4 @@
-package icesword.ui
+package icesword.ui.edit_dialogs
 
 import icesword.RezIndex
 import icesword.editor.PickupKind
@@ -22,6 +22,8 @@ import icesword.html.createTextButtonWb
 import icesword.html.createWrapperWb
 import icesword.html.flatMap
 import icesword.html.map
+import icesword.ui.Dialog
+import icesword.ui.createPickupImage
 import kotlinx.css.Align
 import kotlinx.css.Color
 import kotlinx.css.FlexDirection

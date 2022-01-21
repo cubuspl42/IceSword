@@ -1,4 +1,4 @@
-package icesword.ui
+package icesword.ui.edit_dialogs
 
 import icesword.editor.entities.Rope
 import icesword.frp.Cell.Companion.constant
@@ -11,6 +11,7 @@ import icesword.html.createHeading4Wb
 import icesword.html.createLabel
 import icesword.html.createNumberInput
 import icesword.html.createRow
+import icesword.ui.Dialog
 import kotlinx.css.px
 
 fun createEditRopeDialog(

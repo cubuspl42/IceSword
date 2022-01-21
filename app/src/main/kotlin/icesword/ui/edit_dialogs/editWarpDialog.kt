@@ -1,4 +1,4 @@
-package icesword.ui
+package icesword.ui.edit_dialogs
 
 import icesword.editor.entities.Warp
 import icesword.frp.Cell.Companion.constant
