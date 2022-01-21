@@ -7,15 +7,20 @@ import icesword.editor.entities.Rope
 import icesword.editor.entities.TogglePeg
 import icesword.editor.entities.WapObject
 import icesword.editor.entities.Warp
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.concatWith
 import icesword.frp.dynamic_list.staticListOf
-import icesword.ui.CanvasNode
+import icesword.frp.map
+import icesword.geometry.DynamicTransform
+import icesword.ui.svg.createSvgCross
 import icesword.ui.world_view.EntityNode
 import icesword.ui.world_view.EntityNodeB
 import icesword.ui.world_view.WapNode
 import icesword.ui.world_view.scene.base.HybridNode
+import kotlinx.css.Color
 import org.w3c.dom.svg.SVGElement
 
-class EntityWapSpriteNode(
+class EntityWapSpriteOverlayNode(
     private val editor: Editor,
     private val entity: Entity,
     private val wapSprite: DynamicWapSprite,
@@ -49,7 +54,7 @@ private fun createEntityWapSpriteNode(
                     wapSprite = wapSprite,
                 )
             ),
-            overlayNode = EntityWapSpriteNode(
+            overlayNode = EntityWapSpriteOverlayNode(
                 editor = editor,
                 entity = entity,
                 wapSprite = wapSprite,
@@ -67,10 +72,49 @@ fun createWapObjectNode(
 
 fun createWarpNode(
     warp: Warp,
-): EntityNodeB = createEntityWapSpriteNode(
-    entity = warp,
-    wapSprite = warp.wapSprite,
-)
+): EntityNodeB = object : EntityNodeB {
+    override fun build(context: EntityNodeB.BuildContext): EntityNode = context.run {
+        EntityNode(
+            wapNodes = staticListOf(
+                WapNode.fromWapSprite(
+                    editorTextureBank = editorTextureBank,
+                    textureBank = textureBank,
+                    wapSprite = warp.wapSprite,
+                )
+            ),
+            overlayNode = GroupNode(
+                children = staticListOf(
+                    EntityWapSpriteOverlayNode(
+                        editor = editor,
+                        entity = warp,
+                        wapSprite = warp.wapSprite,
+                    ),
+                ).concatWith(
+                    DynamicList.ofSingle(
+                        editor.isEntitySelected(warp).map {
+                            if (it) buildTargetCross() else null
+                        },
+                    ),
+                ),
+            ),
+        )
+    }
+
+    private fun buildTargetCross() = object : HybridNode() {
+        override fun buildOverlayElement(
+            context: OverlayBuildContext,
+        ): SVGElement = context.run {
+            createSvgCross(
+                svg = svg,
+                transform = DynamicTransform.translate(
+                    viewTransform.transform(warp.targetPosition),
+                ),
+                color = Color.red,
+                tillDetach = tillDetach,
+            )
+        }
+    }
+}
 
 fun createRopeNode(
     rope: Rope,
