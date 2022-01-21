@@ -106,6 +106,8 @@ data class DynamicStyleDeclaration(
     val transform: Cell<Transform?>? = null,
     val pointerEvents: Cell<PointerEvents?>? = null,
     val overflow: Cell<Overflow?>? = null,
+    val overflowX: Cell<Overflow?>? = null,
+    val overflowY: Cell<Overflow?>? = null,
     val border: BorderStyleDeclaration? = null,
 ) {
     fun linkTo(
@@ -284,6 +286,20 @@ data class DynamicStyleDeclaration(
             style = style,
             propertyName = "overflow",
             property = overflow?.map { it?.toString() },
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "overflow-x",
+            property = overflowX?.map { it?.toString() },
+            till = tillDetach,
+        )
+
+        linkProperty(
+            style = style,
+            propertyName = "overflow-y",
+            property = overflowY?.map { it?.toString() },
             till = tillDetach,
         )
 

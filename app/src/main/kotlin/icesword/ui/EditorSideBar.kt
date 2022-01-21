@@ -7,14 +7,28 @@ import icesword.editor.modes.InsertionPrototype
 import icesword.editor.modes.InsertionPrototype.WarpInsertionPrototype
 import icesword.frp.Cell.Companion.constant
 import icesword.frp.Till
+import icesword.frp.dynamic_list.staticListOf
+import icesword.frp.map
+import icesword.html.ColumnStyleDeclaration
 import icesword.html.DynamicStyleDeclaration
+import icesword.html.FlexStyleDeclaration
 import icesword.html.HTMLWidget
+import icesword.html.buildElement
+import icesword.html.createColumnDl
+import icesword.html.createColumnWb
+import icesword.html.createColumnWbDl
 import icesword.html.createGrid
 import icesword.html.createHTMLElementRaw
 import icesword.html.createHeading4
+import icesword.html.createTextWb
+import icesword.html.createWrappedTextWb
+import icesword.html.createWrapperWb
 import icesword.html.resolve
 import icesword.ui.retails.RetailUiPrototype
 import kotlinx.css.Align
+import kotlinx.css.Color
+import kotlinx.css.FlexDirection
+import kotlinx.css.JustifyContent
 import kotlinx.css.Overflow
 import kotlinx.css.px
 import org.w3c.dom.HTMLElement
@@ -25,39 +39,58 @@ fun editorSideBar(
     editor: Editor,
     retailUiPrototype: RetailUiPrototype,
     tillDetach: Till,
-): HTMLElement {
-    val root = createHTMLElementRaw("div").apply {
-        className = "editorSideBar"
-
-        style.apply {
-            display = "flex"
-            flexDirection = "column"
-            overflowY = Overflow.scroll.toString()
-
-            setProperty("gap", "16px")
-
-            width = "140px"
-            padding = "8px"
-            backgroundColor = "lightgrey"
-        }
-
-    }
-
-    return root.apply {
-        listOf(
-            createInsertSection(
-                editor = editor,
-                retailUiPrototype = retailUiPrototype,
-                tillDetach = tillDetach,
+): HTMLElement = createColumnWbDl(
+    columnStyle = ColumnStyleDeclaration(
+        justifyVertically = constant(JustifyContent.flexEnd),
+    ),
+    children = staticListOf(
+        createColumnWbDl(
+            style = DynamicStyleDeclaration(
+                overflowY = constant(Overflow.scroll),
+                width = constant(140.px),
+                padding = constant(8.px),
+                backgroundColor = constant(Color.lightGray),
             ),
-            createBrushesSection(
-                editor = editor,
-                retailUiPrototype = retailUiPrototype,
-                tillDetach = tillDetach,
+            columnStyle = ColumnStyleDeclaration(
+                verticalGap = constant(16.px),
             ),
-        ).forEach(::appendChild)
-    }
-}
+            children = staticListOf(
+                HTMLWidget.of(createInsertSection(
+                    editor = editor,
+                    retailUiPrototype = retailUiPrototype,
+                    tillDetach = tillDetach,
+                )),
+                HTMLWidget.of(createBrushesSection(
+                    editor = editor,
+                    retailUiPrototype = retailUiPrototype,
+                    tillDetach = tillDetach,
+                )),
+            ),
+        ),
+        createColumnWbDl(
+            style = DynamicStyleDeclaration(
+                backgroundColor = constant(Color("#b1b1b1")),
+                padding = constant(8.px),
+            ),
+            columnStyle = ColumnStyleDeclaration(
+                verticalGap = constant(4.px),
+                alignHorizontally = constant(Align.center),
+            ),
+            children = staticListOf(
+                createWrappedTextWb(
+                    editor.pointerWorldPixelCoord.map { coordOrNull ->
+                        "Pixel: " + (coordOrNull?.let { "(${it.x}, ${it.y})" } ?: "-")
+                    }
+                ),
+                createWrappedTextWb(
+                    editor.pointerWorldTileCoord.map { coordOrNull ->
+                        "Tile: " + (coordOrNull?.let { "(${it.x}, ${it.y})" } ?: "-")
+                    }
+                ),
+            ),
+        ),
+    ),
+).buildElement(tillDetach)
 
 private fun createInsertSection(
     editor: Editor,

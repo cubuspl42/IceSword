@@ -15,6 +15,7 @@ import icesword.editor.modes.KnotPaintMode
 import icesword.editor.modes.StampInsertionMode
 import icesword.editor.modes.WapObjectAlikeInsertionMode
 import icesword.frp.Cell
+import icesword.frp.Cell.Companion.constant
 import icesword.frp.Stream
 import icesword.frp.Till
 import icesword.frp.asStream
@@ -68,6 +69,17 @@ fun worldView(
 
         addEventListener("contextmenu", { it.preventDefault() })
     }
+
+    editor.closePointerWorldPixelCoord(
+        root.trackMousePosition(tillDetach).switchMap {
+            when (it) {
+                is MousePosition.Over -> editor.camera.transformToWorld(
+                    cameraPoint = it.relativePosition,
+                )
+                MousePosition.Out -> constant(null)
+            }
+        },
+    )
 
     root.onMouseDrag(button = MouseButton.Secondary, till = tillDetach)
         .reactTill(tillDetach) { mouseDrag ->
@@ -205,7 +217,7 @@ fun setupEntitySelectModeController(
                         is MousePosition.Over -> editor.camera.transformToWorld(
                             cameraPoint = mousePosition.relativePosition,
                         )
-                        MousePosition.Out -> Cell.constant(null)
+                        MousePosition.Out -> constant(null)
                     }
                 }
 

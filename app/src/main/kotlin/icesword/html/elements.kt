@@ -77,6 +77,14 @@ fun createTextWb(
     }
 }
 
+fun createWrappedTextWb(
+    text: Cell<String>,
+) = createWrapperWb(
+    child = constant(
+        createTextWb(text = text),
+    ),
+)
+
 fun createStyledText(
     text: Cell<String>,
     style: DynamicStyleDeclaration? = null,
@@ -729,65 +737,6 @@ fun createColumn(
         tillDetach = tillDetach,
     ).apply {
         children.forEach(this::appendChild)
-    }
-}
-
-fun createColumnWb(
-    tagName: String = "div",
-    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
-    flexStyle: FlexStyleDeclaration = FlexStyleDeclaration(),
-    verticalGap: LinearDimension? = null,
-    children: List<HTMLWidgetB<*>>,
-) = object : HTMLWidgetB<HTMLWidget> {
-    override fun build(tillDetach: Till): HTMLWidget {
-        val element = createStyledHtmlElement(
-            tagName = tagName,
-            style = style.copy(
-                displayStyle = flexStyle.copy(
-                    direction = constant(FlexDirection.column),
-                    gap = flexStyle.gap ?: verticalGap?.let(::constant),
-                ),
-            ),
-            tillDetach = tillDetach,
-        ).apply {
-            HTMLWidgetB.build(children, tillDetach).forEach {
-                appendChild(HTMLWidget.resolve(it))
-            }
-        }
-
-        return HTMLWidget.of(element)
-    }
-}
-
-fun createColumnWbDl(
-    tagName: String = "div",
-    style: DynamicStyleDeclaration = DynamicStyleDeclaration(),
-    flexStyle: FlexStyleDeclaration = FlexStyleDeclaration(),
-    verticalGap: LinearDimension? = null,
-    reverse: Boolean = false,
-    children: DynamicList<HTMLWidgetB<*>>,
-) = object : HTMLWidgetB<HTMLWidget> {
-    override fun build(tillDetach: Till): HTMLWidget {
-        val element = createStyledHtmlElement(
-            tagName = tagName,
-            style = style.copy(
-                displayStyle = flexStyle.copy(
-                    direction = constant(
-                        if (reverse) FlexDirection.columnReverse else FlexDirection.column,
-                    ),
-                    gap = flexStyle.gap ?: verticalGap?.let(::constant),
-                ),
-            ),
-            tillDetach = tillDetach,
-        )
-
-        linkNodeChildrenDl(
-            element = element,
-            children = HTMLWidgetB.buildDl(children, tillDetach).map { it.resolve() },
-            till = tillDetach,
-        )
-
-        return HTMLWidget.of(element)
     }
 }
 

@@ -26,6 +26,7 @@ import icesword.frp.mapTillNext
 import icesword.frp.reactTill
 import icesword.frp.switchMap
 import icesword.html.BorderStyleDeclaration
+import icesword.html.ColumnStyleDeclaration
 import icesword.html.DragGesture
 import icesword.html.DraggableState
 import icesword.html.DropTargetState
@@ -396,7 +397,9 @@ class EditCrateStackDialogObject(
                 style = DynamicStyleDeclaration(
                     alignSelf = constant(Align.center),
                 ),
-                reverse = true,
+                columnStyle = ColumnStyleDeclaration(
+                    reverseDirection = constant(true),
+                ),
                 children = pickupWrappers,
             ).build(tillDetach)
 

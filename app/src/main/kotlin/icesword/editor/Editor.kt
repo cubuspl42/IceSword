@@ -53,6 +53,7 @@ import icesword.editor.modes.WapObjectAlikeInsertionMode
 import icesword.editor.modes.WapObjectInsertionMode
 import icesword.editor.retails.Retail
 import icesword.frp.Cell
+import icesword.frp.CellLoop
 import icesword.frp.DynamicMap
 import icesword.frp.DynamicView
 import icesword.frp.MutCell
@@ -70,6 +71,7 @@ import icesword.frp.switchMapOrNull
 import icesword.frp.update
 import icesword.geometry.IntVec2
 import icesword.loadRetailTextureBank
+import icesword.tileAtPoint
 import icesword.utils.roundToMultipleOf
 import icesword.wwd.DumpWwd.dumpWwd
 import icesword.wwd.OutputDataStream.OutputStream
@@ -355,6 +357,20 @@ class Editor(
 
     val selectedEntity: Cell<Entity?> =
         selectedEntities.map { it.singleOrNull() }
+
+    private val _pointerWorldCoord = CellLoop<IntVec2?>(placeholderValue = null)
+
+    val pointerWorldPixelCoord: Cell<IntVec2?>
+        get() = _pointerWorldCoord.asCell
+
+    val pointerWorldTileCoord: Cell<IntVec2?>
+        get() = pointerWorldPixelCoord.mapNested { tileAtPoint(it) }
+
+    fun closePointerWorldPixelCoord(
+        pointerWorldPixelCoord: Cell<IntVec2?>,
+    ) {
+        _pointerWorldCoord.close(pointerWorldPixelCoord)
+    }
 
     private val _editEnemyPickups = StreamSink<Enemy>()
 
