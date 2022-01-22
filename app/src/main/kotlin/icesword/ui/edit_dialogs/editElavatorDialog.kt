@@ -4,10 +4,14 @@ import icesword.editor.entities.Elevator
 import icesword.editor.entities.ElevatorMovementCondition
 import icesword.editor.entities.ElevatorMovementPattern
 import icesword.frp.Cell.Companion.constant
+import icesword.frp.dynamic_list.DynamicList
+import icesword.frp.dynamic_list.concatWith
 import icesword.frp.dynamic_list.staticListOf
+import icesword.frp.map
 import icesword.frp.reactTill
 import icesword.html.ColumnStyleDeclaration
 import icesword.html.DynamicStyleDeclaration
+import icesword.html.FontFamily
 import icesword.html.HTMLWidget
 import icesword.html.HTMLWidgetB
 import icesword.html.RadioGroup
@@ -17,9 +21,12 @@ import icesword.html.createHeading4Wb
 import icesword.html.createHeading5Wb
 import icesword.html.createLabel
 import icesword.html.createRow
+import icesword.html.createWrappedTextWb
 import icesword.ui.Dialog
 import kotlinx.css.Align
+import kotlinx.css.FontWeight
 import kotlinx.css.px
+import kotlinx.css.style
 
 fun createElevatorDialog(
     elevator: Elevator<*>,
@@ -147,6 +154,26 @@ fun createElevatorDialog(
                     children = staticListOf(
                         createMovementConditionSection(),
                         createMovementPatternSection(),
+                    ).concatWith(
+                        DynamicList.ofSingle(
+                            elevator.isValid.map { isValidNow ->
+                                when {
+                                    isValidNow -> createWrappedTextWb(
+                                        style = DynamicStyleDeclaration(
+                                            fontFamily = constant(FontFamily.sansSerif),
+                                        ),
+                                        text = constant("(Combination is valid)"),
+                                    )
+                                    else -> createWrappedTextWb(
+                                        style = DynamicStyleDeclaration(
+                                            fontFamily = constant(FontFamily.sansSerif),
+                                            fontWeight = constant(FontWeight.bold),
+                                        ),
+                                        text = constant("(Combination is not valid, try another)"),
+                                    )
+                                }
+                            }
+                        ),
                     ),
                 ),
             ),

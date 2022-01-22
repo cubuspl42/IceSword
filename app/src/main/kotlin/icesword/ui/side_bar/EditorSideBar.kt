@@ -75,12 +75,12 @@ fun editorSideBar(
             ),
             children = staticListOf(
                 createWrappedTextWb(
-                    editor.pointerWorldPixelCoord.map { coordOrNull ->
+                    text = editor.pointerWorldPixelCoord.map { coordOrNull ->
                         "Pixel: " + (coordOrNull?.let { "(${it.x}, ${it.y})" } ?: "-")
                     }
                 ),
                 createWrappedTextWb(
-                    editor.pointerWorldTileCoord.map { coordOrNull ->
+                    text = editor.pointerWorldTileCoord.map { coordOrNull ->
                         "Tile: " + (coordOrNull?.let { "(${it.x}, ${it.y})" } ?: "-")
                     }
                 ),

@@ -76,8 +76,10 @@ fun createTextWb(
 }
 
 fun createWrappedTextWb(
+    style: DynamicStyleDeclaration? = null,
     text: Cell<String>,
 ) = createWrapperWb(
+    style = style,
     child = constant(
         createTextWb(text = text),
     ),

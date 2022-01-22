@@ -8,8 +8,10 @@ import icesword.editor.DynamicWapSprite
 import icesword.editor.IntVec2Serializer
 import icesword.frp.Cell
 import icesword.frp.MutCell
+import icesword.frp.map
 import icesword.geometry.IntRect
 import icesword.geometry.IntVec2
+import icesword.wwd.DataStreamObj
 import icesword.wwd.Geometry.Rectangle
 import icesword.wwd.Wwd
 import kotlinx.serialization.Serializable
@@ -119,6 +121,30 @@ sealed class Elevator<Range : AxisRange<Range>>(
         }
     }
 
+    val logic: Cell<String?> = Cell.map2(
+        props.movementCondition,
+        props.movementPattern,
+    ) { movementCondition, movementPattern ->
+        when {
+            movementPattern == ElevatorMovementPattern.TwoWay &&
+                    movementCondition == ElevatorMovementCondition.MovesAlways -> "Elevator"
+            movementPattern == ElevatorMovementPattern.TwoWay &&
+                    movementCondition == ElevatorMovementCondition.MovesWithPlayer -> "StartElevator"
+            movementPattern == ElevatorMovementPattern.TwoWay &&
+                    movementCondition == ElevatorMovementCondition.MovesWithoutPlayer -> "StopElevator"
+            movementPattern == ElevatorMovementPattern.TwoWay &&
+                    movementCondition == ElevatorMovementCondition.MovesOnceTriggered -> "TriggerElevator"
+            movementPattern == ElevatorMovementPattern.OneWay &&
+                    movementCondition == ElevatorMovementCondition.MovesWithPlayer -> "OneWayStartElevator"
+            movementPattern == ElevatorMovementPattern.OneWay &&
+                    movementCondition == ElevatorMovementCondition.MovesOnceTriggered -> "OneWayTriggerElevator"
+            else -> null
+        }
+    }
+
+    val isValid: Cell<Boolean> =
+        logic.map { it != null }
+
     final override fun isSelectableIn(area: IntRect): Boolean {
         val hitBox = wapSprite.boundingBox.sample()
         return hitBox.overlaps(area)
@@ -126,15 +152,21 @@ sealed class Elevator<Range : AxisRange<Range>>(
 
     abstract fun exportElevatorRangeRect(): Rectangle
 
-    final override fun exportWapObject(): Wwd.Object_ {
+    final override fun exportWapObjects(): List<Wwd.Object_> {
+        val logicOrNull = logic.sample()
         val position = position.sample()
         val zOrder = asZOrderedEntity.zOrder.sample()
 
-        return prototype.wwdObjectPrototype.copy(
-            x = position.x,
-            y = position.y,
-            z = zOrder,
-            rangeRect = exportElevatorRangeRect(),
+        return listOfNotNull(
+            logicOrNull?.let { logic ->
+                prototype.wwdObjectPrototype.copy(
+                    logic = encode(logic),
+                    x = position.x,
+                    y = position.y,
+                    z = zOrder,
+                    rangeRect = exportElevatorRangeRect(),
+                )
+            }
         )
     }
 }
