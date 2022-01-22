@@ -2,6 +2,7 @@ package icesword.html
 
 import icesword.frp.Cell
 import icesword.frp.Till
+import icesword.frp.map
 import kotlinx.css.Align
 import kotlinx.css.Display
 import kotlinx.css.FlexDirection
@@ -10,9 +11,16 @@ import kotlinx.css.LinearDimension
 
 
 data class RowStyleDeclaration(
-    val justifyContentHorizontally: Cell<JustifyContent>? = null,
-    val alignItemsVertically: Cell<Align>? = null,
-)
+    val horizontalGap: Cell<LinearDimension>? = null,
+    val justifyHorizontally: Cell<JustifyContent>? = null,
+    val alignVertically: Cell<Align>? = null,
+) {
+    fun toFlexStyle() = FlexStyleDeclaration(
+        gap = horizontalGap,
+        justifyContent = justifyHorizontally,
+        alignItems = alignVertically,
+    )
+}
 
 fun createRow(
     tagName: String = "div",
@@ -26,11 +34,9 @@ fun createRow(
         val element = createStyledHtmlElement(
             tagName = tagName,
             style = style.copy(
-                display = Cell.constant(Display.flex),
-                flexDirection = Cell.constant(FlexDirection.row),
-                gap = horizontalGap?.let(Cell.Companion::constant),
-                justifyContent = rowStyle.justifyContentHorizontally,
-                alignItems = rowStyle.alignItemsVertically,
+                displayStyle = rowStyle.copy(
+                    horizontalGap = rowStyle.horizontalGap ?: horizontalGap?.let(Cell.Companion::constant),
+                ).toFlexStyle(),
             ),
             tillDetach = tillDetach,
         ).apply {

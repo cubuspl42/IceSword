@@ -160,7 +160,7 @@ fun createEditorToolBar(
             backgroundColor = constant(Color.gray),
         ),
         rowStyle = RowStyleDeclaration(
-            justifyContentHorizontally = constant(JustifyContent.spaceBetween),
+            justifyHorizontally = constant(JustifyContent.spaceBetween),
         ),
         children = listOf(
             HTMLWidget.of(leftButtonRow),
