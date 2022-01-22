@@ -6,7 +6,6 @@ import icesword.frp.DynamicSet
 import icesword.frp.Till
 import icesword.frp.dynamic_list.DynamicList
 import icesword.frp.dynamic_list.map
-import icesword.frp.dynamic_list.staticListOf
 import icesword.frp.dynamic_ordered_set.DynamicOrderedSet
 import icesword.frp.map
 import icesword.frp.mapNested
@@ -26,7 +25,6 @@ import kotlinx.css.Display
 import kotlinx.css.FlexDirection
 import kotlinx.css.LinearDimension
 import kotlinx.css.ObjectFit
-import kotlinx.css.em
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.HTMLInputElement
@@ -180,46 +178,6 @@ fun createHTMLWidgetB(
             tillDetach = tillDetach,
         )
 }
-
-
-fun createHeading4(text: String): HTMLElement =
-    createHTMLElementRaw("h4").apply {
-        appendChild(
-            document.createTextNode(text),
-        )
-    }
-
-fun createLabel(text: String): HTMLWidgetB<*> =
-    createHTMLWidgetB(
-        tagName = "label",
-        children = staticListOf(
-            createTextWb(constant(text)),
-        ),
-    )
-
-
-fun createHeading4Wb(text: Cell<String>): HTMLWidgetB<*> =
-    createHTMLWidgetB(
-        tagName = "h4",
-        style = DynamicStyleDeclaration(
-            marginBlock = constant(0.25.em),
-        ),
-        children = staticListOf(
-            createTextWb(text),
-        ),
-    )
-
-
-fun createHeading5Wb(text: Cell<String>): HTMLWidgetB<*> =
-    createHTMLWidgetB(
-        tagName = "h5",
-        style = DynamicStyleDeclaration(
-            marginBlock = constant(0.25.em),
-        ),
-        children = staticListOf(
-            createTextWb(text),
-        ),
-    )
 
 fun createSvgRoot(
     tillDetach: Till,
